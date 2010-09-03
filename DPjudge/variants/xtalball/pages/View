@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+import codecs
+open = codecs.open
+
+loadGame()
+if (page.game.phase != 'COMPLETED' and page.file == 'lists'
+and 'PUBLIC_LISTS' not in page.game.rules): checkPassword()
+showGameHeader()
+if page.power: checkPassword()
+:>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+<:
+gameHeader()
+:>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<:
+#	----------------------------------------------------------------------
+def showLists():
+	page.write(
+		"""
+		<tr valign=top bgcolor="#CCCCCC">
+		<td align=center class="grey"><b>Order History</b></td>
+		</tr>
+		<tr valign=top>
+		<td>
+		<center><table><tr><td>
+		""")
+	page.write('<pre>')
+	file, flag = open(page.game.file(page.file), encoding='latin-1'), 0
+	for line in file:
+		word = line.split()
+		if word:
+			if (page.power and line[0] != '=' and word[-1] != 'ORDERS'
+			and page.power.name not in (word[0][:-1].upper(), 'MASTER')):
+				continue
+			start = end = ''
+			if '[' in line and 'ordered' not in line:
+				if 'ignored' in line:
+					if ('LIMIT_LISTS' in page.game.rules
+					and page.game.phase != 'COMPLETED' and not page.power):
+						continue
+					start, end = '<font color=brown><i>', '</i>'
+				elif 'default' in line: start = '<font color=green>'
+				elif 'revoked' in line: start, end = '<strike>', '</strike>'
+				elif 'proxied' in line or 'byProxy' in line:
+					start = '<font color=gray>'
+				else: start = '<font color=red>'
+			if start[:2] == '<f': end += '</font>'
+			page.write(line[:10] + start + line[10:-1] + end)
+		elif not flag: page.write()
+		flag = line[0] == '=' or not word
+	file.close()
+	page.write(
+		"""</pre>
+		</th></tr></table>
+		<form><input type=button class=inputSubmit
+			onclick=window.history.back()
+			value="Return To The Status Page"></form></center>
+		""")
+#	----------------------------------------------------------------------
+if page.file == 'lists': showLists()
+else: viewFile()
+:>
+</td>
+</tr>
+<:
+footer()
+:>

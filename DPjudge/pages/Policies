@@ -1,0 +1,332 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>DPPD: DPjudge House Rules</title>
+<style type="text/css">
+<:
+page.include('stylesheet')
+:>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=2>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>Rules and Regulations</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center><a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=2 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>DPjudge&nbsp;Regulations</b></td>
+<td align=center class="grey"><a name="1"></a><b>I. Registration</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Registration for Use</a><br>
+		<b>&middot;</b>&nbsp;<a href="#2">The Judgekeeper</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">The GameMaster</a><br>
+		<b>&middot;</b>&nbsp;<a href="#4">The Players</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<P>
+		<center><font color=red>
+		The DPjudge creator<br>
+		wishes to thank<br>Mark Kindrachuk<br>
+		for his contributions<br>
+		toward the creation<br>
+		of these house rules.
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+<td>
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->		
+<ol>
+<li><b>Every user of the DPjudge must register their full, true, and correct
+name with the DPjudge Player Database (DPPD).</b>
+
+<li><font color=red><b>Under <u>no circumstances</u> whatsoever
+may any user ever create or maintain more
+than one registration record in the DPPD.</b></font>
+Persons having multiple e-mail addresses may easily
+tell the DPPD to add each one to his or her one-and-only, <i>single</i>
+DPPD registration record, and must <b><u>not</b></u> create a second
+registration.
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="2"></a><b>II. The Judgekeeper</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--DESIGN CREDITS BEGIN HERE-->
+<ol>
+<li>
+Every DPjudge shall have one human judgekeeper, who may request and
+       receive the assistance of one or more other persons to fulfill the
+       duties of this position.
+
+<li>
+The judgekeeper may not participate as a player in any game without
+       express consent of the GameMaster.
+
+<li>
+The judgekeeper may set all use policies, may admit, blacklist, or remove any
+person from the DPjudge Player Database, and may take any action he sees
+       fit in or concerning any game run on the DPjudge.  Objections to the
+       actions of the judgekeeper may be made only to the judgekeeper, who has
+       sole right of review, and to the general public.
+
+<li>
+The judgekeeper is obligated to investigate all reported violations of
+       these rules.  After due investigation into potential violations of
+       these rules as reported to the judgekeeper by any player or GameMaster,
+       or by the automated alarms provided by the DPjudge itself,
+       sanctions for violations of these rules shall be decided by the
+	   judgekeeper, whose decisions as to intention and severity of the
+	   infraction are final.  No appeal except for reconsideration is
+	   possible.  Penalties up to and including permanent and publicized
+	   expulsion from the ranks of DPjudge users shall be enforced.
+		<!--DESIGN CREDITS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="3"></a><b>III. The GameMaster</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--DESIGN CREDITS BEGIN HERE-->
+<ol>
+<li>
+<b>Every game on the DPjudge must have a human GameMaster.</b>  The GameMaster
+       is responsible for the creation of the game and the setting of all
+       parameters.
+
+<li><b><font color=red>The GameMaster may not participate as a power in the game.</font></b>  Further,
+       the GameMaster may not take any action in the role of any player (such
+       as entering orders, sending press, etc.) without having been instructed
+       to do so by the player.
+
+<li>A GameMaster may not abandon his responsibility to the game without
+       having identified and installed a willing and dedicated replacement.
+	   The judgekeeper is empowered to determine if a GameMaster is in
+	   violation of this rule, based on attentiveness to the game and
+	   resposiveness to the judgekeeper.  Violations of this rule will be
+	   punished as severely as violations of any other rule.
+
+<li>The GameMaster is the sole decider of game settings and parameters,
+       including the determination as to whether the game is
+	   <ul>
+	   <li><b>a public game</b> (meaning that it is open to all DPjudge
+	   users and <u>must be</u> played anonymously) or
+       <li><b>a private game</b>
+	   (meaning that it may include persons who know each other,
+       and <u>need not</u> be played anonymously).</ul>
+	   In games in which the chosen
+	   settings do not automatically penalize tardy players by civil disorder
+	   or automatic resignation, the GameMaster should make known to the players
+	   his or her policy concerning the length of time he will wait after a
+	   deadline before resigning a late player on his own accord or entertaining
+	   calls from the other players to effect such a resignation.  Once
+	   announced, this policy is not to be altered by the GameMaster during
+	   the play of a game.
+
+<li>Once any player has joined the game intending to participate, no
+       parameters may be changed without the unanimous consent of all
+       (uneliminated) players.  If a GameMaster alters any game setting or
+       parameter without having obtained unanimous consent for the change,
+       any objecting player may petition the judgekeeper, who shall restore
+       the original parameters to the game and cause any necessary phases of
+       play to be readjudicated.
+
+<li>Notwithstanding the above rule, a GameMaster shall not modify any game
+       setting or parameter that would alter the victory condition (including
+       by the introduction of the NO_DIAS rule) of any game that has commenced
+       play.  Any such change that is made is subject to revocation by the
+       judgekeeper upon the request of any person.
+
+<li>The GameMaster may not divulge to any player any information or
+       misinformation concerning any other player's identity, game situation,
+       strategy, tactical intentions or tendencies, alliance structure, or
+       any other game-related information.
+
+<li>The GameMaster may not kibitz by offering, even if requested, any
+       strategic or tactical advice to any player or player(s) in the game,
+       nor divulge any information to any person who is engaged in kibitzing.
+       The GameMaster may, however, refer any player to published sources,
+       including records of completed games, or to other human advisors who
+       do not have access to game information.
+
+<li>The GameMaster is responsible for enforcement of these rules in the
+       game.  With the assistance of the players and automated alarms provided
+       by the judge, the GameMaster is to be vigilant for any violations.
+       The GameMaster may remove any player from the game by forceful
+       resignation for any infraction of these rules that the GameMaster
+       deems significant.  Upon due consideration of an incident, if the
+       GameMaster determines that the violation is serious and intentional,
+       it is to be reported immediately to the judgekeeper with a
+       recommendation for further action.
+
+<li>If all (uneliminated) players agree that the GameMaster should be
+       replaced for any reason, then upon communication of this agreement to
+       the judgekeeper, the judgekeeper shall assume responsibility to Master
+       the game or to install another GameMaster of his choosing.
+		<!--DESIGN CREDITS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="4"></a><b>IV. The Players</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+<ol>
+
+<li><b>A person may play one and only one power during any game.</b>  Exceptions:
+       Players who have joined a game but who have not yet had a set of submitted
+	   orders be processed by the judge are permitted to resign one power and
+	   take up position as another power if they receive permission from the Game
+	   Master, who is obliged in any game allowing private press to poll the
+	   other players for unanimous consent.  This rule is also
+	   waived for variant games in which control of multiple powers by a single
+	   person is explicitly allowed by rule and for private games when unanimous
+	   consent of the other players and the GameMaster is obtained for an
+	   eliminated person to take a different, vacated role later in the game.
+
+<li><b>No player shall at any time access any information on the DPjudge that
+       cannot be retrieved using only his own power's password.</b> <!--
+
+<li> -->
+A player who becomes aware of any other player's password or the
+       Master's password shall report this immediately to the GameMaster. <!-- ,
+       and shall not in any way use that password in any interaction with
+       the DPjudge. -->
+
+<li><b><font color=red>No player shall join a public game if he has prior knowledge that any
+       particular player known to him is participating in the game.</font></b>
+
+<li>No player in a public game shall make any statement or divulge any
+       information to any other player that will or may reveal his or her
+       true identity, nor may a player represent himself or herself to be
+       some other real-life person.  If a player becomes aware of the true
+       identity of any player in the game after play has commenced, he is
+       to immediately report this knowledge to the GameMaster and inform the
+       GameMaster of any and all relationships that he may have with the
+       player whose identity has been exposed.  Likewise, any player who
+       becomes aware that he has accidentally exposed his own identity to
+       another player is to report this immediately to the GameMaster.  The
+       decision of the GameMaster as to any necessary remedy, including
+       announcing the interplayer relationship to the other players and/or
+       removing one or more players from the game, is final.  Note that
+       players who believe they recognize the writing style or other
+       peculiarities of a player are not obliged to report their presumption
+       as to the identity of the other player.
+
+<li><b>All players must be completely honest and candid in all communications
+       with the GameMaster and the judgekeeper.  All violations of this rule
+       shall be penalized by blacklisting, and no exceptions shall be made.</b>
+
+<li>All players are obliged to abide by the spirit and intent of all game
+       settings and parameters.  Except when forbidden by rule, communication
+       between players may be made at any time, and eliminated players may
+       continue to communicate and participate in a game.  Except in private
+       games, all interplayer communication, including draw and concession
+       proposals, is to take place using only the press mechanisms provided
+       by the judge.
+
+<li>Interception by any means of any e-mail or Web traffic properly
+       addressed and delivered to another party is forbidden.  This rule
+       covers reading any other player's e-mail without his or her knowledge
+       by gaining access to their e-mail client or logged-in Web browser,
+       and also covers interception by means of network packet
+       redirection and other electronic means.
+
+<li>Cross-gaming transactions (for example, rewards or retaliation in one
+       game for actions in another game) and extra-gaming transactions (such
+       as paying real-world money for an alliance) are prohibited.
+
+<li>Players who require a deadline extension should contact the GameMaster
+       as far in advance as possible, and inform the GameMaster of the reason
+	   for the request.  Repeated absenteeism or tardiness in submitting orders
+	   may result in the removal of a player from the game at the sole
+	   discretion of the GameMaster.
+
+<li>Mild literary abuse of the GameMaster and of other players is permitted,
+       but use of profane or obscene language will not be tolerated if any
+       objection is raised from any quarter.  If the GameMaster feels that
+       any disagreement has turned personal and that the discussion surrounding
+       it has gone too far, the GameMaster will issue a warning, after which
+       the conduct in question must stop or this rule shall be deemed to have
+       been violated.
+
+<li>A player who discovers that the judge has made an error in adjudication
+       must inform the GameMaster and judgekeeper immediately.  If the
+       GameMaster determines that it is not possible to correct the error
+       without affecting the result of the game, the GameMaster may terminate
+       the game.
+
+<li>Any player who becomes aware that any other player or GameMaster is
+       acting in violation of these rules, intentionally or otherwise, has a
+       positive obligation to immediately inform the GameMaster (or, in the
+       case of perceived violation by the GameMaster, the judgekeeper).
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>
+<tr valign=top>
+<td colspan=2 align=right class="fineprint" bgcolor="#CCCCCC">The DPjudge is copyright © <:= '1995-%d' % time.localtime()[0] :> by Manus Hand. All rights reserved. </td>
+</tr>
+</table>
+
+</body>
+</html>
+

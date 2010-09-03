@@ -1,0 +1,496 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: 1900 Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"><img src="<URL>/images/spacer.gif" width=1></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>The 1900 Variant</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Contents</b></td>
+<td align=center class="grey"><a name="2"></a><b>Map Changes</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=7>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#2">Map Changes</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Unit Changes</a><br>
+		<b>&middot;</b>&nbsp;<a href="#4">Rule Changes</a><br>
+		<b>&middot;</b>&nbsp;<a href="#5">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		<form action=<URL> target=1900>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=1900>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr><td class=bodycopy>
+	<!--
+Baron Powell is the designer of <b>1900</b>.
+-->
+<b>1900</b> is very similar to conventional <b>Diplomacy</b>, using
+the same seven Great Powers.
+<!-- &nbsp;-- only better,
+if I do say so myself. --> What primarily distinguishes <b >1900</b> from
+<b>Diplomacy</b> is the map, which shows Europe and the entire northern
+coast of Africa at the turn of the century.  Features of the map are
+discussed below.
+<!--
+There are also some unit
+changes and two major rule changes.  These are discussed below.
+</td></tr></table>
+
+		<!--BODYCOPY ENDS HERE- - >
+	</td>
+	</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="2"></a><b>Map Changes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE- - >
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE- - >
+-->
+<ul>
+<li>There are thirty-nine supply centers.
+Great Powers control twenty-five at game-start: Britain,
+France, Germany, and Russia have four supply centers each and Austria-Hungary,
+Italy, and Turkey have three supply centers each. The remaining
+fourteen supply centers are neutral at game-start.
+
+<li>
+Morocco is separated from North Africa and is a neutral SC.
+This reflects the fact that Morocco was independent in 1900 and
+also a tremendous source of friction between the Great Powers.
+
+<li>
+What's left of North Africa is split into two spaces: Algeria
+and Southern Algeria.  Algeria is a French SC. This represents France's
+dominant presence in the area.
+
+<li>
+The Tyrrhenian Sea touches Algeria, where it doesn't touch North Africa in
+<b>Diplomacy</b>. This makes it easier for Italy to stake a claim on French
+territory.
+
+<li>
+Tunisia is no longer an SC. It is now simply a
+buffer between two supply centers, French Algeria and neutral Tripolitania.
+
+<li>
+Libya appears on the map and is represented by two spaces: Tripolitania,
+a neutral SC, and Cyrenaica, which serves as a buffer
+between Tripolitania and British Egypt.
+Though Turkey controlled Tripolitania and Cyrenaica
+in 1900, the fact that the former is a neutral SC rather than Turkish reflects
+the Ottoman Empire's increasingly loose hold on the
+area.
+
+<li>
+Egypt appears on the map and is a British SC.  The British undeniably felt
+Egypt was a key territory in their vast empire in 1900.  Never mind that the
+Turks felt Egypt belonged to them. Having a British SC
+within arms reach of Turkish territory dramatically increases the need for
+British, and therefore French and German, interaction with not only Turkey,
+but also Austria-Hungary, Italy, and Russia.
+
+<li>
+Syria has been renamed Damascus and is a Turkish SC. At the same time, Smyrna
+has been renamed Konya and is no longer a Turkish SC. This flip-flop makes it
+more difficult for Turkey to establish a dominant position in the southeast
+corner of the map. 
+
+<li>
+Two additional Turkish spaces appear on the map, Palestine and Hejaz.
+Palestine's primary purpose is to serve as a buffer between Turkish Damascus
+and British Egypt.
+
+<li>
+A new neutral space, Arabia, is sandwiched in between Damascus, Palestine,
+and Hejaz. 
+
+<li>
+Turkey controls a large territory in the Balkans called Macedonia.  Macedonia
+has two coasts, east and west, and touches no less than eight other spaces.
+Albania, which came into existence in 1912 after the Balkan Wars, no longer
+exists. 
+
+<li>
+Moscow is split into two spaces: Moscow and Siberia. This
+division frustrates the formation of stalemate lines. 
+
+<li>
+Trieste is split into two spaces: Trieste and Bosnia.  In 1900, Bosnia
+was under Austro-Hungarian administration, but was not technically a part of
+the Dual Monarchy. The Dual Monarchy's
+annexation of nominally Turkish Bosnia in 1908 nearly resulted in WWI erupting
+six years early. 
+
+<li>
+Vienna no longer touches Galicia.  Instead, Budapest now touches Bohemia.
+Not only is this geographically correct, as a look at a map of the Czech
+Republic today will confirm, it also prevents a particularly nasty tactic
+that Austria-Hungary and Germany could use against Russia
+given the new unit at-start positions discussed shortly. 
+
+<li>
+Venice is no longer an SC. This diffuses the
+tension between <b >Diplomacy's</b> weak sisters, Austria-Hungary and Italy.
+Venice is also renamed Venetia. 
+
+<li>
+A new space, Milan, is an Italian SC. 
+
+<li>
+Tuscany no longer exists. Rome now borders the Gulf of Lyon,
+Piedmont, and Milan.  This helps Italy reinforce its northern position. 
+
+<li>
+A Gibraltar space is added. Gibraltar divides the south coast of Spain
+in two (i.e., Spain now has three coasts: north, east, and west).
+Gibraltar is a sea space for convoy purposes, but
+an army can move there from either Morocco or Spain, and
+prevent a fleet from entering. 
+
+<li>
+Ruhr is renamed Cologne and is a German SC. This additional SC
+makes the Reich more formidable and allows it to serve as more of a
+counterweight to <b >Diplomacy’s</b> Big Boys,
+France and Russia.
+
+<li>
+A new space, Alsace, separates French Burgundy from German Cologne and Munich.
+This prevents the Kaiser from taking advantage of the new German unit
+at-start position to perpetrate evil on France during the first game-turn. 
+
+<li>
+Holland is renamed Netherlands.
+
+<li>
+Switzerland is a neutral SC. This makes for some
+very interesting dynamics between Austria-Hungary, France, Germany, and Italy. 
+
+<li>
+Ireland borders the Mid-Atlantic Ocean.
+<li>
+Iceland, Ireland, and Switzerland are now passable. 
+
+<li>
+Movement between Clyde and Ireland is allowed. This is true even if an enemy
+fleet is in the North Atlantic Ocean.  A convoy is not required to move an
+army back and forth between Clyde and Ireland.
+
+<li>
+Army movement is allowed between Gibraltar and Morocco.
+No convoy is required in this case.  Gibraltar is
+considered a sea space for convoy purposes. 
+
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="3"></a><b>Unit Changes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+
+<ul>
+<li>
+Austria-Hungary starts with an army in Trieste instead of a fleet.
+The Imperial and Royal Army was the glue that held the Empire together.
+The undernourished Austro-Hungarian Navy was
+little more than an afterthought. This
+third army greatly enhances the Dual Monarchy's flexibility and options. 
+
+<li>
+Britain starts with four units: F London, F Edinburgh, F Gibraltar, and F Egypt.
+Note that Liverpool is
+still an SC, but the army that starts there in <b 
+>Diplomacy</b> is gone. At the
+same time, note that Gibraltar is not an SC.
+Britain
+was the premier sea power at the turn of the century, but its puny army was
+almost embarrassing for a nation of Britain's
+stature. The vaunted, and diminutive,
+British Expeditionary Force wasn't formed until just before WWI. 
+
+<li>
+France starts with four units: A Paris, F Brest, A Marseilles, and A Algeria.
+The last unit reflects the military presence France
+maintained in its African territories.
+The strong French garrison was no doubt a prudent deterrent given
+Italian ambitions to establish an African empire that the Romans themselves
+would have been proud of. 
+
+<li>
+Germany starts with four units: A Berlin, A Cologne, F Kiel, and A Munich.
+The supremacy of the German army was acknowledged, grudgingly, by all of
+the Great Powers.  In standard <b>Diplomacy</b>, however, Germany
+seems pathetically weak when compared to the actual colossus that was the
+Second Reich. The additional army gives the Kaiser real options to conduct
+a two-front war if necessary or desired. 
+
+<li>
+The Italian army that started in Venice now starts in Milan. 
+
+<li>
+The Turkish army that started in Smyrna now starts in Damascus.
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="4"></a><b>Rule Changes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+<p>
+With the few exceptions discussed below, all rules for <b>Diplomacy</b>
+apply to <b >1900</b> as well.  In all but two cases, the rule changes
+represent little more than minor revisions to account for the new map.
+The two major exceptions are the Suez Canal Rules and the
+Russian Emergency Measures (REM) <!Steamroller> Rule.
+The Suez Canal Rules are a series of rules governing
+movement and combat between the Mid-Atlantic Ocean space and the Egypt/Hejaz
+spaces. These rules serve to give <b>1900</b> a distinct character primarily
+because they dramatically increase the need for all of the Great Powers to talk
+to each other from the beginning of the game, an end state the
+variant creator definitely hoped
+to achieve.
+The Russian Emergency Measures <!Steamroller> Rule
+<!(hereafter simply Steamroller)> was
+a late addition to the variant rules that was felt necessary to enhance
+play balance.  This rule's purpose is to boost Russia's
+defensive prospects after repeated game play showed that Russia
+was not achieving the results that had been anticipated. 
+
+<p>
+The minor rule changes go as follows: 
+
+<ul>
+<li>
+Victory conditions have not changed.  If a Great Power gains control of eighteen
+supply centers, the game ends and the player controlling that Great Power is declared the
+winner. With thirty-nine supply centers, though, it is now possible for two Great Powers
+to get eighteen supply centers on the same game-turn.
+Should this happen, the player representing the Great Power with the
+most supply centers is the winner. If the two Great
+Powers each control the same number of supply centers, play continues until one Great
+Power controls at least eighteen supply centers and that Great Power controls more supply centers
+than any other Great Power. 
+
+<li>
+Egypt and Algeria, while controlled by Britain and France
+respectively at game-start, are not considered home supply centers.
+This means that Britain may not build in Egypt and France may
+not build in Algeria.  This also explains why Egypt
+is not called Cairo and Algeria not called Algiers.
+</ul>
+
+<p>The Suez Canal Rules go like this:
+
+<ul>
+<li>
+A fleet may move back and forth between Egypt
+and Hejaz. 
+
+<li>
+Movement between Egypt or Hejaz and the Mid-Atlantic Ocean is allowed.
+It is assumed the unit travels around the southern tip of Africa.
+A unit that moves in this manner does so at half strength.
+This means that a unit adjacent to Egypt or Hejaz succeeds in moving
+there if opposed only by a fleet moving from the Mid-Atlantic Ocean
+and a fleet adjacent to the Mid-Atlantic Ocean succeeds in moving there if
+opposed only by a fleet moving from Egypt or Hejaz. 
+
+<li>
+A fleet in Egypt or Hejaz cannot support a unit holding in or moving to
+the Mid-Atlantic Ocean.  This is true even though the fleet in Egypt
+or Hejaz can itself move to the Mid-Atlantic Ocean.
+Likewise, a fleet in the Mid-Atlantic Ocean cannot support a unit holding
+in or moving to Egypt or Hejaz. 
+
+<li>
+A fleet moving from Egypt or Hejaz to the Mid-Atlantic Ocean does not cut
+support being provided by a fleet already in the Mid-Atlantic Ocean unless
+the attack results in F Mid-Atlantic Ocean being dislodged.
+The opposite is equally true. A fleet moving from the Mid-Atlantic Ocean
+to Egypt or Hejaz does not cut support being provided by a unit already
+in Egypt or Hejaz unless the attack results in the unit being dislodged.
+
+<li>
+F Mid-Atlantic Ocean can convoy an army from or to Egypt or Hejaz.
+An army convoyed from Egypt or Hejaz attacks its destination space at full
+strength. An army convoyed to Egypt or Hejaz attacks at half strength.
+
+<li>
+If two units are retreating to Egypt or Hejaz, or the Mid-Atlantic
+Ocean, and one of them must travel around the southern tip of Africa,
+the unit that does not travel around southern Africa may retreat while
+the other unit is disbanded.
+</ul>
+<p>
+The Russian Emergency Measures Rule goes like this:
+<p>
+Russia's greatest military assets at the dawn of the 20th century were
+its seemingly endless supply of manpower and its vast resources.
+Unfortunately, terrible mismanagement and a weak economy prevented Russia from
+successfully
+exploiting these assets.  If Russia were to suffer a severe setback, such as
+is implied by the loss of a home supply center, it seems reasonable to assume
+the Russian government would be shocked into taking drastic measures to
+overcome the situation, to include stripping the many garrisons stationed
+throughout
+the Asiatic portions of the Empire and better managing its limited industrial
+capability.  In game terms, this is done as follows:
+<ul>
+<li>    Whenever Russia possesses at least one,
+<b><i>but not all four</i></b>,
+of its original home supply centers, it is entitled to maintain one extra
+unit on the map (i.e., one more than the number of supply centers it currently
+controls).  Additionally, while Russia is in this condition, the Russian player
+may use Siberia as a build site during the adjustment phase, if Siberia is
+unoccupied.
+<li>Should Russia fail to possess at least one home supply center
+<b>or</b> should it regain possession of all four of its home supply centers,
+the ability to
+maintain an extra unit is lost and any excess units must be disbanded during the
+subsequent adjustment phase.  Further, Siberia reverts to its normal status
+(that is, it is no longer a build site).
+<li>Note that Siberia, while it may become a build site, <b><i>never</i></b>
+attains supply center status.
+</ul>
+<!--
+<p>
+The Steamroller reflects the seemingly endless reserves of
+manpower that were available to the Tsar at the turn of the century.
+In game terms, this is done as follows:
+<ul>
+<li>Russia is allowed to have one additional unit while the Tsar controls
+at least one of the four Russian home supply centers.
+<li>
+If other Powers control <i>all four</i> Russian home supply centers
+(with control being determined after the Fall retreats), the ability
+to maintain an
+additional unit is lost and Russia may only field a number of units equal
+to the number of supply centers it actually controls.
+<li>Should Russia regain a home SC, it would again be eligible to field
+an additional unit, though this unit would need to be built in an open
+home SC as per normal build rules.
+<li>Note that the additional unit does not appear at the start of the game,
+as there is no vacant home SC to put it in.
+</ul>
+-->
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="5"></a><b>Design Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+		<!--
+<p>
+So, there you have it.  As you can see, <b>1900</b> is, at heart, just like
+the game of <b>Diplomacy</b> that we have all come to know and love.  The map,
+unit, and rule changes do, however, alter the dynamics of how the Great Powers
+interact with each other.
+Once you've played, I think you'll agree that it was well worth your
+time. In fact, I expect you'll be so impressed with <b>1900</b> that you may
+have a tough time going back to conventional Diplomacy. 
+-->
+
+<p>A <a href="<POUCH>/Online/variants/1900-GG.pdf">Gamers' Guide to 1900</a>
+(PDF format) is also available to help players understand the variant. 
+
+<p>Baron Powell, the creator of <b>1900</b>, wishes players to feel free to
+contact him at <a href="mailto:VonPowell@aol.com">VonPowell@aol.com</a>.
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+<:
+footer()
+:>

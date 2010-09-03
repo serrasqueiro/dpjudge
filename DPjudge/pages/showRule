@@ -1,0 +1,20 @@
+<title>DPjudge Rule <:=page.rule:></title>
+<:
+page.include('stylesheet')
+:>
+<dl><dt><b><tt>RULE <:=page.rule:></tt></b><dd class=bodycopy>
+<:
+file, text, data = open('<PKG>/pages/Rules'), 0, ''
+for line in file:
+	word = line.split()
+	if word[:2] == ['<!--', 'RULE']:
+		if word[2] == page.rule: text = 1
+		elif text and word[2] == 'END': break
+	if text: data += line
+file.close()
+page.include(data = data)
+:>
+</dd></dl>
+<script>
+window.focus();
+</script>

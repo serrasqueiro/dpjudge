@@ -1,0 +1,246 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Aberration Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"><img src="<URL>/images/spacer.gif" width=1></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>The Aberration Variant</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Contents</b></td>
+<td align=center class="grey"><a name="1"></a><b>Basic Rules</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=3>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		<form action=<URL> target=milan>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=aberration>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr><td class=bodycopy>
+
+<ol>
+<li>The standard rules of regular Diplomacy apply, except where modified below.
+
+<P><li>The map is a vision of Europe, northern Africa and the Middle East,
+with nine powers that may have become (or who may yet become?) Great Powers
+had history gone a bit differently than it did.
+<ol type=a>
+<li>Six spaces (Cairo, Constantinople, Denmark,
+    Holstein, Sinai, and Taurida) are canals, behaving as Denmark, Kiel,
+	and Constantinople do on the standard Diplomacy map.
+<li>The Caspian Sea, Crete, Iceland, and Corsica are impassable.
+</ol>
+
+<p><li>There are nine powers, initially
+   owning the following supply centers and units:
+<center>
+<table border>
+<tr><th class=bodycopy bgcolor=#ff00ff><font color=white>B - Burgundy</th>
+	<td class=bodycopy><tt>Army Dijon</tt></tt>
+	<td class=bodycopy><tt>Army Brussels</tt></tt>
+	<td class=bodycopy><tt>Fleet Hague</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=yellow>C - Sicily</th>
+	<td class=bodycopy><tt>Army Rome</tt></tt>
+	<td class=bodycopy><tt>Fleet Naples</tt></tt>
+	<td class=bodycopy><tt>Fleet Palermo</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=#00e600>E - Eire</th>
+	<td class=bodycopy><tt>Army Alcluyd</tt></tt>
+	<td class=bodycopy><tt>Fleet Dublin</tt></tt>
+	<td class=bodycopy><tt>Fleet Edinburgh</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=#006600><font color=white>H - Hungary</th>
+	<td class=bodycopy><tt>Army Budapest</tt></tt>
+	<td class=bodycopy><tt>Army Szeged</tt></tt>
+	<td class=bodycopy><tt>Fleet Zara</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=#33b3b3>I - Israel</th>
+	<td class=bodycopy><tt>Army Damascus</tt></tt>
+	<td class=bodycopy><tt>Army Jerusalem</tt></tt>
+	<td class=bodycopy><tt>Fleet Cairo</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=red>P - Poland</th>
+	<td class=bodycopy><tt>Army Warsaw</tt></tt>
+	<td class=bodycopy><tt>Army Riga</tt></tt>
+	<td class=bodycopy><tt>Fleet Gdansk</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=#ff804c>S - Spain</th>
+	<td class=bodycopy><tt>Army Toledo</tt></tt>
+	<td class=bodycopy><tt>Fleet Santander</tt></tt>
+	<td class=bodycopy><tt>Fleet Valencia</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=white>U - Ukraine</th>
+	<td class=bodycopy><tt>Army Kiev</tt></tt>
+	<td class=bodycopy><tt>Army Odessa</tt></tt>
+	<td class=bodycopy><tt>Fleet Yalta</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=blue><font color=white>Z - Byzantium</th>
+	<td class=bodycopy><tt>Army Athens</tt></tt>
+	<td class=bodycopy><tt>Fleet Constantinople</tt></tt>
+	<td class=bodycopy><tt>Fleet Smyrna</tt></tt>
+</tr>
+</table>
+</center>
+
+<p><li>A player may build on any owned supply center, as long as the player
+owns at least one original home supply center.
+
+<p><li>The victory condition is 27 supply centers.
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="3"></a><b>Design Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+
+<p>
+This variant was created by Rod Walker and Nick Fitzpatrick, who are
+both genuine Diplomacy legends.
+<P>
+Here are some suggestions as to what may have happened to the powers
+in Aberration to cause them to achieve Great Power status:
+<dl>
+<dt><b>
+Burgundy</b><dd>
+   The final confrontation between the civilization of the Seine and
+            the Saone was no sure thing for the Parisian monarch.  In this
+            instance the victor was the Burgundian dynastic state, stretching
+            from the Rhone to the North Sea.
+
+<dt><b>
+Byzantium</b><dd>
+  This empire might have survived had the Turks failed to make a
+            landing in Europe.  The population of western Asia Minor was
+            still basically Greek in the 1400s.  Some strong emperors could
+            have given the Greek state a new lease on life.
+
+<dt><b>
+Hungary</b><dd>
+    Hungary was a budding great power until the Turkish invasions.  A
+            strong Byzantium would have prevented that, and Hungary, not
+            Austria, could have become the great Danubian power.
+
+<dt><b>
+Eire</b><dd>
+       If Irish missionary activity had been followed by political
+            action on behalf of their fellow Celts, the Anglo-Norman imperium
+            at London might have been still-born.  All the Irish needed was
+            some real unity, which they almost achieved on occasion.
+
+<dt><b>
+Israel</b><dd>
+     This could be a continuation of the ancient dynastic state under
+            descendants of the Maccabees or the Herods.  Just as likely,
+            however, it would be representative of the final victory of the
+            Crusaders in the Middle East.  It might therefore be called the
+            "Kingdom of Jerusalem."
+
+<dt><b>
+Poland</b><dd>
+     The Poles had many opportunities to overwhelm both the Russian
+            and the eastern Germans.  We must here assume that one
+            such opportunity finally afforded success.
+
+<dt><b>
+Sicily</b><dd> 
+    This island once had an excellent chance of gaining control of
+            most of Italy under a powerful and aggressive Norman dynasty. 
+            These rulers died out, and Sicily became  the pawn of others. 
+            Here we assume that the Norman dynasty did not die out.
+
+<dt><b>
+Spain</b><dd>
+      This could be a Christian Spain which somehow remained powerful
+            despite a long succession of cretinous monarchs.  Perhaps they
+            were spared the third-rate Hapsburgs and Bourbons who were
+            thrust upon them.  Another possibility is that this is
+			a Muslim Spain, which case we
+            should perhaps refer to it as the "Caliphate of Toledo" (a change
+			of capital from Cordova).
+
+<dt><b>
+Ukraine</b><dd>
+    The original Russian state was centred at Kiev, and we suppose
+            here that this southern center remained dominant rather than
+            losing out to the northern centres at Vladivostok and Moscow.  These
+            people would, however, continue to call their land "Russia" or
+            something like it, so Ukraine is perhaps a misnomer for this
+			power.
+
+</dl>
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+<:
+footer()
+:>

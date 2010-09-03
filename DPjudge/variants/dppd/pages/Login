@@ -1,0 +1,165 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<:
+page.include('stylesheet')
+page.include('functions')
+page.include('dppd')
+
+if 'forgot' in vars(page):
+	page.dppd.db.execute(
+		"""
+		select User.status, password from User, Email
+		where User.id = Email.userId and Email.address = '%s'
+		""" % page.email)
+	data = page.dppd.db.fetchone()
+	if data:
+		mail = Mail(page.email, 'DPPD Password Reminder', None, host.dppd)
+		what, reminder = 'password', data['password']
+		if data['status'] == 'PENDING':
+			what = 'registration confirmation number'
+			reminder = reminder.split('/')[0]
+		mail.write('Your DPjudge %s is: %s\n' % (what, reminder or '(blank)'))
+		mail.close()
+		alert = "Password reminder sent."
+	else: alert = 'No such DPjudge player - %s' % page.email
+	page.write(
+		"""
+		<script>
+		alert("%s");
+		window.history.back();
+		</script>
+		""" % alert)
+	raise SystemExit
+
+player = login()
+:>
+
+<title>DPPD: <:=player['name']:></title>
+</head>
+<body bgcolor="#ffffff">
+
+<:
+id, status = player['id'], player.get('status', 'ACTIVE')
+header()
+if 'newGame' in vars(page):
+	if 'newPass' not in vars(page):
+		page.write("""
+		<script>
+		alert('Password cannot be blank.');
+		window.history.back();
+		</script>""")
+	if 'email' not in vars(page):
+		page.dppd.db.execute("""
+		SELECT address
+		  FROM Email
+		 WHERE status = 'PRIMARY'
+		   AND userId = %s""" % id)
+		email = page.dppd.db.fetchone()['address']
+	else: email = page.email
+	back = 'window.history.back();'
+	text = Status().createGame(email, page.newGame, page.newPass, page.newVariant)
+	if not text:
+		text = 'Your game has been created.'
+		updateText = 'JUDGE:USDP|GAME:%s|ZONE:GMT|' % page.newGame + \
+			'STATUS:%s:PREPARATION|MASTER:%s:#%s' % (
+			page.newVariant, page.newPass, id)
+		page.dppd.updateGame(updateText)
+		back = 'document.newGame.submit();'
+	else:
+		text = '\\n'.join(text)
+	page.write("""
+	<form name=newGame method=post>
+	<input type=hidden name=variant value=dppd>
+	<input type=hidden name=id value=%s>
+	<input type=hidden name=password value=\'%s\'>
+	<input type=hidden name=page value='Login'>
+	<script>
+	alert("%s");
+	%s
+	</script>""" % (id, page.password.encode('latin-1'), text, back))
+:>
+
+	<tr valign=top bgcolor="#CCCCCC">
+		<td nowrap align=center class="grey"><b>DPjudge Resources</b></td>
+		<td width=100% colspan=2 align=center class="grey"><b>My Games</b></td>
+	</tr>
+	<tr valign=top>
+		<td align=center valign=top class=bodycopy>
+<:
+leftside()
+:>
+		</td>
+		<td align=center class=bodycopy>
+<:
+master, player, observer = [], [], []
+game, which = Game(), 0
+page.dppd.db.execute("""
+	select	Judge.url, Game.judgeId, Game.name, Game.status,
+			Game.phase, Game.deadline, Game.zone,
+			Role.type, Role.password, Role.name
+			from Judge, Game, Role
+			where Game.id = Role.gameId and Game.judgeId = Judge.id
+			and Role.userId = %d
+			and Game.status not in ('COMPLETED', 'TERMINATED')
+			""" % page.id)
+for info in page.dppd.db.fetchall():
+	game.phase, game.deadline = info['phase'], info['deadline']
+	game.setTimeZone(info['zone'])
+	when = game.timeFormat(shortForm=1).split()
+	info['late'] = game.deadlineExpired()
+	info['deadline'] = ' '.join(when[:-2]) + '<br>' + ' '.join(when[-2:])
+	if info['type'] == 'MASTER': master += [info]
+	elif info['type'] in ('POWER', 'LATE'): player += [info]
+	else: observer += [info]
+page.write('<table cellpadding=10 width=100% height=100%><tr>')
+if not (player or master or observer):
+	page.write("""
+		<td class=bodycopy align=center>
+			You are currently not involved in any games.
+		</td>
+		""")
+for list in filter(None, (player, master, observer)):
+	which += 1
+	if list is player: header = 'Playing...'
+	elif list is master: header = 'Mastering...'
+	else: header = 'Observing...'
+	page.write(
+		"""
+		<td valign=top align=center class=bodycopy>
+		<font size=2><b><u>%s</u></b></font>
+		<table border=1 cellspacing=0><tr>
+		<th class=bodycopy bgcolor=#cccccc>Game</th>
+		<th class=bodycopy bgcolor=#cccccc>Status</th></tr>
+		""" % header)
+	for num, info in enumerate(list):
+		info['formNum'] = '%03d%03d' % (which, num)
+		phase = '<b>%(phase)s<br>' % info
+		if info['status'] != 'ACTIVE': info['clock'] = info['status']
+		elif not info['late']: info['clock'] = phase + info['deadline']
+		elif info['type'] == 'LATE' or list is not player:
+			info['clock'] = phase + '<b><font color=red>LATE</font></b>'
+		else: info['clock'] = phase + 'TO BE PROCESSED'
+		if list is master: info['role'] = ''
+		else: info['role'] = '%(Role.name)s in<br>' % info
+		info['Role.name'] = info['Role.name'].replace('#', '%23')
+		info['password'] = info['password'].replace(';', '%3b')
+		page.write("""
+			<form name=Game%(formNum)s method=post action=%(url)s/index.cgi
+				target=Game%(name)s>
+				<input type=hidden name=game value=%(name)s>
+				<input type=hidden name=power value=%(Role.name)s>
+				<input type=hidden name=password value=%(password)s>
+			</form>
+			<tr>
+				<td align=center class=bodycopy>
+					<a href=javascript:document.Game%(formNum)s.submit()>
+					<font size=3><tt><b>%(role)s%(name)s</b></tt></td>
+				<td align=center class=bodycopy>%(clock)s</td>
+			</tr>
+			""" % info)
+	page.write('</table></td>')
+
+page.write('</tr></table></td></tr></td></tr>')
+footer()
+:>

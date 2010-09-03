@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+
+loadGame()
+checkPassword()
+showGameHeader()
+
+:>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+<:
+gameHeader()
+:>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<:
+showReadyNotice()
+:>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Status</b></td>
+<:
+if 1: # [x for x in page.game.powers if x.type]: ### WHY WAS THIS HERE?
+	page.write('<td align=center class="grey"><b>Press Message</b></td>')
+:>
+</tr>
+<tr valign=top>
+<td>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+		<!--FLAG AND PLAYER INFORMATION TABLE BEGINS HERE-->
+<:
+powerHeader()
+:>
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr>
+		<td colspan=3 class="border" height=1></td></tr>
+		</table>
+		<!--FLAG AND PLAYER INFORMATION TABLE ENDS HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td align=center>
+		<!--MAPS, RESULTS, ENDGAME TABLE BEGINS HERE-->
+		<table border=0 align=center>
+<:
+showMessages()
+powerInfo()
+showMapButtons()
+showResultsText()
+:>
+		</table>
+		<!--MAPS, RESULTS, ENDGAME TABLE ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+<td>
+<!--COMMUNICATIONS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td align=center>
+		<!--SEND PRESS TABLE BEGINS HERE-->		
+		<table border=0 align=center>
+		<tr>
+		<td align=center class=bodycopy>
+<:
+def showPressArea():
+	if type(page.recipient) in (str, unicode): page.recipient = [page.recipient]
+	if 'ALL' in page.recipient: page.recipient = ['All']
+	page.write(
+		"""
+		<script>function sendit(){
+		if(document.press.message.value!="")document.press.submit();
+		else alert('Empty press message. Not sent.');}</script>
+		<center><form method=post name=press>
+		<input type=hidden name=page value=Status>
+		<input type=hidden name=game value=%s>
+		<input type=hidden name=power value=%s>
+		<input type=hidden name=password value=%s>
+		""" % (page.game.name, page.power.name, page.password))
+	for power in page.recipient:
+		page.write('<input type=hidden name=recipient value=%s>' % power)
+	if page.recipient == ['All']: header = 'Broadcast Message'
+	else: header = 'Press ' + page.game.listReaders(page.recipient)
+	page.write(
+		"""
+		<font size=2><b><u>%s</u></b></font><br>
+		<textarea name=message rows=20 cols=72 wrap=virtual
+		class=pressBox></textarea>
+		""" % header)
+	if page.power.name != 'MASTER' and page.recipient != ['MASTER']:
+		#	-----------------------------------------
+		#	Alternate addressing options (GREY, FAKE)
+		#	-----------------------------------------
+		if ('GREY_PRESS' in page.game.rules
+		or ('YELLOW_PRESS' in page.game.rules
+		and page.recipient == ['All'])): page.write(
+			'<b>(Press will be sent Anonymously)</b>'
+			'<input type=hidden name=claimFrom value=(ANON)>')
+		elif 'WHITE_GREY' in page.game.rules: page.write(
+			"""
+			<P><b>Send Press</b>
+			<select name=claimFrom class=inputBox>
+			<option value=%s selected>From %s
+			<option value=(ANON)>Anonymously</select>
+			""" % (page.power.name, page.game.anglify(page.power.name)))
+		elif 'FAKE_PRESS' in page.game.rules:
+			page.write(
+				"""
+				<P><table cellpadding=5 border>
+				<tr><th align=left valign=top class=bodycopy>Address As If Sent
+				<select name=claimFrom class=inputBox>
+				""")
+			for power in page.game.powers:
+				if power.type != 'MONITOR' and power is page.power: page.write(
+					'<option value=%s%s>From ' %
+					(power.name, ' selected' * (power is page.power)) +
+					page.game.anglify(power.name))
+			page.write('<option value=(ANON)>Anonymously</select>')
+			if 'PUBLIC_PRESS' not in page.game.rules:
+				eligible = page.game.eligiblePressRecipients(page.power, 1)
+				if ('MASTER' not in page.recipient
+				and page.recipient != ['All']): eligible.remove('MASTER')
+				page.write(
+					"""
+					<br><table><tr><th align=right valign=top class=bodycopy>
+					...And As If Sent To</th><td class=bodycopy><b>
+					<script>var count=%d;function setOn(which){
+					document.press.claimTo[count-which].checked=true;}
+					function send(){for(i=0;i<=count;++i)
+					if(document.press.claimTo[i].checked){sendit();return;}
+					alert('Please specify the claimed recipients.');}
+					function reclick(broadcast){if(!count)return;
+					if(broadcast){for(i=0;i<count-%d;++i)
+					document.press.claimTo[i].checked=
+					document.press.claimTo[count].checked;
+					""" % (len(eligible) - 1, 'MASTER' in eligible))
+				if 'YELLOW_PRESS' in page.game.rules: page.write(
+					'if(document.press.claimTo[count].checked)'
+					'document.press.claimFrom.selectedIndex=%d;' %
+					len(page.game.powers))
+				page.write(
+					'}else document.press.claimTo[count].checked=false;}'
+					'</script>')
+				for power in eligible:
+					#	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+					#	Note -- you can FAKE TO ALL and it won't go
+					#	to the MASTER....  Hmmm....  Is that okay??
+					#
+					#	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+					on = ' checked' * (page.recipient == ['All']
+						or power in page.recipient)
+					if power == 'MASTER':
+						if (page.recipient != ['All']
+						and power not in page.recipient): continue
+						onClick = 'setOn(1)'
+					else: onClick = 'reclick(%d)' % (power == 'ALL')
+					page.write('<input type=checkbox name=claimTo '
+						'class=inputBox value=%s onClick=%s%s>%s<br>' %
+						(power, onClick, on, page.game.anglify(power)))
+				page.write('</b></td></tr></table>')
+			page.write('</th></tr></table>')
+	page.write(
+		"""
+		<P><input type=button class=inputSubmit value="Send This Message"
+			onclick=%s()></form>
+		<script>document.press.message.select();
+		document.press.message.focus();</script>
+		""" % ('sendit', 'send')['FAKE_PRESS' in page.game.rules
+		and page.power.name != 'MASTER' and page.recipient != ['MASTER']
+		and 'PUBLIC_PRESS' not in page.game.rules])
+#	----------------------------------------------------------------------
+showPressArea()
+:>
+		</td>
+		</tr>
+		</table>
+		<!--SEND PRESS TABLE ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>
+<:
+footer()
+:>

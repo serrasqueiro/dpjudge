@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>DPPD: The DPjudge Player Database</title>
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif"
+		height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"><img src="<URL>/images/spacer.gif" width=1></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>DPPD: The DPjudge Player Database</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+			<a href="<URL>?page=Policies">DPjudge house rules</a> |
+			<a href="<URL>?page=About">about the DPjudge</a> |
+			<a href="<URL>?page=Questions">DPjudge questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>DPPD Player Lookup</b></td>
+</tr>
+<tr><td align=center>
+&nbsp;<br>
+<table border=1 cellspacing=0>
+<tr>
+<td align=center class=grey>DPPD&nbsp;ID</td>
+<td align=center class=grey>Name</td>
+<td align=center class=grey>Status</td>
+</tr>
+<:
+def showPlayerData(ids):
+	if type(ids) is not list: ids = [ids]
+	for id in ids:
+		player = page.dppd[id]
+		status = player.get('status', 'ACTIVE')
+		if status == 'PENDING' and '/' not in player.get('password', ''):
+			status = 'INACTIVE'
+		name = player.get('name', '?')
+		# if status == 'INACTIVE': continue
+		page.write(
+			"""
+			<tr %s><th class=bodycopy>%s%d</th>
+			<th class=bodycopy>%s%s</th>
+			<th class=bodycopy>%s%s</th></tr>
+			""" % ('bgcolor=black' * (status == 'BLACK')
+				+ 'bgcolor=#cccccc' * (status == 'INACTIVE')
+				+ 'bgcolor=#dddddd' * (status == 'PENDING'),
+			'<font color=white>' * (status == 'BLACK'), id,
+			'<font color=white>' * (status == 'BLACK'), name,
+			'<font color=white>' * (status == 'BLACK'),
+			status == 'BLACK' and 'BLACKLISTED' or status))
+
+page.dppd = DPPD()
+if 'email' not in vars(page): page.email = None
+if 'name' not in vars(page): page.name = None
+if page.email or page.name:
+	id = page.dppd.lookup(page.email, page.name)
+	if id is None:
+		if page.email: criteria = 'E-mail: %s' % page.email
+		else: criteria = 'Name: %s' % page.name
+		page.write(
+			"""
+			<tr><th bgcolor=red colspan=3 class=bodycopy>
+			<font color=yellow>No member found matching criteria:<br>
+			%s
+			</td></tr>
+			""" % criteria)
+	else: showPlayerData(id)
+else:
+	page.dppd.allUsers()
+	showPlayerData(sorted(page.dppd.keys()))
+:>
+</table><br></td></tr>
+<:
+footer()
+:>

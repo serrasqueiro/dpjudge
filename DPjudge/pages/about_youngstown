@@ -1,0 +1,448 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+
+<title>USDP: Youngstown Overview</title><meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+
+<style type="text/css">
+<!--
+.bodycopy		{
+					font-family:		verdana;
+					font-size:			10px;
+					color:				#000000
+				}
+.fineprint		{
+					font-family:		verdana;
+					font-size:			9px;
+					color:				#000000;
+					background-color:	#CCCCCC
+				}
+.gameheader		{
+					font-family:		verdana;
+					font-size:			18px;
+					color:				#000000;
+					font-weight:		bold
+				}
+.bannerinfo		{
+					font-family:		verdana;
+					font-size:			10px;
+					color:				#ffffff;
+					background-color:	#777777
+				}
+.bannerinfo2	{
+					font-family:		verdana;
+					font-size:			10px;
+					color:				#ffffff;
+					font-weight:		bold
+				}
+TT     			{
+					font-size: 11px
+				}
+TD				{
+					background-color:	#F7F7F7
+				}
+TD.border		{
+					background-color:	#666666
+				}
+TD.grey			{
+					font-family:		verdana;
+					font-size:			10px;
+					color:				#000000;
+					background-color:	#CCCCCC
+				}
+A				{
+					font-family:		verdana;
+					font-size:			10px;
+					color:				#000099;
+					font-weight:		bold;
+					text-decoration:	none
+				}
+A:ACTIVE		{
+					font-family:		verdana;
+					font-size:			10px;
+					color:				#990099;
+					font-weight:		bold;
+					text-decoration:	none
+				}
+A:FOCUS			{
+					font-family:		verdana;
+					font-size:			10px;
+					color:				#666666;
+					font-weight:		bold;
+					text-decoration:	none
+				}
+A:HOVER			{
+					font-family:		verdana;
+					font-size:			10px;
+					color:				#0000FF;
+					font-weight:		bold;
+					text-decoration:	none
+				}
+A:LINK			{	
+					font-family:		verdana;
+					font-size:			10px;
+					color:				#000099;
+					font-weight:		bold;
+					text-decoration:	none
+				}
+A:VISITED		{
+					font-family:		verdana;
+					font-size:			10px;
+					color:				#660099;
+					font-weight:		bold;
+					text-decoration:	none
+				}
+.ch				{
+					cursor:				pointer;
+					cursor:				hand
+				}
+.inputSubmit	{	
+					color:				#000000;
+					background-color:	#EEEEEE;
+					border-color:		#000000;
+					border-top:			1px solid;
+					border-bottom:		1px solid;
+					border-left:		1px solid;
+					border-right:		1px solid;
+					font-family:		verdana;
+					font-size:			10px;
+					font-weight:		bold;
+					cursor:				hand
+				}
+.inputSubmit2	{
+					color:				#000000;
+					background-color:	#EEEEEE;
+					border-color:		#000000;
+					border-top:			1px solid;
+					border-bottom:		1px solid;
+					border-left:		1px solid;
+					border-right:		1px solid;
+					font-family:		verdana;
+					font-size:			10px;
+					font-weight:		bold;
+					width:				11em;
+					cursor:				hand;
+				}
+.inputBox		{
+					color:				#000000;
+					background:			#FFFFFF;
+					border-color:		#000000;
+					border-top:			1px solid;
+					border-bottom:		1px solid;
+					border-left:		1px solid;
+					border-right:		1px solid;
+					font-family:		verdana;
+					font-size:			10px
+				}
+.pressBox		{
+					color:				#000000;
+					background:			#FFFFFF;
+					border-color:		#000000;
+					border-top:			1px solid;
+					border-bottom:		1px solid;
+					border-left:		1px solid;
+					border-right:		1px solid;
+					font-family:		verdana;
+					font-size:			10px
+				}
+//-->
+</style></head>
+
+<body bgcolor="#ffffff">
+
+<table align="center" bgcolor="#666666" border="0" cellpadding="0" cellspacing="1" width="750">
+<tbody><tr valign="top">
+<td colspan="3">
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tbody><tr>
+	<td align="center" width="225"><a href="<URL>"><img src="<URL>/images/dpjudge_logo.gif" border="0" height="43" vspace="10" width="205"></a></td>
+	<td class="border" width="1"><img src="<URL>/images/spacer.gif" width="1"></td>
+	<td class="gameheader" align="center">
+		<!--HEADER GOES HERE-->
+		The Youngstown Variant
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border="0" cellpadding="5" cellspacing="0" width="100%">
+		<tbody><tr>
+		<td class="bodycopy" align="center">
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="http://www.diplom.org/dpjudge/dppd">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</tbody></table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</tbody></table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan="3" height="5"><!--SPACER--></td>
+</tr>
+<tr bgcolor="#cccccc" valign="top">
+<td class="grey" align="center"><b>Contents</b></td>
+<td class="grey" align="center"><a name="1"></a><b>Basic Rules</b></td>
+</tr>
+<tr valign="top">
+<td rowspan="5">
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border="0" cellpadding="10" cellspacing="0" width="100%">
+	<tbody><tr valign="top">
+	<td class="bodycopy" nowrap="nowrap">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>·</b> <a href="#1">Basic Rules</a><br>
+		<b>·</b> <a href="#2">Map Notes</a><br>
+		<b>·</b> <a href="#3">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		</p><form action="<URL>" target="youngstown">
+		<input name="page" value="DPmapit" type="hidden">
+		<input name="map" value="youngstown" type="hidden">
+		<input name="make" value="1" type="hidden">
+		<input class="inputSubmit" value="Variant Map" type="submit">
+		</form>
+		<P align=center>
+		<i>(Thanks to<br>Thor Hovden<br>for creating<br>this page!)</i>
+	</td>
+	</tr>
+	</tbody></table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border="0" cellpadding="10" cellspacing="0" width="100%">
+	<tbody><tr><td class="bodycopy">
+	<ol>
+<li>
+The normal rules of the game of Diplomacy apply, with the following additions and clarifications.
+
+</li><P><li>
+The standard map is replaced by the "Youngstown" variant map, spanning Europe,
+Asia, and parts of Africa.
+
+</li><P><li>
+There are three new great powers -- China, India and Japan -- as well as
+some adjustments to the original seven powers.
+The Indian player must use the letter "N" rather than "I" when signing on since "I" is reserved for Italy.
+The new starting units are as follows:<p>
+<center>
+<table border="1">
+<tbody><tr><th class="bodycopy" bgcolor="#b2b2b2">Austria-Hungary</th>
+	<td><tt>Army<br>Budapest</tt></td>
+	<td><tt>Army<br>Vienna</tt></td>
+	<td><tt>Army<br>Klug</tt></td>
+	<td><tt>Fleet<br>Trieste</tt></td>
+</tr>
+<tr><th class="bodycopy" bgcolor="orange">China</th>
+	<td><tt>Fleet<br>Canton</tt></td>
+	<td><tt>Army<br>Hankow</tt></td>
+	<td><tt>Army<br>Peking</tt></td>
+</tr>
+<tr><th class="bodycopy" bgcolor="red"><font color=white>England</th>
+	<td><tt>Fleet<br>Edinburgh</tt></td>
+	<td><tt>Fleet<br>London</tt></td>
+	<td><tt>Fleet<br>Joharra</tt></td>
+	<td><tt>Fleet<br>Liverpool</tt></td>
+</tr>
+<tr><th class="bodycopy" bgcolor="blue"><font color=white>France</th>
+	<td><tt>Fleet<br>Brest</tt></td>
+	<td><tt>Fleet<br>Saigon</tt></td>
+	<td><tt>Army<br>Paris</tt></td>
+	<td><tt>Army<br>Marseilles</tt></td>
+</tr>
+<tr><th class="bodycopy" bgcolor="black"><font color="white">Germany</font></th>
+	<td><tt>Army<br>Berlin</tt></td>
+	<td><tt>Army<br>Munich</tt></td>
+	<td><tt>Army<br>Posen</tt></td>
+	<td><tt>Fleet<br>Kiel</tt></td>
+</tr>
+<tr><th class="bodycopy" bgcolor="#ff0066"><font color=white>India</th>
+	<td><tt>Army<br>Calcutta</tt></td>
+	<td><tt>Army<br>Delhi</tt></td>
+	<td><tt>Fleet<br>Madras</tt></td>
+</tr>
+<tr><th class="bodycopy" bgcolor="#00b200">Italy</th>
+	<td><tt>Army<br>Venice</tt></td>
+	<td><tt>Army<br>Rome</tt></td>
+	<td><tt>Fleet<br>Naples</tt></td>
+	<td><tt>Fleet<br>Mogadiscio</tt></td>
+</tr>
+<tr><th class="bodycopy" bgcolor="#33b2b2">Japan</th>
+	<td><tt>Fleet<br>Tokyo</tt></td>
+	<td><tt>Fleet<br>Kyoto</tt></td>
+	<td><tt>Fleet<br>Osaka</tt></td>
+</tr>
+<tr><th class="bodycopy" bgcolor="#b27f33">Russia</th>
+	<td><tt>Army<br>Warsaw</tt></td>
+	<td><tt>Army<br>Moscow</tt></td>
+	<td><tt>Army<br>Omsk</tt></td>
+	<td><tt>Fleet<br>Sevastopol</tt></td>
+	<td><tt>Fleet<br>St.Petersburg/sc</tt></td>
+	<td><tt>Fleet<br>Vladivostok</tt></td>
+</tr>
+<tr><th class="bodycopy" bgcolor="yellow">Turkey</th>
+	<td><tt>Fleet<br>Ankara</tt></td>
+	<td><tt>Army<br>Baghdad</tt></td>
+	<td><tt>Army<br>Smyrna</tt></td>
+	<td><tt>Army<br>Constantinople</tt></td>
+</tr>
+</tbody></table></center>
+<p>England, France and Italy are free to build new units at their respective
+colony territories (Joharra, Saigon, and Mogadiscio)
+with the same restrictions as regular home centers.</p>
+
+<p></p></li><li>
+There are seventy-two supply centers on the board. The winner is the power
+which holds 37 or more supply centers during an adjustment phase. A draw
+may also be declared by consent of all players.
+
+
+		<!--BODYCOPY ENDS HERE-->
+	</li></ol></td>
+	</tr>
+	</tbody></table>
+	
+</td>
+</tr>
+<tr bgcolor="#cccccc" valign="top">
+<td class="grey" align="center"><a name="2"></a><b>Map Notes</b></td>
+</tr>
+<tr valign="top">
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border="0" cellpadding="10" cellspacing="0" width="100%">
+	<tbody><tr valign="top">
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+		<ol>
+<p></p><li>
+<u>Impassable areas</u>
+No unit may enter Switzerland or the Himalayas.
+The body of water in the center of
+the map is the Caspian Sea and is intentionally left unlabeled and
+cannot be entered. No unit may enter the zone marked "Impassable" north
+of Russia.
+
+<p></p></li><li>
+<u>Coastal Icebreaker</u>
+Fleets may move along the coast of Omsk (icebreakers did exist in
+those days). <!Some subvariants disallow this. If specifically
+disallowed by mutual consent of the players or by decree of the game's
+master you should not order fleets to Omsk. The adjudicator will permit
+such a move, however.>
+
+<p></p></li><li>
+<u>Off-board areas</u>
+Surrounding the edge of the map are "off-board" boxes.
+The boxes are referred to as follows.  The box in the North
+Atlantic is known as "Offboard A", the box in the Mid-Atlantic
+as "Offboard B", etc., counterclockwise to "Offboard L", in the North
+Pacific. Movement into and out of off-board boxes is covered by the
+following rules:
+<ol type=a>
+<li>Any unit in an area that contains an off-board box may move into that box
+ as though moving to a normal sea area or province. Any unit in an
+ off-board box may move into the sea area or province that contains the
+ off-board box.<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example:<br><tt>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;English F NAt -&gt; ObA<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Japan F ObK -&gt; SPO</tt><br>
+ Off-board box C is contained within the South Atlantic. This is indicated by an
+ arrow since there is not enough room in that space for the box.
+<li>A unit in an off-board box may move to any off-board box whose letter
+	appears in the off-board box where the unit is located.<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example:<br><tt>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;French F ObB -&gt; ObC<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;India F ObH -&gt; ObG</tt><br>
+ <!--
+<li>A unit in an off-board box may move to the off-board box within the sea
+ area or province whose name appears in the unit's off-board box.<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example:<br><tt>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;French F ObB -&gt; ObK<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;India F ObH -&gt; ObC</tt><br>
+ The spaces adjacent to an off-board box are
+ listed within the box.
+ -->
+<li>Off-board boxes are treated as normal sea areas or provinces.
+ Hence, only one unit may be present in an off-board box.
+<li>Support orders and convoy orders apply to off-board boxes.<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Example:<br><tt>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<u>Japan</u><br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F NPa C A Tok -&gt; Ire<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F ObL C A Tok -&gt; Ire<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F ObA C A Tok -&gt; Ire<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F NAt C A Tok -&gt; Ire<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A Tok -&gt; NPa -&gt; ObL -&gt; ObA -&gt; NAt -&gt; Ire<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<u>England</u><br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F ObB -&gt; ObK<br>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F ObJ S F ObB -&gt; ObK</tt>
+<li>Fleets may move to any off-board box with the exception of the inland
+African boxes (boxes E and F, located in Sudan and the Sahara).  A fleet
+in either of the other African off-board boxes (boxes D and G, located in
+Morocco and East Africa) is considered to be on the coast of the African
+continent, and may not participate in convoys.
+<li>Armies may move only to the four off-board boxes located in Africa
+(boxes D, E, F, and G), but may be convoyed by fleets through any of the
+other off-board boxes.
+</ol>
+
+<p></p></li><li>
+<u>The Suez</u>
+The Suez is a water space contained within Egypt that provides a
+route between the Red Sea and the Eastern Mediterranean.
+The Suez is adjacent to the Eastern Mediterranean, the Red Sea, and the
+north and east coasts of Egypt. It is not adjacent to either coast of
+Jordan.  The Suez does not
+separate Egypt from Jordan or affect the adjacency between those two spaces.
+Jordan's
+north coast is adjacent to Egypt's north coast and Jordan's west coast is
+adjacent to Egypt's east coast. Units may move between Egypt and
+Jordan regardless of whether or not there is a fleet in the Suez and
+fleets may move
+into the Suez regardless of whether or not there is a unit present in Egypt.
+Fleets in the Suez may convoy armies.
+
+		<!--BODYCOPY ENDS HERE-->
+	</p></li></ol></td>
+	</tr>
+	</tbody></table>
+	
+</td>
+</tr>
+<tr bgcolor="#cccccc" valign="top">
+<td class="grey" align="center"><a name="3"></a><b>Design Notes</b></td>
+</tr>
+<tr valign="top">
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border="0" cellpadding="10" cellspacing="0" width="100%">
+	<tbody><tr valign="top">
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+<p>
+Youngstown is named after the city in Ohio where the variant was created
+and first played.  It is regarded by many as the oldest Diplomacy
+variant.
+
+<p>
+The Youngstown variant played on the DPjudge is named
+<a target=vb
+href=http://www.variantbank.org/results/rules/y/youngstown.htm>Youngstown
+IVa in the Variant Bank</a>.
+This variant was created by Rod Walker, A. Phillips, Ken Lowe, and Jon Monsarret.
+
+		<!--BODYCOPY ENDS HERE-->
+	</p></td>
+	</tr>
+	</tbody></table>
+	
+
+
+		</td></tr><tr valign="top">
+		<td colspan="3" class="fineprint" align="right" bgcolor="#cccccc">
+		The DPjudge is copyright © <:= '1995-%d' % time.localtime()[0] :>
+		by Manus Hand.  All rights reserved.
+		</td>
+		</tr>
+		</tbody></table>
+		</body></html>

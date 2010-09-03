@@ -1,0 +1,179 @@
+
+<html>
+<head>
+<title><ID>: DPmapit!</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv=pragma content=no-cache>
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"></td>
+	<td class="gameheader" align=center>
+		
+		<b>DPmapit!</b>
+		
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr><td colspan=3 height=5></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="1"></a><b>DPjudge Map Maker
+<:
+if 'map' in vars(page): page.write('(%s)' % page.map)
+:>
+</b></td>
+</tr>
+<tr valign=top>
+<td>
+
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		
+<:
+name = os.environ['REMOTE_ADDR']
+
+class MapPower:
+	def __init__(self, name):
+		self.name = name
+
+class GameMap(Game):
+	def __init__(self, results, map):
+		self.gameDir = host.dpjudgeDir + '/maps'
+		self.name, self.rules, self.map = name, [], Map(map)
+		self.phase = self.map.phase
+		#	Since it's being put into a <td>, not a decorated pop-up window
+		#	(which eats some of the pixels) the width is reduced by 10 pixels
+		#	to make the map fit really nicely on the page.
+		if self.map.name not in ('youngstown','imperial'):
+			self.map.size = (self.map.size[0] - 10, self.map.size[1])
+		file = open('%s/results' % self.gameDir, 'w')
+		results = results.strip()
+		if not results:
+			self.phase = self.map.phase
+			results = 'Starting position for Spring of 1901.\n\015'
+			for power in sorted(self.map.units):
+				units = self.map.units[power]
+				results += '\n\015'
+				for unit in units: results += ('%s: %s.\n\015' %
+					(self.anglify(power), self.anglify(unit)))
+			results += '\n\015Ownership of supply centers:\n\015\n\015'
+			self.powers = [MapPower(x) for x in self.map.powers]
+			for power, centers in self.map.home.items():
+				if centers: results += ('%s: %s.\n\015' % (self.anglify(power),
+					', '.join([self.anglify(x) for x in centers])))
+		for line in results.split('\015'): file.write(line.encode('latin-1'))
+		file.close()
+		for ext in ('.ps', '.pdf', '.gif', '_.gif'):
+			try: os.unlink(host.dpjudgeDir + '/maps/' + name + ext)
+			except: pass
+		self.makeMaps()
+
+if 'make' in vars(page):
+	page.write('</td><td valign=top align=center>')
+	if 'results' not in vars(page): page.results = ''
+	x = GameMap(page.results, page.map)
+	page.write('<table border=5>')
+	if os.path.exists(host.dpjudgeDir + '/maps/' + name + '_.gif'):
+		page.write("""
+		<caption><b>Click Map To Toggle Between Most Recent
+		Moves / Current Position</b></caption>
+		""")
+	page.write('<tr><th>')
+	if os.path.exists(host.dpjudgeDir + '/maps/' + name + '_.gif'):
+		page.write("""<a href=. onClick="if(image.src.indexOf('_.gif')<0)"""
+		"""image.src='<URL>/maps/%s_.gif';"""
+		"""else image.src='<URL>/maps/%s.gif';return false">""" 
+		% (name, name))
+	page.write(
+		"""
+		<img border=0 name=image src=<URL>/maps/%s.gif></a></th></tr>
+		</table>
+		<table cellpadding=10><th>
+		<form action=<URL>/maps/%s.ps>
+		<input class=inputSubmit type=submit value="PostScript Version">
+		</th></form>
+		<th width=50>&nbsp;</th><th>
+		<form action=<URL>/maps/%s.pdf>
+		<input class=inputSubmit type=submit value="PDF Version">
+		</th>
+		</form>
+		<th width=50>&nbsp;</th><th>
+		<form action=<URL>>
+		<input type=hidden name=page value=DPmapit>
+		<input class=inputSubmit type=submit value="Make Another Map">
+		</th></form>
+		</tr></table>
+		""" % (name, name, name))
+else:
+	options = ''
+	for each in sorted([x.split('.')[0]
+		for x in os.listdir(host.packageDir + '/maps')
+		if '[' not in x and x.endswith('.map')]):
+		options += '<option%s>%s' % (' selected' * (each == 'standard'), each)
+	page.write(
+		"""
+		<b><u>Instructions:</u></b>
+		Type (or, more likely, cut-and-paste)
+		a Diplomacy position or movement results, in standard DPjudge (or
+		Ken Lowe judge) format.   <font color=red>(You may leave the
+		input area empty -- a map set up as at game start will be made.)</font>
+		<P>
+		<b><u>What Will Happen:</u></b>  Push the button and after a short
+		wait, you will see the maps.  If you input a movement results,
+		you will be
+		allowed to toggle (by clicking on the map) between two maps --
+		one showing the moves, and the other showing the results.
+		<center>
+		<form method=post>
+		Map:
+		<input type=hidden name=page value=DPmapit>
+		<select name=map class=inputBox>
+		%s
+		</select>
+		<input type=hidden name=make value=1>
+		<P>
+		<b>Paste Your Position or Results Here:</b><br>
+		<font color=red> -- must include
+		the "Movement results..." or "Retreat orders..." or "Status of the..."
+		(etc., etc.) line --<br>
+		<textarea name=results rows=20 cols=75 wrap=off></textarea><p>
+		<input class=inputSubmit type=submit value="Make The Maps">
+		</form>
+		""" % options)
+:>
+
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<:
+footer()
+:>

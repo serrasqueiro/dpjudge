@@ -1,0 +1,125 @@
+<!--DESIGN CREDITS BEGIN HERE-->
+
+<li><b>Diplomacy:</b> Allan B. Calhamer, copyright held by Hasbro, Inc.
+<li><b>Rule Variants:</b>
+	<dd><b><a href="<POUCH>/Zine/W1995A/Payola">Payola</a>:</b>
+		Manus Hand and John Woolley
+	<dd><b><a href="<POUCH>/Online/variants/crystalball.html">Crystal
+		Ball</a>:</b> Manus Hand, John Woolley, and Pitt Crandlemire
+<li><b>Mix-In Rule Variants:</b>
+	<dd><b><a href="<PAGE>Rules#BLIND">Blind</a>:</b>
+		Adapted from Joan C. Artes by Manus Hand
+	<dd><b><a href="<PAGE>Map#FACTORIES">Factories</a>:</b>
+		Manus Hand
+	<dd><b><a href="<PAGE>Rules#FLEX_SETUP">Flexible
+		Setup</a>:</b> <a href="<POUCH>/Zine/S1995M/Woolley/Puzzle.html">John
+		Woolley</a>
+	<dd><b><a href="<PAGE>Rules#GARRISON">Garrison</a>:</b>
+		Wilson Hsieh and Manus Hand
+	<dd><b><a href="<PAGE>Map#LEAGUE">Leagues</a>:</b>
+		Baron M. Powell and Manus Hand (after Ambition & Empire)
+	<dd><b><a href="<PAGE>Status#ROTATE">Missing Man (Control Rotation)</a>:</b>
+		<a href="<POUCH>/Zine/S1995M/Hand/Missing.html">Scott Kasch</a>
+		and Manus Hand
+	<dd><b><a href="<PAGE>Map#NEWHOMES">Mobile Homes</a>:</b>
+		Manus Hand (after 1897)
+	<dd><b><a href="<PAGE>Rules#MOBILIZE">Mobilize</a>:</b>
+		Manus Hand (after 1898)
+	<dd><b><a href="<PAGE>Map#PARTISANS">Partisans</a>:</b>
+		Baron M. Powell and Manus Hand
+	<dd><b><a href="<PAGE>Map#RESERVES">Reserves</a>:</b>
+		Baron M. Powell and Manus Hand
+	<dd><b><a href="<PAGE>Map#MILITIA">Militia</a>:</b>
+		Matt Ready and Manus Hand
+	<dd><b><a href="<POUCH>/Zine/S1998R/Norman/VarLength.html">Variable
+		Length</a>:</b> David Norman
+	<dd><b><a href="<POUCH>/Zine/W1998A/Duewer/exchange.html">Exchange
+		Payola</a>:</b> Bruce Duewer
+		<font color=red><i>(stocks/leadership votes currently by GM)</i></font>
+	<dd><b><a href="<PAGE>Rules#ZEROSUM">Zero Sum Payola</a>:</b>
+		Michael Schmahl
+	<dd><b><a href="<PAGE>Rules#TOUCH_BRIBE">Touch Bribe Payola</a>:</b>
+		Matt Ready
+	<dd><b><a href="<PAGE>Rules#VASSAL_DUMMIES">Vassals</a>:</b>
+		Joseph Wheeler
+<li><b><a href=<PAGE>Map>Map Variants</a>:</b>
+	<dd><b><a href="<PAGE>about_1897">1897</a></b> (7 players):
+		Mark Nelson, Josh Smith, and Rick Westerman
+	<dd><b><a href="<PAGE>about_1898">1898</a></b> (7 players):
+		Randy Davis
+	<dd><b><a href="<PAGE>about_1900">1900</a></b> (7 players):
+		Baron M. Powell
+	<dd><b><a href="<PAGE>about_aberration">Aberration</a></b> (9 players):
+		Rod Walker and Nick Fitzpatrick
+	<dd><b><a href="<PAGE>about_ambition">Ambition & Empire</a></b>
+		(10 players): Baron M. Powell and Jeffrey Kase
+	<dd><b><a href="<PAGE>about_ancmed">Ancient Mediterranean</a></b>
+		(5 players): Don Hessong
+	<dd><b><a href="<PAGE>about_brazilian">Brazilian</a></b> (7 players):
+		GROW Produtos Para Recrea&ccedil;&atilde;o, Ltda.
+	<dd><b><a href="<PAGE>about_britain">Britain</a></b> (7 players):
+		Danny Loeb and Bruce McIntyre <i>[independently]</i>
+	<dd><b><a href="<PAGE>about_canton">Canton</a></b> (7 players):
+		Paul Webb
+	<dd><b><a href="<PAGE>about_chaos">Chaos</a></b> (34 players):
+		Michel Ferion
+	<dd><b><a href="<PAGE>about_chromatic">Chromatic</a></b> (5 players):
+		James Millington, Robert Schone, and Lynsey Smith
+	<dd><b><a href="<PAGE>about_classical">Classical</a></b> (5 players):
+		Andy Schwarz and Vincent Mous
+	<dd><b><a href="<PAGE>about_crowded">Crowded</a></b> (11 players):
+		<i>Unknown</i>
+	<dd><b><a href="<PAGE>about_empire">Empire</a></b> (10 players):
+		Vincent Mous
+	<dd><b><a href="<PAGE>about_fiveman">Five-Man</a></b> (5 players):
+		Allan B. Calhamer and Fred C. Davis, Jr.
+	<dd><b><a href="<PAGE>about_fleetRome">Fleet Rome</a></b> (7 players):
+		Richard Sharp
+	<dd><b><a href="<PAGE>about_hundred">Hundred</a></b> (3 players):
+		Andy Schwarz
+	<dd><b><a href="<PAGE>about_imperial">Imperial</a></b> (13 players):
+		Michael David Roberts
+	<dd><b><a href="<PAGE>about_loeb9">Loeb9</a></b> (9 players):
+		Daniel Loeb
+	<dd><b><a href="<PAGE>about_milan">Milan</a></b> (7 players):
+		John Norris
+	<dd><b><a href="<PAGE>about_minorpower">Minor Power</a></b> (19 players):
+		<i>Unknown</i>
+	<dd><b><a href="<PAGE>about_modern">Modern</a></b> (10 players):
+		Vincent Mous
+	<dd><b><a href="<PAGE>about_pure">Pure</a></b> (7 players):
+		Danny Loeb
+	<dd><b><a href="<PAGE>about_renaissance">Renaissance</a></b> (7 players):
+		Earle Ratcliffe and Michael Cuffaro
+	<dd><b><a href="<PAGE>about_sailho">Sail Ho!</a></b> (4 players):
+		"Tarzan"
+	<dd><b><a href="<PAGE>about_sengoku">Sengoku Jidai</a></b> (8 players):
+		Benjamin Hester
+	<dd><b><a href="<PAGE>about_shift">Shift
+		(Left, Right, and Around)</a></b> (7 players):
+		Josh Smith and Dan Dzikowicz
+	<dd><b><a href="<PAGE>about_v8">V8</a></b> (8 players):
+		Clay Snyder
+	<dd><b><a href="<PAGE>about_void">Void</a></b> (36 players):
+		Mario Huys
+	<dd><b><a href="<PAGE>about_youngstown">Youngstown</a></b> (10 players):
+		Rod Walker, A. Phillips, Ken Lowe, and Jon Monsarret
+<li><b>Press Variants:</b>
+	<dd><b>Public-Press/No-Press:</b> <i>Unknown</i>
+	<dd><b>Grey/Fake Press:</b> <i>Unknown</i>
+	<dd><b><a href="<POUCH>/Zine/S1995R/Szykman/Backseat.html">Backseat
+		Driver</a></b>: Simon Szykman
+	<dd><b><a href="<POUCH>/Zine/W1995A/Schwarz/Touch.html">Touch</a>:</b>
+		Andy Schwarz <font color=red><i>(broadcasts forbidden)</i></font>
+	<dd><b>Postage/Limited Press:</b> "Tarzan" and Manus Hand
+		<font color=red><i>(supported soon)</i></font>
+<li><b>The DPjudge Itself:</b> Manus Hand
+<li><b>DPjudge Web Page Design:</b> Patrick Lambrecht
+<li><b>Mapit Map Generation:</b> George Boyce (original code),
+	followed by many others
+<li><b><a href="<POUCH>/manus/mapit">Manusized Mapit</a> (dpmap):</b>
+	Manus Hand
+<li><b><a href="<POUCH>/manus/mapit#maps">Manusized Maps</a>
+	and dpmap Enhancements:</b> Manus Hand, Juho Snellman, Mario Huys
+
+<!--DESIGN CREDITS ENDS HERE-->

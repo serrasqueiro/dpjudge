@@ -1,0 +1,1405 @@
+<:
+#	----------------------------------------------------------------------
+#   We have started to break out the functions into relevant smaller files
+#    so here is where we include them.  We could have done this in the 
+#    pages that need each sub-file to make the executed code smaller and
+#    may want to do that in the future.
+#	----------------------------------------------------------------------
+page.include('master')
+import codecs
+open = codecs.open
+#	----------------------------------------------------------------------
+#	IndexPage
+#	----------------------------------------------------------------------
+def listGames(variant = 'standard'):
+	gameDict, games, which = Status(), {}, 0
+	gameList = ('ACTIVE', 'COMPLETED', 'WAITING', 'FORMING')
+	for state in gameList:
+		games[state] = gameDict.listGames([variant.title(), state])
+		if state == 'ACTIVE': page.write(
+			"""
+			<tr valign=top bgcolor="#CCCCCC">
+			<td align=center class="grey" width=50%>
+				<b>Active Games</b></td>
+			<td align=center class="grey" width=50%>
+				<b>Completed Games</b></td>
+			</tr>
+			""")
+		elif state == 'WAITING': page.write(
+			"""
+			<tr valign=top bgcolor="#CCCCCC">
+			<td align=center class="grey"><b>Waiting Games</b></td>
+			<td align=center class="grey"><b>Forming Games</b></td>
+			</tr>
+			""")
+		which = not which
+		page.write('<tr valign=top>' * which +
+			"""
+			<td><table border=0 cellpadding=10 cellspacing=0 width=100% >
+			<tr valign=top><td align=center class="bodycopy">
+			""")
+		if games[state]:
+##			if state[0] in 'FW': page.write('(Private games listed in gray)')
+			page.write(
+				"""
+				<form name=%s method=post>
+				<input type=hidden name=page value=Login>
+				<input type=submit value="View Game:" 
+				class="inputSubmit">&nbsp;
+				<select name=game onchange=document.%s.submit()
+				class="inputBox">
+				""" % (state, state))
+			for private in 0, 1:
+				shown = 0
+				for gamename in games[state]:
+					if private == ('private' in gameDict[gamename]):
+						if not shown:
+							page.write('<optgroup label="%s Games">' %
+								('Public', 'Private')[private])
+							shown = 1
+						page.write('<option value=%s>' % gamename + gamename)
+#					page.write('<option style="background:%s" value=%s>' %
+#						(('white', '#dddddd')[state[0] in 'FW'
+#							and 'private' in gameDict[gamename]], gamename) +
+#						gamename)
+			page.write('</select></form>')
+		else:
+			page.write('(Currently None)')
+			if state[0] == 'F': page.write('<br>Just ask a Game Master '
+				'to <tt><b>CREATE</b></tt> one.<br>&nbsp;')
+		page.write('</td></tr></table></td>')
+#	----------------------------------------------------------------------
+#	LoginPage, StatusPage
+#	----------------------------------------------------------------------
+def showGameHeader():
+	game = page.game
+	page.write('<tiTLE>Game %s</title>' % game.name)
+	when = game.deadline
+	if 'active' in game.status and when and when > game.Time():
+		page.write(
+		"""
+		<script>
+		window.setTimeout("Update(%d);",0);
+		function Update(left) {
+			down=--left;tick="Time to Deadline: ";
+			weeks=Math.floor(down/604800);down%%=604800;
+			days=Math.floor(down/86400);down%%=86400;
+			hrs=Math.floor(down/3600);down%%=3600;
+			mins=Math.floor(down/60);secs=down%%60;
+			if(weeks>1)tick+=weeks+" weeks, ";
+			else if(weeks==1)tick+="1 week, ";
+			if(days>1)tick+=days+" days, ";
+			else if(days==1)tick+="1 day, ";
+			if(hrs>1)tick+=hrs+" hours, ";
+			else if(hrs==1)tick+="1 hour, ";
+			if(mins>1)tick+=mins+" minutes, ";
+			else if(mins==1)tick+="1 minute, ";
+			tick+=secs+" second";if(secs!=1)tick+="s";
+			window.status=tick;
+			if(left)window.setTimeout("Update("+left+");",1000);
+			else alert("Deadline!!");}
+		</script>
+		""" % (time.mktime(map(int, (when[:4], when[4:6], when[6:8],
+			when[8:10], when[10:], 0, 0, 0, -1))) -
+			time.mktime(time.localtime())))
+#	----------------------------------------------------------------------
+def showMapButtons():
+	file, game = mapName(), page.game
+	map = host.dpjudgeDir + '/maps/' + file
+	gif = os.path.exists(map + '.gif') | (os.path.exists(map + '_.gif') * 2)
+	pdf, ps = os.path.exists(map + '.pdf'), os.path.exists(map + '.ps')
+	if not (gif or pdf or ps): return
+	page.write('<tr class="bodycopy"><td valign=top><b>Maps:</b></td>')
+	if gif:
+		width, height = game.map.size
+		page.write(
+			"""
+			<script>var win;function popup(){height=%d;width=%d;n=navigator;
+			n5=n.appName=="Netscape"&&n.appVersion.charAt(0)>'4';
+			if(n5||n.appName=="Microsoft Internet Explorer")height+=7;
+			win=window.open("","%s","status=0,width="+width+",height="+height+
+				",resizable=0,menubar=0,scrollbars=0,toolbar=0,location=0");
+			win.document.write("<meta http-equiv=pragma content=no-cache>\\n"+
+				"<title>%s (%s%s)</title>"+
+				'<a href=. onDblClick=window.print() onClick="');
+			""" % (height + 12, width + 12, game.name, game.name,
+			'Click For Other Map / ' * (gif > 2), 'Double-Click To Print'))
+		noCache, label = '.gif?map=%f' % random.random(), ''
+		if gif > 2: page.write(
+			"""
+			win.document.write("if(game.src.indexOf('_.gif')<0)"+
+				"game.src='%s/maps/%s_%s';else game.src='%s/maps/%s%s';");
+			""" % ((host.dpjudgeURL, file, noCache) * 2))
+		if game.phase == 'COMPLETED': label += 'Final Map/Last Moves'
+		else:
+			if gif & 1: label += 'Current Map' + '/' * (gif > 1)
+			if gif > 1: label += 'Most Recent Moves'
+		page.write(
+			"""
+			win.document.write('return false">'+
+			'<img border=0 name=game height=%d width=%d src=%s/maps/%s%s%s></a>');
+			win.document.close(); win.focus();}</script>
+			<form>
+			<td class="bodycopy" align=right nowrap>%s (GIF)</td>
+			<td><input type=button class="inputSubmit" onClick=popup()
+				value="View"></td>
+			</tr>
+			</form>
+			""" % (height, width, host.dpjudgeURL, file, "_"[gif != 2:], noCache, label))
+		if pdf or ps: page.write('<tr><td></td>')
+	if pdf:
+		page.write(
+			"""
+			<script>function showPdf(url){if(navigator.appName!="Netscape"
+			||navigator.plugins["Adobe Acrobat"])
+			{win=window.open(url,"_%s_","resizable=yes,menubar=no,"+
+			"status=no,directories=no,scrollbars=no,toolbar=no,location=no");
+			win.focus();}else window.location=url;return false;}</script>
+			<form>
+			<td class="bodycopy" align=right nowrap>By Season (PDF)</td>
+			<td><input type=button onClick=showPdf("%s/maps/%s.pdf");
+			class="inputSubmit" value='View'></td>
+			</tr></form>
+			""" % (game.name, host.dpjudgeURL, file))
+		if ps: page.write('<tr><td></td>')
+	if ps: page.write(
+			"""
+			<form method=get action=%s/maps/%s.ps>
+			<td class="bodycopy" align=right nowrap>By Season (PS)</td>
+			<td><input type=submit value="View" class="inputSubmit"></td>
+			</tr></form>
+			""" % (host.dpjudgeURL, file))
+	page.write('</tr>')
+#	----------------------------------------------------------------------
+def showResultsText(list = None, subject = None):
+	game = page.game
+	if not os.path.exists(game.file('results')): return
+	if page.power:
+		power, password = page.power.name, page.power.password
+		if power == 'MASTER': password = game.password
+	elif 'BLIND' in game.rules: return
+	else: power = password = ''
+	if not list:
+		file = open(game.file('results'), encoding='latin-1')
+		list = [line[9:-1] for line in file if line[:8] == 'Subject:']
+		file.close()
+	if not list: return
+	page.write(
+		"""
+		<form name=results method=post>
+		<input type=hidden name=game value=%s>
+		<input type=hidden name=page value=View>
+		<input type=hidden name=file value=results>
+		<tr>
+		<td class=bodycopy><b>Results:</b></td>
+		<td align=right><select name="subject" class="inputBox"
+		onChange=document.results.submit()>
+		""" % game.name)
+	subject = subject or list[-1]
+	for item in list:
+		page.write('<option%s>' % (' selected' * (subject == item)) + item)
+	page.write('</select></td>')
+	if page.power: page.write('<input type=hidden name=password value=%s>'
+		'<input type=hidden name=power value=%s>' % (page.password, power))
+	page.write(
+		"""
+		<input type=hidden name=count value=%d>
+		<td><input type="submit" value="Read" class="inputSubmit"></td>
+		</tr></form>
+		""" % ('count' in vars(page) and (int(page.count) - 1)))
+#	----------------------------------------------------------------------
+def showDocList(files, beforeEnd = 0):
+	if not beforeEnd and page.game.phase != 'COMPLETED': return
+	shown = 0
+	for file, desc in files:
+		if os.path.isfile(page.game.file(file)):
+			if not shown: page.write(
+				"""
+				<form method=post name=docread>
+				<input type=hidden name=page value=View>
+				<input type=hidden name=game value=%s>
+				<tr><td class="bodycopy"><b>Analysis:</b></td>
+				<td align=right>
+				<select class="inputBox"
+				onchange=document.docread.submit() name=file>
+				""" % page.game.name)
+			shown = 1
+			page.write('<option value=%s>' % file + desc)
+	if shown: page.write(
+		"""
+		</select>
+		</td><td><input type=submit value="Read" class="inputSubmit">
+		</td></tr>
+		</form>
+		""")
+#	----------------------------------------------------------------------
+#	LoginPage
+#	----------------------------------------------------------------------
+def showLoginForm(showElimPowers = 0):
+	game, powers, others = page.game, [], []
+	page.write(
+		"""
+		<script>function maySubmit(){
+		if(document.powerForm.password.value==""){
+		document.powerForm.password.focus();
+		document.powerForm.password.select();}
+		else document.powerForm.submit();}</script>
+		<form name=powerForm method=post onSubmit=maySubmit()>
+		<input type=hidden name=page value=Status>
+		<input type=hidden name=game value=%s>
+		<tr valign=bottom><td height=10 colspan=3><!hr></td></tr>
+		<tr><td colspan=2 class="bodycopy" nowrap><b>Log in as:</b>&nbsp;
+		<select name=power class="inputBox" onchange=maySubmit()>
+		""" % game.name)
+	for power in game.powers:
+		if ((power.ceo or power.player and power.player[0] == 'DUMMY')
+		and 'HIDE_DUMMIES' not in game.rules) or power.type == 'MONITOR': pass
+		elif power.type and power.type != 'POWER': others += [power.name]
+		elif (game.phase in ('FORMING', 'COMPLETED') or power.centers
+		or showElimPowers): powers += [power.name]
+	if 'terminated' in game.status: powers = others = []
+	for who in sorted(powers) + sorted(others): page.write('<option%s>' %
+		(page.power and page.power.name == who and ' selected' or '') + who)
+	page.write(
+		"""
+		<option%s>MASTER</select>
+		<b>Password:</b>&nbsp;
+		<input name="password" type="password" class="inputBox" size=15></td>
+		<td class="bodycopy">
+		<input type="button" value="Log In" class="inputSubmit"
+		onClick=maySubmit()></td>
+		</tr></form>
+		<script>document.powerForm.password.focus();
+		document.powerForm.password.select();</script>
+		""" %
+		(page.power and page.power.name == 'MASTER' and ' selected' or ''))
+#	----------------------------------------------------------------------
+def showInfo(name, value, left = 0):
+	if value: page.write(
+		"""
+		<tr valign=top>
+		<td class="bodycopy" nowrap align=%s><B>%s:&nbsp;</td>
+		<td class="bodycopy">%s</td>%s</tr>
+		""" % (('right', 'left')[left], name, value.replace('-', '&#8722;'),
+				'<td></td>' * left))
+#	----------------------------------------------------------------------
+def showVariantInfo():
+	game, ceoInfo = page.game, ''
+	for power in game.powers:
+		if power.type: continue
+		if power.abbrev not in power.funds: ipo = ''
+		else: ipo = '(%d shares in IPO)' % power.funds[power.abbrev]
+		if power.ceo or ipo: ceoInfo += (('<tr>' +
+			('<td class=bodycopy>%s</td>' * 3) + '</tr>') %
+			(game.anglify(power.name),
+			game.anglify(power.ceo and power.ceo[0] or 'None'), ipo))
+	if ceoInfo and 'HIDE_DUMMIES' not in game.rules: page.write("""
+		<tr><td valign=top class=bodycopy><b>Control&nbsp;Info:</td>
+		<td valign=top align=right><table topmargin=0><tr><td class=bodycopy>
+		<b><u>Power</u>%s</td><td class=bodycopy><b><u>Controller</th></tr>
+		</tr>%s</table></td><td></td></tr>
+		""" % ('&nbsp;' * 5, ceoInfo))
+#	----------------------------------------------------------------------
+def showGameInfo():
+	game = page.game
+	page.write('<table border=0>')
+	showInfo('Description', ' '.join(game.desc))
+	showInfo('Origin of Name', ' '.join(game.origin))
+	if game.master and len(game.master) == 3: showInfo('GameMaster',
+		'<a href="mailto:%s?Subject=Game %s">%s</a>' %
+		(game.master[1], game.name, game.master[2].replace('_', ' ')))
+	variant, timing = [], ''
+	if game.map.name != game.variant:
+		text = game.map.name.title()
+		if os.path.isfile('<PKG>/pages/about_' + text.lower()):
+			text = ('<a target=new href=<URL>?page=about_%s>%s</a>' %
+				(text.lower(), text))
+		variant += [text]
+	if game.variant: variant += [game.variant.title()]
+	if 'NO_DIAS' in game.rules: variant += ['No DIAS']
+	showInfo('Variant', ', '.join(variant) + '<!, Anonymous>.')
+	showInfo('Press', game.pressSettings())
+	rules = game.rules[:]
+	for rule in game.metaRules + ['EAVESDROP']:
+		try: rules.remove(rule)
+		except: pass
+	rules = ['<a target=rules href=<URL>?page=Rules#%s>%s</a>' % (x, x)
+		for x in rules]
+	showInfo('<a target=rules href=<URL>?page=Rules>Rules</a>',
+		rules and '<tt><b>' + ', '.join(rules) + '.' or '')
+	if game.phase == 'FORMING': showInfo('Time Zone', game.zone or 'UTC (GMT)')
+	if game.phase == 'COMPLETED' and 'NOT' in game.timing:
+		del game.timing['NOT']
+	for key, val in game.timing.items(): timing += ' ' + key + ' ' + val
+	timing = timing or 'NEXT 1D MOVE 3D'
+	if 'DAYS' not in game.timing: timing += ' DAYS -MTWTF-'
+	showInfo('<a target=rules href=<URL>?page=Status#timing>Timing</a>',
+			'<tt><b>' + timing)
+	if game.avail: showInfo('Last Accessed',
+		time.ctime(os.path.getmtime(game.file('status'))))
+	if game.start: showInfo('Game Started', game.start)
+	if game.phase == 'COMPLETED':
+		showInfo('Game Ended', game.end)
+		end, winners = game.outcome[0], game.outcome[1:]
+		showInfo('Result', len(winners) > 1
+			and '%d-way draw (%s) in %s' % (len(winners),
+				', '.join(map(game.anglify, winners)), end)
+			or 'Solo victory by %s in %s' % (game.anglify(winners[0]),
+				end[1:-1]))
+	if game.phase == 'FORMING':
+		if 'preparation' in game.status: showInfo('Current Phase',
+			'<font color=white><blink>Preparation</blink></font>')
+		else:
+			spots = (int(game.avail[0])
+				or (len(game.map.powers) - len(game.map.dummies)))
+			showInfo('<blink>Players Needed', '%d Position%s Remain' %
+				(spots, 's'[spots == 1:]) + 's'[spots != 1:])
+			showInfo('<a href=mailto:%s?subject=%s>'
+				'E-mail to Join</a>' %
+				(host.dpjudge, game.name), '<b><tt>JOIN&nbsp;%s&nbsp;'
+				'<font color=green><i>yourPassword%s</i></font><br>'
+				'SIGNOFF</tt>%s' % (game.name,
+				game.private and '&nbsp;privacyWord' or '',
+				'POWER_CHOICE' in game.rules and
+				'<br><dd><i>-or-</i></dd><br><b><tt>'
+				'JOIN&nbsp;<font color=green><i>powerChoice</i></font>@%s'
+				'&nbsp;<font color=green><i>yourPassword%s</i></font><br>'
+				'SIGNOFF' % (game.name,
+				game.private and ' privacyWord' or '') or ''))
+	if 'terminated' in game.status:
+		showInfo('Game Status', '<font color=red><blink><b>'
+			'Terminated by GameMaster</blink></font>')
+	elif game.phase not in ('FORMING', 'COMPLETED'):
+		if (game.deadline and 'HIDE_LATE_POWERS' in game.rules
+		and game.Time() > game.deadline and not game.avail):
+			late = game.latePowers()
+			if late: showInfo('Late Power' + 's'[len(late) < 2:],
+				'(Identit%s Concealed by Rule)' % ('ies', 'y')[len(late) == 1])
+	page.write('</table>')
+#	----------------------------------------------------------------------
+def gameHeader():
+	game, power = page.game, page.power
+	page.write(
+		"""
+		<tr>
+		<td width=225 align=center><a href=<URL>><img border=0
+		src="<URL>/images/dpjudge_logo.gif"
+		height=43 width=205 vspace=10></a></td>
+		<td width=1 class="border"></td>
+		<td class="gameheader" align=center>
+		<!--GAME NAME GOES HERE-->
+		<a href=<URL>?game=%s><font class=gameheader><u>game %s</u></a>
+		""" % (game.name, game.name))
+	page.write(
+		"""
+		<!--GAME WARNING TABLE BEGINS HERE-->
+			<table border=0 cellpadding=0 cellspacing=0 width=100%>
+			<tr>
+			<td rowspan=3 width=5><!--SPACER--></td>
+			<td height=5><!--SPACER--></td>
+			<td rowspan=3 width=5><!--SPACER--></td>
+			</tr>
+			<!--WARNING INFORMATION GOES HERE-->
+		""")
+	if game.deadline and game.phase not in ('COMPLETED', 'FORMING'):
+		page.write(
+			'<tr><td bgcolor="#777777" align=center class="bannerinfo">'
+			'<span class="bannerinfo2">')
+		page.write('The Deadline for the %s Phase is<br>%s' %
+			(game.phaseName(form = 2), game.timeFormat()))
+		late = game.latePowers()
+		if game.avail: page.write(
+			'<br><font color=yellow size=2>-- Waiting to replace %s --' %
+			', '.join([game.anglify(x[:x.find('-')]) + x[x.find('-'):]
+				for x in game.avail]))
+		elif game.deadline < game.Time():
+			if power and power.name in late: page.write(
+				'<br><font size=+1><blink>You Are Late!</blink></font>')
+			elif late and (power and power.name == 'MASTER'
+			or 'HIDE_LATE_POWERS' not in game.rules): page.write(
+				'<br>(Late Power%s: %s)' % ('s'[len(late) == 1:],
+				', '.join(map(game.anglify, late))))
+		else:
+			waiters = [game.anglify(x.name) for x in game.powers if x.wait]
+			if waiters:
+				if 'LIST_WAITERS' in game.rules:
+					if len(waiters) > 1: waiters[-1] = 'and ' + waiters[-1]
+					page.write(
+						'<br>The following player%s ha%s requested that '
+						'orders not be processed until the deadline:\n'
+						'<br><font color=yellow>%s</font>' %
+						('s' * (len(waiters) > 1),
+						('s', 've')[len(waiters) > 1],
+						', '[len(waiters) < 3:].join(waiters)))
+				else: page.write(
+					'<br>One or more players have requested that '
+					'orders not be processed until the deadline.')
+			if late:
+				laters = [game.anglify(x) for x in late]
+				page.write('<BR>')
+				if 'LIST_UNORDERED' in game.rules:
+					if len(laters) > 1: laters[-1] = 'and ' + laters[-1]
+					page.write(
+						'The following player%s ha%s not yet submitted orders:'
+						'<br><font color=pink>%s</font>' %
+						('s' * (len(laters) > 1),
+						('s', 've')[len(laters) > 1],
+						', '[len(laters) < 3:].join(laters)))
+				else: page.write(
+					'One or more powers have not yet submitted orders.')
+			elif not game.await:
+				page.write('<br>All powers have submitted orders.')
+		page.write('</td></tr>')
+	if game.private: page.write(
+		'<tr><th bgcolor="yellow" align=center class="bodycopy">'
+		'<font color=red>'
+		'This is a private game including specific players;<br>'
+		'it may include players who know each other.</th></tr>')
+	page.write(
+		"""
+			<tr><td height=5><!--SPACER--></td></tr>
+			</table>
+		<!--GAME WARNING TABLE ENDS HERE-->
+		</td>
+		</tr>
+		""")
+#	----------------------------------------------------------------------
+def powerHeader():
+	game, power = page.game, page.power
+	page.write(
+		"""
+		<center>
+		<table border=0 cellpadding=0 cellspacing=0>
+		<tr valign=middle>
+		""")
+	flagFile = ('/images/flags/' + (game.map.flagDir or game.map.rootMap) +
+				'/' + game.map.flag.get(power.name, power.name) + '.gif')
+	if game.map and os.path.exists(('<WEB>' + flagFile).encode('latin-1')):
+		page.write(
+			"""
+			<td width=91><img width=75 hspace=10 vspace=10 src=%s%s></td>
+			<td width=10><!--SPACER--></td>
+			""" % (host.dpjudgeURL, flagFile))
+	page.write('<th class="bodycopy"><font size=+1>%s</font>' %
+		game.anglify(power.name))
+	if power.name == 'MASTER': name = game.master[2]
+	elif power.player: name = power.player[0]
+	else: name = 0
+	if name: page.write('<br>%s' % name.split('|')[-1].replace('_', ' '))
+	page.write('</th></tr></table>')
+#	----------------------------------------------------------------------
+def showProposal():
+	game, power = page.game, page.power
+	if 'NO_DRAW' in game.rules or not power.centers: return
+	#	------------------------------------------------------------
+	#	In non PROPOSE_DIAS games, each player selects a single game
+	#	result and if they all match, so be it.  NO_DIAS is the same
+	#	except that players can vote for the maximum acceptable SIZE
+	#	of a draw that must include them.
+	#	------------------------------------------------------------
+	if 'PROPOSE_DIAS' not in game.rules:
+		powerName = game.anglify(power.name)
+		power.vote = power.vote or '1'
+		dias = len([1 for x in game.powers if x.centers])
+		vote = min(int(power.vote), dias)
+		options = (2, dias)['NO_DIAS' in game.rules]
+		now = (min(vote, options) - 1, options)[vote == 0]
+		page.write(
+			"""
+			<script>function makeProp(){
+			if(confirm('Are you sure about this change?'))
+			document.proposalForm.submit();
+			else document.proposalForm.proposal.selectedIndex=%d;}</script>
+			<form name=proposalForm %s>
+			<input type=hidden name=page value=Status>
+			<input type=hidden name=game value=%s>
+			<input type=hidden name=power value=%s>
+			<input type=hidden name=password value=%s>
+			<tr valign=top><td class="bodycopy">
+			<b>Goal:</b></td><td align=right class="bodycopy">
+			<select name=proposal onchange=makeProp() class="inputBox">
+			""" % (now,
+			('onSubmit="return false"', 'method=post')[page.pwdFlag == 1],
+			game.name, power.name, page.password))
+		if 1 in (vote, page.pwdFlag):
+			page.write('<option value=1%s>A solo victory for %s\n' %
+				(' selected' * (vote == 1), powerName))
+		for way in range((dias, 2)['NO_DIAS' in game.rules], dias + 1):
+			if vote == way or page.pwdFlag == 1: page.write(
+				'<option value=%d%s>A %sdraw including ' %
+				(way == dias and -1 or way, ' selected' * (vote == way),
+				('%d-way ' % way, '')['BLIND' in game.rules]) +
+				powerName + ' (DIAS)' * (way == dias))
+		if vote == 0 or page.pwdFlag == 1: page.write(
+			'<option value=0%s>' % (' selected' * (vote == 0)) +
+			('A concession to another power',
+			'Any result NOT including ' + powerName)
+			['NO_DIAS' in game.rules])
+		page.write('</select></td><td></td></tr></form>')
+	#	-------------------------------
+	#	PROPOSE_DIAS.  Request player's
+	#	vote on any current proposal.
+	#	-------------------------------
+	elif game.proposal: page.write(
+		"""
+		<form name=proposalForm method=post>
+		<input type=hidden name=page value=Status>
+		<input type=hidden name=game value=%s>
+		<input type=hidden name=power value=%s>
+		<input type=hidden name=password value=%s>
+		<tr><td class="bodycopy" colspan=2 align=right>
+		<b><font color=red>A %s<br>Has Been Proposed%s:</font>
+		</td><td>
+		"""
+		'<select class="inputBox" name=vote onchange="'
+		"if(confirm('Are you sure about this vote on the proposal?'))"
+		'document.proposalForm.submit();"'
+		'else document.proposalForm.vote.selectedIndex=0;">'
+		'%s<option value=YES>AGREE<option value=NO>VETO</select></b>'
+		'</td><td></td></tr></form>'
+		% (game.name, power.name, page.password,
+		('Concession to ' + game.anglify(game.proposal[0]),
+		'Draw Including All Survivors')[game.proposal[0] == 'DIAS'],
+		(' by ' + game.anglify(game.proposal[1]), '')
+		['HIDE_PROPOSER' in game.rules], '<option>(NVR)' * (not power.vote)))
+	#	---------------------------------------
+	#	Or pop up a window with a select list
+	#	requesting the type of game termination
+	#	(DIAS or concession) to be proposed.
+	#	---------------------------------------
+	else:
+		page.write(
+			"""
+			<script>function propose(){win=window.open("","%s_proposal",
+			"width=430,height=40,resizable=no,menubar=no,status=no," +
+			"directories=no,scrollbars=no,toolbar=no,location=no");
+			win.document.write('<title>Proposal in %s</title>'+
+			'<body bgcolor=white><center><H3>Game Conclusion Proposal'+
+			'</H3><form name=proposalForm method=post>'+
+			'<input type=button value="Propose" onclick="'+
+			"if(confirm('Are you sure you wish to make this proposal?'))"+
+			"{window.opener.document.proposalForm.proposal.value="+
+			'document.proposalForm.proposal.options'+
+			'[document.proposalForm.proposal.selectedIndex].value;'+
+			'window.opener.makeProposal();}window.close();">&nbsp;'+
+			'<select class=inputBox name=proposal>'+
+			'<option value=DIAS>a draw including all surviving players');
+			""" % ((game.name,) * 2))
+		[page.write("win.document.write('<option value=%s>"
+			"a concession to %s');" % (who.name, game.anglify(who.name)))
+			for who in game.powers if who.centers]
+		page.write(
+			"""
+			win.document.write('</select></form>');win.document.close();}
+			function makeProposal(){document.proposalForm.submit();}
+			</script><form name=proposalForm method=post>
+			<input type=hidden name=page value=Status>
+			<input type=hidden name=game value=%s>
+			<input type=hidden name=power value=%s>
+			<input type=hidden name=password value=%s>
+			<input type=hidden name=proposal value="">
+			<tr><td class=bodycopy><b>Endgame:</td>
+			<td colspan=2 align=right>
+			<input class=inputSubmit type=button value="Propose Game Conclusion"
+			onclick=propose()></td></tr></form>
+			""" % (game.name, power.name, page.password))
+#	----------------------------------------------------------------------
+def showMessages():
+	if page.power.name != 'MASTER' and page.power.msg:
+		page.write('<tr><td class=bodycopy valign=top><b>Message:</b></td>'
+			'<td valign=top class=bodycopy colspan=2><b><font color=red>')
+		for msg in page.power.msg: page.write(msg + '<br>')
+		page.write('</td></tr>')
+#	----------------------------------------------------------------------
+def showControlInfo():
+	if page.power.ceo: return page.write(
+		"""
+		<form name=ceoForm method=post>
+		<input type=hidden name=page value=Status>
+		<input type=hidden name=game value=%s>
+		<input type=hidden name=power value=%s>
+		<input type=hidden name=password value=%s>
+		<tr><td class=bodycopy><b>Controller:</b></td>
+		<td class=bodycopy align=right>%s</font>
+		<td><input class=inputSubmit type=submit value="Log In">
+		</td></tr></form>
+		""" %
+		(page.game.name, page.power.ceo[0],
+		page.password, page.game.anglify(page.power.ceo[0])))
+	headsUp = [x.name for x in page.game.powers
+		if x.ceo and x.ceo[0] == page.power.name]
+	if headsUp:
+		page.write(
+			"""
+			<form name=ceoForm method=post>
+			<input type=hidden name=page value=Status>
+			<input type=hidden name=game value=%s>
+			<input type=hidden name=password value=%s>
+			<tr><td class=bodycopy nowrap><b>Controller Of:</b></td>
+			<td align=right>
+			<select class=inputBox
+			name=power onChange=document.ceoForm.submit()>
+			""" % (page.game.name, page.password))
+		for country in headsUp: page.write('<option>' + country)
+		page.write(
+			"""
+			</select></td>
+			<td><input class=inputSubmit type=submit value="Log In"></td>
+			</tr>
+			</form>
+			""")
+#	----------------------------------------------------------------------
+def footer():
+	page.write(
+		"""
+		<tr valign=top>
+		<td colspan=3 align=right class="fineprint" bgcolor="#CCCCCC">
+		The DPjudge is copyright &copy; 1995-%d by Manus Hand.
+		All rights reserved.
+		</td>
+		</tr>
+		</table>
+		</body>
+		</html>
+		""" % time.gmtime()[0])
+#	----------------------------------------------------------------------
+def showReadyNotice():
+	game = page.game
+	if (game.phase != 'COMPLETED' and game.deadline
+	and game.ready() and not game.await
+	and (not game.avail or 'CIVIL_DISORDER' not in game.rules)): page.write(
+		'<tr><td class=bodycopy colspan=3>'
+		'<table width=100%><tr><th class=bodycopy bgcolor=yellow>'
+		'<font color=red>All Orders Have Now Been Submitted<br>'
+		'-- Processing Will Occur Soon --<br>Make Any Changes Now'
+		'</font></th></tr></table></th></tr>')
+#	----------------------------------------------------------------------
+def showPressOptions():
+	if not page.game.powers:
+		page.write('<td class=bodycopy align=center valign=top>'
+					'(None available)</td>')
+		return
+	readers = page.game.eligiblePressRecipients(page.power)
+	page.write('<form method=post name=press>'
+		'<input type=hidden name=page value=Press>'
+		'<input type=hidden name=game value=%s>'
+		'<input type=hidden name=power value=%s>'
+		'<input type=hidden name=password value=%s>' %
+		(page.game.name, page.power.name, page.password))
+	#	---------------------------
+	#	Draw and fill the press box
+	#	---------------------------
+	if len(readers) > 1:
+		page.write(
+			"""
+			<script>var count=%d;function compose(){for(i=0;i<=count;++i)
+			if(document.press.recipient[i].checked){
+			document.press.submit();return;}
+			alert('Please specify the press recipients.');}
+			function reclick(broadcast){if(!count)return;
+			if(broadcast)for(i=0;i<=count;++i)
+			{%s document.press.recipient[i].checked=
+			document.press.recipient[count].checked;}
+			else document.press.recipient[count].checked=false;}</script>
+			<td class="bodycopy" nowrap><b>Send Press To:</b></td>
+			</tr>
+			<td valign=top class=bodycopy><b>
+			""" % (len(readers) - 1 - (page.power.name == 'MASTER'), 'if(i==count-1)'
+			'document.press.recipient[i].checked=false;else' *
+			('PRESS_MASTER' in page.game.rules
+			and page.power.name != 'MASTER')))
+		for power in readers:
+			page.write('<input type=checkbox name=recipient value=' + power)
+			if 'ALL' in readers:
+				page.write('onclick=reclick(%d)' % (power == 'ALL'))
+			page.write('>%s<br>' % page.game.anglify(power))
+		page.write(
+			"""
+			</td></tr><tr><td align=center>
+			<input type=button class=inputSubmit
+			value="Compose" onclick=compose()>
+			</td>
+			""")
+	elif page.power.name != 'MASTER': page.write(
+		"""
+		<input type=hidden name=recipient value=MASTER>
+		<th><input class=inputSubmit type=submit value="Mail the Master">
+		</th>
+		""")
+	else: page.write('<td class=bodycopy align=center>(None available)</td>')
+	page.write('</form>')
+#	----------------------------------------------------------------------
+def showWaitNotice():
+	if page.game.phaseType == 'M': phase = 'the next movement'
+	else:
+		kind = page.game.phase.split()[-1]
+		if kind[-1] == 'S': kind = kind[:-1]
+		phase = ('a ', 'an ')[page.game.phaseType in 'AEIOU'] + kind.lower()
+	if page.game.await: page.write(
+		"""
+		<tr><th bgcolor=yellow class=bodycopy><font color=red>
+		The game is waiting for processing of %s phase.<br>
+		No changes are currently allowed.</font></th></tr>
+		""" % phase)
+	else: page.write(
+		"""
+		<tr><th class=bodycopy><font color=red>
+		You have no orders to issue for the pending %s phase.
+		</font></th></tr>
+		""" % phase.split()[-1])
+#	----------------------------------------------------------------------
+def showReceiptFlag():
+	if page.power.address: page.write(
+		"""
+		<tr><td class=bodycopy align=center>
+		<input type=checkbox name=receipt> Issue an e-mail receipt</td></tr>
+		""")
+#	----------------------------------------------------------------------
+def showWaitFlag():
+	if page.pwdFlag != 1: return
+	showReceiptFlag()
+	if (('NO_MINOR_WAIT' in page.game.rules and page.game.phaseType != 'M')
+	or 'REAL_TIME' in page.game.rules
+	or not page.game.deadline or page.game.deadline < page.game.Time()): return
+	page.write(
+		"""
+		<tr><td class=bodycopy align=center>
+		<input type=checkbox name=wait%s> 
+		Wait for deadline before processing</td></tr>
+		""" % (' checked', '')[not page.power.wait])
+#	----------------------------------------------------------------------
+def showAdjustList():
+	game, power = page.game, page.power
+	if len(power.centers) == 0: return
+	count = len(power.centers) - len(power.units)
+	if [x for x in power.centers if x in game.map.home[power.name]]:
+		count += (game.map.reserves.count(power.name) +
+			min(game.map.militia.count(power.name),
+			len([0 for x in power.units
+				if x[2:5] in game.map.home[power.name]])))
+	if count > 0:
+		#	-------------------------------------------
+		#	Determine list of all available build sites
+		#	(count may be set to zero by doing this!!)
+		#	-------------------------------------------
+		buildable = game.buildSites(power)
+		count = min(count, len(buildable))
+	#	-----------------------
+	#	Create list of possible
+	#	build or remove orders.
+	#	-----------------------
+	if count > 0:
+		action, list = 'BUILD', ['WAIVED']
+		for site in sorted([x.upper() for x in game.map.locType]):
+			if site[:3] in buildable: list += filter(
+				game.map.isValidUnit, ('A ' + site, 'F ' + site))
+	elif count: action, list = 'REMOVE', sorted(power.units)
+	else: return
+	#	----------------------
+	#	Display pulldowns with
+	#	all available orders
+	#	----------------------
+	page.write(
+		"""
+		<tr><td class=bodycopy align=center><font size=2>
+		<b>%s Orders</b><br></font>
+		""" % game.phaseName(form = 2)[:-1])
+	if game.await:
+		return page.write('<b>%s</b>' % '<br>'.join(power.adjust))
+###		if 'NO_CHECK' in game.rules:
+###			page.write('<textarea name=adjust rows=%d cols=40>%s</textarea>' %
+###				(abs(count), '\n'.join(power.adjust)))
+###			return 1
+	for which in range(abs(count)):
+		order = power.adjust[which:which + 1]
+		page.write('<b>%s <select name=adjust class=inputBox>' % action.title())
+		if page.pwdFlag == 1 or not order: page.write('<option>(NMR)')
+		for ord in list:
+			syntax = action + ' ' + ord
+			select = ' selected' * (syntax in order)
+			if select or page.pwdFlag == 1: page.write(
+				'<option value=\'%s\'%s>' % (syntax, select) + ord)
+		page.write('</select><br>')
+	page.write('</td></tr>')
+	return 1
+#	----------------------------------------------------------------------
+def showRetreatList():
+	power = page.power
+	if not power.retreats or power.goner: return
+	page.write(
+		"""
+		<tr><td class=bodycopy align=center><font size=2>
+		<b>%s Orders</b></font>
+		""" % page.game.phase.title()[:-1])
+	if page.game.await:
+		for order in power.adjust: page.write(order[8:] + '<br>')
+	else:
+		page.write('<table>')
+		for unit in power.retreats:
+			page.write('<tr><td class=bodycopy align=right>' + unit + '</td>')
+			page.write('<td><select name=adjust class=inputBox>')
+			if not power.adjust or page.pwdFlag == 1:
+				page.write('<option>(NMR)')
+			choices = ['DISBAND'] + ['- ' + x for x in power.retreats[unit]]
+			for choice in choices:
+				ord = 'RETREAT %s ' % unit + choice
+				select = ' selected' * (ord in power.adjust)
+				if select or page.pwdFlag == 1: page.write(
+					'<option value=\'%s\'%s>' % (ord, select) + choice)
+			page.write('</select></td></tr>')
+		page.write('</table')
+	page.write('</td></tr>')
+	return 1
+#	----------------------------------------------------------------------
+def viewFile():
+	if page.file == 'status': return
+	page.write(
+		"""
+		<tr valign=top bgcolor="#CCCCCC">
+		<td align=center class="grey"><b>%s</b></td></tr>
+		<tr valign=top><td><center><table><tr><td>
+		""" % page.file.title())
+	file, list = open(page.game.file(page.file), encoding='latin-1'), []
+	blind, lastLine = 0, ''
+	if 'subject' in vars(page):
+		showing = 0
+		page.write('<pre>')
+	for line in file:
+		if 'subject' in vars(page):
+			if showing:
+				if line[:5] == 'From ': showing = 0
+				elif page.file == 'results':
+					if line[:2] == '::': showing = 2
+				elif not line.split(): showing = 2
+			elif line[:9] == 'Subject: ':
+				list += [line[9:-1]]
+				showing = line[9:-1] == page.subject
+			if showing < 2: continue
+		if page.file == 'results' and line.startswith('SHOW'):
+			showTo = line[:-1].split()[1:]
+			blind = showTo and page.power.name not in showTo
+		elif not blind and (line[:-1] or lastLine):
+			lastLine = line[:-1]
+			page.write(lastLine)
+	file.close()
+	page.write('</td></tr></table>')
+	page.write('<HR><table><tr><td valign=top align=center>')
+	if list:
+		page.write('<table>')
+		showResultsText(list, page.subject)
+		page.write('</table></td></tr><tr><td align=center>')
+	page.count = ('count' in vars(page) and int(page.count)) - 1
+	page.write(
+		"""
+		<form><input class=inputSubmit type=button
+		onclick=window.history.go(%d) value="Back To Game Page">
+		</form>
+		""" % page.count)
+	page.write('</td></tr></table>')
+#	----------------------------------------------------------------------
+def sendPress():
+	if type(page.recipient) in (str, unicode): page.recipient = [page.recipient]
+	if 'ALL' in page.recipient: page.recipient = ['All']
+	if 'claimFrom' not in vars(page): page.claimFrom = None
+	if 'claimTo' not in vars(page): page.claimTo = None
+	elif type(page.claimTo) in (str, unicode): page.claimTo = [page.claimTo]
+	if page.claimTo and 'ALL' in page.claimTo: page.claimTo = ['All']
+	message, okay = '', page.game.eligiblePressRecipients(page.power)
+	if (page.power.name != 'MASTER'
+	and [1 for x in page.recipient if x.upper() not in okay]):
+		page.write(
+			"""
+			<th class=bodycopy bgcolor=red>
+			<font color=yellow><b><font size=2>Message Cannot Be Sent<br>
+			</font>The settings of this game dictate
+			that your message cannot be sent at this time.</font>
+			</td>
+			""")
+		return
+	for line in page.message.split('\n'):
+		while len(line) > 72:
+			split = line[:72].rfind(' ')
+			if split < 0: break
+			message += line[:split] + '\n'
+			line = line[split:].strip()
+		message += line + '\n'
+	page.game.mailPress(page.power, page.recipient, message,
+		page.claimFrom, page.claimTo)
+	#	-------------------------------------------------------
+	#	Report success.  If the type of the socket.gethostname
+	#	object is not a built_in_function_or_method (like len),
+	#	it is because we have detected that outgoing mail is
+	#	being delayed, and we have (in dpjudge.py) set the
+	#	socket.gethostname object to a lambda function instead
+	#	of letting it stay the built_in_function it usually is.
+	#	-------------------------------------------------------
+	page.write(
+		"""
+		<th class=bodycopy align=center bgcolor=yellow>
+		<b><font color=red size=2>Message Sent</font></b>
+		%s
+		</th>
+		""" % (
+		"""<br><font color=red><b><u>NOTICE:</u> E-mail service down;
+			message queued for delivery when restored</font>
+		""" * (type(socket.gethostname) is not type(len))))
+#	----------------------------------------------------------------------
+def finished(header = 'Update Made'):
+	if 'receipt' in vars(page): page.game.reportOrders(page.power)
+	page.write(
+		"""
+		<tr valign=top bgcolor="#CCCCCC">
+		<th bgcolor=yellow class=bodycopy>
+		<font color=red size=3>%s</th></tr>
+		<tr valign=top>
+		<script>window.setTimeout("document.form.submit();",5000);</script>
+		<td align=center width=100%% class=bodycopy>
+		&nbsp;<br>
+		<form method=post name=form>
+		<input type=hidden name=page value=Status>
+		<input type=hidden name=game value=%s>
+		<input type=hidden name=power value=%s>
+		<input type=hidden name=password value=%s>
+		<input type=submit class=inputSubmit
+		value="Return to the Status Page [Automatic in 5 Seconds]"></form>
+		%s
+		</th></tr>
+		""" % (header, page.game.name, page.power.name, page.password,
+		"""
+		<blockquote>Note that if you use your browser's
+		"Back" button to return to the status page<br>(instead of the
+		button above), you will need to "Reload" the screen to see
+		your changes reflected.</blockquote>
+		""" * (header != 'Update Made' or page.power.name == 'MASTER')))
+#	----------------------------------------------------------------------
+def problem(pre = '', post = ''):
+	page.write(
+		"""
+		<!--tr valign=top bgcolor="#CCCCCC">
+		<td align=center class="grey"><b>Problems With Your Submission</b></td>
+		</tr-->
+		<tr valign=top>
+		<th align=left bgcolor=red class=bodycopy><font color=yellow>
+		<font size=2><blockquote>&nbsp;<br>Your update was not made,
+		because the system detected the following error%s:
+		<tt><font size=2><b>"""
+		% ('s' * (len(page.game.error) > 1)))
+	for error in page.game.error:
+		where = error.find(': ')
+		if where > -1:
+			error = error[:where] + ':<br>' + '&nbsp;' * 4 + error[where + 2:]
+		page.write('<HR>' + error)
+	page.write("""
+		<p></tt>
+		</th></tr><tr>
+		<td class=bodycopy><!font size=2><br>
+		The hard-and-fast formatting rules are:<ul>
+		""")
+	if page.game.phaseType == 'M': page.write(pre +
+		"""
+		<li>Specify the unit:<ul>
+		<li>The unit specification should begin with either <tt><b>"ARMY"</b></tt>
+			or <tt><b>"FLEET"</b></tt>, or <tt><b>"A"</b></tt> or <tt><b>"F"</b></tt>. %s
+		<li>The unit type must be followed by at least one space</em>.
+		<li>Following the space, the location of the unit must be
+			specified.  A number of aliases are recognized, but whatever
+			you input (if understood) will be changed to the three-letter
+			DPjudge abbreviation of the location.  (If you are unfamiliar
+			with the DPjudge abbreviation of any location, pull up the
+			current game map and check.)
+		<li>%s, a number of aliases are recognized.  For example,
+			"<tt><b>spa/sc</b></tt>", "<tt><b>bulgaria(east)</b></tt>",
+			"<tt><b>st petersburg (north coast)</b></tt>", etc.</ul>
+		<li>Next, give the order type (move, hold, support, convoy). These
+			may be abbreviated, if you wish, using <tt><b>"M"</b></tt> or a dash
+			(<tt><b>"-"</b></tt>) or <tt><b>"-&gt;"</b></tt> for move, <tt><b>"S"</b></tt> for
+			support, <tt><b>"C"</b></tt> for convoy, or <tt><b>"H"</b></tt> for hold.
+		%s
+		<li>If writing the order for a convoying army, the location of
+			the fleet (or fleets) to be used must appear (in order of use),
+			and a move order, with optional space on either side, must
+			separate these locations from each other and from the army's
+			origin and destination provinces.  Examples:
+			<dd><tt><b>A YOR-NTH-BEL<br>A BUL-AEG - ION -> TUN</b></tt></dd>
+		<li>If writing a support or convoy order, the type of the unit
+			being supported or convoyed may <i>but need <b>not</b></i> be
+			specified.  Additionally, if a fleet to receive support is in a
+			dual-coast province, the coast on which the fleet rests <b>does
+			<i>not</i> need</b> to be given.  Examples:
+			<dd><tt><b>F MAO S F SPA<dd>F MAO S SPA<dd>F MAO S SPA - POR
+			<dd>F MAO C SPA - POR</b></tt></dd>
+		<li>If writing an order to support a unit's attempt to remain in
+			its position, you may <i>optionally</I> specify <tt><b>HOLD</b></tt>
+			(or <tt><b>H</b></tt>) after the supported unit.  Examples:
+			<dd><tt><b>F MAO S A GAS <dd>F MAO S A GAS H</b></tt></dd>
+		<li>If writing an order to support a fleet in its move
+			<i><b>to</b></i> a multi-coast province, the coast to which it
+			is moving <i><b>must <u>not</u></b></i> be specified.  Example:
+			<dd><tt><b>F MAR S F MAO-SPA</b></tt></dd><BR>
+			Contrast this with the following:
+		<li>If writing a <b>move</b> order <b>for</b> a fleet moving
+			<b>to</b> a dual-coast province, the coast to which it is
+			moving <b>must</b> be specified (unless the move could be
+			made to only one coast -- in that case, it is optional).
+			Examples: <dd><tt><b>F MAO-SPA/nc<dd>F GAS-SPA<dd>F GAS-SPA/nc
+			<dd>F CON-BUL/ec</b></tt></dd>
+		""" % (('The unit type <i><b>may</b></i> be omitted; it will '
+			'be determined for you.', 'Note that you <b><i>must</i></b> '
+			'specify the unit type.')['FICTIONAL_OK' in page.game.rules],
+			('To specify the coast on which a fleet in a dual-coast '
+			'province rests (note that this will be determined for '
+			'you if you do not specify the coast)',
+			'If the unit is a fleet in a dual-coast province, the '
+			'coast <b><u>must</u></b> be specified.  Again')
+			['FICTIONAL_OK' in page.game.rules],
+			'<li>If writing a proxy order, you must give only '
+			'the <i>full name</i> of the power to whom the proxy is '
+			'given. Example: <dd><tt><b>A LON PROXY FRANCE</b></tt></dd>' *
+			('PROXY_OK' in page.game.rules)) + post)
+	else: page.write(
+		"""
+		<li>Select your orders from the pulldown lists.
+		<li>You must enter either <i>all</i> or <i>none</i> of your orders
+			as <tt><b>(NMR)</b></tt>.
+		<li>If you submit <i>all</i> orders as <tt><b>(NMR)</b></tt>, any
+			current orders you have will be cleared, and you will need to
+			enter orders later.
+		<li>Other than waived builds, you may not enter the same order in
+			more than one of the pulldowns.
+		""")
+	page.write(
+		"""
+		</ul></td></tr>
+		<tr><th>
+		<form><input type=button onClick=history.back() class=inputSubmit
+			value="Return to Status Page">
+		</th></tr></form>
+		""")
+#	----------------------------------------------------------------------
+def lockedUp():
+	page.write(
+		"""
+		<form name=form method=post><input type=hidden name=page value=Status>
+		<input type=hidden name=game value=%s>
+		<input type=hidden name=power value=%s>
+		<input type=hidden name=password value=%s>
+		</form>
+		<script>
+		alert("            Too Late!\\n\\n" +
+			  "Sorry, but the units have already \\n" +
+			  "been issued their orders.\\n" +
+			  "Nothing to do now but wait.");
+		document.form.submit();
+		</script>
+		""" % (page.game.name, page.power.name, page.password))
+	raise SystemExit
+#	----------------------------------------------------------------------
+def updateOffPhases():
+	if type(page.adjust) != list: page.adjust = page.adjust.split('\n')
+	page.game.updateOffPhases(page.power, page.adjust)
+#	----------------------------------------------------------------------
+def checkPassword():
+	page.pwdFlag = page.game.isValidPassword(page.power, page.password)
+	if page.pwdFlag: return
+	page.write(
+		"""
+		<script>
+		alert("Either you are not %s in game\\n" +
+			"%s, or you mistakenly entered%s\\nthe wrong password.");
+		window.history.back();
+		//window.location.replace('<URL>');
+		</script>
+		""" % (page.power and hasattr(page.power, 'name')
+		and page.power.name or 'participating', page.game.name,
+		page.power and hasattr(page.power, 'name') and ' ' or
+		"\\nthe wrong power name ('%s') or" % page.power))
+	raise SystemExit
+#	----------------------------------------------------------------------
+def loadGame():
+	if not page.game:
+		page.write(
+			"""
+			<script>
+			alert("         Improper Access!\\n" +
+				  "Enter the DPjudge the Correct Way!");
+			window.location.replace("%s");
+			</script>
+			""" % host.dpjudgeURL)
+		raise SystemExit
+	try: page.power = [x for x in page.game.powers if page.power == x.name][0]
+	except: 
+		if page.power == 'MASTER': page.power = Power(page.game, 'MASTER')
+		else: page.power = 0
+#	----------------------------------------------------------------------
+def mapName():
+	file = page.game.name
+	if 'BLIND' in page.game.rules and page.power:
+		if page.power.name != 'MASTER': file += page.power.password or ''
+		elif page.game.phase != 'COMPLETED': file += page.game.password
+		file = filter(lambda x: x not in '?/&$', file)
+	return file	
+#	----------------------------------------------------------------------
+def checkProposal():
+	game = page.game
+	if game.phase in ('FORMING', 'COMPLETED'): return
+	#	-------------------------------------------------------------
+	#	Ensure all votes are proper.  If a power has been eliminated,
+	#	the current game proposal and/or some votes may be illegal.
+	#	-------------------------------------------------------------
+	viable, mod = 0, 'proposal' in vars(page) or 'vote' in vars(page)
+	for power in game.powers:
+		if power.centers: viable += 1
+		elif game.proposal and game.proposal[0] == power.name:
+			game.proposal, mod = None, 1
+			for clear in game.powers: clear.vote = None
+	#	-----------------------------------------------------------
+	#	See if a vote (or a proposal in PROPOSE_DIAS) has been made
+	#	-----------------------------------------------------------
+	if 'proposal' in vars(page):
+		#	-----------------------------------------------------------
+		#	PROPOSE_DIAS games set the proposal so it will be announced
+		#	-----------------------------------------------------------
+		if 'PROPOSE_DIAS' in game.rules:
+			game.proposal = [page.proposal, page.power.name]
+		#	------------------------------------------------
+		#	All other games update the player's vote and see
+		#	if enough people have said "I'm dead" to allow
+		#	for the smallest-requested result to be declared
+		#	------------------------------------------------
+		else:
+			if page.proposal == '-1':
+				page.proposal = `len([1 for x in game.powers if x.centers])`
+			votes, page.power.vote = [], page.proposal
+			for power in game.powers:
+				try: power.centers and votes.append(int(power.vote))
+				except: break
+			else:
+				votes = filter(None, votes)
+				try:
+					if len(votes) <= min(votes):
+						if len(votes) > 1 and 'NO_DIAS' not in game.rules:
+							raise
+						game.proposal = ['NO_DIAS']
+				except: game.proposal = ['DIAS']
+				if game.proposal: game.endByAgreement()
+	#	--------------------------------------------
+	#	See if a vote on a proposal was just entered
+	#	--------------------------------------------
+	elif 'vote' in vars(page) and game.proposal:
+		if page.vote == 'YES':
+			page.power.vote = page.vote
+			if not [1 for x in game.powers if x.centers and not x.vote]:
+				game.endByAgreement()
+		else:
+			#	Should broadcast to everyone that the vote has failed?
+			for power in game.powers: power.vote = None
+			game.proposal, mod = None, 1
+	if mod: game.save()
+#	----------------------------------------------------------------------
+def showAccessLog():
+	access = page.game.file('access')
+	try:
+		file = open(access, encoding='latin-1')
+		contents = ''.join([x for x in reversed(file.readlines())]) # file.read()
+		file.close()
+	except: contents = '(No Accesses Logged)'
+	page.write(
+		"""
+		<tr valign=top bgcolor="#CCCCCC">
+		<td align=center class="grey"><b>Game Access Log</b></td>
+		</tr>
+		<tr><td align=center class=bodycopy>
+		<blockquote><b><p align=justify>&nbsp;<br>
+		The DPjudge game access log is only one of a large number
+		of methods by which potential problem players (cheaters) can
+		be detected.  If you suspect that any person is playing more
+		than one power, you can check the IP addresses and times at
+		which those powers have logged in at the Website, and
+		<a href="mailto:%s?subject=CHEATING in %s"><font color=red>report
+		any issue to the judgekeeper!!</font></a>
+		Again, a number of other automatic checks are continually
+		occurring -- it is possible that the judgekeeper may already
+		be aware of and monitoring an issue.</p></b></blockquote>
+		<form ><textarea cols=88 rows=20>%s</textarea><p>
+		<input type=button onclick=window.history.back() class=inputSubmit
+		value="Go Back To The Status File"><br>&nbsp;<BR></td></tr></form>
+		""" % (host.judgekeeper, page.game.name, contents))
+	footer()
+	raise SystemExit
+#	----------------------------------------------------------------------
+def powerInfo():
+	game = page.game
+	variant, timing = [], ''
+	if game.map.name != game.variant: variant += [game.map.name.title()]
+	if game.variant: variant += [game.variant.title()]
+	if 'NO_DIAS' in game.rules: variant += ['No DIAS']
+	showInfo('Variant', ', '.join(variant) + '<!, Anonymous>.', 1)
+	showInfo('Press', game.pressSettings(), 1)
+	rules = game.rules[:]
+	for rule in game.metaRules + ['EAVESDROP']:
+		try: rules.remove(rule)
+		except: pass
+	rules = rules and '<tt><b>' + ', '.join(rules) + '.' or ''
+	showInfo('<a target=rules href=<URL>?page=Rules>Rules</a>', rules, 1)
+	if game.phase == 'COMPLETED' and 'NOT' in game.timing:
+		del game.timing['NOT']
+	for key, val in game.timing.items(): timing += ' ' + key + ' ' + val
+	timing = timing or 'NEXT 1D MOVE 3D'
+	if 'DAYS' not in game.timing: timing += ' DAYS -MTWTF-'
+	showInfo('<a target=rules href=<URL>?page=Status#timing>Timing</a>',
+			'<tt><b>' + timing, 1)
+	page.write('<tr><td colspan=3><HR></td></tr>')
+#	----------------------------------------------------------------------
+def pouchLinks():
+	page.write("""
+		<p align=center>
+		<A HREF="<POUCH>">
+		<IMG SRC="<POUCH>/Common/DPLogo.gif"
+			ALT="The Diplomatic Pouch" HEIGHT=45 WIDTH=164 BORDER=0></A>
+		<IMG SRC="<POUCH>/Common/DPLinks.gif"
+			ALT="Shortcuts" usemap="#pouchers"
+			HEIGHT=45 WIDTH=423 BORDER=0 ISMAP>
+		<map name=pouchers>
+		<area shape=rect href=<POUCH>/Zine coords=0,0,53,45>
+		<area shape=rect href=<URL> coords=53,0,106,45>
+		<area shape=rect href=<POUCH>/Online coords=106,0,159,45>
+		<area shape=rect href=<POUCH>/Face coords=159,0,212,45>
+		<area shape=rect href=<POUCH>/Email coords=212,0,265,45>
+		<area shape=rect href=<POUCH>/Postal coords=265,0,318,45>
+		<area shape=rect href=<POUCH>/Showcase coords=318,0,371,45>
+		<area shape=rect href=<POUCH>/shirts coords=371,0,422,45>
+		</map>
+		<P>
+	""")
+#	----------------------------------------------------------------------
+def pressCode(text, lineNum = None):
+	if lineNum is not None:
+		result, lineNum, hashVal = '', `lineNum` + '.', `hash(text)` + '.'
+		for a in range(max(len(lineNum),len(hashVal))):
+			if a < len(hashVal): result += hashVal[a]
+			if a < len(lineNum): result += lineNum[a]
+		return result[:-1]
+	result, done = ['',''], 0
+	for which, ch in enumerate(text):
+		if ch == '.': done = 1
+		elif done:
+			result[which & 1] += text[which:]
+			break
+		else: result[which & 1] += ch
+	return map(long, result)
+#	----------------------------------------------------------------------
+def showPressArchive(selected = 0, filter = 0):
+#	if 'TZAR' not in `page.power`: return []
+	file = page.game.file('press')
+	if not os.path.exists(file): return
+	power = page.power and page.power.name or ''
+	thePower = power.encode('latin-1')
+	file, items, validCodes, involved = open(file), [], [], []
+	omniscient = (power == 'MASTER') or power and page.power.omniscient
+	for lineNum, line in enumerate(file):
+		if not line.startswith('::'): continue
+		data, receivers = line.strip().upper().split(), []
+		if len(data) < 4: continue
+		phase, sender, receivers = data[1], data[2], data[3:]
+		if phase == '?????':
+			if page.game.phaseAbbr() != phase and power != 'MASTER': continue
+			phase = ''
+		else: phase += ': '
+		if '|' in receivers:
+			which = receivers.index('|')
+			fakeFrom, fakeTo = receivers[which+1], receivers[which+2:]
+			receivers = receivers[:which]
+		else: fakeFrom, fakeTo = 0, []
+		if (not omniscient and thePower != sender and thePower not in receivers
+		and 'ALL' not in receivers): continue
+		code = pressCode(line, lineNum)
+		item = '<option %svalue=%s>%s' % ('selected ' * (selected == code),
+			code, phase)
+		if not omniscient or sender == power: omni = ''
+		else: omni = ' from ' + page.game.anglify(sender.decode('latin-1'))
+		if omni or thePower == sender:
+			if fakeFrom == '(ANON)': item += '(ANON) '
+			elif fakeFrom:
+				item += '[FAKE] '
+				omni += (' [as %s]' %
+					page.game.anglify(fakeFrom.decode('latin-1')))
+			omni = omni.encode('latin-1')
+			involved += receivers
+			if 'ALL' in receivers:
+				item += 'Broadcast%s' % (' sent' * (thePower == sender)) + omni
+			else:
+				b = ','.join([page.game.anglify(x.decode('latin-1'))
+					for x in receivers])
+				item += 'Press%s to ' % omni + b.encode('latin-1')
+		else:
+			item += ('Press', 'Broadcast')['ALL' in (fakeTo or receivers)]
+			if fakeFrom != '(ANON)':
+				b = (' from ' +
+					page.game.anglify((fakeFrom or sender).decode('latin-1')))
+				item += b.encode('latin-1')
+				involved += [fakeFrom or sender]
+		if (not filter or filter in item.replace(',','').split()
+		or 'sent' in item.split()):
+			if len(item) > 113: item = item[:110] + '...'
+			items = [item] + items
+			validCodes.append(code)
+	file.close()
+	if not validCodes: return []
+	b = ''
+	for x in items: b += x.decode('latin-1') + '\n'
+	b = b.encode('latin-1')
+	page.write("""
+		<form name=archive method=post>
+		<input type=hidden name=game value=%s>
+		<input type=hidden name=page value=PressArchive>
+		<input type=hidden name=power value="%s">
+		<input type=hidden name=password value="%s">
+		<input type=hidden name=count value=%d>
+		<tr><td class=bodycopy><b>%s:</b></td>
+		<td align=right><select name=message class=inputBox 
+			onChange=document.archive.submit()>
+		""" % (page.game.name, power, page.password,
+			int('count' in vars(page) and page.count) - 1,
+			('Message' + 's' * (not selected), 'Broadcasts')[not power]))
+	page.write("""
+			%s
+		</select></td>
+			""" %
+			b)
+	if selected:
+		involved = [x for x in sorted(dict.fromkeys(involved))]
+		if 'ALL' in involved: involved.remove('ALL')
+		if power in involved: involved.remove(power)
+		if involved:
+			page.write("""
+				<td class=bodycopy><b>Filter:</b>
+				<select name=filter class=inputBox
+				onchange=document.archive.submit()>
+					<option value="">(None)
+				""")
+			b = [page.game.anglify(x.decode('latin-1')) for x in involved]
+			for each in b:
+				page.write('<option value="%s"%s>%s' %
+					(each, ' selected' * (each == filter), each))
+			page.write('</select></td>')
+	else:
+		page.write('<td><input type=submit value=Read class=inputSubmit></td>')
+	page.write('</tr></form>')
+	return validCodes
+#	----------------------------------------------------------------------
+def showPress(code):
+	try:
+		hashVal, lineNum = pressCode(code)
+		file = open(page.game.file('press'))
+		line = file.readlines()[int(lineNum):]
+		file.close()
+		if hash(line[0]) != hashVal: raise
+		result = '<pre>'
+		for each in line[1:]:
+			if each.startswith('::'): break
+			result += each
+		result = result.strip() + '</pre>'
+	except: result = 'No Such Press Message'
+	page.write('<tr><td>%s</td></tr>' % result)
+#	----------------------------------------------------------------------
+:>

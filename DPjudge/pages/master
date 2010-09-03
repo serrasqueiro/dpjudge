@@ -1,0 +1,721 @@
+<:
+import codecs
+open = codecs.open
+
+#	--------------------------------------------------------
+#	This function outputs the whole mess of rule checkboxes
+#	--------------------------------------------------------
+def ruleBoxes(variant = None, mapName = None):
+	if page.game:
+		variant = page.game.status[0]
+		gameMap = page.game.map
+		mapName = gameMap.name
+		gameRules = page.game.rules
+		changeZero = page.game.phase == 'FORMING'
+	else: gameMap, gameRules, changeZero = Map(mapName), [], 1
+	page.write(
+		"""
+		<script>
+		function describe(rule)
+		{
+			window.open('<URL>?page=showRule&rule=' + rule, 'rule',
+				'width=400,height=120,status=no,toolbar=no,resizable=yes,' +
+				'scrollbars=yes')
+		}
+		function radio(rule,rules)
+		{
+			if (document.all) checked = document.all['RULE_'+rule].checked;
+			else checked = document.getElementById('RULE_'+rule).checked;
+			if (!checked || rules == "") return true;
+			deniers = rules.split(',');
+			for (i = 0; i < deniers.length; ++i)
+				if (document.all)
+				{
+					if (document.all['RULE_'+deniers[i]])
+						document.all['RULE_'+deniers[i]].checked = false;
+				}
+				else if (document.getElementById(deniers[i]))
+					document.getElementById('RULE_'+deniers[i]).checked = false;
+			return true;
+		}
+		function notIf(rule,rules)
+		{
+			if (document.all) checked = document.all['RULE_'+rule].checked;
+			else checked = document.getElementById('RULE_'+rule).checked;
+			if (!checked || rules == "") return true;
+			deniers = rules.split(',');
+			for (i = 0; i < deniers.length; ++i)
+			{
+				if (document.all)
+				{
+					if (document.all['RULE_'+deniers[i]]
+					&& document.all['RULE_'+deniers[i]].checked)
+					{
+						document.all['RULE_'+rule].checked = false;
+						alert(rule + " is incompatible with " + deniers[i]);
+						return false;
+					}
+				}
+				else if (document.getElementById('RULE_'+deniers[i])
+					 &&  document.getElementById('RULE_'+deniers[i]).checked)
+				{
+						document.getElementById('RULE_'+rule).checked = false;
+						alert(rule + " is incompatible with " + deniers[i]);
+						return false;
+				}
+			}
+			return true;
+		}
+		function toggle(rule,rules)
+		{
+			if (rules == "") return true;
+			forcees = rules.split(',');
+			if (document.all) checked = document.all['RULE_'+rule].checked;
+			else checked = document.getElementById('RULE_'+rule).checked;
+			for (i = 0; i < forcees.length; ++i)
+				if (document.all)
+				{
+					if (document.all['RULE_'+forcees[i]])
+					{
+						if (checked)
+							document.all['RULE_'+forcees[i]].checked = true;
+						document.all['RULE_'+forcees[i]].disabled = checked;
+					}
+				}
+				else if (document.getElementById('RULE_'+forcees[i]))
+				{
+					if (checked)
+						document.getElementById('RULE_'+forcees[i]).checked = true;
+					document.getElementById('RULE_'+forcees[i]).disabled = checked;
+				}
+			return true;
+		}
+		function turnOn(rule,rules)
+		{
+			if (rules == "") return true;
+			forcees = rules.split(',');
+			if (document.all) checked = document.all['RULE_'+rule].checked;
+			else checked = document.getElementById('RULE_'+rule).checked;
+			for (i = 0; i < forcees.length; ++i)
+				if (document.all)
+				{
+					if (document.all['RULE_'+forcees[i]]&&checked)
+						document.all['RULE_'+forcees[i]].checked = true;
+				}
+				else if (document.getElementById('RULE_'+forcees[i])&&checked)
+					document.getElementById('RULE_'+forcees[i]).checked = true;
+			return true;
+		}
+		</script>
+		""")
+	page.write('<tr><td colspan=3><hr></td></tr>')
+	page.write('<tr><td colspan=3><table width=100%>')
+	mapRules = [x for x in page.game.rules if x in gameMap.rules]
+	if mapRules:
+		page.write('<tr><td class="bodycopy"><b>Map Rules (%s map)</b></td>' %
+			mapName)
+		for rcount, rule in enumerate(mapRules):
+			if rcount and rcount % 3 == 0: page.write('</tr><tr><td></td>')
+			page.write(
+				"""
+				<td class="bodycopy"><a target=rules
+				href=<URL>?page=Rules#%s>%s</td>
+				""" % (rule, rule))
+		page.write('</tr>')
+	rules, forced, denied = page.game.loadRules()
+	forced, enforced, on, off = forced.get(variant, []), [], [], []
+	for nope in denied.get(variant, []):
+		try: del rules[nope]
+		except: pass
+	groups = sorted(set([x['group'] for x in rules.values()
+		if x['variant'].lower() in ('', variant)]))
+	gameRules = [x for x in gameRules if x in rules] # for old games w/bad rules
+	map(enforced.extend, [rules[x].get('+', []) for x in gameRules])
+	map(off.extend, [rules[x].get('-', []) for x in gameRules])
+	if gameRules: map(on.extend, [y for y in rules[x].get('=', [])
+		for x in gameRules if y not in off])
+	for group in groups:
+		guys = sorted([x for x in rules
+			if rules[x]['group'] == group and x not in forced])
+		if not guys: continue
+		if mapRules or group != groups[0]: page.write(
+			'<tr><td colspan=4 align=center><hr width=50%></td></tr>')
+		page.write('<tr><td class="bodycopy"><b>%s Rules:</b></td>' %
+			' '.join(group.split()[1:]))
+		for count, rule in enumerate(guys):
+			if count and count % 3 == 0: page.write('</tr><tr><td></td>')
+			page.write(
+				"""
+				<td nowrap class=bodycopy><input type=checkbox
+				name=RULE_%s id=RULE_%s %s %s
+				onclick=return(radio('%s','%s')&&notIf('%s','%s')&&toggle('%s','%s')&&turnOn('%s','%s'));
+				>&nbsp;<a href="javascript: describe('%s')"
+				onMouseOver="window.status='Show Description of %s';return(1);"
+				onMouseOut="window.status='';return(1);">%s</a></td>
+				""" % (rule, rule,
+					' checked' * (rule in gameRules + enforced + forced + on),
+					' disabled' * ((rule in enforced + forced)
+					or (group[0][0] == '0' and not changeZero)
+					or rule in page.game.metaRules),
+					rule, ','.join([x for x in rules[rule].get('-',[])
+						if x not in forced]),
+					rule, ','.join([x for x in rules[rule].get('!',[])
+						if x not in forced]),
+					rule, ','.join([x for x in rules[rule].get('+',[])
+						if x not in forced]),
+					rule, ','.join([x for x in rules[rule].get('=',[])
+						if x not in forced]),
+					rule, rule, rule))
+			count += 1
+		page.write('</tr>')
+
+	page.write('</td></tr></table>')
+
+#	----------------------------------------------------------------------
+#
+#
+#	----------------------------------------------------------------------
+def changeButton():
+	if page.game.deadline: com = ''
+	else: com = '//'
+	page.write("""
+		<script>
+		function ProcNow()
+		{
+			document.master.currpower.value = "NO POWERS";
+			document.master.proc_now.value = "now";
+			document.master.submit();
+		}
+		function prepSubmit()
+		{
+			%sdocument.master.date.value=document.master.deadline.value;
+			if(typeof document.master.resign != "undefined")
+			{
+				document.master.dataresigned.value = document.master.resign.checked;
+				document.master.datadummy.value = document.master.dummy.checked;
+				document.master.currpower.value = document.master.powerChoice.options[
+				document.master.powerChoice.options.selectedIndex].text;
+				document.master.proc_now.value = "not_now";
+			}
+			else
+			{
+				document.master.dataresigned.value = "";
+				document.master.datadummy.value = "";
+				document.master.currpower.value = "NO POWERS";
+				document.master.proc_now.value = "not_now";
+			}
+			document.master.submit();
+		}
+		</script>
+		<tr><td></td></tr><tr><td align=center colspan=3>
+		<%sinput type=%s
+		class=inputSubmit value="Submit Updates">
+		</td></tr>
+		</form>
+		""" % (com, '!'[page.pwdFlag == 1:],
+		('submit', 'button onClick=prepSubmit()')[page.power.name == 'MASTER']))
+
+#	----------------------------------------------------------------------
+#	This function parses the status file, only outputting the lines that 
+#	 are not able to be modified with the buttons/listboxes/etc that we
+#	 are implementing.
+#	----------------------------------------------------------------------
+def outStatusFile():
+	hidden = ('GAME', 'START', 'DELAY', 'FINISH', 'RESULT',
+				'PHASE', 'AWAIT', 'NEED')
+	implemented = ('DESC', 'GAME', 'DEADLINE', 'ZONE', 'NAME',
+				'MASTER', 'RULE', 'PRIVATE', 'MAP', 'PASSWORD')
+	noshow = hidden + implemented
+	file, outfile = open(page.game.file('status'), encoding='latin-1'), ''
+	for line in file:
+		word = line.split()
+		if not word: break
+		if ''.join(line.split()[:1]) not in noshow: outfile += line
+	file.close()
+	return outfile
+#	----------------------------------------------------------------------
+#
+#
+#	----------------------------------------------------------------------
+def showStatusFile():
+	statFile = page.game.file('status')
+	page.write(
+		"""
+		<form method=post name=master>
+		<input type=hidden name=page value=Update>
+		<input type=hidden name=game value=%s>
+		<input type=hidden name=power value=MASTER>
+		<input type=hidden name=password value=%s>
+		<input type=hidden name=stamp value=%d>
+		<input type=hidden name=dataresigned>
+		<input type=hidden name=datadummy>
+		<input type=hidden name=currpower value="NO POWERS">
+		<input type=hidden name=proc_now>
+		""" % (page.game.name, page.password, os.path.getmtime(statFile)))
+	# This is the new section
+	#print '<tr><td colspan=3><hr></td></tr>'
+
+	if 'preparation' not in page.game.status:
+		page.write('<tr><td class=bodycopy><b>Current&nbsp;Game&nbsp;State:</b>'
+			'</td><td><select class=inputBox name=gameMode>')
+		for mode in ('forming', 'active', 'waiting',
+					'completed', 'terminated'):
+			page.write('<option value=%s%s>%s' %
+				(mode, ' selected' * (mode in page.game.status), mode.title()))
+		page.write("""
+			</select></td>
+			<td align=right colspan=1>
+			<%sinput type=%s class=inputSubmit value="Submit Updates">
+			</td></tr>
+		""" % ('!'[page.pwdFlag == 1:],
+		('submit', 'button onClick=prepSubmit()')[page.power.name == 'MASTER']))
+	page.write("""
+		<tr><td class=bodycopy><b>Password:</b>
+			<td><input class=bodycopy name=newPassword value="%s"></td>
+		""" % page.game.password)
+	if page.game.phase not in ('FORMING', 'COMPLETED') and page.pwdFlag == 1:
+		page.write("""
+		<td align=right colspan=1>
+		<input type=%s class=inputSubmit value="Process Game">
+		</td>
+		""" % 
+		('process', 'button onClick=ProcNow()')[page.power.name == 'MASTER'])
+	page.write('</tr>')
+	page.write("""
+		<script>
+		function policy()
+		{
+			if (document.master.privacy.selectedIndex)
+			{
+				document.master.private.style.visibility = 'visible';
+				document.master.private.focus();
+			}
+			else document.master.private.style.visibility = 'hidden';
+		}
+		</script>
+		<tr><td class=bodycopy><b>Player Policy:</b>
+			<td><select name=privacy onchange=policy() class=bodycopy>
+				<option value=public%s>Public Game
+				<option value=private%s>Private Game With Password:
+				</select>
+				<input style=visibility:%s name=private value="%s"
+				class=bodycopy>
+			</td>
+		</tr>
+		""" % ( ' selected' * (page.game.private is None),
+				' selected' * (page.game.private != None),
+				('visible', 'hidden')[page.game.private is None],
+				page.game.private or ''))
+	page.write("<tr class=bodycopy><td><b>Variant:</b><td>")
+	varLocked = page.game.phase != 'FORMING'
+	page.write('<select class=bodycopy name=%s %s>' %
+		(('curVariant', 'wontPost')[varLocked], 'disabled' * varLocked))
+	dirs = sorted([x for x in os.listdir('<PKG>/variants')
+				if os.path.isdir('<PKG>/variants/' + x)])
+	#	----------------------------------------------------------------
+	#	Make sure Standard Diplomacy is listed before any other variants
+	#	----------------------------------------------------------------
+	curVariant = 'standard'
+	if 'standard' in dirs:
+		dirs.remove('standard')
+		dirs.insert(0, 'standard')
+	for dir in dirs:
+		try: name = __import__('DPjudge.variants.' + dir,
+								globals(), locals(), dir).VARIANT
+		except: continue
+		selected = page.game.__class__.__name__.lower().startswith(dir)
+		if selected: curVariant = dir
+		page.write('<option value=%s %s>%s Diplomacy' % (dir,
+			'selected' * selected,
+			{'xtalball': 'Crystal Ball'}.get(dir, dir.title())))
+	page.write('</select></td></tr>')
+	if varLocked: page.write('<input type=hidden name=curVariant value=%s>' %
+		curVariant)
+	page.write("<tr class=bodycopy><td><b>Map:</b><td>")
+	if page.game.phase == 'FORMING':
+		DIR = "<PKG>/maps"
+		page.write('<select class=bodycopy name=map>')
+		files, map = os.listdir(DIR), ''
+		for file in sorted(files):
+			if not file.endswith('.map'): continue
+			if file.endswith('.notyet'): continue
+			if os.path.isfile(DIR + '/' + file) and file.split('.')[0] != map:
+				map = file.split('.')[0]
+			page.write("<option value=%s%s>%s</option>" %
+			(map, ' selected' * (page.game.map.name == map), map))
+		page.write("</select>")
+	else: page.write(page.game.map.name)
+	page.write("</td></tr>")
+	desc = ' '.join(page.game.desc)
+	page.write("""
+		<tr><td class="bodycopy" align="left"
+		valign=top><b>Description:</b></td>
+		<td class="bodycopy"><textarea class=bodycopy name=desc rows=%d
+		cols=80>%s</textarea></tr>
+		""" % (len(desc) / 80 + 1, desc))
+	desc = ' '.join(page.game.origin)
+	page.write("""
+		<tr><td class="bodycopy" align="left" nowrap
+		valign=top><b>Origin of Name:</b></td>
+		<td class="bodycopy"><textarea class=bodycopy name=origin rows=%d
+		cols=80>%s</textarea></tr>
+		<tr><td class="bodycopy" nowrap align="left">
+		""" % (len(desc) / 80 + 2, desc))
+	if page.game.deadline:
+		dead = page.game.deadline
+		dead = '%s-%s-%s' % (dead[4:6], dead[6:8], dead[:4])
+		page.write("""
+			<script language="javascript" type="text/javascript"
+			src="<URL>/images/scripts/dater"></script>
+			<b>Deadline:</b></td>
+			<input type=hidden name=date value="%s">
+			<td class="bodycopy" colspan=2><b><input disabled name=deadline
+			id=deadline type=text size=12 value="%s" class=bodycopy>
+			<a onmouseover=this.style.cursor='pointer'
+			onclick="NewCal('deadline','mmddyyyy',false,24)">
+			<img border=0 src=<URL>/images/cal.gif></a>
+			at <input type=text size=2 maxlength=2 name=hour
+			class=bodycopy value=%s>:<input class=bodycopy
+			type=text size=2 maxlength=2 name=minute value=%s>
+			Time Zone:&nbsp;
+			""" % (dead, dead, page.game.deadline[8:10],
+				page.game.deadline[-2:]))
+	else: page.write("<b>Time Zone:</b></td><td>")
+	page.write("<select class=bodycopy name=zone>")
+	if not page.game.zone: page.game.setTimeZone()
+	for zone in sorted(page.game.zones): page.write('<option %s>%s</option>' %
+		(' selected' * (zone == page.game.zone), zone))
+	page.write('</select></td></tr>')
+	if page.game.avail: page.write("""
+		<tr><td class="bodycopy" align="left"><b>Powers Needed:</b></td>
+			<td class="bodycopy">%s</tr>
+		""" % ', '.join(page.game.avail))
+	powerData()
+	ruleBoxes()
+	extra = outStatusFile()
+	page.write("""
+		<tr><td colspan=3><hr></td></tr>
+		<tr valign=top>
+		<td class="bodycopy"><b>Other Game Data:</b></td>
+		<td colspan=2 class=bodycopy align="center">
+		<textarea class=bodycopy name=status rows=%d cols=80
+		wrap=off>%s</textarea></td></tr>
+		""" % (extra.count('\n') + 1, extra))
+
+	# Buttons and links Section
+	page.write('<tr><td colspan=3><hr></td></tr>')
+	page.write("""
+		<tr><td nowrap valign=top><a href=<URL>?page=StatusHelp target=status>
+				<font color=red>[Status File Help]</font></a></td>
+			<td nowrap align=center><input type=hidden value=LIST name=list>
+				<input type=hidden value="" name=access>
+				<a href=# onclick="document.master.access.value=1;"""
+				"""document.master.submit();return false;">
+				<font color=red>[View Access Log]</a></td>
+			<td nowrap align=right valign=top>
+				<a href=<URL>?page=Rules target=rules>
+				<font color=red>[Game Rules Help]</font></a></td></tr>""")
+	if 'preparation' in page.game.status: page.write("""
+		<p><table border cellpadding=10>
+		<tr><th class=bodycopy bgcolor=yellow><input type=checkbox name=form>
+		<select name=gameMode><option value=forming>Allow Game To Form
+		<option value=active>Set Game To Active
+		</select></th></tr></table>
+		""")
+	changeButton()
+	page.write('</td>') #</tr>')
+	# End of Buttons and links Section
+#	----------------------------------------------------------------------
+#
+#
+#	----------------------------------------------------------------------
+def powerData():
+	if not page.game.powers: return
+	for num, power in enumerate(page.game.powers):
+		page.write('<input type=hidden name=powerData%s value="">' % `num`)
+	page.write(
+		"""
+		<script>
+		var lastPower = 0;
+		var powerData = new Array();
+		var isGone = new Array();
+		var isDummy = new Array();
+		var powerType = new Array();
+		function fillPower()
+		{
+			powerData[lastPower] = document.master.powerData.value;
+			lastPower = document.master.powerChoice.options.selectedIndex;
+			document.master.powerData.value = powerData[lastPower];
+			document.master['powerData' +
+				document.master.powerChoice.options[lastPower].value].value =
+				powerData[lastPower];
+			document.master.resign.checked = isGone[lastPower];
+			document.master.resign.disabled = isGone[lastPower];
+			document.master.dummy.checked = isDummy[lastPower];
+			document.master.dummy.disabled = document.master.dummy.checked
+				|| powerType[lastPower] != "";
+		}
+		""")
+	text = first = isGone = isDummy = ''
+	for num, power in enumerate(page.game.powers):
+		text += '<option value=%d>%s</option>' % (num, power.name)
+		item = `power`.strip()
+		page.write('powerData[%d] = %s;\n' % (num, `item`))
+		gone = dum = 'false'
+		try: dum = ('false', 'true')[power.player[0] == 'DUMMY']
+		except: pass
+		try: gone = ('false', 'true')[power.player[0] == 'RESIGNED']
+		except: pass
+		page.write('powerType[%d] = "%s";' % (num, power.type or ''))
+		page.write('isDummy[%d] = %s;' % (num, dum))
+		page.write('isGone[%d] = %s;' % (num, gone))
+		page.write('document.master["powerData%s"].value = %s' %
+			(`num`, `item`))
+		if not first:
+			first = `power`
+			if power.player:
+				isGone = 'checked disabled' * (power.player[0] == 'RESIGNED')
+				isDummy = 'checked disabled' * (power.player[0] == 'DUMMY')
+	page.write(
+		"""
+		function resignPlayer()
+		{
+			if (!document.master.resign.checked)
+			{
+				document.master.resign.checked = true;
+				return true;
+			}
+			who = document.master.powerChoice.options[
+				document.master.powerChoice.options.selectedIndex].text;
+			if (!confirm("Are you sure you want to resign " + who + "?"))
+			{
+				document.master.resign.checked = false;
+				return false;
+			}
+			prepSubmit();
+		}
+		function dummyPlayer()
+		{
+			if (!document.master.dummy.checked)
+			{
+				document.master.dummy.checked = true;
+				return true;
+			}
+			who = document.master.powerChoice.options[
+				document.master.powerChoice.options.selectedIndex].text;
+			if (!confirm("Are you sure you want to make " + who + " a DUMMY?"))
+			{
+				document.master.dummy.checked = false;
+				return false;
+			}
+			prepSubmit();
+		}
+		</script>
+		<tr><td colspan=3><hr></td></tr>
+		<tr valign=top>
+		<td class="bodycopy"><b>Data&nbsp;for:&nbsp;<select class=inputBox
+		name=powerChoice onchange=fillPower()>%s</select>
+		<P>
+		Resign&nbsp;this&nbsp;power?&nbsp;<input type=checkbox %s name=resign
+			onclick=resignPlayer()>
+		<br>
+		Make a <tt>DUMMY</tt>? <input type=checkbox %s name=dummy
+			onclick=dummyPlayer()>
+		</b></td>
+		""" % (text, isGone, isDummy))
+	page.write(
+		"""
+		<td colspan=2 class=bodycopy align="center">
+		<textarea class=bodycopy name=powerData wrap=off
+		rows=20 cols=80>%s</textarea>
+		</td></tr>
+		""" % first)
+#	----------------------------------------------------------------------
+#
+#
+#	----------------------------------------------------------------------
+def updateMaster():
+	statFile = page.game.file('status')
+	if page.stamp != `int(os.path.getmtime(statFile))`: return page.write(
+		"""
+		<tr><th align=left class=bodycopy bgcolor=red><font color=yellow>
+		<center><font size=2>&nbsp;<br>Update Aborted</font>
+		</center><blockquote>
+		While you were entering your modifications,
+		the game status file was updated by another participant in the
+		game or by the DPjudge.  Your changes were not made.
+		</blockquote><center>
+		<form method=post name=form>
+		<input type=hidden name=page value=Status>
+		<input type=hidden name=game value=%s>
+		<input type=hidden name=power value=%s>
+		<input type=hidden name=password value=%s>
+		<input type=submit class=inputSubmit
+		value="Return to the Status Page"></form>
+		</center><blockquote>Note that if you use your browser's
+		"Back" button to return to the status page (rather than the
+		button above), you will need to "Reload" the screen to see
+		the latest contents of the status file before making
+		changes.</blockquote>
+		</th></tr>
+		""" % (page.game.name, page.power.name, page.password))
+	#	----------------------
+	#	Game mode modification
+	#	----------------------
+	gameMode = page.game.status[1:]
+	if 'gameMode' in vars(page):
+		if page.gameMode == 'active':
+#			page.game = Game(page.game.name)
+			if page.game.phase == 'FORMING': 
+				page.game.begin()
+				return finished()
+		gameMode[0] = page.gameMode
+		page.game.status[1:] = gameMode
+	if (page.list == 'LIST') == ('unlisted' in gameMode):
+		try: gameMode.remove('unlisted')
+		except: gameMode += ['unlisted']
+	games = Status()
+	games.update(page.game.name, gameMode, page.curVariant)
+	for guy in ('desc', 'origin', 'zone', 'status'):
+		if guy not in vars(page): vars(page)[guy] = ''
+	#	------------------
+	#	Update status file
+	#	------------------
+	#	NEW STUFF (TO BE USED TO UPDATE WITH)
+	if 'map' in vars(page): page.game.map = Map(page.map)
+	page.game.password = page.newPassword
+	if page.privacy == 'public': page.game.private = None
+	else: page.game.private = page.private
+	if page.desc: page.game.desc = page.desc.split('\n')
+	else: page.game.desc = []
+	if page.origin: page.game.origin = page.origin.split('\n')
+	else: page.game.origin = []
+	page.game.zone = page.zone != 'GMT' and page.zone or ''
+	page.extra = page.status.split('\n')
+	extract('JUDGE', isList = 1)
+	extract('BEGIN', 'firstPhase')
+	extract('START')
+	extract('FINISH', 'end')
+	extract('RESULT', 'outcome', 1)
+	extract('SIGNON')
+	extract('NEED', 'avail', 1)
+	extract('ROTATE', isList = 1)
+	extract('NEWHOME', 'homeYears', 1)
+	page.game.rules = [x[5:] for x in vars(page) if x[:5] == 'RULE_']
+	extract('ALLOW', 'playerTypes', 1)
+	extract('FLOW', isList = 1)
+	extract('VICTORY', isList = 1)
+	extract('PROPOSAL', isList = 1)
+	if 'date' in vars(page):
+		dead = map(int, page.date.split('-'))
+		page.game.deadline = ('%d%02d%02d' % (dead[2], dead[0], dead[1]) +
+			page.hour + page.minute)
+	extract('DELAY')
+	extract('RESERVES', 'extra', 1)
+	extract('MILITIA', 'defense', 1)
+	page.game.timing = None	# it will be in page.extra if given....
+	page.game.terrain = {}	# ditto this guy as well
+	if 'corrupt' in page.game.status: return finished()
+	#--------------
+	# Write the file
+	#--------------
+	try:
+		file = open(statFile, 'w')
+		temp = unicode(`page.game`, 'latin-1').strip()
+		file.write(temp.encode('latin-1'))
+		del temp
+		if page.extra:
+			temp = '\n' + '\n'.join(page.extra).strip()
+			file.write(temp.encode('latin-1'))
+			del temp
+		for num, power in enumerate(page.game.powers):
+			temp = '\n\n%s' % \
+				vars(page)['powerData%s' % `num`].replace('\015','')
+			file.write(temp.encode('latin-1'))
+			del temp
+		file.close()
+	except:
+		page.write('<H1 align=center>Cannot write to Status File!</H1>')
+		print statFile
+		import traceback
+		print '<!--'
+		traceback.print_tb(os.sys.exc_traceback, None, os.sys.stdout)
+		traceback.print_exc(None, os.sys.stdout)
+		print '-->'
+		return
+	oldState = dict(page.game.state)
+	page.game = page.game.__class__(page.game.name)
+	page.game.state = oldState
+	try: games.dict[page.game.name].remove('private')
+	except: pass
+	if page.game.private: games.dict[page.game.name] += ['private']
+	games.save()
+	try: os.chmod(page.game.fileName, 0666)
+	except: pass
+	gamename = page.game.name
+	page.game.updateState()
+	finished()
+	####################################################
+	### Now that we've updated the file, let's look at
+	### specific functionality that would require re-
+	### writing the web page data (i.e. we can't do it
+	### above, but only with the file directly).
+	####################################################
+	rd_game = Status().load(gamename)
+	if 'groups' in vars(page):
+		if rd_game.groups != page.game.groups:
+			rd_game.groups = page.game.groups
+	if vars(page)['currpower'] != "NO POWERS":
+		resign = vars(page)['dataresigned']
+		dummy = vars(page)['datadummy']
+		for target in rd_game.powers:
+			if target.name == vars(page)['currpower']:
+				if resign == 'true' and not target.isResigned():
+					target.resign(1)
+				elif dummy == 'true' and not target.isDummy(): target.dummy()
+	rd_game.save()
+	####################################################
+	if vars(page)['proc_now'] == "now": page.game.process(now=1)
+#	----------------------------------------------------------------------
+#
+#
+#	----------------------------------------------------------------------
+def extract(key, var = 0, isList = 0):
+	if not var: var = key.lower()
+	for line in page.extra:
+		word = line.split()
+		if word and word[0].upper() == key.upper():
+			page.extra.remove(line)
+			val = word[1:]
+			vars(page.game)[var] = word[1:]
+			if not isList: val = ' '.join(val)
+			vars(page.game)[var] = val
+			return
+#	----------------------------------------------------------------------
+#
+#
+#	----------------------------------------------------------------------
+def checkErrors():
+	if not page.game.error: return
+	if page.power and page.power.name != 'MASTER':
+		page.write(
+			"""
+			<script>
+			alert(" Problems Found in Game Status File!\\n" +
+					"Please Report This To The GameMaster!");
+			window.history.back();
+			</script>
+			""")
+		raise SystemExit
+	page.write(
+		"""
+		<tr valign=top bgcolor="#CCCCCC">
+		<th bgcolor=yellow class=bodycopy>
+		<font color=red size=3>Problems Found in Game Status File</th></tr>
+		<tr valign=top><th bgcolor=red class=bodycopy>
+		<font color=yellow size=3><pre>
+		""")
+	map(page.write, page.game.error)
+	page.write('</pre></td></tr>')
+#	----------------------------------------------------------------------
+:>

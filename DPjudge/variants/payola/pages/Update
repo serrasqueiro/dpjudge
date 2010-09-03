@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+page.include('payola')
+loadGame()
+checkPassword()
+showGameHeader()
+
+:>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+<:
+gameHeader()
+:>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<:
+showReadyNotice()
+:>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<:
+if page.power.name == 'MASTER' and 'access' in vars(page): showAccessLog()
+page.write(
+	"""
+	<tr valign=top bgcolor="#CCCCCC">
+	<td align=center class="grey"><b>Status</b></td>
+	""")
+
+#	----------------------------------------------------------------------
+def updateOffers():
+	if 'offers' in vars(page): page.game.updateOrders(page.power,
+		[x.strip() for x in page.offers.split('\012')])
+#	----------------------------------------------------------------------
+def payolaProblem():
+	savings = ('NO_SAVINGS' not in page.game.rules and
+		"""
+		<li>You can also specify a savings request instead of a bribe
+			type.  To do so, use a <tt><b>"$"</b></tt> rather than any of the
+			single character bribe types listed above, and after the
+			<tt><b>"$"</b></tt>, you're done.  Otherwise (if <i>not</i>
+			specifying a savings request), ....
+		""" or '')
+	plateau = (savings and 'NO_PLATEAU' not in page.game.rules and
+		"""
+		<li><i>Optionally</i>, a pound sign (<tt><b>"#"</b></tt>) followed by
+			the bribe's plateau amount.  The plateau amount must be a
+			whole number between zero and the bribe amount (inclusive).
+			If this part of the offer is omitted, the bribe has no plateau
+			(a plateau of zero).  If the pound sign is provided but no
+			plateau amount is given, the plateau is the same as the bribe
+			amount -- that is, the bribe will not be reduced at all unless
+			and until all other bribes reach their plateau.  (Note that
+			you may <i>not</i> specify a plateau amount in a savings
+			request.)
+		""" or '')
+	problem(
+		"""
+		<li>First, note that if any line you submit contains a percentage sign
+			(<tt><b>%%</b></tt>), everything from the percentage sign
+			to the end of the line is a comment, and will be completely ignored,
+			(though it will show up, just as you entered it, in your offer
+			sheet).  As for the format of the <i>non-</i>comment part
+			of your offers....
+		<li>A bribe offer can begin with a repetition count, indicating
+			how many times in succession the bribe should be repeated
+			in the offer list.  This is optional (defaults to 1), but
+			if given, should be an integer value from zero to ninety-nine,
+			followed by a star.
+		<li>The first required part of a bribe offer is the numeric bribe
+			amount.  This must be a whole integral number, greater than
+			or equal to zero and strictly less than ten thousand (10000).
+		%s
+		<li>You may then, if you wish, add a plus-sign (<tt>+</tt>) followed
+			by another bribe offer (complete, if you wish, with a repetition
+			and plateau).  All of the different offers (separated by these
+			plus-signs) will be considered to be separate offers, all listed
+			in sequence, for the unit and order(s) in question.
+		<li>Next, give the single character bribe <em>type</em>
+			(either <tt><b>":"</b></tt>, <tt><b>"!"</b></tt>,
+			<tt><b>"&gt;"</b></tt>, <tt><b>"@"</b></tt>, or
+			<tt><b>"&amp;"</b></tt>).
+		%s
+		""" % (plateau, savings),
+		"""
+		<li>To provide a second (third, etc.) order to a unit in the same
+			bribe, supply a vertical bar character, then <b>only</b> the
+			order part of the bribe.  That is, do <b>not</b> re-specify
+			the type and location of the unit being bribed.  Example:
+			<dd><tt><b>F LVN-BOT | S F BAR-STP | S A PRU</b></tt></dd>
+		""")
+#	----------------------------------------------------------------------
+def updateExchangeDividends():
+	try: page.power.funds['/share'] = int(page.dividend)
+	except:
+		if page.game.phaseType == 'D':
+			page.game.error += ['IMPROPER DIVIDEND: ' + page.dividend]
+	if page.game.phaseType == 'D' and not page.game.error: page.game.process()
+#	----------------------------------------------------------------------
+def updatePower():
+	if page.game.await or page.phase != page.game.phaseAbbr(): lockedUp()
+	page.power.wait = (None, 1)['wait' in vars(page)]
+	if 'accept' in vars(page) and page.accept != page.power.accept:
+		page.game.checkAccept(page.power, page.accept)
+		if not page.game.error: page.game.save()
+	if 'dividend' in vars(page):
+		updateExchangeDividends()
+		if not page.game.error: page.game.save()
+	if 'adjust' in vars(page): updateOffPhases()
+	elif page.game.phaseType not in 'DE': updateOffers()
+#	----------------------------------------------------------------------
+page.game.error = []
+if page.power.name != 'MASTER':
+	updatePower()
+	if page.game.error:
+		page.write('<td align=center class="grey"><b>Erroneous Offers</b></td>')
+:>
+</tr>
+<tr valign=top>
+<td>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+		<!--FLAG AND PLAYER INFORMATION TABLE BEGINS HERE-->
+<:
+powerHeader()
+:>
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr>
+		<td colspan=3 class="border" height=1><img
+			src="<URL>/images/spacer.gif" height=1></td>
+		</tr>
+		</table>
+		<!--FLAG AND PLAYER INFORMATION TABLE ENDS HERE-->
+
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td align=center>
+		<!--MAPS, RESULTS, ENDGAME TABLE BEGINS HERE-->
+		<table border=0 align=center width=100%>
+<:
+if page.power.name != 'MASTER':
+	if page.game.error: payolaProblem()
+	else: finished()
+:>
+		</tr>
+		</table>
+		<!--SEND PRESS TABLE ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+</td>
+<:
+if page.power.name == 'MASTER': updateMaster()
+elif page.game.error and page.game.phase not in ('FORMING', 'COMPLETED'):
+	showPowerData()
+:>
+</tr>
+<:
+footer()
+:>

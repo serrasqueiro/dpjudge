@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Loeb9 Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"><img src="<URL>/images/spacer.gif" width=1></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>The Loeb9 Variant</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Contents</b></td>
+<td align=center class="grey"><a name="1"></a><b>Basic Rules</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=3>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		<form action=<URL> target=loeb9>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=loeb9>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr><td class=bodycopy>
+
+<ol>
+<li>The normal rules of Diplomacy apply except where amended below. 
+<p><li>Spain is divided into four spaces: Navarre, Madrid, Catalonia,
+	and Cordoba.  Madrid and Cordoba are supply centers.
+<p><li>The following islands are now spaces into which units may move:
+	Iceland, Ireland, Corsica, Sardinia, and Sicily.  Ireland is
+	a neutral supply center.
+<p><li>Passage between Cordoba and North Africa and passage between
+	Naples and Sicily is allowed by armies.  However, such a move
+	is made with a force equal to the number of supports (as opposed
+	to one <i>plus</i> the number of supports).  
+	An unsupported army making such a move will have no effect whatsoever on
+	the destination province for the purposes of cutting support.
+	Support cannot be given across the strait.
+<p><li>Prussia and Silesia are neutral supply centers.
+<p><li>Moscow is divided into two spaces.  The new space, east
+	of Moscow, is Kakakz, 
+<p><li>St. Petersburg is divided into two spaces.  The new space, east
+	of St. Petersburg, is Siberia.
+<p><li>The Russian fleet in St. Petersburg begins the game on the north
+	coast, rather than the south coast.
+<p><li>The Arctic Ocean is added as a new space along the north edge of the
+	map, adjacent to the North Atlantic Ocean, the Norwegian Sea, the
+	Barents Sea, and Siberia.  This space is passable only in Spring.  That
+	is, in a Fall movement or retreat phase, no fleet may attempt to move
+	or offer support into the Arctic Ocean, and a fleet in the Arctic Ocean
+	must be ordered to <tt>HOLD</tt> during Fall.  A fleet in the Arctic
+	Ocean <i>may</i> be <tt>REMOVE</tt>d by its owner during Winter
+	Adjustments.
+<p><li>In keeping with the standard that all home centers are named
+	for cities, Sweden is renamed Stockholm, Denmark is renamed Copenhagen,
+	Norway is renamed Oslo, and Portugal is renamed Lisbon.  (Note that
+	the usual names and abbreviations of these spaces, from the standard game,
+	are recognized by the DPjudge as valid aliases for the spaces, and
+	therefore may still be used.)
+<p><li>Two new powers are
+	added, making the game a nine-player game.  These powers, and
+	their home centers with their initial unit positions, are:
+<center>
+<table border>
+<tr><th class=bodycopy bgcolor=#dddddd>Norway</th>
+	<td><tt>Army Oslo</tt></tt>
+	<td><tt>Fleet Copenhagen</tt></tt>
+	<td><tt>Fleet Stockholm</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=#e5994c>Spain</th>
+	<td><tt>Army Cordoba</tt></tt>
+	<td><tt>Army Madrid</tt></tt>
+	<td><tt>Fleet Lisbon</tt></tt>
+</tr>
+</table></center>
+<p><li>The victory condition is 20 supply centers.
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="3"></a><b>Design Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+
+<p>
+The Loeb9 variant was created by Danny Loeb, one of the legends of Internet
+play.
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+<:
+footer()
+:>

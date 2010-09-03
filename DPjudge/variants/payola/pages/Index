@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Payola Diplomacy</title>
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="robots" content="noindex">
+</head>
+
+<body bgcolor="#ffffff">
+
+<:
+pouchLinks()
+:>
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=2>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif"
+		height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"><img src="<URL>/images/spacer.gif" width=1></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>Payola Diplomacy</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">DPjudge questions</a>
+		<br>
+		<a href="<POUCH>/Zine/W1995A/Payola/">payola rules</a> |
+		<a href="<URL>?page=Questions&variant=payola">payola questions</a> |
+		<a href="<URL>?page=Ratings&variant=payola">the payroll</a><br>
+		</td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=2 height=5><!--SPACER--></td>
+</tr>
+<:
+listGames('payola')
+:>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>The Collected Arcana</b></td>
+<td align=center class="grey"><b>The Payola Mailing List</b></td>
+</tr>
+<tr valign=top>
+<td>
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+	<li><a href="<URL>?page=Comments&variant=payola"><b>Comments From Payola Players</b></a>
+	<li><a href="<POUCH>/Zine/W1995A/Payola/strategy.html"><b>Thoughts on Play</b></a><br>
+	&nbsp;&nbsp;&nbsp;(an appendix to the Payola rules)
+	<li><a href="<POUCH>/Zine/W1995A/Payola/notes.html"><b>Notes on Payola Diplomacy</b></a><br>
+	&nbsp;&nbsp;&nbsp;(the collected annotations for the Payola rules)
+	<li><A HREF="<POUCH>/Zine/S1996M/Pitt/Dipper.html"><b>The Big Dipper Looks at Payola</b></a>
+	<li><!A HREF="<POUCH>/Zine/W1996A/Tarzan/Basics.html"><b>A User's Guide to Payola Diplomacy</b></A>
+	<dd>I. <A HREF="<POUCH>/Zine/W1996A/Tarzan/Basics.html"><b>The Basics</b></A></dd>
+	<dd>II. <A HREF="<POUCH>/Zine/S1997R/Tarzan/Payola-2.html"><b>Advanced Bribery</b></A></dd>
+	<li><!a href="<POUCH>/Zine/F1997M/Mayer/Payola.html"><b>Overheard at the Ministry of Finance</b></a>
+	<dd>I. <a href="<POUCH>/Zine/F1997M/Mayer/Payola.html"><b>Property Values and Expansion Systems</b></a></dd>
+	<dd>II. <a href="<POUCH>/Zine/W2003A/Mayer/PowersOfPayola.html"><b>Powers of Payola</b></a></dd>
+	<dd>III. <a href="<POUCH>/Zine/S2007R/Mayer/tictactoyola.htm"><b>Thoughts on Bidding; Learning from Tic-Tac-Toyola
+	</b></a></dd>
+	<li><a href="<POUCH>/Zine/S1998R/Cat/payola.html"><b>Tricks of the Trade</b></a>
+	<li><a href="<POUCH>/Zine/S2002R/Torres/payola.html"><b>Why Aren't You Playing Payola?</b></a>
+	</td>
+	</tr>
+	</table>
+</td>
+<td>
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+	<li><a href="http://groups.yahoo.com/group/payola/join">Join the List</a>
+		to talk with other Payolaphiles.
+	<li>Catch up by reading
+		<a href="http://groups.yahoo.com/group/payola/archive">the list's
+		archives</a>.
+	<li>If you're already on the list,
+		<a href=mailto:payola@yahoogroups.com>send mail to the list</a>.
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>
+<:
+footer()
+:>

@@ -1,0 +1,1751 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: DPjudge Ruleset</title>
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>DPjudge RULE Set</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Rule Topics</b></td>
+<td align=center class="grey"><a name="1"></a><b>1. Rules Affecting All Games</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=7>
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Rules Affecting All Games</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#1">Game Start Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#2">Press Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#3">Movement Order Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#4">Convoy Order Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#5">Retreat and Adjustment Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#6">Secrecy Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#7">Late and Vacant Power Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#8">Deadline Handling Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#9">Game Conclusion Rules</a><hr>
+
+		<b>&middot;</b>&nbsp;<a href="#10">Standard Game Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#10">Ignored Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#11">Unit Order Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#111">Late and Vacant Power Rules</a><hr>
+
+		<b>&middot;</b>&nbsp;<a href="#12">Payola Game Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#12">Included and Forbidden Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#13">Funds Transfer Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#14">Income Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#15">Secrecy Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#16">Bribe Offer Rules</a><hr>
+
+		<b>&middot;</b>&nbsp;<a href="#17">Crystal Ball Game Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#17">Included and Forbidden Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#18">Secrecy Rules</a><hr>
+<center>
+<form name=find>
+<select class=inputBox name=rule
+onchange=document.location.replace('#'+document.find.rule.options[document.find.rule.selectedIndex].value);document.find.rule.selectedIndex=0>
+<option>Look Up A Rule...
+<optgroup label="Rules for All Variants">
+<option value=ALWAYS_WAIT>ALWAYS_WAIT
+<option value=BACKSEAT_PRESS>BACKSEAT_PRESS
+<option value=FLEX_SETUP>BLANK_BOARD
+<option value=BLIND>BLIND
+<option value=BUILD_ANY>BUILD_ANY
+<option value=CD_BUILDS>CD_BUILDS
+<option value=CD_DUMMIES>CD_DUMMIES
+<option value=CD_RETREATS>CD_RETREATS
+<option value=CIVIL_DISORDER>CIVIL_DISORDER
+<option value=CIVIL_PREVIEW>CIVIL_PREVIEW
+<option value=COASTAL_CONVOY>COASTAL_CONVOY
+<option value=COASTAL_CRAWL>COASTAL_CRAWL
+<option value=CONVOY_BACK>CONVOY_BACK
+<option value=DEFAULT_UNORDERED>DEFAULT_UNORDERED
+<option value=DUMMY_FIRE>DUMMY_FIRE
+<option value=EAVESDROP>EAVESDROP
+<option value=FAKE_PRESS>FAKE_PRESS
+<option value=FICTIONAL_OK>FICTIONAL_OK
+<option value=FLEX_SETUP>FLEX_SETUP
+<option value=FRIENDLY_FIRE>FRIENDLY_FIRE
+<option value=FTF_PRESS>FTF_PRESS
+<option value=GARRISON>GARRISON
+<option value=GREY_PRESS>GREY_PRESS
+<option value=HIBERNATE>HIBERNATE
+<option value=HIDE_ABSENTEES>HIDE_ABSENTEES
+<option value=HIDE_DUMMIES>HIDE_DUMMIES
+<option value=HIDE_EXTENDERS>HIDE_EXTENDERS
+<option value=HIDE_LATE_POWERS>HIDE_LATE_POWERS
+<option value=HIDE_PROPOSER>HIDE_PROPOSER
+<option value=HOLD_WIN>HOLD_WIN
+<option value=HOME_BUILDS>HOME_BUILDS
+<option value=IMMOBILE_DUMMIES>IMMOBILE_DUMMIES
+<option value=LATE_CHANGES>LATE_CHANGES
+<option value=LATE_SEND>LATE_SEND
+<option value=LIST_UNORDERED>LIST_UNORDERED
+<option value=LIST_WAITERS>LIST_WAITERS
+<option value=MOBILIZE>MOBILIZE
+<option value=MUST_ORDER>MUST_ORDER
+<option value=MUTE_OBSERVERS>MUTE_OBSERVERS
+<option value=MYOPIC>MYOPIC
+<option value=NO_ABSENCES>NO_ABSENCES
+<option value=NO_DIAS>NO_DIAS
+<option value=NO_DRAW>NO_DRAW
+<option value=NO_EOG>NO_EOG
+<option value=NO_FACTORIES>NO_FACTORIES
+<option value=NO_LATE_CHANGES>NO_LATE_CHANGES
+<option value=NO_LATE_RECEIVE>NO_LATE_RECEIVE
+<option value=NO_MILITIA>NO_MILITIA
+<option value=NO_MINOR_WAIT>NO_MINOR_WAIT
+<option value=PUBLIC_PRESS>NO_PARTIAL (PUBLIC_PRESS)
+<option value=NO_PARTISANS>NO_PARTISANS
+<option value=NO_PRESS>NO_PRESS
+<option value=NO_PROXY>NO_PROXY
+<option value=NO_QUARTER>NO_QUARTER
+<option value=NO_RESERVES>NO_RESERVES
+<option value=NO_RETREAT>NO_RETREAT
+<option value=NO_REVEAL>NO_REVEAL
+<option value=ORDER_ANY>ORDER_ANY
+<option value=PLAYER_DEADLINES>PLAYER_DEADLINES
+<option value=PORTAGE_CONVOY>PORTAGE_CONVOY
+<option value=POWER_CHOICE>POWER_CHOICE
+<option value=PRESS_MASTER>PRESS_MASTER
+<option value=PREVIEW>PREVIEW
+<option value=PROPOSE_DIAS>PROPOSE_DIAS
+<option value=PROXY_OK>PROXY_OK
+<option value=PUBLIC_PRESS>PUBLIC_PRESS
+<option value=REAL_TIME>REAL_TIME
+<option value=REMOTE_BUILDS>REMOTE_BUILDS
+<option value=REMOTE_PRESS>REMOTE_PRESS
+<option value=SAFE_CONVOYS>SAFE_CONVOYS
+<option value=SILENT_ABSENCES>SILENT_ABSENCES
+<option value=SHOW_PHANTOM>SHOW_PHANTOM
+<option value=SMART_CD>SMART_CD
+<option value=TOUCH_PRESS>TOUCH_PRESS
+<option value=UNITS_ADAPT>UNITS_ADAPT
+<option value=VASSAL_DUMMIES>VASSAL_DUMMIES
+<option value=VENETIAN>VENETIAN
+<option value=WEAK_BOUNCES>WEAK_BOUNCES
+<option value=WEAK_CONVOYS>WEAK_CONVOYS
+<option value=WHITE_GREY>WHITE_GREY
+<option value=YELLOW_PRESS>YELLOW_PRESS
+<optgroup label="Rules for the Standard Variant">
+<option value=CD_SUPPORTS>CD_SUPPORTS
+<option value=NO_CHECK>NO_CHECK
+<optgroup label="Rules for the Payola Variant">
+<option value=ANON_TRANSFER>ANON_TRANSFER
+<option value=TINCUP>BLIND
+<option value=DIRECT_ONLY>DIRECT_ONLY
+<option value=EBAYOLA>EBAYOLA
+<option value=EXCHANGE>EXCHANGE
+<option value=FLAT_TAX>FLAT_TAX
+<option value=HIDE_COST>HIDE_COST
+<option value=HIDE_OFFERS>HIDE_OFFERS
+<option value=LIMIT_OFFERS>LIMIT_OFFERS
+<option value=NO_DONATIONS>NO_DONATIONS
+<option value=NO_HOARDING>NO_HOARDING
+<option value=NO_LEDGERS>NO_LEDGERS
+<option value=NO_PLATEAU>NO_PLATEAU
+<option value=NO_SAVINGS>NO_SAVINGS
+<option value=NO_TRANSFER>NO_TRANSFER
+<option value=ONE_TRANSFER>ONE_TRANSFER
+<option value=PAYOLA_CLASSIC>PAYOLA_CLASSIC
+<option value=PAY_DUMMIES>PAY_DUMMIES
+<option value=PUBLIC_TOTALS>PUBLIC_TOTALS
+<option value=REMOTE_BRIBE>REMOTE_BRIBE
+<option value=TOUCH_BRIBE>TOUCH_BRIBE
+<option value=VASSAL_TRANSFERS>VASSAL_DUMMIES
+<option value=ZEROSUM>ZEROSUM
+<option value=ZERO_FOREIGN>ZERO_FOREIGN
+<optgroup label="Rules for the Crystal Ball Variant">
+<option value=LIMIT_LISTS>LIMIT_LISTS
+<option value=PUBLIC_LISTS>PUBLIC_LISTS
+</select>
+</form>
+	</td>
+	</tr>
+	</table>
+</td>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+		<dl>
+<p><dt><b>1.1 Game Start</b>
+<dl>
+<!-- RULE GROUP 0 Game Start -->
+<a name=POWER_CHOICE></a><p><dt><b><tt>POWER_CHOICE</tt></b><dd>
+<!-- RULE POWER_CHOICE -->
+	If this rule is used, players may select an (unspoken for) power to play
+	when <tt>JOIN</tt>ing the game.  (Without this rule, the DPjudge will
+	assign powers to all players randomly.)
+<!-- RULE END -->
+
+<a name=MOBILIZE></a><p><dt><b><tt>MOBILIZE</tt></b></dt><dd>
+<!-- RULE MOBILIZE !BLANK_BOARD -->
+	If this rule is used, then all players will begin with no units on the
+	board, but able to make one build in any of their home centers.  If the
+	game's initial phase (from the game's <tt>MAP</tt> or from the
+	<tt>BEGIN</tt> line in the game's <a href=<URL>?page=Status>status file</a>)
+	is not an adjustment phase,
+	then the game will begin with the first adjustment phase that would
+	have occurred before the designated starting phase.
+	<i>(Note that
+	if the game is a Crystal Ball game, the movement phase before
+	the determined adjustment phase is the starting phase instead.)</i>
+<!-- RULE END -->
+
+<a name=FLEX_SETUP></a><p><dt><b><tt>FLEX_SETUP</tt></b> -or-<br>
+	<b><tt>BLANK_BOARD</tt></b><dd>
+<!-- RULE BLANK_BOARD !MOBILIZE -->
+	If this rule is used, then the board will begin empty, and the players
+	will be able to build the unit of their choice in each of their home
+	centers.  The game will begin in an earlier phase (as described
+	above).  Note that the <tt>FLEX_SETUP</tt> rule only affects
+	units originally located on home supply centers.  This means that
+	if a normal game setup includes units that exist
+	on locations that are not supply centers (for example, in the
+	<a href="<PAGE>about_hundred">Hundred variant</a>,
+	France begins with an army in Provence), these units will indeed
+	be placed on the map as usual.
+<!-- RULE END -->
+
+<!--
+<a name=OPEN_ENTRY></a><p><dt><b><tt>OPEN_ENTRY</tt></b><dd>
+	Only games using this rule will allow persons who are <i>not</i> registered
+	with the DPPD (DPjudge Player Database) to <tt>JOIN</tt>, <tt>OBSERVE</tt>,
+	or <tt>TAKEOVER</tt> a power in the game, etc.
+-->
+</dl>
+
+		<a name=2></a>
+<!-- RULE GROUP 2 Player Press -->
+<p><HR><br><dt><b>1.2 Press</b>
+<dl>
+<a name=NO_PRESS></a><p><dt><b><tt>NO_PRESS</tt></b><dd>
+<!-- RULE NO_PRESS +SILENT_ABSENCES !NO_LATE_RECEIVE !MUST_ORDER !LATE_SEND -FAKE_PRESS -GREY_PRESS -WHITE_GREY -TOUCH_PRESS -REMOTE_PRESS -PUBLIC_PRESS -YELLOW_PRESS -BACKSEAT_PRESS -MUTE_OBSERVERS -PROXY_OK -->
+    Press is only allowed to and from the Master.  This rule is invalid
+    when used with <tt>PUBLIC_PRESS</tt> or other rules that imply that
+	any type of press is allowed.
+	(This rule automatically includes the <tt>SILENT_ABSENCES</tt> rule.)
+<!-- RULE END -->
+
+<a name=PUBLIC_PRESS></a><p><dt><b><tt>PUBLIC_PRESS</tt> -or-
+	<br><tt>NO_PARTIAL</tt></b><dd>
+<!-- RULE PUBLIC_PRESS -NO_PRESS -TOUCH_PRESS -REMOTE_PRESS !NO_LATE_RECEIVE -->
+    Press is only allowed to and from the Master, and broadcast.
+    (See the descriptions of the
+	<tt>TOUCH_PRESS</tt> and <tt>REMOTE_PRESS</tt> rules for other
+	implications of the <tt>PUBLIC_PRESS</tt> rule.)
+<!-- RULE END -->
+
+<a name=MUST_ORDER></a><p><dt><b><tt>MUST_ORDER</tt></b><dd>
+<!-- RULE MUST_ORDER !REAL_TIME !LATE_SEND !NO_PRESS -->
+	No press (except to the Master) is allowed until a power has submitted
+	orders for the current turn.  (These need not be that power's <i>final</i>
+	orders, but orders must be submitted before press is permitted.)
+<!-- RULE END -->
+
+<a name=LATE_SEND></a><p><dt><b><tt>LATE_SEND</tt></b><dd>
+<!-- RULE LATE_SEND !MUST_ORDER !NO_PRESS -->
+	Private press <i>may</i> be sent <i><u>by</u></i> any power that
+	has not submitted orders after a deadline.  (Without this rule,
+	private press from late powers is forbidden.)
+<!-- RULE END -->
+
+<a name=NO_LATE_RECEIVE></a><p><dt><b><tt>NO_LATE_RECEIVE</tt></b><dd>
+<!-- RULE NO_LATE_RECEIVE !NO_PRESS !PUBLIC_PRESS -->
+	Private press may <i><u>not</u></i> be sent <i><u>to</u></i> any power that
+	has not submitted orders after a deadline.
+<!-- RULE END -->
+
+<a name=FTF_PRESS></a><p><dt><b><tt>FTF_PRESS</tt></b><dd>
+<!-- RULE FTF_PRESS -->
+    Press may be sent only to the Master except during movement phases,
+    enforcing the face-to-face prohibition on negotiation during non-movement
+    phases.  Additionally, no private press may be sent after a deadline has
+	occurred (when one or more players are late in submitting orders).
+<!-- RULE FTF_PRESS -->
+
+<a name=GREY_PRESS></a><p><dt><b><tt>GREY_PRESS</tt></b><dd>
+<!-- RULE GREY_PRESS -NO_PRESS -FAKE_PRESS -WHITE_GREY -YELLOW_PRESS -->
+	All press (except to the Master) is sent anonymously.
+<!-- RULE END -->
+
+<a name=YELLOW_PRESS></a><p><dt><b><tt>YELLOW_PRESS</tt></b><dd>
+<!-- RULE YELLOW_PRESS -NO_PRESS !GREY_PRESS -->
+	All broadcast press is sent anonymously.
+<!-- RULE END -->
+
+<a name=WHITE_GREY></a><p><dt><b><tt>WHITE_GREY</tt></b><dd>
+<!-- RULE WHITE_GREY -NO_PRESS -GREY_PRESS -FAKE_PRESS -->
+	The player can choose to have any press (except to the Master) sent
+	anonymously.
+<!-- RULE END -->
+
+<a name=FAKE_PRESS></a><p><dt><b><tt>FAKE_PRESS</tt></b><dd>
+<!-- RULE FAKE_PRESS -NO_PRESS -GREY_PRESS -WHITE_GREY -->
+	The player can choose to impersonate another player
+	and to have the message claim to be to a different set of recipients
+	than those to whom it is actually sent.
+<!-- RULE END -->
+
+<a name=MUTE_OBSERVERS></a><p><dt><b><tt>MUTE_OBSERVERS</tt></b><dd>
+<!-- RULE MUTE_OBSERVERS !BACKSEAT_PRESS -->
+	Observers may only send press to the Master.
+<!-- RULE END -->
+
+<a name=TOUCH_PRESS></a><p><dt><b><tt>TOUCH_PRESS</tt></b><dd>
+<!-- RULE TOUCH_PRESS -NO_PRESS -PUBLIC_PRESS !REMOTE_PRESS !BACKSEAT_PRESS -->
+	Private press is only allowed to the Master and to players owning
+	units that the press-sending power could support to hold, or units
+	that could support a hold order of any unit of the press-sending
+	power.
+	<!-- This rule automatically includes the <tt>PRIVATE_ONLY</tt> rule.  -->
+	Note that if the
+	<tt>PUBLIC_PRESS</tt> rule is <i>also</i> used in the game, then
+	messages may be sent to all players ("broadcasts");
+	otherwise (without the <tt>PUBLIC_PRESS</tt> rule), no broadcasts at all
+	can be sent by the players.
+<!-- RULE END -->
+
+<a name=REMOTE_PRESS></a><p><dt><b><tt>REMOTE_PRESS</tt></b><dd>
+<!-- RULE REMOTE_PRESS -NO_PRESS -PUBLIC_PRESS !TOUCH_PRESS !BACKSEAT_PRESS -->
+	Private press is only allowed to the Master and to players owning
+	<b>no</b> units that the press-sending power could support to hold,
+	<b>nor</b> any units that could support a hold order of any unit of the
+	press-sending power, <b>nor</b> any units that could move directly into a
+	supply center owned by the press-sending power, <b>nor</b> any supply
+	centers into which the press-sending power could directly move.
+	<!-- This rule automatically includes the <tt>PRIVATE_ONLY</tt> rule.  -->
+	Note that if the
+	<tt>PUBLIC_PRESS</tt> rule is <i>also</i> used in the game, then
+	messages may be sent to all players ("broadcasts");
+	otherwise (without the <tt>PUBLIC_PRESS</tt> rule), no broadcasts at all
+	can be sent by the players.
+<!-- RULE END -->
+
+<a name=BACKSEAT_PRESS></a><p><dt><b><tt>BACKSEAT_PRESS</tt></b><dd>
+<!-- RULE BACKSEAT_PRESS -NO_PRESS !TOUCH_PRESS !MUTE_OBSERVERS -->
+	Map powers have no press capability (except to the Master) and non-map
+	powers have the ability to send public (broadcast) press only.
+<!-- RULE END -->
+
+<!-- RULE GROUP 2.1 Master Press -->
+<a name=EAVESDROP></a>
+<a name=EAVESDROP!></a>
+<p><dt><b><tt>EAVESDROP</tt></b><dd>
+<!-- RULE EAVESDROP -EAVESDROP! -PRESS_MASTER -->
+    The Master is sent a copy of all private press messages.
+	The fact that this rule is in use does not appear
+	in a game list or summary, or on the Website.
+	If the Master wishes, however, to counteract this and expose the fact
+	that he is eavesdropping, he may append an exclamation point to the name
+	of the rule, like this:  <tt>EAVESDROP!</tt>
+<!-- RULE END -->
+<!-- RULE EAVESDROP! -EAVESDROP -PRESS_MASTER >
+    The Master is sent a copy of all private press messages.
+	The fact that this rule is in use does not appear
+	in a game list or summary, or on the Website.
+	If the Master wishes, however, to counteract this and expose the fact
+	that he is eavesdropping, he may append an exclamation point to the name
+	of the rule, like this:  <tt>EAVESDROP!</tt>
+<!-- RULE END -->
+
+<a name=PRESS_MASTER></a><p><dt><b><tt>PRESS_MASTER</tt></b><dd>
+<!-- RULE PRESS_MASTER -EAVESDROP -EAVESDROP! -->
+    The Master is <i>not</i> sent a copy of all public (broadcast) press
+	messages.  To send a message to the Master, the message must
+	specifically include the Master in its addressing.
+<!-- RULE END -->
+
+</dl>
+
+		<a name=3></a>
+<p><HR><br><dt><b>1.3 Movement Orders</b>
+<!-- RULE GROUP 3 Movement Order -->
+<dl>
+<a name=FICTIONAL_OK></a><p><dt><b><tt>FICTIONAL_OK</tt></b><dd>
+<!-- RULE FICTIONAL_OK -->
+    Players may submit orders to and involving units that do not exist.
+	This could be because the game is <tt>BLIND</tt> or (as in the Crystal
+	Ball variant)
+	because the unit <i>may</i> exist by the time the order is processed.
+	If this rule is used, the <i>type</i> (army or fleet) of each unit being
+	ordered <b><i><u>must</u></i></b> be specified by the player.
+	Players are not told if their orders mention
+	units that do not exist.
+	<p>Note that this rule obviates any and all
+	<a href=<PAGE>Map#LEAGUE><tt>LEAGUE</tt></a> settings for a game.
+	That is, orders are not checked to ensure they are compatible with
+	any restrictions placed by the league membership of the owning power.
+<!-- RULE END -->
+	<!--
+	THE REWRITE OF Game.canConvoy() OBVIATED THE FORMER EXCEPTION BELOW
+	<i>There is a single exception to this, which is
+	that in checking the validity of convoy orders in games that use the
+	<tt>COASTAL_CONVOY</tt>
+	rule, any potential convoy path that must include a coastal location will
+	require that the necessary coastal fleets be in place, or else the convoy
+	will be declared impossible.  For example, in a game allowing
+	<tt>COASTAL_CONVOY</tt>, if there is no fleet in either Kiel, Denmark,
+	or Sweden, the convoy order
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F NTH C A LON - FIN</tt><br>
+	will be declared impossible (even though <tt>FICTIONAL_OK</tt> is in use).
+	This does violate the secrecy aspect of a <tt>BLIND</tt> game by alerting
+	the ordering player to the fact that these specific locations are not
+	occupied by fleets.</i>
+	-->
+
+<a name=SHOW_PHANTOM></a><p><dt><b><tt>SHOW_PHANTOM</tt></b><dd>
+<!-- RULE SHOW_PHANTOM !NO_CHECK -->
+	Supports and convoys offered to non-existent units are announced
+	[note that <tt>SHOW_PHANTOM</tt> implies
+	<a href=#FICTIONAL_OK>the <tt>FICTIONAL_OK</tt> rule</a>, above].
+	Without <tt>SHOW_PHANTOM</tt>, all such orders are displayed as
+	<tt>HOLD</tt> orders.  Additionally, <tt>SHOW_PHANTOM</tt>
+	modifies the results in that it suppresses (for all orders, not simply
+	those referencing non-existent units) the display of the
+	the nationality of a supported or convoyed unit.
+	For example, an Italian support for a German unit would usually
+	be displayed as:<br>
+	<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Italy: Army Rome SUPPORT German Army Venice.</tt><br>
+	If the <tt>SHOW_PHANTOM</tt> rule is in force, the same order
+	would be announced without the word "<tt>German</tt>".
+<!-- RULE END -->
+
+<a name=ORDER_ANY></a><p><dt><b><tt>ORDER_ANY</tt></b><dd>
+<!-- RULE ORDER_ANY -->
+    Players may issue orders to units owned by any player, not just those
+    they themselves own.  This could be because proxy orders are allowed,
+    or (as in Payola) because all units are subject to acting according to
+    the highest financial bid received.
+<!-- RULE END -->
+
+<a name=PROXY_OK></a><p><dt><b><tt>PROXY_OK</tt></b><dd>
+<!-- RULE PROXY_OK -NO_PROXY -->
+    Players may issue the proxy order to any one or more of their units.
+    [If this rule is used, <tt>ORDER_ANY</tt> is effectively in use as well.]
+	Only the actual original owner of a unit may issue it a proxy order;
+	that is, units may not be "re-proxied" from one power to
+	another.  Note also that if a unit receives a proxy order,
+	but then, later in the power's list of orders (if the variant allows this),
+	an order is given to the unit, the unit will follow that order.  Units
+	that are proxied to a power that does not issue an order to that unit
+	will <tt>HOLD</tt> and will be eligible to receive support in place.
+<!-- RULE END -->
+
+<a name=NO_PROXY></a><p><dt><b><tt>NO_PROXY</tt></b><dd>
+<!-- RULE NO_PROXY -PROXY_OK -->
+	Players may <i>not</i> issue the proxy order.  This rule is in force by
+	default -- it need not be explicitly listed.  However, if it <i>is</i>
+	explicitly listed, any <tt>PROXY_OK</tt> rule is silently countermanded.
+<!-- RULE END -->
+
+<a name=COASTAL_CRAWL></a><p><dt><b><tt>COASTAL_CRAWL</tt></b><dd>
+<!-- RULE COASTAL_CRAWL -->
+	A fleet in a province having multiple coasts may swap places with a fleet
+	moving to a different coast of that province.  For example,
+	<tt>F Spa/sc-Por</tt> and <tt>F&nbsp;Por-Spa/nc</tt> would not bounce
+	each other.
+<!-- RULE END -->
+
+<a name=FRIENDLY_FIRE></a><p><dt><b><tt>FRIENDLY_FIRE</tt></b><dd>
+<!-- RULE FRIENDLY_FIRE -->
+	In games using this rule, the rules concerning self-dislodgement and
+	cutting one's own support are modified.  Players may dislodge their
+	own units, and support given by a unit for an attack against a unit
+	owned by the same power will be valid and will be counted towards causing
+	a dislodgement.  Additionally, even an unsuccessful attack made by a unit
+	against another unit owned by the same power will cut any support 
+	being offered by the attacked unit.
+<!-- RULE END -->
+
+<a name=WEAK_BOUNCES></a><p><dt><b><tt>WEAK_BOUNCES</tt></b><dd>
+<!-- RULE WEAK_BOUNCES -->
+	This rule implements "Key's Rule" (named for its developer, Jeff Key,
+	who also created the Italian <a href=<POUCH>/Online/Openings>Key
+	Lepanto</a> opening).  Key's rule says that a unit that is ordered to
+	move will have absolutely no defensive strength to hold its original
+	position if its move fails.  Thus, if <tt>A Vie-Gal</tt> fails,
+	a foreign unit that was ordered <tt>A Bud-Vie</tt> will dislodge
+	<tt>Vie</tt> even if it attacks without support.  A unit will only
+	successfully "bounce" back to a space if no foreign attack (or, if the
+	<tt>FRIENDLY_FIRE</tt> rule is also in force, any attack at all) was made
+	on the space, or if the space is a beleaguered garrison.
+<!-- RULE END -->
+
+<a name=DEFAULT_UNORDERED></a><p><dt><b><tt>DEFAULT_UNORDERED</tt></b><dd>
+<!-- RULE DEFAULT_UNORDERED -->
+	Movement phase orders are not checked to ensure that a player has provided
+	an order for each of his own units.  Any unit left unordered will receive
+	a default order to <tt>HOLD</tt>.
+<!-- RULE END -->
+
+<a name=UNITS_ADAPT></a><p><dt><b><tt>UNITS_ADAPT</tt></b><dd>
+<!-- RULE UNITS_ADAPT -->
+	Some variants use maps on which the terrain of some or all of the spaces
+	can change during the game.  Fleets on water spaces that become multi-coast
+	provinces (or whose multiple coasts change) will be landed at the coast
+	whose terrain type (including <tt>AMEND</tt>) was specified <i>last</i>
+	in the game's <tt>.map</tt> file directives. Fleets located on a coast
+	of a multi-coast
+	province which becomes a single-coast province will remain in the province.
+	Without the <tt>UNITS_ADAPT</tt> rule, units located on spaces that change
+	terrain type to a terrain incompatible with the unit will be destroyed.
+	However, if the <tt>UNITS_ADAPT</tt> rule is used, then units will survive
+	terrain changes by converting, if necessary, to the appropriate type of
+	unit.  For example, if a fleet is located in the Black Sea, and the Black
+	Sea becomes a landlocked space, the fleet will become an army.
+	The <tt>HIBERNATE</tt> rule (below) also affects unit behavior if
+	terrain changes occur; if both rules are used, units will
+	<tt>HIBERNATE</tt> if possible, but armies finding themselves on water
+	will <tt>ADAPT</tt> and become fleets.
+<!-- RULE END -->
+
+<a name=HIBERNATE></a><p><dt><b><tt>HIBERNATE</tt></b><dd>
+<!-- RULE HIBERNATE -->
+	With this rule, if any unit is in a location on the map that becomes
+	impassable (i.e., <tt>SHUT</tt>), or if any fleet is in a location that
+	becomes <tt>LAND</tt>locked, the unit remains a legal unit but
+	may only be ordered to <tt>HOLD</tt> until the space is no longer
+	impassable.
+	Note that the <tt>HIBERNATE</tt> rule has precedence over the
+	<tt>UNITS_ADAPT</tt> rule, meaning that if both rules are used, units
+	will <tt>HIBERNATE</tt> if possible, but armies that find themselves on
+	<tt>WATER</tt> will convert to become fleets, rather than be destroyed.
+<!-- RULE END -->
+
+<a name=IMMOBILE_DUMMIES></a><p><dt><b><tt>IMMOBILE_DUMMIES</tt></b><dd>
+<!-- RULE IMMOBILE_DUMMIES -->
+	With this rule, all units owned by a power that is marked as a
+	<tt>DUMMY</tt> will not be eligible to receive any movement orders.
+	All such units may only be ordered to hold, support, or convoy.
+<!-- RULE END -->
+</dl>
+		<a name=4></a>
+<!-- RULE GROUP 4 Convoy -->
+<p><HR><br><dt><b>1.4 Convoys</b>
+<dl>
+<a name=COASTAL_CONVOY></a><p><dt><b><tt>COASTAL_CONVOY</tt></b><dd>
+<!-- RULE COASTAL_CONVOY -->
+	Fleets in coastal locations (in addition to those on water) may
+	issue and perform convoy orders.  Essentially, this rule causes all
+	<tt>COAST</tt> spaces to be treated as if they were <tt>PORT</tt> spaces
+	(see the documentation on <a href=<URL>?page=Map>map file syntax</a>).
+<!-- RULE END -->
+	<!--
+	THE RE-CODING OF Game.canConvoy() OBVIATES THE FOLLOWING:
+	Note that this rule has an effect on games that use the
+	<tt>FICTIONAL_OK</tt> rule (see the description of that rule, above).
+	-->
+
+<a name=PORTAGE_CONVOY></a><p><dt><b><tt>PORTAGE_CONVOY</tt></b><dd>
+<!-- RULE PORTAGE_CONVOY -->
+	Armies may "convoy" fleets overland from one coastal space to another.
+	Note that a fleet that is portaged through an army that is
+	adjacent to a multi-coast province may end its move on <i>any</i>
+	coast of that province.
+	Just as with orders that <i>support</i> fleets moving to
+	multi-coast provinces, (portage) convoy orders given to armies
+	may <i>not</i> specify any destination coast for the fleet being moved.
+	(Only the fleet's move order may specify its destination coast.)
+<!-- RULE END -->
+
+<a name=SAFE_CONVOYS></a><p><dt><b><tt>SAFE_CONVOYS</tt></b><dd>
+<!-- RULE SAFE_CONVOYS -->
+	If this rule is used, armies may not convoy through fleets that are
+	beleaguered garrisons.  Such fleets will behave (as far as the
+	convoying army is concerned) like dislodged fleets.  This rule implements
+	an alternate convoy paradox resolution scheme, per a proposal advocated
+	by Simon Szykman.
+<!-- RULE END -->
+
+<a name=WEAK_CONVOYS></a><p><dt><b><tt>WEAK_CONVOYS</tt></b><dd>
+<!-- RULE WEAK_CONVOYS -->
+	If this rule is used, a convoying fleet must be <i>better supported</i>
+	than any and all attacks that are being made on it by foreign units,
+	or else its convoy will fail.  For example, an unsupported convoying fleet
+	will have its convoy disrupted even by a single unsupported foreign
+	movement.
+<!-- RULE END -->
+
+<a name=CONVOY_BACK></a><p><dt><b><tt>CONVOY_BACK</tt></b><dd>
+<!-- RULE CONVOY_BACK -->
+	Games using this rule will allow fleets to be used more than once in
+	a convoy chain.  For example, on the standard map, if this rule is
+	used, a fleet in the Adriatic Sea may participate in a convoy from
+	Greece to Naples (which would require an Ionian Sea fleet to be used
+	more than once in the convoy).
+<!-- RULE END -->
+</dl>
+
+
+		<a name=5></a>
+<p><HR><br><dt><b>1.5 Retreat and Adjustment Orders</b>
+<!-- RULE GROUP 5 Retreat and Adjustment Order -->
+<dd><p>
+<dl>
+<a name=NO_RETREAT></a><p><dt><b><tt>NO_RETREAT</tt></b><dd>
+<!-- RULE NO_RETREAT -->
+	If this rule is used, all dislodged units are destroyed without the
+	ability to retreat.  (This rule is automatically included if the
+	<tt>NO_QUARTER</tt> rule is used.)
+<!-- RULE END -->
+
+<a name=BUILD_ANY></a><p><dt><b><tt>BUILD_ANY</tt></b><dd>
+<!-- RULE BUILD_ANY !HOME_BUILDS !REMOTE_BUILDS -->
+    Powers may build new units at any owned supply center, not simply at
+    their home supply centers.
+<!-- RULE END -->
+
+<a name=HOME_BUILDS></a><p><dt><b><tt>HOME_BUILDS</tt></b><dd>
+<!-- RULE HOME_BUILDS !BUILD_ANY -->
+    If this rule is used, players may build in any owned center that
+	was an original home center for any of the powers in the game.
+	Note that this rule may be restricted by the addition of
+	<tt>REMOTE_BUILDS</tt> and the operation of the <tt>GARRISON</tt> rule,
+	both described below.
+<!-- RULE END -->
+
+<a name=REMOTE_BUILDS></a><p><dt><b><tt>REMOTE_BUILDS</tt></b><dd>
+<!-- RULE REMOTE_BUILDS !BUILD_ANY -->
+    Requires that a power must still own at least
+	one of its <i>original</i> home centers to be eligible to build.
+	Without any other rule that restricts build locations (such as
+	<tt>HOME_BUILDS</tt>), this rule silently includes <tt>BUILD_ANY</tt>,
+	meaning that powers will be able to build at any owned center, if and
+	only if they own at least one of their original home centers.
+<!-- RULE END -->
+
+<a name=GARRISON></a><p><dt><b><tt>GARRISON</tt></b><dd>
+<!-- RULE GARRISON -->
+	Games that use the <tt>GARRISON</tt> rule require that at least one home
+	center of each eliminated power be occupied at the beginning of every
+	adjustment phase.
+	The consequence of not doing so is that the eliminated player -- even
+	if that player still has units on the board at the time -- becomes
+	eligible (as long as he has not <tt>RESIGN</tt>ed) to build a unit in any
+	one of his home centers, and the power or powers that own these home centers
+	become ineligible to build there (in games using <tt>BUILD_ANY</tt> or
+	<tt>HOME_BUILDS</tt>, where this would otherwise be possible).
+	The eliminated player does <i>not</i> (yet)
+	regain ownership of the center on which he builds, but he <i>is</i>
+	immediately no longer considered eliminated, and participates in any draw
+	and concession votes.  Note that if the eliminated power builds a unit,
+	does not use it to gain a supply center in the following game-year, and
+	if the same situation exists at the end of that game-year, the power will
+	be eligible to build yet again, giving that power two units without benefit
+	of owning a supply center, and so on.
+<!-- RULE END -->
+
+<a name=NO_RESERVES></a><p><dt><b><tt>NO_RESERVES</tt></b><dd>
+<!-- RULE NO_RESERVES -->
+	A game using this rule will ignore any and all <tt>RESERVES</tt> settings
+	given for the game in its <a href=<URL>?page=Map>map file</a>.  However,
+	any reserves specified in the game's <a href=<URL>?page=Status>status
+	file</a> will be honored.
+<!-- RULE END -->
+
+<a name=NO_MILITIA></a><p><dt><b><tt>NO_MILITIA</tt></b><dd>
+<!-- RULE NO_MILITIA -->
+	A game using this rule will ignore any and all <tt>MILITIA</tt> settings
+	given for the game in its <a href=<URL>?page=Map>map file</a>.  However,
+	any militia specified in the game's <a href=<URL>?page=Status>status
+	file</a> will be honored.
+<!-- RULE END -->
+
+<a name=NO_FACTORIES></a><p><dt><b><tt>NO_FACTORIES</tt></b><dd>
+<!-- RULE NO_FACTORIES -->
+	A game using this rule will ignore any and all factory sites that the
+	map variant might call for in its <a href=<URL>?page=Map>map file</a>.
+<!-- RULE END -->
+
+<a name=NO_PARTISANS></a><p><dt><b><tt>NO_PARTISANS</tt></b><dd>
+<!-- RULE NO_PARTISANS -->
+	A game using this rule will ignore any and all partisan sites that the
+	map variant might call for in its <a href=<URL>?page=Map>map file</a>.
+<!-- RULE END -->
+
+</dl>
+</dl>
+		<a name=6></a>
+<p><HR><br><dl><dt><b>1.6 Secrecy</b>
+<!-- RULE GROUP 6 Secrecy -->
+<dd><p>
+<dl>
+<a name=BLIND></a><p><dt><b><tt>BLIND</tt></b><dd>
+<!-- RULE BLIND !NO_DIAS +FICTIONAL_OK +HIDE_ABSENTEES +HIDE_LATE_POWERS +SHOW_PHANTOM -->
+    In a <tt>BLIND</tt> game, each player receives individually tailored
+	movement, retreat, and adjustment phase
+	results and sees a map made from these tailored results.  Each player's
+	personalized results will contain only:
+	<ul>
+	<li>his own units and their orders,
+	<li>the units (and possibly the orders of those units) owned by other
+		powers, provided that the unit started or ended the turn adjacent to
+		a space where one of the player's own units either began or
+		ended the turn,
+	<li>the units (and possibly the orders of those units) owned by other
+		powers, provided that the unit started or ended the turn in or adjacent
+		to a home supply center of the player in question (regardless
+		of whether or not that center is currently owned by the player).
+		<i>See <tt>VENETIAN</tt>, below, for an alternative.</i>
+	<li>his own list of owned supply centers,
+	<li>his own unit-count, center-count, and adjustment phase status
+		(number of builds or removes he is eligible or required to submit).
+	</ul>
+	When a foreign unit is "visible" to a player, the player will either
+	receive full information on the unit's order (if he could "see" the 
+	unit both before <i>and</i> after the moves), or will receive one of
+	the following instead (based on whether the unit was visible to the
+	player before the moves or after the moves, but not both):<br>
+	<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Army XXX ARRIVES.<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Army XXX DEPARTS.<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Army YYY LOST.<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Army YYY FOUND.</tt><br>
+	Observers and all other non-map powers receive basically no information
+	from the judge, other than the notice that the game has progressed to
+	the next phase.  Notice that this does <i>not</i> apply to any player or 
+	observer who is specified to be <tt>OMNISCIENT</tt>.  Such a person
+	receives the same results as the Master <i>and</i> as each of the
+	players (during the period of time that the person is <tt>OMNISCIENT</tt>).
+	Omniscient persons can also still log in at the Website as any or all of
+	the map powers to see the information at each player's disposal.
+	The <tt>BLIND</tt> rule also has the following effects:
+	<ul>
+	<li>It is never disclosed in the results if a unit's order was
+	void -- the <tt>(*void*)</tt> annotation is completely suppressed from
+	appearing in the results.  However, convoyed armies that were issued
+	orders that would have been <tt>(*void*)</tt> are <i>re-</i>annotated
+	in the results with the <tt>(*no&nbsp;convoy*)</tt> annotation.</li>
+	<li>The <tt>HIDE_ABSENTEES</tt> rule is in effect.</li>
+	<li>The <tt>HIDE_LATE_POWERS</tt> rule is in effect.</li>
+	<li>The <tt>SHOW_PHANTOM</tt> rule is in effect.</li>
+	<li>The <tt>FICTIONAL_OK</tt> rule is in effect.</li>
+	<li>The <tt>NO_DIAS</tt> rule is disallowed.</li>
+	</ul>
+	Note that visibility is determined by the <i>space</i>, not the coast,
+	on which a unit is located.  A unit is visible to, and can "see," any
+	unit that can support it, or that it can support.  For example, a fleet
+	in the Western Mediterranean <i><u>can</u></i> "see" a fleet on the
+	<i>north</i> coast of Spain, <i>and vice-versa</i>!
+	This rule automatically includes the <tt>SILENT_ABSENCES</tt> rule.
+	Note also that the <tt>BLIND</tt> rule may have some further effects if used
+	in different rule variants (such as Payola&nbsp;&#8212;
+	<a href=#TINCUP>see below</a>).
+	Further, note also that any game that is <tt>BLIND</tt> and that uses a
+	non-standard build rule (<tt>BUILD_ANY</tt>, <tt>REMOTE_BUILDS</tt>, or
+	<tt>HOME_BUILDS</tt>) will also automatically be a <tt>VENETIAN</tt>
+	(or, if specified, <tt>MYOPIC</tt>) game (see below).
+<!-- RULE END -->
+
+<a name=VENETIAN></a><p><dt><b><tt>VENETIAN</tt></b><dd>
+<!-- RULE VENETIAN !MYOPIC +BLIND -->
+	A <tt>VENETIAN</tt> game is a <tt>BLIND</tt> game (as described above)
+	except that players see activity in and around all their currently-owned
+	supply centers (rather than only in and around their home supply centers,
+	regardless of the ownership of those centers, as is the case in a
+	standard <tt>BLIND</tt> game).  If <tt>VENETIAN</tt> and <tt>BLIND</tt>
+	are <i>both</i> specified, the game will be <tt>VENETIAN</tt>.
+	Note also that any game that is <tt>BLIND</tt> and that uses a non-standard
+	build rule (<tt>BUILD_ANY</tt>, <tt>REMOTE_BUILDS</tt>, or
+	<tt>HOME_BUILDS</tt>) will also automatically be a <tt>VENETIAN</tt>
+	(or, if specified, a <tt>MYOPIC</tt>) game.
+<!-- RULE END -->
+
+<a name=MYOPIC></a><p><dt><b><tt>MYOPIC</tt></b><dd>
+<!-- RULE MYOPIC !VENETIAN +BLIND -->
+	A <tt>MYOPIC</tt> game is a <tt>BLIND</tt> game (as described above)
+	except that players <i>never</i> see any units other than their own.
+<!-- RULE END -->
+
+<a name=HIDE_EXTENDERS></a><p><dt><b><tt>HIDE_EXTENDERS</tt></b><dd>
+<!-- RULE HIDE_EXTENDERS -->
+	The power-identity of a player who extends the deadline using
+	the <tt>SET DEADLINE</tt> command (with the <tt>PLAYER_DEADLINES</tt>
+	rule in force) is not revealed to the players.
+	Only the Master is sent the identity of that power.
+<!-- RULE END -->
+
+<a name=HIDE_LATE_POWERS></a><p><dt><b><tt>HIDE_LATE_POWERS</tt></b><dd>
+<!-- RULE HIDE_LATE_POWERS -->
+	The power-identity of players who are late with orders is not
+	revealed to the players, and each late player is told only of his
+	own tardiness.  Only the Master is sent the complete list of late powers.
+	<i>This rule is "on" in a <tt>BLIND</tt> game.</i>
+<!-- RULE END -->
+
+<a name=LIST_WAITERS></a><p><dt><b><tt>LIST_WAITERS</tt></b><dd>
+<!-- RULE LIST_WAITERS -->
+	The power-identity of any and all players who have set their
+	"wait for deadline before processing" flag are made available
+	in the game list and on the game's Webpages.
+<!-- RULE END -->
+
+<a name=LIST_UNORDERED></a><p><dt><b><tt>LIST_UNORDERED</tt></b><dd>
+<!-- RULE LIST_UNORDERED -->
+	The power-identity of any and all players who have not yet issued
+	orders for the current game-phase are made available in the game
+	list and on the game's Webpages.
+<!-- RULE END -->
+
+<a name=NO_REVEAL></a><p><dt><b><tt>NO_REVEAL</tt></b><dd>
+<!-- RULE NO_REVEAL +HIDE_ABSENTEES -->
+	In games using this rule, player identities are concealed even after the
+	game is completed.  This rule is useful when a game is part of a multi-game
+	tournament, to prevent players from learning the results already achieved
+	by their opponents.  The Master can (by e-mailing a <tt>REVEAL</tt>
+	command to the DPjudge) cause player identities to be revealed (and the
+	game reported to the play-by-email ratings systems) when the
+	time is right.
+	(This rule automatically includes the <tt>HIDE_ABSENTEES</tt> rule.)
+<!-- RULE END -->
+</dl>
+</dl>
+
+		<a name=7></a>
+<p><HR><br><dl><dt><b>1.7 Late and Vacant Power Handling</b>
+<!-- RULE GROUP 7 Late and Vacant Power Handling -->
+<dl>
+<a name=CIVIL_DISORDER></a><p><dt><b><tt>CIVIL_DISORDER</tt></b><dd>
+<!-- RULE CIVIL_DISORDER !CIVIL_PREVIEW !CD_DUMMIES -LATE_CHANGES =NO_LATE_CHANGES -->
+	Any power that has not submitted orders:
+	<ol type=a>
+	<li>when the game's Master submits a <tt>PROCESS</tt> command,
+		<u><i>or</i></u>
+	<li>when the deadline has passed (or, if
+		a grace period is specified in the <tt>TIMING</tt> line of the game's
+		<a href=<URL>?page=Status>status file</a>, after the expiration of
+		the grace period),
+	</ol>
+	will have its orders entered automatically.  During movement phases, all
+	units will <tt>HOLD</tt>,
+	during retreat phases, all dislodged units will
+	<tt>DISBAND</tt>, and during adjustment phases, all builds will be
+	<tt>WAIVED</tt>, and all removals will be entered using random choice from
+	among the power's on-board units, with preference given to retaining
+	units that are situated on supply centers.
+	<!--
+		(first preference is actually to retain units on home centers not
+		owned by the retreating power, then non-home centers not owned
+		by him, then home centers, then non-home centers, and finally
+		non-centers, and fleets will be removed before armies),
+	-->
+	<font color=red><b>Note:</b></font>
+	The <a href=#CD_BUILDS><tt>CD_BUILDS</tt></a> and
+	<a href=#CD_RETREATS><tt>CD_RETREATS</tt></a> rules (and, in standard
+	Diplomacy games only, the <a href=#CD_SUPPORTS><tt>CD_SUPPORTS</tt></a>
+	rule), each of which is described below, can alter
+	the default orders that are given to units in civil disorder.
+	<p>
+	Note also that unless the
+	<a href=#LATE_CHANGES><tt>LATE_CHANGES</tt></a> rule is specified, the
+	<tt>CIVIL_DISORDER</tt> rule also enforces the
+	<a href=#NO_LATE_CHANGES><tt>NO_LATE_CHANGES</tt></a>
+	rule (described below).  This is to prevent players from changing their
+	orders after the deadline to take advantage of powers that seem likely
+	to go into civil disorder when a grace period expires.
+	<p>
+	Individual powers may also be put into perpetual
+	automatic, don't-even-wait-for-the-deadline,
+	civil disorder (assuming no one like the Master enters orders for them)
+	by setting the <tt>PLAYER</tt> information to <tt>DUMMY</tt>,
+	and using the
+	<a href=#CD_DUMMIES><tt>CD_DUMMIES</tt></a> rule, described below.
+	<tt>CIVIL_DISORDER</tt> and <tt>CIVIL_PREVIEW</tt> are mutually exclusive,
+	as are <tt>CIVIL_DISORDER</tt> and <tt>CD_DUMMIES</tt>.
+<!-- RULE END -->
+
+<a name=CIVIL_PREVIEW></a><p><dt><b><tt>CIVIL_PREVIEW</tt></b><dd>
+<!-- RULE CIVIL_PREVIEW !CIVIL_DISORDER -->
+	At the deadline (or the expiration of any <tt>GRACE</tt> period), if
+	any powers are still late, the game is put into <tt>PREVIEW</tt> mode.
+	Instead of the phase being processed and announced, the Master (only)
+	is sent a <tt>PREVIEW</tt> of the results.  The phase will not process
+	until the Master submits a <tt>PROCESS!</tt> command or the game no
+	longer contains any late powers.
+	<tt>CIVIL_PREVIEW</tt> and <tt>CIVIL_DISORDER</tt> are mutually exclusive.
+<!-- RULE END -->
+
+<a name=CD_DUMMIES></a><p><dt><b><tt>CD_DUMMIES</tt></b><dd>
+<!-- RULE CD_DUMMIES !CIVIL_DISORDER -->
+	Assuming no powers have set their <tt>WAIT</tt> flag, orders will be
+	processed as <i><u>soon</u></i> as all <i><u>non-</u></i><tt>DUMMY</tt>
+	players have submitted orders.  Any powers having a <tt>PLAYER</tt> marked
+	as a <tt>DUMMY</tt> will be considered in civil disorder (as described
+	above) at that time.  Note the distinction -- <tt>CIVIL_DISORDER</tt>
+	will default the orders of all powers (whether dummy or not), while
+	<tt>CD_DUMMIES</tt> will default the orders only of the dummy powers.
+<!-- RULE END -->
+
+<a name=DUMMY_FIRE></a><p><dt><b><tt>DUMMY_FIRE</tt></b><dd>
+<!-- RULE DUMMY_FIRE -->
+	With this rule, all <tt>DUMMY</tt> powers (but <i>only</i> the
+	<tt>DUMMY</tt> powers) will be subject to the
+	<a href="#FRIENDLY_FIRE"><tt>FRIENDLY_FIRE</tt></a> rule.
+<!-- RULE END -->
+
+<a name=CD_BUILDS></a><p><dt><b><tt>CD_BUILDS</tt></b><dd>
+<!-- RULE CD_BUILDS -->
+	All powers in civil disorder during an adjustment phase
+	will build units (if eligible to do so) randomly.  Without
+	this rule, these powers would <tt>WAIVE</tt> their builds.
+	Note that if neither the <tt>CIVIL_DISORDER</tt>
+	nor the <tt>CD_DUMMIES</tt> rules are specified,
+	all powers (whether dummy or not) will have their adjustment
+	orders default in this way at the deadline if they have not
+	been submitted.
+<!-- RULE END -->
+
+<a name=CD_RETREATS></a><p><dt><b><tt>CD_RETREATS</tt></b><dd>
+<!-- RULE CD_RETREATS -->
+	All powers in civil disorder during a retreat phase
+	will retreat any dislodged units randomly, preferably into
+	supply centers.
+	<!-- (first preference is actually to a center not owned by the
+		retreating power),
+	and will <i>not</i> voluntarily choose to disband a retreating unit.
+	(yes, it will, if needed to avoid a self-bouncing-retreat)
+	-->
+	Without this rule, units in civil disorder will <tt>DISBAND</tt>
+	in retreat phases.
+	Note that if neither the <tt>CIVIL_DISORDER</tt>
+	nor the <tt>CD_DUMMIES</tt> rules are specified,
+	all powers (whether dummy or not) will have their retreat
+	orders default at the deadline if they have not been submitted.
+<!-- RULE END -->
+
+<a name=SMART_CD></a><p><dt><b><tt>SMART_CD</tt></b><dd>
+<!-- RULE SMART_CD +CD_RETREATS +CD_BUILDS +CD_SUPPORTS -->
+	This rule calls for the inclusion of the
+	<tt>CD_RETREATS</tt> rule, the <tt>CD_BUILDS</tt> rule
+	(and, in standard Diplomacy games only, the <tt>CD_SUPPORTS</tt> rule).
+<!--
+	<p>
+	The table below gives some examples to describe the operation of
+	the various rules regarding civil disorder.  Notice the need to
+	add <tt>CIVIL_DISORDER</tt> or <tt>CD_DUMMIES</tt> to the mix in
+	order to affect movement phases:
+	<p>
+
+<table border cellspacing=0 cellpadding=0>
+<tr><th class=bodycopy rowspan=2>Rules Used In Game</th>
+	<th class=bodycopy rowspan=2>Powers Affected</th>
+	<th class=bodycopy colspan=3>Default Action Taken For...</th>
+</tr>
+<tr>
+	<th class=bodycopy>Movement Orders</th>
+	<th class=bodycopy>Retreat Orders</th>
+	<th class=bodycopy>Build Orders</th>
+</tr>
+<tr>
+	<th class=bodycopy>(None)</tt></td>
+	<td class=bodycopy align=center>All</td>
+	<td class=bodycopy align=center>(awaited)</td>
+	<td class=bodycopy align=center>(awaited)</td>
+	<td class=bodycopy align=center>(awaited)</td>
+</tr>
+<tr>
+	<th class=bodycopy><tt>CD_RETREATS</tt></td>
+	<td class=bodycopy align=center>All</td>
+	<td class=bodycopy align=center>(awaited)</td>
+	<td class=bodycopy align=center>"sensible"</td>
+	<td class=bodycopy align=center>(awaited)</td>
+</tr>
+<tr>
+	<th class=bodycopy><tt>CD_BUILDS</tt></td>
+	<td class=bodycopy align=center>All</td>
+	<td class=bodycopy align=center>(awaited)</td>
+	<td class=bodycopy align=center>(awaited)</td>
+	<td class=bodycopy align=center>"sensible"</td>
+</tr>
+<tr>
+	<th class=bodycopy><tt>CD_RETREATS, CD_BUILDS</tt></td>
+	<td class=bodycopy align=center>All</td>
+	<td class=bodycopy align=center>(awaited)</td>
+	<td class=bodycopy align=center>"sensible"</td>
+	<td class=bodycopy align=center>"sensible"</td>
+</tr>
+<tr>
+	<th class=bodycopy><tt>SMART_CD</tt></td>
+	<td class=bodycopy align=center>All</td>
+	<td class=bodycopy align=center>(awaited)</td>
+	<td class=bodycopy align=center>"sensible"</td>
+	<td class=bodycopy align=center>"sensible"</td>
+</tr>
+<tr>
+	<th class=bodycopy><tt>CIVIL_DISORDER</tt></td>
+	<td class=bodycopy align=center>All</td>
+	<td class=bodycopy align=center><tt>HOLD</tt></td>
+	<td class=bodycopy align=center><tt>DISBAND</tt></td>
+	<td class=bodycopy align=center><tt>WAIVE</tt></td>
+</tr>
+<tr>
+	<th class=bodycopy><tt>CD_DUMMIES</tt></td>
+	<td class=bodycopy align=center>Dummies</td>
+	<td class=bodycopy align=center><tt>HOLD</tt></td>
+	<td class=bodycopy align=center><tt>DISBAND</tt></td>
+	<td class=bodycopy align=center><tt>WAIVE</tt></td>
+</tr>
+<tr>
+	<th class=bodycopy><tt>CD_SUPPORTS</tt></td>
+	<td class=bodycopy align=center>All</td>
+	<td class=bodycopy align=center>(awaited)</td>
+	<td class=bodycopy align=center>(awaited)</td>
+	<td class=bodycopy align=center>(awaited)</td>
+</tr>
+<tr>
+	<th class=bodycopy><tt>CIVIL_DISORDER, CD_SUPPORTS</tt></td>
+	<td class=bodycopy align=center>All</td>
+	<td class=bodycopy align=center>"sensible"*</td>
+	<td class=bodycopy align=center><tt>DISBAND</tt></td>
+	<td class=bodycopy align=center><tt>WAIVE</tt></td>
+</tr>
+<tr>
+	<th class=bodycopy><tt>CD_DUMMIES, CD_SUPPORTS</tt></td>
+	<td class=bodycopy align=center>Dummies</td>
+	<td class=bodycopy align=center>"sensible"*</td>
+	<td class=bodycopy align=center><tt>DISBAND</tt></td>
+	<td class=bodycopy align=center><tt>WAIVE</tt></td>
+</tr>
+<tr>
+	<th class=bodycopy><tt>CIVIL_DISORDER, SMART_CD</tt></td>
+	<td class=bodycopy align=center>All</td>
+	<td class=bodycopy align=center>"sensible"*</td>
+	<td class=bodycopy align=center>"sensible"</td>
+	<td class=bodycopy align=center>"sensible"</td>
+</tr>
+</table>
+* - Standard Diplomacy Only; units will be ordered to HOLD in all other
+	(Payola, Crystal Ball) variant games
+-->
+<!-- RULE END -->
+
+<a name=VASSAL_DUMMIES></a><p><dt><b><tt>VASSAL_DUMMIES</tt></b><dd>
+<!-- RULE VASSAL_DUMMIES +CD_DUMMIES +CD_BUILDS -->
+	With this rule in use, all <tt>DUMMY</tt> powers are eligible to become
+	vassals of the other powers.  This means that the <tt>DUMMY</tt> power will
+	never lose ownership of its home center(s).  That is, even though the home
+	center(s) of a <tt>DUMMY</tt> power might be occupied by another power at
+	the beginning of an adjustment phase, it remains owned by the <tt>DUMMY</tt>
+	power.  Instead of losing its home center(s) to an occupying power,
+	the <tt>DUMMY</tt> power becomes a controlled "vassal state" of that power
+	if every one of its home centers is occupied forces controlled by the
+	same foreign power.  Powers receive <tt>CONTROL</tt> of their vassal states
+	(and are thus able to log in and issue orders for them).  This control
+	continues unless and until the home center(s) of the vassal are (all) 
+	occupied by forces controlled by some other power at the beginning of an
+	adjustment phase.  Victory condition is calculated based on the total
+	number of centers owned by a power and all of its vassals.  Vassal states
+	cannot own the supply centers of their own controlling powers, meaning that
+	before adjustments, all home centers of a Great Power that are owned
+	and/or occupied by units of one of its own vassals immediately revert to
+	ownership of the controlling Great Power.
+	Before an autonomous state has been made a vassal, any units that it owns
+	will behave according to <tt>CD_BUILDS</tt> and whatever other rules are in
+	place governing <tt>DUMMY</tt> powers.  Such uncontrolled autonomous
+	powers are able (in games in which such uncontrolled units can move)
+	to gain supply centers by occupying home centers of the Great Powers or
+	neutral centers, but can never take possession of the home center of
+	another <tt>DUMMY</tt> power, nor can an autonomous or vassal state become
+	a vassal of another.  If a power that controls one or more vassals
+	loses ownership of all of its own centers, that player may continue in
+	the game, still controlling the vassals owned by his (otherwise eliminated)
+	power, and remains eligible to win the game if the victory condition is met.
+	Note also that the <tt>VASSAL_DUMMIES</tt> rule may have some further
+	effects if used in different rule variants (such as Payola&nbsp;&#8212;
+	<a href=#VASSAL_TRANSFERS>see below</a>).
+<!-- RULE END -->
+
+<a name=HIDE_DUMMIES></a><p><dt><b><tt>HIDE_DUMMIES</tt></b><dd>
+<!-- RULE HIDE_DUMMIES -->
+	If this rule is in use, any <tt>DUMMY</tt> powers will be listed
+	on the game's main Webpage as powers that can be logged in and will
+	be listed as available to receive press messages sent to them.  This
+	rule can be used to keep secret from the players which of the powers
+	are <tt>DUMMY</tt> powers, and/or to provide the Master with access
+	to the power's data entry Webpage.  (However, if a particular <i>player</i>
+	is to be allowed access to any <tt>DUMMY</tt> power pages, this should
+	be done with a <tt>CONTROL</tt> directive in the dummy power's stanza
+	of the game <a href=<URL>?page=Status>status file</a>.)
+	This rule also completely suppresses the display of controller
+	information for any and all powers under the <tt>CONTROL</tt> of another
+	player, such that the power in control is not listed publicly.
+<!-- RULE END -->
+</dl>
+
+		<a name=8></a>
+<p><HR><br><dt><b>1.8 Deadline Handling and Phase Processing</b>
+<!-- RULE GROUP 8 Deadline Handling and Phase Processing -->
+<dl>
+<a name=NO_QUARTER></a><p><dt><b><tt>NO_QUARTER</tt></b><dd>
+<!-- RULE NO_QUARTER +NO_RETREAT +NO_DRAW -->
+	This rule enforces both of the rules <tt>NO_RETREAT</tt>
+	(described above) and <tt>NO_DRAW</tt> (described below).
+<!-- RULE END -->
+
+<a name=NO_LATE_CHANGES></a><p><dt><b><tt>NO_LATE_CHANGES</tt></b><dd>
+<!-- RULE NO_LATE_CHANGES -LATE_CHANGES -->
+	In games using this rule, no changes can be made to any
+	<i>already-submitted</i> orders after a deadline has passed.
+<!-- RULE END -->
+
+<a name=LATE_CHANGES></a><p><dt><b><tt>LATE_CHANGES</tt></b><dd>
+<!-- RULE LATE_CHANGES -NO_LATE_CHANGES -->
+	This rule (which is in use by default, and therefore need not
+	be stated, in all games that do <i>not</i> use the <tt>CIVIL_DISORDER</tt>
+	rule) allows players to make changes to submitted
+	orders even after a deadline has passed.
+<!-- RULE END -->
+
+<a name=REAL_TIME></a><p><dt><b><tt>REAL_TIME</tt></b><dd>
+<!-- RULE REAL_TIME !ALWAYS_WAIT !MUST_ORDER -->
+	If this rule is used, the game will be processed <i>as soon as</i>
+	the last player submits orders (this player will have no opportunity
+	to modify them).  Additionally, players will not be allowed to direct
+	that the game wait for any deadline before processing.  This rule is
+	used especially for games with very short deadlines (for example, 
+	10 minutes).
+<!-- RULE END -->
+
+<a name=NO_MINOR_WAIT></a><p><dt><b><tt>NO_MINOR_WAIT</tt></b><dd>
+<!-- RULE NO_MINOR_WAIT -->
+	If this rule is used, players will only see (and be able to use) a
+	"wait for processing" checkbox during movement phases.
+<!-- RULE END -->
+
+<a name=ALWAYS_WAIT></a><p><dt><b><tt>ALWAYS_WAIT</tt></b><dd>
+<!-- RULE ALWAYS_WAIT !REAL_TIME -->
+	If this rule is used, orders will never process until the deadline
+	has arrived (unless requested by the Master using a <tt>PROCESS</tt>
+	command sent via e-mail).  This rule is incompatible with
+	<tt>REAL_TIME</tt> [above].
+<!-- RULE END -->
+
+<a name=PLAYER_DEADLINES></a><p><dt><b><tt>PLAYER_DEADLINES</tt></b><dd>
+<!-- RULE PLAYER_DEADLINES -->
+	This rule allows any participant in the game to issue the
+	<tt>SET&nbsp;DEADLINE</tt> command.  (Without this rule, only
+	a game's Master may modify the current deadline.)  Only the
+	Master is permitted to <i>shorten</I> a deadline, however.
+	All other participants may only <i>lengthen</i> the current
+	deadline.
+<!-- RULE END -->
+
+<a name=SILENT_ABSENCES></a><p><dt><b><tt>SILENT_ABSENCES</tt></b><dd>
+<!-- RULE SILENT_ABSENCES -->
+	This rule suppresses the absence broadcasts (informing that a
+	<tt>SET&nbsp;ABSENCE</tt> has been received and processed,
+	introducing a period of time during which no deadlines will
+	be set).  Only the Master will receive notice
+	of the planned absence.  (The period of time covered by the absence
+	will, however, still appear in the <tt>TIMING</tt> line for the game, as
+	shown on the Website and in the game <tt>LIST</tt>.)
+<!-- RULE END -->
+
+<a name=HIDE_ABSENTEES></a><p><dt><b><tt>HIDE_ABSENTEES</tt></b><dd>
+<!-- RULE HIDE_ABSENTEES -->
+	This rule conceals the identity of the power who submites a
+	<tt>SET&nbsp;ABSENCE</tt> command (requesting a period of time
+	during which no deadlines will be set).
+	Only the Master will be told which power made the request.
+<!-- RULE END -->
+
+<a name=NO_ABSENCES></a><p><dt><b><tt>NO_ABSENCES</tt></b><dd>
+<!-- RULE NO_ABSENCES -->
+	Games using this rule will reject as illegal any use
+	of the <tt>SET&nbsp;ABSENCE</tt> command
+	by anyone other than the Master.
+<!-- RULE END -->
+
+<a name=PREVIEW></a><p><dt><b><tt>PREVIEW</tt></b><dd>
+<!-- RULE PREVIEW -->
+	If this rule is used, then when any game-phase is ready to be processed,
+	the would-be results are sent <i>only to the Master</i>, and the game is
+	left in its pre-processed state.  This gives the Master the chance to check
+	the adjudication and perform any other activity prior to releasing the
+	results to the players (which is done by e-mailing a <tt>PROCESS</tt>
+	command to the DPjudge).  When a game is automatically previewed,
+	a <tt>DELAY</tt> count of <tt>72</tt> (one day) is introduced into the
+	<a href=<URL>?page=Status>status file</a>, to prevent the Master's e-mailbox
+	from being bombarded with
+	a repeat of the previewed results every twenty minutes.  Note that even
+	games that do not use this rule may be <tt>PREVIEW</tt>ed at any time
+	by the Master using the <a href=<URL>?page=Email#12>e-mail interface</a>.
+<!-- RULE END -->
+</dl>
+
+		<a name=9></a>
+<p><HR><br><dt><b>1.9 Game Conclusion</b>
+<!-- RULE GROUP 9 Game Conclusion -->
+<dl>
+<a name=NO_DRAW></a><p><dt><b><tt>NO_DRAW</tt></b><dd>
+<!-- RULE NO_DRAW -->
+	If this rule is used, draws cannot be called; the game must end in
+	a solo victory.  (This rule is automatically included by the
+	<tt>NO_QUARTER</tt> rule.)
+<!-- RULE END -->
+
+<a name=PROPOSE_DIAS></a><p><dt><b><tt>PROPOSE_DIAS</tt></b><dd>
+<!-- RULE PROPOSE_DIAS !NO_DIAS -->
+	In games that use this rule, a player makes a proposal to conclude the
+	game with a certain result, and all other
+	players vote on it.  The proposal may be a concession to a specific
+	power or a draw including all survivors.  Any negative vote on the proposal
+	will cause it to fail.
+	<p>
+	In games <i><u><b>not</b></u></i> using this rule,
+	draw and concession votes are never called for.  Instead, each player
+	can select a single game ending (concession to his own power or to
+	any other single power, or agreement to a
+	draw that includes all surviving powers), and if ever all votes allow,
+	the game will end.  No player's vote is revealed to any other player.  Note
+	that if all players are ever found to be simultaneously voting for any
+	result that is <i>not</I> a concession to their own power, the game will
+	end in a draw shared among all surviving powers.
+<!-- RULE END -->
+
+<a name=HIDE_PROPOSER></a><p><dt><b><tt>HIDE_PROPOSER</tt></b><dd>
+<!-- RULE HIDE_PROPOSER -->
+	The power who makes a draw or concession proposal is not revealed to the
+	players.  For example, rather than saying, "A Concession to Italy Has Been
+	Proposed <i>By Italy</i>," the players' Web pages will simply say, "A
+	Concession to Italy Has Been Proposed."  This rule automatically includes
+	the <tt>PROPOSE_DIAS</tt> rule [above].
+<!-- RULE END -->
+
+<a name=NO_DIAS></a><p><dt><b><tt>NO_DIAS</tt></b><dd>
+<!-- RULE NO_DIAS !PROPOSE_DIAS !BLIND -->
+	Games with this rule operate in their voting as do normal
+	(non-<tt>PROPOSE_DIAS</tt>) games; that is, no proposal is ever made or
+	vetoed.  However, games using the <tt>NO_DIAS</tt> rule may end in a
+	result other than concession to a single player or agreement to a draw
+	that includes all survivors.  If this rule is used, each player may vote
+	either for the maximum size of a draw that he will accept which must
+	include his power, or for a solo victory by his power, <i>or for
+	<u>any</u> result that does <u><b>not</b></u> include his power.</i>
+	Note that if all players are ever found to be voting for a result that
+	does <i>not</i> include their own power, a draw shared among all
+	surviving powers will be declared.
+<!-- RULE END -->
+
+<a name=HOLD_WIN></a><p><dt><b><tt>HOLD_WIN</tt></b><dd>
+<!-- RULE HOLD_WIN -->
+	To win a game using this rule, a player must achieve the winning condition
+	two game-years in a row.
+<!-- RULE END -->
+
+<a name=NO_EOG></a><p><dt><b><tt>NO_EOG</tt></b><dd>
+<!-- RULE NO_EOG -->
+	If this rule is used, broadcast messages sent after the conclusion of
+	the game will <i>not</i> be archived as "End Of Game Statements."  Without
+	this rule, the EOG messages <i>will</i> be permanently stored for
+	future reference through the game's Webpage.
+<!-- RULE END -->
+</dl>
+
+</dl>
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="10"></a><b>2. Rules Affecting Only Standard Games</b></td>
+<!-- RULE VARIANT standard -->
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+		<dl>
+		<a name=10></a>
+<p><dt><b>2.1 Ignored Rules</b>
+<dd><p>Any rules that are specific to any other variant (that is, any
+    rules that are listed in section 3 or later, below) are silently ignored.
+</dl>
+		<a name=11></a>
+<a name=no_check></a>
+<p><HR><br><dl><dt><b>2.2 Orders</b>
+<dl>
+<!-- RULE GROUP 3 Movement Order -->
+<a name=NO_CHECK></a><p><dt><b><tt>NO_CHECK</tt></b><dd>
+<!-- RULE NO_CHECK !SHOW_PHANTOM +DEFAULT_UNORDERED -->
+	This rule emulates face-to-face play, in which players could (by
+	accident or design) issue invalid orders to their units.  This rule
+	is also useful in <tt>NO_PRESS</tt> games to allow for limited
+	player communication.
+	When they are entered, movement phase orders are only very minimally
+	checked for validity.  The <i>only</i> checks that are made at
+	the time an order is entered are:
+	<ol>
+	<li>Every component of the order must be understood.  That is, the
+		order must appear to be a Diplomacy move, convoy, support or
+		hold order, and all placenames must be identifiable on the map
+		in use. This check catches
+		inadvertant misspellings, such as "<tt>URK</tt>" for "<tt>UKR</tt>".
+		In fact, this is known as the "Urk check."
+	<li>Any placename abbreviation that
+		is potentially ambiguous is declared
+		erroneous and must be changed.  For example, the order
+		"<tt>TYR H</tt>" is rejected because it may be an order for
+		an army in Tyrolia to hold, or for a fleet in the Tyrrhenian
+		Sea to hold.
+	<li>A support for a fleet move may not specify the destination coast of
+		the fleet.  This error must also be corrected.
+	</ol>
+	<p>
+	Therefore, most errors <i>(including the omission of the fleet-path of
+	a convoying army from its order!)</i> are not detected until the phase
+	is ready to process, at which time the erroneous orders will be ignored.
+	All units that had been given erroneous or multiple orders will
+	<tt>HOLD</tt> (and may receive support), and all erroneous orders will
+	be reported in the results, flagged as <tt>(*invalid*)</tt>.
+<!-- RULE END -->
+
+</dl>
+</dl>
+
+		<a name=111></a>
+<p><HR><br><dl><dt><b>2.3 Late and Vacant Power Handling</b>
+<!-- RULE GROUP 7 Late and Vacant Power Handling -->
+<dl>
+<a name=CD_SUPPORTS></a><p><dt><b><tt>CD_SUPPORTS</tt></b><dd>
+<!-- RULE CD_SUPPORTS -->
+	This rule causes powers that are in civil disorder in movement phases to
+	issue "sensible support" orders rather than <tt>HOLD</tt> orders.
+	The power's units will receive orders to support each other,
+	<!--
+	with preference to supporting units located on supply center, and only
+	-->
+	giving support where possible to units that are in danger of
+	foreign attack having the strength to dislodge.
+	Note that if neither the <tt>CIVIL_DISORDER</tt>
+	nor the <tt>CD_DUMMIES</tt> rules are specified,
+	all powers (whether dummy or not) will have their movement phase
+	orders default at the deadline as described
+	if they have not been submitted.
+	<i>(Note that this rule is
+	silently ignored in non-standard Diplomacy games, such as Payola or
+	Crystal Ball Diplomacy games.)</i>
+<!-- RULE END -->
+</dl>
+</dl>
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+		<a name=12></a>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="12"></a></a><b>3. Rules Affecting Only Payola Games</b></td>
+<!-- RULE VARIANT payola +ORDER_ANY !PROXY_OK -->
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+		<dl>
+		<a name=12></a>
+<p><dt><b>3.1 Included, Forbidden, and Ignored Rules</b>
+<p><dd>Payola games always use the <tt>ORDER_ANY</tt> rule.
+	<p>The <tt>PROXY_OK</tt> and <tt>FICTIONAL_OK</tt> rules are not allowed.
+	(An exception is made for <tt>FICTIONAL_OK</tt> if it is included as
+	a by-product of the use of the <tt>BLIND</tt> rule.)
+	<p>The <tt>DEFAULT_UNORDERED</tt> rule has no effect except on actual
+	<u>orders</u> [not bribe offers].  Thus, it has no effect in Payola
+	games unless the players also issue (non-bribe) orders (as is done
+	when the <tt>PAY_DUMMIES</tt> rule is in used).
+	<p>
+	Additionally, any rules that are specific to any other variant
+	&mdash; such as <tt>NO_CHECK</tt> and <tt>CD_SUPPORTS</tt> (which are
+	specific to standard games) &mdash; are either not allowed or are
+	silently ignored.
+
+</dl>
+		<a name=13></a>
+<p><HR><br><dl><dt><b>3.2 Funds Transfers</b>
+<!-- RULE GROUP V2 Funds Transfer -->
+<dl>
+<a name=ANON_TRANSFER></a><p><dt><b><tt>ANON_TRANSFER</tt></b><dd>
+<!-- RULE ANON_TRANSFER -->
+    All funds transfers are anonymous, meaning that the recipient of
+    the transfer is not told from whom the money was sent.
+<!-- RULE END -->
+
+<a name=NO_DONATIONS></a><p><dt><b><tt>NO_DONATIONS</tt></b><dd>
+<!-- RULE NO_DONATIONS !GARRISON -->
+    If this rule is used, the powers that have been eliminated may not
+	transfer funds.  This rule is incompatible with <tt>GARRISON</tt>.
+<!-- RULE END -->
+
+<a name=NO_TRANSFER></a><p><dt><b><tt>NO_TRANSFER</tt></b><dd>
+<!-- RULE NO_TRANSFER -->
+    Funds transfers are not allowed.
+<!-- RULE END -->
+
+<a name=ONE_TRANSFER></a><p><dt><b><tt>ONE_TRANSFER</tt></b><dd>
+<!-- RULE ONE_TRANSFER -->
+    Each power may transfer money to each other power only a maximum
+    of one time per game phase.
+<!-- RULE END -->
+
+<a name=NO_LOOTING></a><p><dt><b><tt>NO_LOOTING</tt></b><dd>
+<!-- RULE NO_LOOTING -->
+    Funds may not be transferred from <tt>DUMMY</tt> powers.
+<!-- RULE END -->
+
+<a name=VASSAL_TRANSFERS></a><p><dt><b><tt>VASSAL_DUMMIES</tt></b><dd>
+    In a Payola game using the VASSAL_DUMMIES rule (<a href=#VASSAL_DUMMIES>see
+	above</a>), the <tt>DUMMY</tt> powers do not earn income unless they are
+	vassal states (that is, controlled by some Great Power).  All income
+	earned by vassal state is added directly to its controlling Great
+	Power's treasury.
+</dl>
+
+		<a name=14></a>
+<p><HR><br><dt><b>3.3 Income</b>
+<!-- RULE GROUP V3 Payola Income -->
+<dl>
+<a name=EXCHANGE></a><p><dt><b><tt>EXCHANGE</tt></b><dd>
+<!-- RULE EXCHANGE -->
+	This rule implements Bruce Duewer's "Exchange Payola" variant, in which
+	the human players take on the roles of investors rather than the powers
+	on the board, and compete for capital in a fluctuating market of stock
+	futures in each of the powers.  Players "float" the various powers like
+	publicly traded companies, and can become the CEO by stockholder vote.
+	Stock may be issued by (and purchased from) the powers and traded
+	between players during specific phases of the game.
+<!-- RULE END -->
+
+<a name=FLAT_TAX></a><p><dt><b><tt>FLAT_TAX</tt></b><dd>
+<!-- RULE FLAT_TAX -->
+    Income at year-end is defined to be a specific number of AgP for
+    each center (rather than the figure arrived at using the diminishing
+	returns scheme).  The amount of AgP given per center is equal to the
+	number of players originally
+    in the game.
+<!-- RULE END -->
+
+<a name=NO_HOARDING></a><p><dt><b><tt>NO_HOARDING</tt></b><dd>
+<!-- RULE NO_HOARDING -->
+	With this rule, players do not retain unspent funds.
+    The treasury of each player is set to zero before any income is awarded.
+<!-- RULE END -->
+
+<a name=ZEROSUM></a><p><dt><b><tt>ZEROSUM</tt></b><dd>
+<!-- RULE ZEROSUM -->
+    There is no tax income.  Players begin the game with 10 AgP for each
+	of their home centers, and as each center changes hands, money moves
+    from one player's treasury to another.  Capture of a neutral SC pays
+	10 AgP to the new owner, and all pre-owned SC's, when changing hands,
+    cause a strict proportion of the former owner's treasury to be paid
+    to the new owner.
+<!-- RULE END -->
+</dl>
+</dl>
+
+		<a name=15></a>
+<p><HR><br><dl><dt><b>3.4 Secrecy</b>
+<!-- RULE GROUP 6V4 Bribe Secrecy -->
+<dl>
+<a name=TINCUP></a><p><dt><b><tt>BLIND</tt></b><dd>
+	<i>(In addition to <a href=#BLIND>the effects of this rule
+	as listed above</a>.)</i>
+    The <i>owner</i> of each successfully bribed unit, but <i>not</i>
+	its exact order, is revealed to the bribing party.  To learn its
+	exact order, the player must match the accepted price uniquely to his
+	offer sheet.  Additionally, orders that are impossible (such as to
+	support a non-existent unit) are allowed [the <tt>SHOW_PHANTOM</tt>
+	rule], but will be silently ignored at
+	processing time.  This rule is incompatible with the <tt>ZERO_FOREIGN</tt>
+	rule.
+	<i>Blind Payola is known as "Tin Cup" Diplomacy.</i>
+
+<a name=EBAYOLA></a><p><dt><b><tt>EBAYOLA</tt></b><dd>
+<!-- RULE EBAYOLA -->
+	This variation comes from the mind of Payola creator John Woolley.
+	In eBayola, the total cost of a successful bribe is automatically
+	reduced to one silver piece more than the highest <i>non-</i>winning
+	bribe.  Any resulting cost savings for the contributor(s) to the
+	winning bribe are awarded to the powers according to their position in
+	the acceptance list of the bribed unit (then, if necessary, randomly
+	to any contributing observers).
+<!-- RULE END -->
+
+<a name=HIDE_COST></a><p><dt><b><tt>HIDE_COST</tt></b><dd>
+<!-- RULE HIDE_COST -NO_LEDGERS -->
+	In the notices sent after each movement phase, players are <u>not</u>
+	provided with information on the total amount of money accepted by
+	each of his units.
+<!-- RULE END -->
+
+<a name=HIDE_OFFERS></a><p><dt><b><tt>HIDE_OFFERS</tt></b><dd>
+<!-- RULE HIDE_OFFERS -NO_LEDGERS -->
+	In the notices sent after each movement phase, players are <u>not</u>
+	provided a copy of their submitted offer sheet or the details
+	concerning which of these offers were accepted and which were not.
+	The notice provides each player only with the orders that his own
+	units will issue, the total amount paid to each of his own units,
+	and the player's new, adjusted balance.  This rule is useful when playing
+	Payola face-to-face and issuing printouts of the turn notices to
+	the players, since the players will not be able to reliably
+	disclose the full details of their offers.
+<!-- RULE END -->
+
+<a name=PUBLIC_TOTALS></a><p><dt><b><tt>PUBLIC_TOTALS</tt></b><dd>
+<!-- RULE PUBLIC_TOTALS -->
+    The total bribe amount paid to each unit is made available to all
+	players on the Web, and is kept at the Website for perpetual reference
+    (no data on the source of funds is made public, however).  This rule
+	causes a change in the behavior of the <tt>EBAYOLA</tt> rule,
+	described in the discussion of that rule.
+<!-- RULE END -->
+
+<a name=NO_LEDGERS></a><p><dt><b><tt>NO_LEDGERS</tt></b><dd>
+<!-- RULE NO_LEDGERS -HIDE_COSTS -HIDE_OFFERS -->
+    No expenditure and balance report is sent to the players after each turn.
+<!-- RULE END -->
+</dl>
+
+		<a name=16></a>
+<p><HR><br><dt><b>3.5 Offers</b>
+<!-- RULE GROUP V5 Bribe Offer -->
+<dl>
+<a name=DIRECT_ONLY></a><p><dt><b><tt>DIRECT_ONLY</tt></b><dd>
+<!-- RULE DIRECT_ONLY -->
+	Only one offer may be made by any player to any given unit.  Additionally,
+	wildcard bribes (<tt>&gt;</tt>, <tt>@</tt>, <tt>!</tt>, <tt>&amp;</tt>)
+	are not allowed.
+<!-- RULE END -->
+
+<a name=PAY_DUMMIES></a><p><dt><b><tt>PAY_DUMMIES</tt></b><dd>
+<!-- RULE PAY_DUMMIES !REMOTE_BRIBE !TOUCH_BRIBE -->
+	Bribes may only be offered to units that are owned by <tt>DUMMY</tt>
+	powers.  That is, each power is in control of his or her own units,
+	ordering them as in normal, non-Payola games, but all unowned powers
+	will operate in Payola mode. 
+	[This rule automatically includes the <tt>CD_DUMMIES</tt> rule.]
+	Note that (even in games that do not use the <tt>PAY_DUMMIES</tt> rule)
+	acceptance lists for <tt>DUMMY</tt> powers are not used.
+	Instead, all ties for control of a <tt>DUMMY</tt> unit and that involve
+	bribes paid for by different powers or different
+	set of powers are decided by <tt>HOLD</tt>ing the contested unit and
+	reporting that the total cost paid for the <tt>HOLD</tt>
+	was one AgP greater than the amount offered for the bribes involved
+	in the tie.
+<!-- RULE END -->
+
+<a name=NO_SAVINGS></a><p><dt><b><tt>NO_SAVINGS</tt></b><dd>
+<!-- RULE NO_SAVINGS -->
+	The savings request (<tt>$</tt>) and bribe plateaus (<tt>#</tt>)
+	are not allowed.
+<!-- RULE END -->
+
+<a name=NO_PLATEAU></a><p><dt><b><tt>NO_PLATEAU</tt></b><dd>
+<!-- RULE NO_PLATEAU -->
+	Bribe plateaus (<tt>#</tt>) are not allowed.
+<!-- RULE END -->
+
+<a name=PAYOLA_CLASSIC></a><p><dt><b><tt>PAYOLA_CLASSIC</tt></b><dd>
+<!-- RULE PAYOLA_CLASSIC +FLAT_TAX +NO_SAVINGS +DIRECT_ONLY +ZERO_FOREIGN !BLIND -->
+	This rule indicates that the game is played using the original
+	rules of the Payola variant.  It includes all of the following:
+	<tt>NO_SAVINGS</tt>, <tt>DIRECT_ONLY</tt>, <tt>FLAT_TAX</tt>,
+	and <tt>ZERO_FOREIGN</tt>.  Because of this last inclusion,
+	this rule is incompatible with <tt>BLIND</tt>.
+<!-- RULE END -->
+
+<a name=LIMIT_OFFERS></a><p><dt><b><tt>LIMIT_OFFERS</tt></b><dd>
+<!-- RULE LIMIT_OFFERS +DIRECT_ONLY -->
+	This rule requires that the sum total of all offers made by a player
+	do not exceed the amount in that player's treasury.
+<!-- RULE END -->
+
+<a name=REMOTE_BRIBE></a><p><dt><b><tt>REMOTE_BRIBE</tt></b><dd>
+<!-- RULE REMOTE_BRIBE -TOUCH_BRIBE !PAY_DUMMIES -->
+	Bribes may only be offered to the player's own units and to any
+	foreign units that are <i><b>not</b></i> adjacent to one of the
+	player's own units.  Adjacency is determined by the ability of
+	either of the two units to support the other to hold.
+	Note that if the <tt>CD_DUMMIES</tt> rule is also used, this restriction
+	is disregarded in bribes issues to any <tt>DUMMY</tt> power.  That is,
+	units owned by <tt>DUMMY</tt> powers may be bribed by any player
+	without regard to adjacency.
+<!-- RULE END -->
+
+<a name=TOUCH_BRIBE></a><p><dt><b><tt>TOUCH_BRIBE</tt></b><dd>
+	<tt>TOUCH_BRIBE</tt> is the opposite of <tt>REMOTE_BRIBE</tt> (above).
+<!-- RULE TOUCH_BRIBE -REMOTE_BRIBE !PAY_DUMMIES -->
+	Bribes may only be offered to the player's own units and to any
+	foreign units that are adjacent to one of the player's own units.
+	Adjacency is determined by the ability of either of the two units
+	to support the other to hold.  Note that because only certain powers
+	may issue bribes to each unit, there is a stronger chance that a
+	player will know which foreign power purchased hostile control of
+	his unit on a turn.
+	Note that if the <tt>CD_DUMMIES</tt> rule is also used, this restriction
+	is disregarded in bribes issues to any <tt>DUMMY</tt> power.  That is,
+	units owned by <tt>DUMMY</tt> powers may be bribed by any player
+	without regard to adjacency.
+
+<a name=ZERO_FOREIGN></a><p><dt><b><tt>ZERO_FOREIGN</tt></b><dd>
+<!-- RULE ZERO_FOREIGN -->
+    Players are permitted to offer bribes having a 0 AgP amount to foreign
+    units (units not their own).  [This rule cannot be used with
+	<tt>BLIND</tt>.]
+<!-- RULE END -->
+
+</dl>
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+		<a name=17></a>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="17"></a></a><b>4. Rules Affecting Only Crystal Ball Games</b></td>
+<!-- RULE VARIANT xtalball +FICTIONAL_OK +PROXY_OK +DEFAULT_UNORDERED -->
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+		<dl>
+		<a name=17></a>
+<p><dt><b>4.1 Included, Forbidden, and Ignored Rules</b>
+<p><dd>
+	Crystal Ball games always include <tt>FICTIONAL_OK</tt>
+	and <tt>PROXY_OK</tt>.  However, if the rule <tt>NO_PROXY</tt>
+	is used, the <tt>PROXY_OK</tt> rule is suppressed (thus allowing
+	play of Crystal Ball without the proxy order).
+	<p>Any rules that are specific to any other variant
+	-- such as <tt>NO_CHECK</tt> and <tt>CD_SUPPORTS</tt> (which are
+	specific to standard games) -- are either not allowed or are
+	silently ignored.
+</dl>
+		<a name=18></a>
+<p><HR><br><dl><dt><b>4.2 Secrecy</b>
+<dl>
+<!-- RULE GROUP 6V2 Order List Secrecy -->
+<a name=PUBLIC_LISTS></a><p><dt><b><tt>PUBLIC_LISTS</tt></b><dd>
+<!-- RULE PUBLIC_LISTS -->
+    The order lists of all the players are broadcast with each move
+    submission and made available on the Web pages.  Without this rule,
+    each power may only see his own order lists until the end of the
+    game.  (This rule is pretty much <i>de rigeur</i> for
+	<tt>NO_PRESS</tt> Crystal Ball games.)
+<!-- RULE END -->
+<P>
+<a name=LIMIT_LISTS></a><p><dt><b><tt>LIMIT_LISTS</tt></b><dd>
+<!-- RULE LIMIT_LISTS -->
+	This rule is identical to <tt>PUBLIC_LISTS</tt> (above), except
+	that the maximum number of each power's written orders that will
+	be revealed is the number of supply centers controlled by the
+	largest player on the board. The <tt>LIMIT_LISTS</tt> rule supercedes
+	<tt>PUBLIC_LISTS</tt>.
+<!-- RULE END -->
+</dl>
+</dl>
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<:
+footer()
+:>

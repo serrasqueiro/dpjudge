@@ -1,0 +1,181 @@
+<:
+page.dppd = DPPD()
+
+#	--------------------------------------------------------------------------
+def login():
+	if 'id' in vars(page):
+		try: data = page.dppd.lookup(id = int(page.id))
+		except: data = None
+	else: data = page.dppd.lookup(email = page.email)
+	page.id = None
+	if not data: item = 'wrong e-mail address or password.'
+	elif data['status'] == 'ACTIVE':
+		if page.password.upper() != data['password'].upper():
+			item = 'wrong password.'
+		else: page.id = data['id']
+	elif data['status'] != 'PENDING':
+		item = 'DPjudge system without authorization.'
+	elif (data['password'].startswith(page.password + '/')
+	or data['password'].upper() == page.password.upper()):
+		page.id = data['id']
+		page.dppd.db.execute("""
+			update User
+			set status = 'ACTIVE', password = '%s'
+			where id = %d
+			""" % (data['password'][len(page.password) + 1:], data['id']))
+	else: item = ('wrong confirmation number.\\n\\n'
+			'Remember, the password that you must use for your first\\n'
+			'login must be the confirmation number that was e-mailed\\n'
+			'to you at %s.' % data['address'])
+	if page.id is not None: return data
+	page.write(
+		"""
+		<script>
+		alert("You entered the %s\\n\\nPlease try again.");
+		window.history.back();
+		</script>
+		""" % item)
+	raise SystemExit
+#	--------------------------------------------------------------------------
+def header():
+	print(
+	"""
+	<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666"
+		width=750 align=center>
+	<tr valign=top>
+		<td colspan=3>
+			<table border=0 cellpadding=0 cellspacing=0 width=100%>
+			<tr>
+				<td align=center width=225><A href=<URL>><img
+					src="<URL>/images/dpjudge_logo.gif"
+					height=43 width=205 vspace=10 border=0></a></td>
+				<td width=1 class="border"><img
+					src="<URL>/images/spacer.gif" width=1></td>
+				<td class="gameheader" align=center>
+					<table border=0 cellpadding=5 cellspacing=0 width=100%>
+					<tr>
+						<td class="bodycopy" align=center>
+	""")
+	page.dppd.db.execute('select id, url from Judge order by id')
+	judges = ['<a href=%(url)s>%(id)s</a>' % judge
+				for judge in page.dppd.db.fetchall()]
+	page.write("<b>The DPjudges: %s" % '&nbsp;|&nbsp;'.join(judges))
+	page.write(
+	"""
+						<p>
+						<a href="<URL>?page=Policies">DPjudge house rules</a> |
+						<a href="<URL>?page=About">about the DPjudge</a> |
+						<a href="<URL>?page=Questions">DPjudge questions</a>
+						</td>
+					</tr>
+					</table>
+				</td>
+			</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td colspan=3 height=5><!--SPACER--></td>
+	</tr>
+	""")
+	if id is None: return
+	page.write(
+	"""
+	<tr>
+		<th colspan=3 bgcolor=yellow class=bodycopy><font color=red>
+		<font size=3>%s</font><br>
+		Player #%d&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		Status: %s</th>
+	</tr>
+	<tr>
+		<td colspan=3 height=5><!--SPACER--></td>
+	</tr>
+	""" % (player.get('name', '?'), id, status))
+#	--------------------------------------------------------------------------
+def leftside():
+	page.write('<table border=0 cellpadding=10 cellspacing=0>')
+	if id is not None:
+		myGroupButton = ''
+		page.dppd.db.execute("""
+		SELECT Count(*) group_count
+		  FROM Groups t1
+			   INNER JOIN Members t2 ON t1.id = t2.group_id
+			   INNER JOIN GroupStatus t3 ON t1.curr_status = t3.id
+			   INNER JOIN MemberStatus t4 ON t2.curr_status = t4.id
+		 WHERE t3.status_id <> 2
+		   AND t4.status_id <> 2
+		   AND t2.user_id = %d
+		""" % id)
+		groups = page.dppd.db.fetchone()['group_count']
+		if groups:
+			myGroupButton = """
+				<input type=button value="My Groups"
+				  onclick=setPage('Groups') class=inputSubmit2>
+			"""
+		page.write("""
+		<script>
+		function setPage(x)
+		{
+			document.dppdPage.page.value = x;
+			document.dppdPage.submit();
+		}
+		</script>
+		<form name=dppdPage method=post>
+		<input type=hidden name=variant value=dppd>
+		<input type=hidden name=page value="">
+		<input type=hidden name=id value="%d">
+		<input type=hidden name=password value="%s">
+		<tr nowrap>
+			<td>
+				<input type="button" value="My Games"
+					onclick=setPage('Login') class="inputSubmit2">
+				<input type="button" value="My Addresses"
+					onclick=setPage('Email') class="inputSubmit2">
+				<input type="button" value="Change Password"
+					onclick=setPage('Passchange') class="inputSubmit2">
+				<P class=bodycopy><hr><p class=bodycopy>
+				New Game Name:<br><input type=text class=inputBox name=newGame>
+				New Game Password:<br><input type=password class=inputBox name=newPass>
+				Variant:<br><select class=bodycopy name=newVariant>
+				<option value=STANDARD selected>STANDARD</option>
+				<option value=PAYOLA>PAYOLA</option>
+				<option value=XTALBALL>XTALBALL</option></select>
+				<input type=button class=inputSubmit2 value="Start New Game" onclick=setPage('Login')>
+				<P><HR>%s
+				<P class=bodycopy align=center>
+				Someday, a couple of buttons
+				called<br>"Search Games"<br>and<br>"Search Players"<br>
+				will be here.
+				<!--
+				<input type="button" value="Search Games"
+					onclick=setPage('Search') class="inputSubmit2">
+				<input type="button" value="Search Players"
+					onclick=setPage('Player') class="inputSubmit2">
+				-->
+				<P>
+				<HR>
+			</td>
+		</tr>
+		</form>
+		""" % (id, page.password, myGroupButton))
+	page.write("""
+		<tr>
+			<td nowrap align=right>
+				<p class=bodycopy><b>Help for Players:</b><p>
+				<a href=<URL>?page=Format>Order Format</a><br>
+				<a href=<URL>?page=Email>E-Mail Commands</a><br>
+				<a href=<URL>?page=Rules>Supported Rules</a><br>
+				<a href=<URL>?page=About>General Info</a><br>
+				<a href=<URL>?page=Questions>Common Questions</a><br>
+				<p class=bodycopy><b>For GameMasters:</b><p>
+				<a href=<URL>?page=Status>Game Status File</a><br>
+				<a href=<URL>?page=Map>Variant Map Files</a><br>
+			</td>
+		</tr>
+		</form>
+		</td>
+		</tr>
+		</table>
+		""")
+#	--------------------------------------------------------------------------
+:>

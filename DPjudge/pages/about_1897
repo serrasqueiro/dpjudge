@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: 1897 Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"><img src="<URL>/images/spacer.gif" width=1></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>The 1897 Variant</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Contents</b></td>
+<td align=center class="grey"><a name="1"></a><b>Basic Rules</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=5>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br>
+		<b>&middot;</b>&nbsp;<a href="#2">Examples</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		<form action=<URL> target=1897>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=1897>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr><td class=bodycopy>
+<ol>
+<li>The normal rules of Diplomacy apply except where amended herein. 
+<P><li>The game starts in Winter 1897, when each player reveals which of
+	their regular home supply centers will be their initial home supply
+	center. However, Russia may not choose St. Petersburg. In Winter 1897,
+	each player builds a unit in their chosen initial home supply center.
+<P><li>The game then proceeds as normal with the exception that all centers
+	owned by each player at the beginning of the Winter 1899 Adjustments
+	phase become the player's home supply centers for the duration of the game. 
+<p><li>If a player holds another player's originally chosen home
+	supply center in Winter 1899, it becomes a home supply center for the
+	owning player and is <i>no longer</i> a home supply center for its original
+	owner.  Players are referred to by their country of origin, even if they do
+	not own any centers within their original homeland.
+<P><li>Regular home supply centers that are not captured before Winter 1899
+	are <i>not</i> home centers in this variant. 
+</ol>
+</td></tr></table>
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="2"></a><b>Examples</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+
+<ol>
+<li>
+England selects London as her initial home supply center. She builds an army
+there, and moves to Liverpool by Fall 1898. Having two centers and one unit,
+she builds a fleet in London in Winter 1898, and moves the fleet into Norway
+in Fall 1899 via the North Sea, moving the army into Edinburgh in Spring 1899
+and holding there in Fall 1899. She now controls London, Liverpool, Edinburgh,
+and Norway: these are her home centers for the remainder of the game, and she
+may build units in any of these when she is entitled to do so (including
+during the immediately following Winter 1899 builds). 
+<p>
+<center>
+<table border><tr bgcolor=#bbbbbb><th class=bodycopy align=center>Phase</th><th class=bodycopy align=center>Orders</td></tr>
+<tr><td class=bodycopy align=right valign=top>Winter 1897</th><td><tt>Build A Lon</td></tr>
+<tr><td class=bodycopy align=right valign=top>Spring 1898</th><td><tt>A Lon - Yor</td></tr>
+<tr><td class=bodycopy align=right valign=top>Fall 1898</th><td><tt>A Yor - Lvp</td></tr>
+<tr><td class=bodycopy align=right valign=top>Winter 1898</th><td><tt>Build F Lon</td></tr>
+<tr><td class=bodycopy align=right valign=top>Spring 1899</th><td><tt>A Lpl - Edi<br>F Lon - NTH</td></tr>
+<tr><td class=bodycopy align=right valign=top>Fall 1899</th><td><tt>F Nth - Nwy<br>A Edi H</td></tr>
+<tr><td class=bodycopy align=right valign=top>Winter 1899</th><td class=bodycopy>England's home supply centers<br>are <tt>Edi</tt>,
+	<tt>Lon</tt>, <tt>Lvp</tt>, and <tt>Nwy</tt></td></tr>
+</table>
+</center><p>
+<li>
+Austria selects Trieste as his initial home supply center. He builds an army
+there, and moves to Serbia in Spring 1898, holding there in Fall 1898. He
+builds a second army in Trieste, and moves it through Serbia in Spring 1899
+into Greece in Fall 1899, while his first army moves from Serbia into Rumania
+in Spring 1899, and holds in Fall 1899. However, Germany, who began with an
+army in Munich and built a second one there in Winter 1898, moves into Tyrolia
+in Spring 1899, and into Trieste in Fall 1899. Austria's home centers become
+Serbia, Greece, and Rumania, while Germany's include Munich and Trieste. With
+three centers and two units, Austria may build one unit in his only open home
+center, Serbia. 
+<p>
+<center>
+<table border><tr bgcolor=#bbbbbb><th class=bodycopy align=center>Phase</th><th class=bodycopy align=center>Orders</th></tr>
+<tr><td class=bodycopy valign=top align=right>Winter 1897</th><td class=bodycopy>Build A Tri</td></tr>
+<tr><td class=bodycopy valign=top align=right>Spring 1898</th><td><tt>A Tri - Ser</td></tr>
+<tr><td class=bodycopy valign=top align=right>Fall 1898</th><td><tt>A Ser H</td></tr>
+<tr><td class=bodycopy valign=top align=right>Winter 1898</th><td><tt>Build A Tri</td></tr>
+<tr><td class=bodycopy valign=top align=right>Spring 1899</th><td><tt>A Tri - Ser<br>A Ser - Rum</td></tr>
+<tr><td class=bodycopy valign=top align=right>Fall 1899</th><td><tt>A Ser - Gre<br>A Rum H</td></tr>
+<tr><td class=bodycopy valign=top align=right>Winter 1899</th><td class=bodycopy>Austria's home supply centers<br>are <tt>Gre</tt>, <tt>Rum</tt>, and <tt>Ser</tt></td></tr>
+</table>
+</center>
+</ol>
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="3"></a><b>Design Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+
+<p>
+This variant is a revision of <a href=<URL>?page=about:1898>1898</a>.
+In 1898, players have to recapture their regular home supply centers.
+This revision gives players the option of deciding which centers they
+want for their home supply centers.
+<!--
+In 1898 players start from a
+pre-fixed initial home supply center. In 1897 they decide for themselves,
+as a result of diplomacy, where to start from. 
+<p>
+In 1898, players spend the pre-1900 seasons recapturing their original
+Diplomacy boundaries. In this variant players have the option of going
+for different boundaries. 
+-->
+<p>
+In August 1992, <a href=mailto:westerm@aclcb.purdue.edu>Rick Westerman</a>
+suggested a revision of 1898 along these lines. His ideas were discussed in
+the <a href=news:rec.games.diplomacy><tt>rec.games.diplomacy</tt></a> newsgroup.
+The main contributor to this discussion was
+<a href=mailto:amt5man@sun.leeds.ac.uk>Mark Nelson</a>. The first person to
+codify the discussion into a set of rules was
+<a href=mailto:irilyth@infersys.com>Josh Smith</a>.
+This set of rules is a revision by Mark Nelson and Josh Smith of Josh's
+set of rules. 
+
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+<:
+footer()
+:>

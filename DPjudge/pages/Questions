@@ -1,0 +1,328 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Questions About The DPjudge</title>
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=2>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>Answers to Common Questions About the DPjudge</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=Policies">house rules</a> |
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=2 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Questions About...</b></td>
+<!--
+<td align=center class="grey"><a name="1"></a><b>The DPjudge in General</b></td>
+-->
+<td align=center class="grey"><a name="2"></a><b>The Web Interface</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="<URL>?page=About">The DPjudge in General</a><br>
+		<b>&middot;</b>&nbsp;<a href="#2">The Web Interface</a><br>
+		&nbsp;&nbsp;(including the Season-By-Season Map)<br>
+		<b>&middot;</b>&nbsp;<a href="<URL>?page=Email">How and What to E-Mail the DPjudge</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">How to Write Orders with the DPjudge</a><br>
+		<b>&middot;</b>&nbsp;<a href="<URL>?page=Rules">The Various Game "Rules"<br>
+		&nbsp;&nbsp;&nbsp;that the DPjudge Supports</a><br>
+		<b>&middot;</b>&nbsp;<a href="#4">Acronyms and Abbreviations</a><br>
+		<b>&middot;</b>&nbsp;<a href="#5">When the DPjudge Processes Moves</a><br>
+		<b>&middot;</b>&nbsp;<a href="#6">Mastering a DPjudge Game</a><br>
+		&nbsp;&nbsp;(including how a game gets created)<br>
+		<b>&middot;</b>&nbsp;<a href="#7">Move Adjudication Details</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+<td>
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--DESIGN CREDITS BEGIN HERE-->
+		<P><b>Can I set a bookmark (fans of Bill Gates: a "favorite") that will get me straight to my game?</b><p>
+		Yes.  Paste the following lines together into a single line, with no included whitespace, and there you have it:<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;<URL>?<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;game=<font color=red><i>gameName</i></font>&amp;<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;power=<font color=red><i>powerName</i></font>&amp;<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;password=<font color=red><i>yourPassword</i></font>
+		<p>Note that if your <tt><i>powerName</i></tt> contains a number-sign
+		(<tt>#</tt>, as in <tt>POWER#2</tt>, which is what you might be before
+		a game begins), or, similarly, if your password contains that character,
+		the rules of the Internet require that you change the <tt>#</tt>
+		character to <tt>%23</tt> and if you don't, the URL won't work at all.
+		
+<P><HR>
+		<P><b>Where can I get a PostScript viewer so that I can see the PostScript "Season By Season" Maps?</b><p>
+		At the <a href=http://www.cs.wisc.edu/~ghost>Ghostscript, Ghostview, and GSview</a> site.  You need ghostscript (which is called <tt>gs</tt> if you need it for a Personal Computer) <b><u>and</u></b> ghostview (<tt>gsview32</tt> for the PC).  Downloading and installing ghostview (<tt>gsview32</tt>) should drag ghostscript along with it and set you all up.  It should even tell your Web browser to use gsview to view PostScript files (if it doesn't, you can teach your Web browser to do so yourself).  Note that you will want to set the "Orientation" in ghostview to "Auto."
+		<!--DESIGN CREDITS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="3"></a><b>How to Write Orders and Otherwise Communicate with the DPjudge</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--DESIGN CREDITS BEGIN HERE-->
+		<b>I know how to write orders when playing a table-top Diplomacy game, but what will the DPjudge accept as a valid order?</b><p>
+		Since the DPjudge supports a number of Diplomacy variants, and since orders in some of these variants (Payola Diplomacy, for example) can look a little different from those of a standard ("plain vanilla") Diplomacy game, I'm afraid there is no single answer for this question.
+		
+		<P>But if I answer the question strictly in regards to standard Diplomacy, then really, if you already know how to write a Diplomacy order that would be understood at a table-top game, you cannot go too far wrong.  Just enter the order the way you know how.  I know that's scary for someone completely new to the DPjudge, but what's even more reassuring is the fact that if you <i>do</I> enter an order the DPjudge does not understand, it will let you know about it and you will be able (and obliged!) to correct your error.
+		
+		<P>The only thing that might throw you (as a table-top player new to the world of electronic Diplomacy play) is the way in which a convoying army's order is written:  it must contain, in order, each and every one of the bodies of water through which the army will travel.  You can <a href=<URL>?page=Format#convoy>see some examples and read more about this</a>.
+		
+		<P>In case you are <i>still</i> concerned, though, that you will not format your orders correctly when you enter them, and you want to make sure to get them right the first time, you can read <a href=<URL>?page=Format>the hard-and-fast rules for order formatting</a>.  As you'll see, they're not really all that hard or fast.
+		
+<P><HR><p>
+<a name=3B></a>
+		<b>I can probably figure out how to interface with the DPjudge over the Web.  But will
+I need (or want) to use the DPjudge's e-mail interface as well? And if so, how do I do so?</b><p>
+		You definitely <i>do</i> need to send e-mail to the DPjudge at least once, since the e-mail interface provides the only way a person can actually join a game. After that, there are reasons when you may need or want to use the e-mail interface instead of the Web.  The most common of these reasons is to send press.  While press can indeed be composed and sent from the Web interface, it is often more convenient to write messages using your own favorite e-mail application.  This gives you the ability to include the text of any message to which you are replying, etc. So the answer to your first question is that yes, you will probably want to become familiar with the e-mail interface. The answer to your second question is that everything you need to know about how to do so is in the <a href=<URL>?page=Email>E-Mail Interface Question and Answer List</a>.
+		<!--DESIGN CREDITS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="4"></a><b>Acronyms and Abbreviations</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--DESIGN CREDITS BEGIN HERE-->
+		<b>I see a few acronyms that I don't understand.  What do <tt>(NMR)</tt> and <tt>(NVR)</tt> mean?</b><p>
+		The abbreviations NMR and NVR are standard lingo in the Diplomacy hobby. They stand for "No Move Received" and "No Vote Received."  Here at the DPjudge, though, you can always read them as "No Move Received <i><b>Yet</b></i>" and "No Vote Received <b><i>Yet</i></b>."  In other words, the abbreviations are used by the DPjudge to indicate that you have not yet provided a retreat or adjustment phase order (for example) or a vote on a draw or concession proposal.  <b><i>Only</i></b> if the game is set up to cause powers to be put into civil disorder (CD) will it proceed without any moves that are marked <tt>(NMR)</tt>.
+
+<P><HR>
+		<P><b>How about <tt>DIAS</tt>?  What does that stand for?</b><p>
+		DIAS is another standard Diplomacy hobby term.  It stands for a Draw Including All Survivors.  By default, all games run by the DPjudge adhere to the rule limiting the ways in which a game can end to:
+		
+		<ol>
+		<li>a solo victory by (or concession to) a <i>single</i> player or
+		<li>a draw agreed to and shared by <i>all</i> players who own supply centers (a so-called "DIAS").
+		</ol>
+	
+		<P>If <a href=<URL>?page=Rules#NO_DIAS>a particular <tt>RULE</tt></a> is used, games <i>may</i> also be run as "No DIAS," meaning that draws can be declared among a subset of the uneliminated powers (if all survivors agree).  The implementation of "No DIAS" here at the DPjudge cleverly (if I do say so myself) avoids many of the negatives of the "No DIAS" implementation on the Ken Lowe judge.  However, as a purist, I personally still frown on the "No DIAS" setting.
+		<!--DESIGN CREDITS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="5"></a><b>When Does the DPjudge Process Moves?</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--DESIGN CREDITS BEGIN HERE-->
+		<b>What is the behavior of the "Wait for deadline before processing" checkbox on my Webscreen?</b><p>
+		Every player who has orders due on the current turn may direct that the turn not be processed until the deadline has been reached (perhaps to ensure ample negotiation time despite orders having been entered). A player may change this setting at any time, and (unless a specific optional <tt>RULE</tt> is used)
+the setting of each player is never announced to any other player.  This "wait flag" factors <i>only</i> into the examination that is described in answer to the next question.
+		
+<P><HR>
+		<P><b>So apparently the DPjudge does not process a move only when the game's deadline has been reached.  So when exactly will a game's moves be processed?  How does the DPjudge handle players who have not entered their orders by the time the deadline occurs?</b><p>
+		What happens is this:
+	
+		<ul>
+		<li>Every active game is checked for readiness every twenty minutes. A game is ready if:
+			<ol>
+			<li>All "active" players (see below) have issued orders <u><b><i>and</i></b></u>
+			<li><u>Either</u> the deadline is past <u>or</u> no player has set his "wait" flag <u><b><i>and</i></b></u>
+			<li>The game's <tt>DELAY</tt> number is zero. <i>(The two ways in which a game's </i><tt>DELAY</tt><i> number becomes non-zero are described later in this answer and in the answer to the next question.)</i>
+			</ol>
+		<li>If the game is ready, it is "locked" so that no one can change anything, and it is then processed. Processing at the DPjudge takes only a few seconds, so it is likely that you may never even encounter a "The game is waiting for processing of..." message on the Web screen (you'd have to catch it <i>right</i> in the middle of its work).
+		<li>If the game is <b><i><u>not</u></i></b> ready, then:
+			<ul>
+			<li>If the game's <tt>DELAY</tt> number is non-zero, it is decreased by one, and no further action is taken.
+			<li>Otherwise (if the <tt>DELAY</tt> number is zero), then
+				<ol>
+				<li>If the deadline has passed, the DPjudge sends out a	"late notice" to all players, and sets the game's <tt>DELAY</tt> value to <tt>24</tt> (meaning, don't yell about late players until another eight hours have passed).
+				<li>Otherwise, if the deadline has <b><i>not</i></b> passed, it does nothing at all.
+			 	</ol>
+			</ul>
+		</ul>
+
+<P><HR>
+		<P><b>I think I understand.  As long as no one has asked for the game to wait for the deadline, the game will process early if it orders have been submitted by all of its "active" players. But what exactly constitutes an "active" player?</b><p>
+		There are three answers here:
+		<ul>
+		<li>In a movement phase, a player is considered to be active only if the player owns at least one supply center.  This means that the game will not wait for orders from players who own one or more units, but who do not not own any supply centers (as a result of the action of the <tt>GARRISON</tt> rule, for example).
+		<li>In an adjustment phase, an active player is one who is eligible to build, or who is required to remove at least one but not all of that player's units.
+		<li>And finally, the most complicated case of all.  In a retreat phase, a player is active if the player has at least one unit in retreat, and if the player will not be eliminated regardless of every possible retreat, and if every possible retreat cannot possibly bounce against a unit being retreated by a player who will not be eliminated if the potentially bouncing unit is disbanded.
+		</ul>
+
+<P><HR>
+		<P><b>If I am the last player to put in my orders for the current turn, do I have an opportunity to change them before the turn processes?</b><p>
+		Yes, you do.  As you read above, the DPjudge processes games only at specific times (every twenty minutes).  Therefore, there is at least some delay after having entered orders.  To ensure that there is adequate delay, when the very last player to put in orders does so, the game's <tt>DELAY</tt> count is set to <tt>1</tt>.  <i>(Unless the deadline has already passed, in which case it is set to <tt>0</tt>, as discussed below.)</i>
+	
+		<!--<P>Note that the <tt>DELAY</tt> count is set to <tt>1</tt> <i>regardless</i> of any value it may currently have (for example, it may be at <tt>15</tt> because a "late notice" had recently been sent out).-->
+	
+		<P>Setting the <tt>DELAY</tt> count to <tt>1</tt> has the effect that the game will <b><i>not</i></b> be processed on the very next scheduled check.  This means that when the last player puts his offers in, he has somewhere between twenty and forty minutes to panic and change them (and, by changing them, obtain <i>another</i> 20 to 40 minutes, assuming the deadline has not arrived) before the game will be processed.
+
+<P><HR>
+		<P><b>What, if anything, changes when a deadline is reached?</b><p>
+		A few things.
+	
+		<P>First, if the last player to submit orders does so after the deadline (that is, while late), the <tt>DELAY</tt> count (described above) is <i>not</i> set to <tt>1</tt> but is instead set to <tt>0</tt>.  This means that this player has only twenty minutes or less before the phase <u>will be</u> processed.
+	
+		<P>Second, it is impossible to submit an <i>empty</i> list of orders after a deadline (doing so would have the effect of making or leaving a power late).
+		
+		<p>Third, unless a specific <tt>RULE</tt> is in use, it is impossible for a late power to send press (other than broadcast messages and messages sent only to the Master).  Additionally, if a (different) specific <tt>RULE</tt> <i>is</i> in use, it is impossible for any player to send press <i>to</i> a player who is late.
+		<!--DESIGN CREDITS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="6"></a><b>Mastering a DPjudge Game</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--DESIGN CREDITS BEGIN HERE-->
+		<b>How does a new game get created?</b><p>
+		A would-be GameMaster can create a new game through either the DPjudge's e-mail interface or the web interface.  Details on the <tt>CREATE</tt> command that would be e-mailed can be found in <a href=<URL>?page=Email#mastery>the e-mail interface questions and answers list</a>.  To start a game using the web interface, you must be registered with the DPPD.  Then, when you log in, you can create a game by using the left side of the screen.  Simply enter the game name and the password.  If you would like to use the PAYOLA or XTALBALL variants, choose those from the <i>Variant</i> selection box.  Click <i>Start New Game</i> to create the game in the USDP.
+
+<P><HR>
+		<P><b>How does a GameMaster configure a game to use certain variants?</b><p>
+		The Master for a game has access to the "status" file for the game, and can update it at any time according to the required <a href=<URL>?page=Status>status file syntax</a>.  In this way, the Master can add or remove <tt>RULE</tt> commands at will, consulting the <a href=<URL>?page=Rules>complete list of supported rules</a>.
+
+<P><HR>
+		<P><b>What Diplomacy variants are supported by the DPjudge?</b><p>
+		The complete list of supported variants can be found at <a href=<URL>>the main page for the DPjudge</a>.
+
+<P><HR>
+		<P><b>Can I teach the DPjudge a new map variant?</b><p>
+		Yes.  To completely support a map variant, two files are needed.
+		The first is the necessary <tt>dpmap</tt> PostScript file with a
+		<tt>.ps</tt> extensions (dpmap is the mapit-based PostScript map
+		generation program used by the DPjudge -- you can create mapit maps
+		using David Norman's
+		<a href=http://www.ellought.demon.co.uk/mapmaker.htm>MapMaker</a>
+		program).  The preferred (required) maps are those that have been
+		given the "Manusization" treatment to allow for colored supply
+		centers.  More information can be found at the
+		<a href=<POUCH>/manus/mapit>Manusized Mapit Webpage</a>.
+		The second file should have a <tt>.map</tt> extension and is the
+		DPjudge map description file.  This file is written using
+		<a href=<URL>?page=Map>DPjudge map file syntax</a>.  When you have
+		both of these files, simply e-mail them to the DPjudge keeper and he
+		can install them.  Your map variant will then be supported.
+		The hardest part is creating a decent-looking <tt>.ps</tt>
+		file.  Manus's advice is to find someone who's done it before and
+		convince them to make your <tt>.ps</tt> file, or else serve an
+		apprenticeship under them first, because Manus is notorious for
+		saying, "nope, sorry; that map doesn't look good enough."  They
+		need to be beautiful to make the cut.
+		<!--DESIGN CREDITS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="7"></a><b>Move Adjudication Details</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--DESIGN CREDITS BEGIN HERE-->
+		<b>What is the move adjudication algorithm?</b><p>
+		I'm happy you asked, because frankly, I'm rather proud of it.  I began from a skeleton of the method given in the Diplomacy Players Technical Guide (on which I collaborated), but soon took an independent path. If you're interested in reading it, <a href=<URL>?page=Algorithm>the complete adjudication algorithm</a> is available.
+
+<P><HR>
+		<P><b>I don't want to read the whole algorithm, so can you just tell me how the DPjudge handles Pandin's Paradox and the other convoying paradoxes?</b><p>
+		The problem of convoyed attacks cutting supports has caused a lot of people a lot of head-scratching over the years. <!-- Frankly, I've always preferred the 1976 rule, and never liked any of the later attempts to resolve the paradoxes that arise from it. --> The 1976 rule, quoted below, is simple.  A convoyed army cannot protect the fleets that convoy it.
+	
+		<blockquote>
+		<i>If a convoyed army attacks a fleet which is supporting a fleet which is attacking one of the convoy fleets, that support is not cut.</i>
+		</blockquote>
+	
+		<P>This just always seemed logical to me.  A convoying army "comes from" its original location and also "from" each fleet location along the way, so it seemed natural that the army should not be able to cut support directed against <i>any</i> of those spots. <!-- But I saw no reason to restrict its support-cutting power any further.  I feel pretty strongly that if a convoying army attacks a unit that is offering any support <i>other than</i> for an action against that convoying army's original location or the location of any fleet that is convoying the army, the support <i>should</i> be cut (as long as the convoy is not disrupted, of course). -->
+	
+		<P>However, <a href=<POUCH>/Zine/W1995A/Tactics/section3.htm#SecondOrder>paradoxes arise from this simple rule</a>, and to remedy them, the 1982 rules added <i>more</i> fleet supports to the set of those that a convoyed army cannot cut.  Specifically, a convoyed army cannot cut a support for any action in or into a space containing <i>any</i> convoying fleet. <!-- Not only does this grate at my sense of order, but (as we all know) it introduces -->
+	
+		<P> Although the 1982 rule introduces <a href=<POUCH>/Zine/W1995A/Tactics/section3.htm#Nightmare>new problems</a> -- the results that are yielded in one particular rare situation may be said to run counter to common-sense -- this rule does seem to be the best choice to resolve all cases. <!-- Even the Ken Lowe judge's algorithm results in some counter-intuitive results. -->
+	
+		<P><!-- I prefer an alternate approach. -->The problem with the 1976 rule lay in the exception that is made in the rules to actually <i>allow</i> the convoying fleet to cut the support <i>despite</i> the rule (quoted above) that says it cannot.  This exception, of course, is that the support <i>will be</i> cut if the attack dislodges the fleet.
+	
+		<P> As it turns out, to ensure sensible results, all I had to do to the rule was amend it as follows:
+
+		<blockquote>
+		<i>If a convoyed army attacks a fleet that is supporting any action in or into a location containing any convoying fleet, that support is not cut by the convoyed army <u><b>under any circumstance</b></u>.</i>
+		</blockquote>
+	
+		<P>In other words:
+	
+		<blockquote><b><font color=red><i>even if a fleet is dislodged by a convoyed attack, if the fleet is supporting a convoying fleet or an attack against a convoying fleet, the convoying army does <u>not</u> cut the fleet's support</i></font></b>
+		</blockquote>
+	
+		<!-- <P><i>[If the attack that the fleet is supporting succeeds (dislodging a convoying fleet), the convoy is disrupted and the army, of course, remains without support at its original position.]</i>-->
+	
+		<P>This reduces the number of possible inconsistencies in the results to a single case, which is that a fleet can be dislodged (by a convoying army) while delivering a valid, uncut support (for an attack on or defense of a convoying fleet). <i>Despite being dislodged, it can deliver a valid support.</i>
+	
+		<P>By leaving that support valid throughout adjudication -- never <i>ever</i> cutting it -- what this does is ensure that the convoying fleets truly do withstand all attempted assaults while delivering the army to its destination.
+	
+		<P> I don't find it too difficult to come up with a real-world justification for this amendment.  A successful beach landing will only come at the cost of some ships being battered more than they would be in an open-sea battle.  Even if the fleet guarding the beach against the invasion is forced into retreat, it has probably greatly aided any naval support it had, doing a lot of damage to the hulking, slow-moving ships that had to approach land so closely. In effect, such a supporting fleet makes the task of establishing a beach-head tougher.
+	
+		<P> The DPjudge also offers another adjudication option (a game parameter that the game's Master can set), which is simply that a fleet that is a beleaguered garrison may not convoy.
+		<!--DESIGN CREDITS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>
+<:
+footer()
+:>

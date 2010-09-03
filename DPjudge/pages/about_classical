@@ -1,0 +1,234 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Classical Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>The Classical Variant</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Contents</b></td>
+<td align=center class="grey"><a name="1"></a><b>Basic Rules</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=5>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br>
+		<b>&middot;</b>&nbsp;<a href="#2">Map Notes</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		<form action=<URL> target=classical>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=classical>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr><td class=bodycopy>
+	<!ol>
+<!li>
+The normal rules of the game of Diplomacy apply, with the following additions,
+exceptions, and clarifications.
+<p><!li>
+The map that is used is a representation of the Mediterranean Sea and the
+land that borders it, with political boundaries describing the ancient empires
+of the region.
+<p><!li>
+The five powers in the game, and the initial positions of their units, are
+shown below:
+<center>
+<table border>
+<tr><th class=bodycopy bgcolor=red>Rome</th>
+	<td><tt>Fleet Cumae</tt></tt>
+	<td><tt>Army Brundisium</tt></tt>
+	<td><tt>Army Roma</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=blue><font color=white>Carthage</th>
+	<td><tt>Fleet Panormus</tt></tt>
+	<td><tt>Fleet Leptis Magna</tt></tt>
+	<td><tt>Fleet Carthage</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=ltgreen>Macedon</th>
+	<td><tt>Fleet Cassandreaia</tt></tt>
+	<td><tt>Fleet Kallatis</tt></tt>
+	<td><tt>Army Pella</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=black><font color=white>Syria</th>
+	<td><tt>Fleet Tyre</tt></tt>
+	<td><tt>Army Antioch</tt></tt>
+	<td><tt>Army Damascus</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=yellow>Egypt</th>
+	<td><tt>Fleet Alexandria</tt></tt>
+	<td><tt>Fleet Memphis</tt></tt>
+	<td><tt>Army Thebes</tt></tt>
+</tr>
+</table>
+</center>
+<p><!li>
+The game-year proceeds as in the standard game (Spring, Fall, Winter)
+except that the game's first year is 273 B.C., the second game-year is
+272 B.C., and so forth.
+<p><!li>
+The map contains thirty-five supply centers,
+so the victory criteria (18 supply centers)
+is the same as in the standard game.
+<p><!li>
+A power may build in any vacant supply center it owns during an adjustment
+phase, assuming at least one of the original SCs of that power is owned by
+that power.  Thus while there are permanent "home centers," as long as you
+own one, all owned centers act like home centers. For example, Carthage may
+build in Syracuse if:
+	<ul><li>it is vacant,<li>Carthage owns it, <li>Carthage is eligible
+	for a build and <li>Carthage still owns at least one of: Panormus,
+	Carthage, or Leptis Magna.</ul>
+[Note: This is known as "aberration-style" builds, from the Aberration
+variant in which they first appeared.]
+
+</td></tr></table>
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="2"></a><b>Map Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+
+<!ol>
+<p><!li>
+All Coastal provinces are assumed to have only one coast. Thus, for example,
+a fleet can enter Athens from Euboea and exit to Corinth the following turn.
+The same holds for Fleets entering Sinai from Memphis and proceeding to Petra
+(and vice versa), and for Agrigentum as well. For those who need to add
+realism to this rule, assume the wooden triremes and quinquiremes of the
+period were sufficiently light to portage within a single province.
+[Note, however, that two neighboring coastal provinces may not necessarily be
+adjacent for the purposes of sea travel. For example: Etruria and Cisalpina
+are both coastal provinces, but they do not touch on a water border, and thus
+a fleet in Etruria may not move to Cisalpina or vice versa.]
+<ul>
+<li>The Nile is navigable up to Thebes. Once in Thebes, a fleet may move to
+the Sinai, Sea of Reeds, or Nubian Desert via "portage."  [Note: This is just
+a regular move order; that is, a "portage" from Thebes to Nubian Desert is just
+Fleet Thebes to Nubian Desert, with no special indication that the fleet may
+have had to be lifted across a stretch of desert.  However, Fleet Thebes cannot
+move to Libya, for the same reasons that Fleet Cisalpina to Etruria is not
+allowed.]
+<P>
+<li>
+The Rhodes space in southeastern Asia Minor consists of the island of Rhodes
+proper and the mainland province of Caria, which Rhodes controlled. They are
+one province despite being separated by water.
+Thus, for example, a unit entering Rhodes from the Sea of Alexander may move
+to Pergamum in the following season (and vice versa). Note however, that the
+Lycian Sea and the Cretan Sea <i>are</i> adjacent (as are Lycian and Kos), despite
+this unusual land province.
+</ul>
+<P>
+The game has several land bridges, designed to improve interaction among the
+five powers.  [Note: Rhodes also has a land bridge indicated, but its special
+nature is defined by the rule above.]
+<ul>
+<li>
+Units (army or fleet) in a province with a land bridge may move to the
+opposite shore at full strength. In addition, a unit in such a province may
+give support to a unit on the other side, or support a move into the space
+across the bridge, also at full strength, regardless of the presence of a
+fleet in the waters between the land bridges.
+<P>
+<li>
+None of these land bridges precludes movement across the sea spaces they
+cross. For example, an army moving from Thrace to Troy will not impede a
+fleet moving from Propontis to Lesbos. In addition, these land bridges do
+not prevent convoys, so an army in Bithynia may convoy via Propontis and
+Lesbos to Pergamum, or even, should the need arise, directly across the
+Propontis to Thrace (this might be used to swap two units which would
+otherwise bounce). 
+</ul>
+
+
+</ul>
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="3"></a><b>Design Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+<p>
+The Classical variant was created by Andy Schwarz and Vincent Mous.
+A commercial version of the game is offered for sale by
+<a href=http://stupendousgames.com/classic>Stupendous Games</a>.
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+<:
+footer()
+:>

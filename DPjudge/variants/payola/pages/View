@@ -1,0 +1,116 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+import codecs
+open = codecs.open
+loadGame()
+if page.game.phase != 'COMPLETED' and (page.file == 'ledgers'
+or (page.file == 'chart' and 'PUBLIC_TOTALS' not in page.game.rules)):
+	checkPassword()
+showGameHeader()
+if page.power: checkPassword()
+:>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+<:
+gameHeader()
+:>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<:
+#	----------------------------------------------------------------------
+def showPrices():
+	page.write(
+		"""
+		<tr valign=top bgcolor="#CCCCCC">
+		<td align=center class="grey"><b>Bribe Chart for %s</b></td>
+		</tr>
+		<tr valign=top>
+		<td>
+		<center><table><tr><td>
+		""" % page.phase)
+	page.write('<pre>')
+	file, show = open(page.game.file(page.file), encoding='latin-1'), 0
+	for line in file:
+		if 'MOVEMENT' in line: show = line.strip().title() == page.phase
+		elif show:
+			word = line.split()
+			if not word: page.write()
+			elif (page.power and page.power.name == 'MASTER'
+			or page.game.phase == 'COMPLETED'): page.write(line[:-1])
+			else:
+				if line[0] != ' ': unit = ' '.join(word[:2])
+				if len(word[0]) == 1 and word[-1][0].isdigit():
+					page.write('%3s : %s ' %
+						(word[-1], unit) + line[len(unit):35].strip())
+	file.close()
+	page.write(
+		"""</pre>
+		</th></tr></table>
+		<form><input type=button class=inputSubmit
+			onclick=window.history.back()
+			value="Return To The Status Page"></form></center>
+		""")
+#	----------------------------------------------------------------------
+def showLedger():
+	page.write(
+		"""
+		<tr valign=top bgcolor="#CCCCCC">
+		<td align=center class="grey"><b>Account Ledger</b></td>
+		</tr>
+		<tr valign=top>
+		<td>
+		<center><table><tr><td>
+		""")
+	page.write('<pre>')
+	file = open(page.game.file(page.file), encoding='latin-1')
+	reading = text = not page.power
+	for line in file:
+		word = line.split()
+		if not page.power:
+			if word and word[0] == 'ENDPRESS': page.write()
+			else: page.write(line[:-1])
+		elif not reading:
+			header = ' '.join(word[:3])
+			if (header == 'PRESS TO ' + page.power.name
+			or (page.power.abbrev
+			and header == 'PRESS TO ' + page.power.abbrev)
+			or	' '.join(word[:4]) == 'ACCOUNT ACTIVITY FOR ' +
+				page.power.name): reading = text = 1
+		elif 'ENDPRESS' in line:
+			reading = 0
+			page.write()
+		else: page.write(line[:-1])
+	file.close()
+	if not text: page.write('(You Currently Have An Empty Ledger)')
+	page.write(
+		"""</pre>
+		</th></tr></table>
+		<form><input type=button class=inputSubmit
+			onclick=window.history.back()
+			value="Return To The Status Page"></form></center>
+		""")
+#	----------------------------------------------------------------------
+if page.file == 'ledgers': showLedger()
+elif page.file == 'chart': showPrices()
+else: viewFile()
+:>
+</td>
+</tr>
+<:
+footer()
+:>

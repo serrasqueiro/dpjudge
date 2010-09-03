@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Sail Ho! Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"><img src="<URL>/images/spacer.gif" width=1></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>The Sail Ho! Variant</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Contents</b></td>
+<td align=center class="grey"><a name="1"></a><b>Basic Rules</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=3>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		<form action=<URL> target=sailho>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=sailho>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr><td class=bodycopy>
+	<!ol>
+<!li>
+The normal rules of the game of Diplomacy apply, with the following additions,
+exceptions, and clarifications.
+
+<p><!li>
+The map that is used is a fictional body of water and the land surrounding it.
+The names of many of the map provinces in Sail Ho! are taken from mythology. 
+
+<p><!li>
+There are four powers in the game, named with the points of the compass:
+East, North, South, and West.  Each of these powers begins with two units,
+one in each of his home supply centers.
+<p><table align=center border>
+<tr><th class=bodycopy bgcolor=black><font color=white>East
+<td><tt>Army Centaur Forest
+<td><tt>Fleet Amazon Village
+</tr>
+<tr><th class=bodycopy bgcolor=blue><font color=white>North
+<td><tt>Army Hercules' Respite
+<td><tt>Army Village of Aeolus
+</tr>
+<tr><th class=bodycopy bgcolor=red><font color=white>South
+<td><tt>Army Depths of Hades
+<td><tt>Fleet Xena's Rest
+</tr>
+<tr><th class=bodycopy bgcolor=green><font color=white>West
+<td><tt>Fleet Isle of Lesbos
+<td><tt>Fleet Convent of the Vestal Virgins 
+</tr>
+</table><p>
+
+The map contains sixteen supply centers, half of which are located on the
+three islands in the center of the map.  Ownership of nine or more supply
+centers is required for victory.
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="3"></a><b>Design Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+<p>
+<!-- The Sail Ho! variant was created by Todd Hertzberg. -->
+The idea for Sail Ho! began with the three-player
+<a href=<URL>?page=about:hundred>Hundred Years' War variant</a>.
+In this variant, the game quickly
+(if not immediately) moves to the "mid-portion" of the game.
+That is, the neutral SC's are quickly acquired and the three players
+find themselves face-to-face with their adversaries.
+<P>
+During the variant creator's "Interview with Manus Hand"
+(published in <a href=<POUCH>/Zine>The
+Diplomatic Pouch Zine</a>) he came to realize that he shared Manus's
+enjoyment of convoying.  His next thoughts were that very few (if any)
+variants emphasize the convoy order. It was at this point that
+Sail Ho! was conceived.
+<P>
+After spending some time searching through the many variants he noticed that
+very few were designed for an even number of players (much less for four
+players).
+His intent was to create a variant which addressed these shortcomings.
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+<:
+footer()
+:>

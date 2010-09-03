@@ -1,0 +1,449 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Crystal Ball Diplomacy Questions</title>
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=2>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"><img src="<URL>/images/spacer.gif" width=1></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>Answers to Common Crystal Ball Questions</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a>
+		<br>
+		<a href="<POUCH>/Online/variants/crystalball.html">crystal ball rules</a>
+		</td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=2 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Questions About...</b></td>
+<td align=center class="grey"><a name="1"></a><b>Crystal Ball and Diplomacy</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Crystal Ball and Diplomacy</a><br>
+		<b>&middot;</b>&nbsp;<a href="#2">Order Lists (Including "Can I change</a><br>
+		&nbsp;&nbsp;<a href="#2">locked-in orders?")</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Proxies</a><br>
+		<b>&middot;</b>&nbsp;<a href="#4">Order Syntax (Including the coastal</a><br>
+		&nbsp;&nbsp;<a href="#4">support question)</a><br>
+		<b>&middot;</b>&nbsp;<a href="#5">Game Phases (Including "Why were</a><br>
+		&nbsp;&nbsp;<a href="#5">my units told to HOLD?")</a><br>
+		<b>&middot;</b>&nbsp;<a href="#6">The Website and the E-Mail</a><br>
+		&nbsp;&nbsp;<a href="#6">Press Interface</a>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+<td>
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+		<b>What is Crystal Ball Diplomacy anyway?</b><br>
+	Basically, Crystal Ball Diplomacy is a standard game of Diplomacy (on any
+	game map, etc.) in which you cannot see what happens on each turn
+	until your moves for the <i>next</i> turn are written.
+	Each player must guess or deduce what the board will look like to have
+	the best chance of successfully ordering his units to meet his objectives.
+	Think of it as having to sit far from the battles and have your orders
+	to the armies and navies dispatched by carrier pigeon, and needing to
+	conduct a complete campaign that way.
+
+<P><b>Okay, but what is the game of Diplomacy?</b><br>
+	If you asked this question, you have my sympathy that you managed to
+	live long enough to form intelligent questions without becoming
+	acquainted with -- nay, addicted to -- Diplomacy.  I won't answer the
+	question here, but will instead refer you to the Internet home page
+	of the Diplomacy hobby, <a href=<POUCH>>The
+	Diplomatic Pouch</a>, where you can find the answer you seek.
+	The Pouch is chock full of more information on The Game
+	than you can digest in one sitting -- one place to start is
+	<a href=<POUCH>/Welcome.html>The Pouch's "Welcome"
+	page</a>, where I wrote a quickie overview of Diplomacy itself.
+	<i>(Head for The Pouch now, because
+	the rest of these questions are answered assuming that you are familiar
+	with Diplomacy, and most Crystal Ball players cut their teeth on the
+	standard game first before trying to deal with the possibility that their
+	own units won't obey orders.)</i>
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="2"></a><b>Order Lists (Including "Can I change locked-in orders?")</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+		<b>How do I issue orders if I don't know where my
+pieces will be located?</b><br>
+	If you issue an order for a unit that isn't there (for example,
+	if you order an army in Paris to move to Burgundy, but there is
+	no army in Paris when the time comes for your orders to be issued),
+	the order has no effect.  Perhaps this is because the army already moved
+	to Burgundy on the previous turn (you had thought perhaps it would
+	bounce) -- if so, hopefully you have also issued an order for an army
+	in Burgundy in case this is indeed what happened.
+
+<P><b>Looks like I'll have to guess where my units will
+end up.  No problem.  I'll just issue an order for a unit in every single
+place on the board and those that are mine will follow those orders.
+Can't I just do this?</b><br>
+	No, you can't just do this.  If you could, everyone would do it, and
+	what fun would that be?
+	You need to make your best attempt to learn where your units will be,
+	because the number of wrong guesses you can make on a turn is limited.
+	<P>
+	Each player's order list can contain only a certain number of
+	orders that will be "considered."  After that number, any orders
+	appearing later in the list are completely ignored.
+	<P>
+	The number of
+	orders that will be "considered" is the same as the number of supply
+	centers held by the largest power on the board.
+	<P>
+	So if you are the largest power on the board and you want to issue
+	an order to every one of your units, you have no room for error.
+	You have to know (or guess correctly) where every one of your units
+	will be if you truly wish to get an order to each and every one of them.
+	By contrast, a smaller power can issue more orders than he has units,
+	which allows him more of a chance to "find" and issue orders to each
+	of his units.
+
+<P><b>So you're saying I always have one set of
+orders that I've pre-issued, and they're "locked-in," right?  Well,
+what if it turns out I was wrong about where my units ended up.  Can
+I change my "locked-in" orders?</b><br>
+	No.  That's why they're called "locked-in."  There is, however, one
+	(and only one) exception.
+	<P>
+	You <i>will</i> be allowed to <i>rearrange</i> the sequence of the
+	orders in your "locked-in" list for the first Fall phase of the game
+	(that is, you may add no new orders, and remove no currently listed
+	orders), if and only if the GameMaster allows you to do so.
+	You must request permission to do this, and the GameMaster must agree
+	that your reason for the request is because it is apparent from your
+	order list that it was written in ignorance of Rule 3.1.
+	<P>
+	Rule 3.1 limits the number of orders that each player will have
+	at his useful disposal.  Here is an example of a Fall 1901 order
+	list written in obvious ignorance of Rule 3.1.
+	<dl><dd><tt>
+		F ENG S A PIC - BEL<br>
+		F BRE - ENG<br>
+		A BUR S A PIC - BEL<br>
+		A MAR - BUR<br>
+		A PIC - BEL</tt></dd></dl>
+	The obvious intention of this order list is to provide as much
+	support as possible to a move from Picardy to Belgium.  However,
+	by virtue of Rule 3.1, the fifth and subsequent orders in the list
+	are completely ignored, so the Picardy army will not receive
+	the order to move to Belgium.  The French player wanted to cover both
+	his uncertainties (that his Springtime moves to the English Channel
+	and to Burgundy may have bounced) but he cannot.  If the GameMaster
+	notices this type of order list, or if he is requested by the owner
+	of such an order list, he would allow the player to re-sequence the
+	orders in the list.
+	<P>
+	Notice that this exception is made <i>only</i> for the order list
+	submitted for the <i>first Fall movement phase</i> of the game, and
+	that it allows the player <i>only</i> to re-sequence the orders he
+	had already submitted.
+
+<P><b>What happens if I list more than one order for a
+particular unit?</b><br>
+	The unit will follow the <i>last</i> order that you give it before using
+	up your allotment of "considered" orders.  The earlier ones will be marked
+	<tt>revoked</tt>.
+
+<P><b>What if a unit doesn't receive any order at all?
+What will it do?</b><br>
+	It will <tt>HOLD</tt>.
+
+<P><b>Will the other players see my order list?  Will
+they see how confused I am and/or what I would have done to them had my
+units been in place?  Or will they only see the results of the moves,
+and wonder why so many of my units were ordered to <tt>HOLD</tt> and
+what I was planning had I not been so wrong about where they are?</b><br>
+	In (most) Crystal Ball games that allow press, the order lists are
+	kept secret until the end of the game.  A player can see his own
+	order lists going back to the beginning of the game, but has no access
+	to the order list of any of the other players.  Once the game is
+	finished, though, all order lists become public knowledge.
+	<p>
+	In games with<i>out</i> press, however, the order lists <i>are publicly
+	broadcast</i> with the results of each movement phase.  Players <i>do</i>
+	see each and every order listed in all other players' order lists --
+	including those that are marked <tt>no&nbsp;unit</tt> and those that
+	fall after the limit of "considered" orders and which are therefore marked
+	<tt>ignored</tt>.  This makes the order list a tool for communication
+	among players (although the signals you may try to send using your
+	ignored orders are going to be a season out-of date by the time they
+	are read!).
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="3"></a><b>Proxies</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+		<b>It sounds like if a smaller power has a good idea of
+where all his units are, he will have slots in his order list for which he has
+no use.  If I'm a larger or more confused power,
+is it possible for me to "borrow" some of those unused slots from him to
+help me out?</b><br>
+	Yes, it is.  You can proxy one or more of your units to another power
+	in hopes that he will be willing to devote extra room in his
+	list to help you out by giving your unit an order.  For example,
+	if you make a move from Brest to the English Channel and you are not
+	sure whether that move will succeed, you would like in your next
+	order list to issue an order both for a fleet in the English Channel
+	and one in Brest (just in case).  However, if you do not have room in your
+	"considered" orders, you could allow either or both of these
+	orders to be given by proxy by another player.
+
+<P><b>Wait a minute!  What's the use in that?  Issuing a
+proxy order still takes up one of my "considered" orders, doesn't it?</b><br>
+	No, it doesn't.  Proxy orders are <i>not</i> counted under 
+	"considered" orders limit discussed above.
+	Instead, they are counted <i><u>and limited</u></i> separately.  
+	<P>
+	Each player may issue only a certain number of proxy orders on a turn.
+	This number is the number of supply centers owned by the
+	<i><b>smallest</b></i> uneliminated power in the game.  Contrast this
+	with the maximum number of "considered" <i>non-</i>proxy orders,
+	which is the supply count of the <i>largest</i> power in the game.
+	<P>
+	This separate limit makes it worth the while of the largest
+	power on the board to see that the smallest power is not so small
+	that the leader has insufficient proxies to offer to his allies.  However,
+	it also makes it in the interests of the smaller powers to shrink
+	one power, located far from the leader if possible, to near elimination,
+	thus limiting the leader's proxy capability (assuming he is
+	using that capability well in concert with a loyal ally).
+
+<P><b>How do I issue a proxy order?</b><br>
+	List the unit, then a <tt>P</tt> (or the word <tt>PROXY</tt>, etc.),
+	and then the <i>full name</i> of the power to be given the proxy.  For
+	example: <ul><dd><tt>F BRE P ENGLAND</tt></dd></ul>
+
+<P><b>What happens if I proxy a unit to another player
+and that other player does not issue an order to the unit?</b><br>
+	The unit will <tt>HOLD</tt>.
+
+<P><b>What happens if I proxy a unit to another player
+and he in turn proxies it to yet another player (or back to me)?</b><br>
+	Again, the unit will <tt>HOLD</tt>.  The power receiving a
+	proxy from the player who actually owns a unit must either
+	order the unit or leave it unordered (to <tt>HOLD</tt>).  If
+	he instead issues a proxy order for the unit, it will be marked
+	<tt>reProxy</tt> and rendered invalid.
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="4"></a><b>Order Syntax (Including the coastal support question)</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+		<b>What if I wish to <i>support</i> the move of a fleet in
+Constantinople to a particular coast of Bulgaria?  The Website
+is not letting me enter the order.  How do I do it?</b><br>
+	You cannot.  You may offer support for the fleet to move to Bulgaria,
+	but not to a specific <i>coast</i> of Bulgaria.  This is the proper
+	implementation of the Diplomacy rules -- support is directed to a
+	<i>space</i>, not to a specific <i>coast</i>.
+
+<P><b>What if I don't know whether I will have an
+army or a fleet in a certain place, but I wish to give it the same
+order?  Can I omit the unit type?</b><br>
+	No, you cannot.  If, for example, you wish to use your
+	London unit (whose type -- army or fleet -- you don't know)
+	to support a unit in Wales,
+	you would need to use up two of your "considered" orders to ensure that
+	the unit receives your order:
+	<ul><dd><tt>A LON S F WAL<br><dd>F LON S F WAL</tt></ul>
+	<i>(Note that if you are unsure which type of unit will be in Wales,
+	you <b><u>can</u></b> omit <b><u>its</u></b> unit type -- see the answer
+	to the next question for an example of this.)</i>
+
+
+<P><b>Do I need to include the type of unit <i>receiving</i>
+a support? Or can I say I wish to support a unit no matter what its type
+might happen to be (in case I don't know which type of unit will be there)?
+</b><br>
+	The answer to the first question is no, and to the second question is
+	yes.  You may specify a support (or convoy) order that does not
+	specify the type (army or fleet) of the other involved unit.  For
+	example:
+	<ul><dd><tt>A BEL S GAS - BRE</tt></ul>
+	will be valid for a move to Brest made from Gascony by either an army
+	or a fleet, and
+	<ul><dd><tt>A BUR S GAS</tt></ul>
+	will be valid to support whichever type of unit (army or fleet) happened
+	to be in Gascony.
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="5"></a><b>Game Phases (Including "Why were my units told to HOLD?")</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+		<b>
+How does the first turn work?</b><br>
+	Before the orders for the first turn are processed, all players must have
+	entered orders for <i>both</i> the first and second movement phases.  No
+	player may enter orders for the second movement phase until <i>after
+	<u>all</u> players have entered orders for the first phase.</i>
+	<P>
+	When the final player to
+	enter orders for the first phase submits valid orders -- <i>and as
+	<u>soon</u> as he does so!</i> -- the orders for all players are "locked
+	down" and notice is sent to all players indicating that orders for the
+	second movement phase may be entered.
+
+<P><b>What about retreat and adjustment phases?  Do I 
+"forecast" orders for those phases of the game too?</b><br>
+	No.  All of a player's retreat, build, and remove orders are issued
+	"in real time," as they occur.  That is, you would issue a Spring
+	retreat order only after the Spring movement phase actually happens,
+	which is after you have "locked in" your Fall movement orders.  
+	In retreat and adjustment phases, therefore,
+	a Crystal Ball game is just like a standard Diplomacy game.
+	Just as you enter your movement phase order lists at the Website,
+	you can issue your retreat and adjustment phase orders here too.
+
+<P><b>
+Will moves process before the deadline if all players get their (next)
+order list submitted?
+</b><br>
+	The short answer is, "Yes; assuming no player has set his <i>wait flag</i>."
+	The complete answer to this and other similar questions can be found on the
+	Webpage that answers the
+	<a href=<URL>?page=Questions>Common Questions About the DPjudge</a>.
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="6"></a><b>The Website and the E-Mail Press InterfaceS</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+		<b>Can I set a bookmark (fans of Bill Gates: a "favorite")
+that will get me straight to my Crystal Ball game?</b><br>
+	Yes.  Paste the following lines together into a single line, with
+	no included whitespace, and there you have it:<br><tt>
+	&nbsp;&nbsp;&nbsp;&nbsp;
+		http://www.floc.net/dpjudge?<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;
+		game=<font color=red><i>gameName</i></font>&<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;
+		power=<font color=red><i>powerName</i></font>&<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;
+		password=<font color=red><i>yourPassword</i></font></tt>
+<P><b>How do I change my password at the Crystal Ball Central 
+Website?</b><br>
+	You must use the e-mail interface to do this (sending a
+	<tt>SET&nbsp;ADDRESS</tt> or <tt>SET&nbsp;PASSWORD</tt> command).
+	See <a href=<URL>?page=Email#8>the details on these commands</a>
+	in the <a href=<URL>?page=Email>questions about the DPjudge
+	e-mail interface</a>.
+
+<P><b>Where can I get a PostScript viewer so that I can
+	see the "Season By Season" Maps?</b><br>
+	At the <a href=http://www.cs.wisc.edu/~ghost>Ghostscript, Ghostview,
+	and GSview</a> site.  You need ghostscript (which is called <tt>gs</tt>
+	if you need it for a Personal Computer) <b><u>and</u></b> ghostview
+	(<tt>gsview32</tt> for the PC).  Downloading and installing ghostview
+	(<tt>gsview32</tt>) should drag ghostscript along with it and set you
+	all up.  It should even tell your Web browser to use gsview to view
+	PostScript files (if it doesn't, you can teach your Web browser to
+	do so yourself).  Note that you will want to set the "Orientation"
+	in ghostview to "Seascape" to show the map right-side-up.
+
+<P><b>So there's an e-mail interface to which I can send
+my press messages?  What do I need to know?</b><br>
+	In addition to composing and sending press at the Crystal Ball Central
+	Website, you can
+	indeed send it from your favorite e-mail application.  Everything
+	you need to know about how to do so is in the
+	<a href=<URL>?page=Email>E-Mail Interface Question
+	and Answer List</a>.
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<:
+footer()
+:>

@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Crystal Ball Player Comments</title>
+<style type="text/css">
+<:
+page.include('stylesheet')
+:>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=2>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"><img src="<URL>/images/spacer.gif" width=1></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>Comments from Crystal Ball Players</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">DPjudge questions</a>
+		<br>
+		<a href="<POUCH>/Online/variants/crystalball.html">crystal ball rules</a> |
+		<a href="<URL>?page=XtalballQuestions">crystal ball questions</a><br>
+		</td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=2 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Crystal&nbsp;Ball&nbsp;Players</b></td>
+<td align=center class="grey"><a name="1"></a><b>Peter Schermerhorn</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Peter Schermerhorn</a><br>
+		<b>&middot;</b>&nbsp;<a href="#2">Len Vincent</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Stanley Szeto<br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+<td>
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->		
+<!-- a href=mailto:pscherm@umich.edu -->
+This variant is so difficult, I consider all who make it
+to the endgame as winners, despite the SC count.  This one has taxed my wits
+to the limit, and I am eager to try again, once the scars heal.
+
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="2"></a><b>Len Vincent</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--DESIGN CREDITS BEGIN HERE-->
+<!-- a href=mailto:bamalen@aol.com -->
+Germany caught me with my pants down with his opening that saw him rush straight
+into Warsaw.  As both Germany and Russia in plain vanilla Diplomacy games,
+I have tried opening against the other with very poor results.  I
+have totally abandoned such openings and did not expect it.
+Other powers usually come in through the back door if Russia or Germany
+oppose each other early.  In Crystal Ball, though, such an unusual opening
+makes a lot more sense.  Changing
+direction in Crystal Ball is like turning an aircraft carrier around -- it
+takes a lot of time.  I don't know if I can come back or not, but I'm sending
+my Galicia army to Silesia, and just like his Spring 1901 move to Silesia
+was unexpected by me, and left Warsaw wide open, I'm thinking my Spring 1902
+move there will be unexpected by him.  Turnabout
+is fair play, and I'm headed for Munich or Berlin or Kiel.  If this doesn't
+work and if Germany presses his advantage (he has Moscow guaranteed -- show me
+a non-Crystal Ball game that has Germany owning both Warsaw and Moscow by
+1902!) and if he is not opposed by other powers, then I am a goner.
+What a game this is going to be...if I live!
+
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="3"></a><b>Stanley Szeto</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--DESIGN CREDITS BEGIN HERE-->
+<!-- a href=mailto:stanley.szeto@prudential.com -->
+I find Crystal Ball Diplomacy absolutely brilliant!
+
+		<!--DESIGN CREDITS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+
+</td>
+</tr>
+<tr valign=top>
+<td colspan=2 align=right class="fineprint" bgcolor="#CCCCCC">The DPjudge is copyright © <:= '1995-%d' % time.localtime()[0] :> by Manus Hand. All rights reserved. </td>
+</tr>
+</table>
+
+</body>
+</html>
+

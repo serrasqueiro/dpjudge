@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Renaissance Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"><img src="<URL>/images/spacer.gif" width=1></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>The Renaissance Variant</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Contents</b></td>
+<td align=center class="grey"><a name="1"></a><b>Basic Rules</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=3>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		<form action=<URL> target=crowded>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=renaissance>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr><td class=bodycopy>
+
+<ol>
+<li>The normal rules of Diplomacy apply except where amended herein. 
+<P><li>Switzerland is passable, and is a neutral supply center.
+<P><li>The game starts in the Spring 1454 Movement phase.
+<P><li>In keeping with the standard that home centers are named for cities
+	and neutral centers are named for regions or countries, and for more
+	historical accuracy, the following spaces are renamed:
+	<center><table class=bodycopy border=1>
+	<tr><th>Old Name</th><th>New Name</th>
+				<th rowspan=7 width=20></th>
+				<th>Old Name</th><th>New Name</th>
+									<th rowspan=7 width=20></th>
+									<th>Old Name</th><th>New Name</th></tr>
+	<tr><td>Belgium</td><td>Brussels</td>
+				<td>Holland</td><td>Netherlands</td>
+									<td>Rome</td><td>Papal States</td></tr>
+	<tr><td>Budapest</td><td>Hungary</td>
+				<td>Kiel</td><td>Hannover</td>
+									<td>Ruhr</td><td>Rheinland</td></tr>
+	<tr><td>Bulgaria</td><td>Sofia</td>
+				<td>Liverpool</td><td>Chester</td>
+									<td>Rumania</td><td>Moldavia</td></tr>
+	<tr><td>Edinburgh</td><td>Scotland</td>
+				<td>Moscow</td><td>Muscovy</td>
+									<td>Spain</td><td>Madrid</td></tr>
+	<tr><td>Gascony</td><td>Aquitaine</td>
+				<td>Piedmont</td><td>Genoa</td>
+									<td>St Petersburg</td><td>Novgorod</td></tr>
+	<tr><td>Greece</td><td>Athens</td>
+				<td>Portugal</td><td>Lisbon</td></tr>
+	</table>
+	</center>
+	The DPjudge recognizes the usual, standard map, names and abbreviations
+	as aliases for all of these these locations, however.
+<P><li>The seven powers, with their starting locations, are shown below:
+<table border>
+<tr><th class=bodycopy bgcolor=blue><font color=white>England
+<td><tt>Fleet Brest
+<td nowrap><tt>Army Chester
+<td nowrap><tt>Fleet London
+</tr>
+<tr><th class=bodycopy bgcolor=cyan>France
+<td><tt>Fleet Brussels
+<td nowrap><tt>Army Marseilles
+<td nowrap><tt>Army Paris
+</tr>
+<tr><th class=bodycopy bgcolor=black><font color=white>Holy Roman Empire
+<td><tt>Fleet Berlin
+<td nowrap><tt>Army Munich
+<td nowrap><tt>Army Vienna
+</tr>
+<tr><th class=bodycopy bgcolor=white>Poland-Lithuania
+<td><tt>Army Novgorod
+<td nowrap><tt>Fleet Sevastopol
+<td nowrap><tt>Army Warsaw
+</tr>
+<tr><th class=bodycopy bgcolor=ltgreen>Spain
+<td><tt>Fleet Madrid<br>&nbsp;&nbsp;&nbsp;&nbsp;(south&nbsp;coast)
+<td nowrap><tt>Army Lisbon
+<td nowrap><tt>Fleet Naples
+</tr>
+<tr><th class=bodycopy bgcolor=red><font color=white>Venice</white>
+<td><tt>Army Venice
+<td nowrap><tt>Army Trieste
+<td nowrap><tt>Fleet Athens
+</tr>
+<tr><th class=bodycopy bgcolor=yellow>Ottoman Turks
+<td nowrap><tt>Fleet Sofia<br>&nbsp;&nbsp;&nbsp;&nbsp;(east coast)
+<td nowrap><tt>Fleet Smyrna
+<td nowrap><tt>Army Ankara
+<td nowrap><tt>Army Constantinople
+</tr>
+</table>
+</center>
+To maintain consistency with the Ken Lowe judge (which does not
+allow the letter <tt>O</tt> to be used as a power abbreviation), the Ottoman
+Turk player is denoted in DPjudge play by the letter <tt>T</tt>.
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="3"></a><b>Design Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+
+<p>
+Earle Ratcliffe and Michael Cuffaro created the Renaissance variant.
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+<:
+footer()
+:>

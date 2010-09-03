@@ -1,0 +1,191 @@
+<html>
+<head>
+<title><ID>: The DPjudge</title>
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff">
+
+<:
+pouchLinks()
+:>
+
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666"
+		width=750 align=center>
+<tr valign=top>
+<td colspan=2>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0
+		src="<URL>/images/dpjudge_logo.gif"
+		height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>Internet Interface for Diplomacy and its Variants</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href=<URL>?page=Policies>house rules</a> |
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">DPjudge questions</a>
+		</td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=2 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Diplomacy Games</b></td>
+<td align=center class="grey"><b>DPjudge Information</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td align=center>
+		<!--BUTTON NAVIGATION TABLE BEGINS HERE-->
+		<table border=0 cellpadding=0 cellspacing=0>
+<:
+dirs = sorted([x for x in os.listdir('<PKG>/variants')
+	if os.path.isdir('<PKG>/variants/' + x)])
+#	----------------------------------------------------------------
+#	Make sure Standard Diplomacy is listed before any other variants
+#	----------------------------------------------------------------
+if 'standard' in dirs:
+	dirs.remove('standard')
+	dirs.insert(0, 'standard')
+for dir in dirs:
+	try: name = __import__('DPjudge.variants.' + dir,
+							globals(), locals(), dir).VARIANT
+	except: continue
+	page.write('<form method=post><tr><td align=center><input type=hidden '
+		'name=variant value=%s>'
+		'<input type=submit value=%s class=inputSubmit2></td></tr></form>'
+		'<tr><td height=2></td></tr>' % (dir, `name.replace(' Diplomacy', '')`))
+:>
+		<tr><td height=15></td></tr>
+		<form method="post" name="toGame">
+		<tr>
+		<td class="bodycopy"><b>Go directly to game:</b><br>
+		<input type="text" name="game" onChange="document.toGame.submit()"
+		class="inputBox">
+		</td>
+		</tr>
+		<tr><td height=2></td></tr>
+		<tr>
+		<td align=right><input type="submit" value="Go"
+		class="inputSubmit">
+		</form>
+		<P>
+		<HR>
+		<form>
+		<input type=hidden name=page value=DPmapit>
+		<p class=bodycopy><b>Map any position:<br>
+		<input type=submit value="DPmapit!" class=inputSubmit>
+		</form>
+		<P>
+		<HR>
+<form target=donate name=donate
+	action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<center>
+<H3 align=center>
+	<input type="hidden" name="cmd" value="_s-xclick">
+	<input type=image align=center
+	src="https://www.paypal.com/en_US/i/btn/x-click-but21.gif" border="0"
+	name="submit" alt="Donate to support the DPjudge">
+	<input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----
+	"><p>
+		<HR>
+		<p class=bodycopy><b>Documentation:</b><p>
+		<a href=<URL>?page=Format>Order Format</a><br>
+		<a href=<URL>?page=Email>E-Mail Commands</a><br>
+		<a href=<URL>?page=Rules>Supported Rules</a><br>
+		<a href=<URL>?page=About>General Info</a><br>
+		<a href=<URL>?page=Questions>Common Questions</a><br>
+		<p class=bodycopy><b>For GameMasters:</b><p>
+		<a href=<URL>?page=Status>Game Status File</a><br>
+		<a href=<URL>?page=Map>Variant Map Files</a><br>
+		</td></tr>
+		</form>
+		</td>
+		</tr>
+		</table>
+		<script>document.toGame.game.focus();document.toGame.game.select();</script>
+		<!--BUTTON NAVIGATION TABLE ends HERE-->
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+<td>
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+<!--DPJUDGE INFORMATION BEGINS HERE-->		
+	<li>Check the
+		<a href="<POUCH>/openings/openings.html#<ID>">current
+		openings on this DPjudge</a>.
+	<li><a href="http://groups.yahoo.com/group/dpjudge"><b>Discussion</b></a>
+		of the DPjudge Diplomacy Web/Email interface is on the
+		<a href="http://groups.yahoo.com/group/dpjudge"><b>DPjudge Mailing
+		List</b></a>.
+	<li><a href="http://groups.yahoo.com/group/dpjgames"><b>Game
+		announcements</b></a> and other game-related discussion is on
+		the DPJgames mailing list.
+	<li><a href="http://groups.yahoo.com/group/dpjudge/join">Join the DPjudge
+		Mailing List</a> or the
+		<a href="http://groups.yahoo.com/group/dpjgames/join">DPJgames
+		mailing list</a> to keep abreast of the latest happenings.
+	<!--
+	<li>Catch up by reading
+		<a href="http://groups.yahoo.com/group/dpjudge/archive">the mailing
+		list's archives</a>.
+	<li>If you're already on the mailing list,
+		<a href="mailto:dpjudge@yahoogroups.com">send mail to the list!</a></b>
+	-->
+	<li>Read the
+		<a href="<POUCH>/Zine/F1999R/Hand/dpjudge.html">history
+		of the DPjudge</a> (as of Fall, 1999).
+	</td>
+	</tr>
+	</table>
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey"
+				align=center><b>Design Credits</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>
+
+	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+<:
+page.include('credits')
+:>
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>
+<:
+footer()
+:>

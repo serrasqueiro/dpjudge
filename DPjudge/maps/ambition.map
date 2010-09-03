@@ -1,0 +1,319 @@
+NOTIFY	VonPowell@aol.com
+
+Abo                         = abo
+Adriatic Sea                = adr adriatic
+Aegean Sea                  = aeg aegean
+Algiers                     = alg algeria
+Andalusia                   = and
+Ankara                      = ank
+Armenia                     = arm
+Austrian Netherlands        = ane belgium bel
+Baden-Wuerttemberg          = baw baden-wurttenberg baden bad
+Baltic Sea                  = bal baltic
+Barcelona                   = brc
+Barents Sea                 = bar bas barents
+Bavaria                     = bav
+Black Sea                   = bla black
+Berlin                      = ber
+Bohemia                     = boh
+Bosnia                      = bos
+Breslau                     = brl silesia sil
+Brest                       = bre
+Budapest                    = bud
+Burgundy                    = bur burgandy
+Christiania                 = chr norway nwy
+Constantinople              = con
+Copenhagen                  = cop denmark den
+Courland                    = cou
+Crimea                      = cri sevastopol sev sevastapol
+Croatia                     = cro
+Dalmatia                    = dal
+Dresden                     = dre
+Eastern Mediterranean       = eas emed east eastern eastmed ems eme emd eas+med
+Edinburgh                   = edi
+English Channel             = eng english channel ech eng+ch
+Galicia                     = gal galacia
+Gascony                     = gas
+Gibraltar                   = gib
+Gulf of Bothnia             = bot gbo gob both gulfofb bothnia
+Gulf of Lyon                = lyo gly gol gulfofl lyon
+Hanover                     = han
+Helgoland Bight             = hel helgoland heligoland heligoland+bight
+Hesse-Westphalia            = hew hesse hes
+Holstein                    = hls hst
+Holstein (east coast)       = hls/ec hls(ec) hst/ec hst(ec)
+Holstein (west coast)       = hls/wc hls(wc) hst/wc hst(wc)
+Iceland                     = ice
+Ionian Sea                  = ion ionian
+Ireland                     = ire
+Irish Sea                   = iri irish irs
+Karelia                     = kar
+Kazan                       = kaz
+Kiev                        = kiv kev kie
+Koenigsberg                 = kon koe konigsberg
+Languedoc                   = lan
+Lapland                     = lap
+Leon                        = leo
+Lithuania                   = lit
+Liverpool                   = lvp lvl liv
+Livonia                     = lvn lvo
+London                      = lon
+Lusatia                     = lus
+Madrid                      = mad
+Marseilles                  = mar mars
+Mecklenburg                 = mec
+Mid-Atlantic Ocean          = mao midatlanticocean midatlantic mid mat
+Milan                       = mil
+Morocco                     = mor
+Moscow                      = mos
+North Atlantic Ocean        = nao nat
+North Sea                   = nth norsea nts
+Norwegian Sea               = nwg norwegian norwsea nrg norg nws
+Novgorod Territory          = nov novgorod
+Papal States                = pap rome rom
+Papal States (east coast)   = pap/ec pap(ec) rome/ec rome(ec) rom/ec rom(ec)
+Papal States (west coast)   = pap/wc pap(wc) rome/wc rome(wc) rom/wc rom(wc)
+Paris                       = par
+Picardy                     = pic
+Portugal                    = por
+Posen                       = pos
+St Petersburg               = stp stpete st.+petersburg st.petersburg
+Sardinia                    = sar
+Savoy                       = sav piedmont pie
+Scania                      = sca
+Skaggerak                   = ska
+Stockholm                   = sto
+Switzerland                 = swi
+Syria                       = syr
+Tunis                       = tun tunisia
+Tuscany                     = tus
+Two Sicilies                = tws sicily two sic
+Tyrol                       = tyr tyrolia tyl trl tyo
+Tyrrhenian Sea              = tys tyrr tyrrhenian tyn tyh
+United Provinces            = upr uni united provinces prv prov holland
+Republic of Venice          = ven venice venetia
+Vienna                      = vie
+Wales                       = wal
+Wallachia                   = wla rumania rum
+Warsaw                      = war
+Western Mediterranean       = wes wmed west western westmed wms wme wmd west+med wes+med western+med
+Yorkshire                   = yor york yonkers
+Zaporozh'ye                 = zap zaporozhye
+
+COAST   ABO     ABUTS   BOT LAP KAR nov
+WATER   ADR     ABUTS   BOS CON CRO DAL ION PAP/EC TWS VEN VIE
+WATER   AEG     ABUTS   ANK CON EAS ION
+COAST   ALG     ABUTS   MOR TUN WES
+COAST   AND     ABUTS   BRC GIB MAD MAO POR WES
+COAST   ANK     ABUTS   AEG ARM BLA CON EAS SYR
+COAST   ARM     ABUTS   ANK BLA KAZ syr
+COAST   ANE     ABUTS   BUR ENG hew PIC UPR
+LAND    BAW     ABUTS   BAV BOH BUR DRE HEW SWI TYR
+WATER   BAL     ABUTS   BER BOT COP COU HLS/EC KON MEC POS SCA STO
+COAST   BRC     ABUTS   AND gas LAN leo LYO MAD WES
+WATER   BAR     ABUTS   CHR NOV NWG
+LAND    BAV     ABUTS   BAW BOH TYR VIE
+WATER   BLA     ABUTS   ANK ARM CON CRI KAZ WLA
+COAST   BER     ABUTS   BAL BRL han hew LUS MEC POS
+LAND    BOH     ABUTS   VIE BAV BAW DRE BRL GAL BUD LUS
+COAST   BOS     ABUTS   ADR BUD CON cro DAL wla
+LAND    BRL     ABUTS   BER POS GAL BOH LUS
+COAST   BRE     ABUTS   ENG GAS MAO PAR PIC
+LAND    BUD     ABUTS   BOS CRO VIE WLA BOH GAL
+LAND    BUR     ABUTS   ANE GAS HEW LAN MAR PIC SAV PAR BAW SWI
+COAST   CHR     ABUTS   BAR SKA lap NOV NTH NWG SCA
+COAST   CON     ABUTS   ADR AEG ANK BLA BOS ION WLA
+COAST   COP     ABUTS   BAL HEL HLS/EC HLS/WC SCA SKA
+COAST   COU     ABUTS   BAL BOT KON LIT LVN
+COAST   CRI     ABUTS   BLA KAZ LIT WLA ZAP
+COAST   CRO     ABUTS   ADR bos BUD DAL VIE
+COAST   DAL     ABUTS   ADR BOS CRO
+LAND    DRE     ABUTS   HEW LUS BOH BAW
+WATER   EAS     ABUTS   AEG ANK ION SYR
+COAST   EDI     ABUTS   IRE LVP YOR IRI NAO NTH
+WATER   ENG     ABUTS   IRI LON NTH PIC ANE UPR BRE WAL MAO
+LAND    GAL     ABUTS   POS WLA WAR LIT BUD BOH BRL
+COAST   GAS     ABUTS   brc BRE BUR lan LEO MAO PAR
+WATER   GIB     ABUTS   AND MAO MOR WES
+WATER   BOT     ABUTS   ABO BAL COU KAR LAP LVN STO STP
+WATER   LYO     ABUTS   BRC LAN MAR SAV TUS SAR TYS WES
+COAST   HAN     ABUTS   ber HEL HEW HLS/WC mec
+WATER   HEL     ABUTS   COP HAN HEW HLS/WC UPR SKA NTH
+COAST   HEW     ABUTS   ane BAW ber BUR DRE HAN HEL LUS UPR
+COAST   HLS/EC  ABUTS   BAL COP MEC
+COAST   HLS/WC  ABUTS   HAN HEL COP
+COAST   hls     ABUTS   BAL COP HAN HEL MEC
+COAST   ICE     ABUTS   NAO NWG
+WATER   ION     ABUTS   ADR AEG CON EAS TUN TWS TYS WES
+COAST   IRE     ABUTS   EDI IRI MAO NAO
+WATER   IRI     ABUTS   ENG IRE LVP WAL NAO EDI MAO
+COAST   KAR     ABUTS   ABO BOT nov STP
+COAST   KAZ     ABUTS   ARM BLA CRI MOS nov ZAP
+LAND    KIV     ABUTS   LIT MOS ZAP
+COAST   KON     ABUTS   BAL COU LIT POS
+COAST   LAN     ABUTS   BRC BUR gas LYO MAR
+COAST   LAP     ABUTS   ABO BOT chr nov sca STO
+COAST   LEO     ABUTS   brc GAS MAD MAO POR
+LAND    LIT     ABUTS   COU CRI KON LVN POS WLA MOS KIV ZAP GAL WAR
+COAST   LVN     ABUTS   BOT COU LIT MOS STP
+COAST   LVP     ABUTS   EDI IRI WAL yor
+COAST   LON     ABUTS   ENG NTH WAL YOR
+LAND    LUS     ABUTS   BER HEW BRL DRE BOH
+LAND    MAD     ABUTS   AND BRC LEO POR
+COAST   MAR     ABUTS   BUR LAN LYO SAV
+COAST   MEC     ABUTS   BAL BER han HLS/EC
+WATER   MAO     ABUTS   AND BRE GAS IRE LEO MOR POR NAO GIB ENG IRI
+LAND    MIL     ABUTS   SAV TUS VEN SWI
+COAST   MOR     ABUTS   ALG GIB MAO WES
+LAND    MOS     ABUTS   KAZ LVN NOV STP KIV ZAP LIT
+WATER   NAO     ABUTS   EDI ICE IRE IRI MAO NTH NWG
+WATER   NTH     ABUTS   CHR ENG LON UPR YOR SKA NAO NWG EDI HEL
+WATER   NWG     ABUTS   BAR CHR ICE NAO NTH
+COAST   NOV     ABUTS   abo BAR CHR kar kaz lap MOS
+COAST   PAP/EC  ABUTS   ADR TWS VEN
+COAST   PAP/WC  ABUTS   TUS TWS TYS
+COAST   pap     ABUTS   ADR TUS TWS TYS VEN
+LAND    PAR     ABUTS   BRE GAS PIC BUR
+COAST   PIC     ABUTS   ANE BRE BUR ENG PAR
+COAST   POR     ABUTS   AND LEO MAD MAO
+COAST   POS     ABUTS   BAL BER BRL GAL KON LIT WAR
+COAST   STP     ABUTS   BOT KAR LVN MOS
+COAST   SAR     ABUTS   LYO TYS WES
+COAST   SAV     ABUTS   BUR LYO MAR MIL SWI TUS
+COAST   SCA     ABUTS   BAL CHR COP lap SKA STO
+WATER   SKA     ABUTS   CHR COP HEL NTH SCA
+COAST   STO     ABUTS   BAL BOT LAP SCA
+LAND    SWI     ABUTS   SAV VEN MIL TYR BAW BUR
+COAST   SYR     ABUTS   ANK arm EAS
+COAST   TUN     ABUTS   ALG ION WES
+COAST   TUS     ABUTS   LYO MIL PAP/WC SAV TYS ven
+COAST   TWS     ABUTS   ADR ION PAP/EC PAP/WC TYS
+LAND    TYR     ABUTS   VEN VIE SWI BAV BAW
+WATER   TYS     ABUTS   LYO ION PAP/WC SAR TUS TWS WES
+COAST   UPR     ABUTS   ANE ENG HEW HEL NTH
+COAST   VEN     ABUTS   ADR PAP/EC MIL SWI tus TYR VIE
+COAST   VIE     ABUTS   ADR BAV BOH BUD CRO TYR VEN
+COAST   WAL     ABUTS   ENG IRI LON LVP yor
+COAST   WLA     ABUTS   BLA bos BUD CON CRI GAL LIT
+LAND    WAR     ABUTS   POS LIT GAL
+WATER   WES     ABUTS   ALG AND BRC GIB LYO ION MOR SAR TUN TYS
+COAST   YOR     ABUTS   EDI LON lvp NTH wal
+LAND    ZAP     ABUTS   CRI KAZ MOS KIV LIT
+
+SAXONY       		(POLISH-SAXON:X)		DRE WAR &SC
+LEAGUE CATHOLIC
+A DRE
+A WAR
+
+SWEDEN              (SWEDISH:W)             ABO STO &SC
+LEAGUE CHRISTIAN
+F STO
+A ABO
+
+SPAIN               (SPANISH)             	BRC MAD &SC
+LEAGUE CATHOLIC
+A MAD
+F BRC
+
+DENMARK      		(DANISH-NORWEGIAN)      COP CHR &SC
+LEAGUE CHRISTIAN
+F COP
+F CHR
+
+AUSTRIA             (AUSTRIAN)              BUD VIE MIL
+LEAGUE CATHOLIC
+OWNS ANE BUD VIE MIL
+A VIE
+A BUD
+A MIL
+A ANE
+
+BRITAIN			     (BRITISH-HANOVERIAN)    LON EDI HAN LVP
+LEAGUE CHRISTIAN
+F LON
+F EDI
+A HAN
+F GIB
+
+FRANCE              (FRENCH)                PAR MAR BRE
+LEAGUE CATHOLIC
+A PAR
+A MAR
+F BRE
+
+RUSSIA              (RUSSIAN)               MOS KIV STP CRI
+LEAGUE CHRISTIAN
+OWNS MOS KIV STP
+A MOS
+A KIV
+F STP
+
+PRUSSIA             (PRUSSIAN)              BER BRL KON
+LEAGUE CHRISTIAN
+A BER
+A BRL
+A KON
+
+TURKEY              (OTTOMAN)               ANK CON &SC
+LEAGUE MUSLIM
+A ANK
+F CON
+
+_PAPACY		        (PAPIST)
+LEAGUE CATHOLIC STRICT
+OWNS	PAP
+DUMMY
+A PAP
+
+_CATHOLIC			(CATHOLIC)
+LEAGUE CATHOLIC BENIGN CHRISTIAN
+OWNS	BAV POR SAV TUS TWS VEN
+DUMMY
+A BAV
+F POR
+A SAV
+A TUS
+F TWS
+F VEN
+
+_PROTESTANT			(PROTESTANT)
+LEAGUE CHRISTIAN BENIGN CATHOLIC
+OWNS	BAW COU HEW MEC SWI UPR
+DUMMY
+A BAW
+F COU
+A HEW
+A MEC
+A SWI
+F UPR
+
+_MUSLIM				(MUSLIM)
+LEAGUE MUSLIM BENIGN
+OWNS	CRI MOR TUN ALG
+DUMMY
+A CRI
+F MOR
+F TUN
+F ALG
+
+BEGIN   SPRING 1763 MOVEMENT
+VICTORY 15
+
+FLOW SPRING:INCOME,MOVEMENT,RETREATS
+FLOW FALL:INCOME,MOVEMENT,RETREATS
+FLOW WINTER:ADJUSTMENTS
+
+DIRECTIVES
+RULE NO_TRANSFER
+RULE NO_SAVINGS
+RULE CD_DUMMIES
+RULE PAY_DUMMIES
+RULE LIMIT_OFFERS
+RULE NO_HOARDING
+RULE IMMOBILE_DUMMIES
+RULE DUMMY_FIRE
+RULE NO_LEDGERS
+TAX 1
+CAP 3
+END DIRECTIVES
+

@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<:
+page.include('stylesheet')
+page.include('functions')
+page.include('dppd')
+player = login()
+:>
+
+<title>DPPD: <:=player['name']:></title>
+</head>
+<body bgcolor="#ffffff">
+
+<:
+id, status = player['id'], player.get('status', 'ACTIVE')
+header()
+:>
+
+	<tr valign=top bgcolor="#CCCCCC">
+		<td nowrap align=center class="grey"><b>DPjudge Resources</b></td>
+	<td width=100% colspan=2 align=center class="grey"><b>My E-Mail Addresses</b></td>
+	</tr>
+	<tr valign=top>
+		<td align=center valign=top class=bodycopy>
+<:
+leftside()
+:>
+		</td>
+		<td align=center class=bodycopy>
+<:
+
+def showEmail(id):
+	page.dppd.db.execute(
+		"""
+		select * from Email where userID = %d order by status
+		""" % id)
+	page.dppd[id]['email'] = [x['address'] for x in page.dppd.db.fetchall()]
+	page.write(
+		"""
+		<table>
+		<form name=form method=post>
+		<input type=hidden name=page value=Email>
+		<input type=hidden name=variant value=dppd>
+		<input type=hidden name=id value=%s>
+		<input type=hidden name=password value=%s>
+		<input type=hidden name=primary value="">
+		<tr><td align=center><table>
+		<tr><td align=center class=bodycopy><b><u>Address</u></td>
+			<td align=center class=bodycopy><b><u>Primary</u></td>
+			<td align=center class=bodycopy><b><u><font color=red>NOTICE</u>
+			</td>
+		</tr>
+		""" % (id, page.password.encode('latin-1')))
+	for num, addr in enumerate(page.dppd[id]['email']):
+		page.write(
+			"""
+			<tr><td align=right class=bodycopy valign=top>
+				<font size=3><tt><b>%s</b></tt></font></td>
+				<td align=center class=bodycopy valign=top>
+				<input type=radio name=primary %s value="%s">
+			</tr>
+			""" % (addr, 'checked' * (num == 0), addr))
+		if num == 0:
+			page.write(
+				"""
+			<td align=center class=bodycopy rowspan=%d
+			valign=top><font color=red>
+		Updating your list of e-mail addresses in your DPPD membership<br>
+		is <b><u>not</u></b> sufficient to change your address in any games<br>
+		in which you are currently involved.<br>
+		The list of addresses here is used <i>only</I> to
+		<br>identify you at the time you issue a<br>
+		<tt>JOIN</tt>, <tt>TAKEOVER</tt>, or <tt>CREATE</tt> command.<br>
+		If you wish to change the address that any game is currently<br>
+		using to communicate with you, you will need to issue a<br>
+		<tt><b>SET&nbsp;ADDRESS</b></tt> command by e-mail to that game<br>
+		(after a <tt><b>SIGNON</b></tt> line, of course).
+		</td>
+				""" % (len(page.dppd[id]['email']) + 3))
+	page.write(
+		"""
+		<tr><th align=right class=bodycopy valign=top>New Address?
+		<input class=inputBox type=text size=24 name=newEmail>
+		</td><td align=center class=bodycopy valign=top>
+		<input type=radio name=primary value="new">
+		</td></tr>
+		<tr><td align=right class=bodycopy valign=top>
+		<input class=inputSubmit type=submit value="Update"></td>
+		<td></td></tr>
+		<tr><td colspan=2 height=100%>&nbsp;</td></tr>
+		</table>
+		</form></td></tr>
+		</table>
+		""")
+#	----------------------------------------------------------------------
+if 'primary' in vars(page) or 'newEmail' in vars(page):
+	if 'newEmail' in vars(page):
+		page.newEmail = page.newEmail.strip()
+		if (page.newEmail.count('@') != 1 or '@' not in page.newEmail[1:-3]
+		or '.' in (page.newEmail.split('@')[1][0],
+					page.newEmail.split('@')[1][-1])
+		or '.' not in page.newEmail.split('@')[1][1:-1]
+		or ' ' in page.newEmail or '\t' in page.newEmail):
+			page.write(
+				"""
+				<script>
+				alert('The e-mail address that you specified ("%s")\\n' +
+					  'cannot possibly be a legitimate, complete e-mail ' +
+					  'address.');
+				window.history.back();
+				</script>
+				""" % page.newEmail)
+			raise SystemExit
+		if page.dppd.lookup(page.newEmail):
+			page.write(
+				"""
+				<script>
+				alert("That e-mail address is already associated with " +
+					  "a DPPD user.");
+				window.history.back();
+				</script>
+				""")
+			raise SystemExit
+		page.dppd.db.execute(
+			"""
+			insert into Email (userID, address, status)
+			values(%d, "%s", "ACTIVE")
+			""" % (id, page.newEmail))
+	nothing = 0
+	page.dppd.db.execute(
+		"""
+		select address from Email where userID = %d and status = "PRIMARY"
+		""" % id)
+	primary = page.dppd.db.fetchone()['address']
+	if page.primary == 'new':
+		if 'newEmail' in vars(page): page.primary = page.newEmail
+		else: nothing = 1
+	elif 'newEmail' not in vars(page) and page.primary.lower() == primary:
+		nothing = 1
+	if nothing:
+		page.write(
+			"""
+			<script>
+			window.history.back();
+			</script>
+			""")
+		raise SystemExit
+	if page.primary:
+		page.dppd.db.execute(
+			"""
+			update Email set status = "ACTIVE"
+			where userID = %d and status = "PRIMARY"
+			""" % id)
+		page.dppd.db.execute(
+			"""
+			update Email set status = "PRIMARY"
+			where userID = %d and address = "%s"
+			""" % (id, page.primary.lower()))
+	page.write(
+		"""
+		<form name=form method=post>
+		<input type=hidden name=page value=Email>
+		<input type=hidden name=variant value=dppd>
+		<input type=hidden name=id value=%d>
+		<input type=hidden name=password value=%s>
+		</form>
+		<script>
+		alert("         Thanks for the Update!\\n\\n" +
+			  "Your registration record has been updated.");
+		document.form.submit();
+		</script>
+		""" % (id, page.password.encode('latin-1')))
+	raise SystemExit
+
+showEmail(page.id)
+
+footer()
+:>

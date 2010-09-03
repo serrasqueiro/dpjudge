@@ -1,0 +1,438 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Imperial Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>The Imperial Variant</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Contents</b></td>
+<td align=center class="grey"><a name="1"></a><b>Basic Rules</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=5>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br>
+		<b>&middot;</b>&nbsp;<a href="#2">Map Notes</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		<form action=<URL> target=imperial>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=imperial>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr><td class=bodycopy>
+	<ol>
+<li>
+The normal rules of the game of Diplomacy apply, with the following additions,
+exceptions, and clarifications.
+
+<p><li>
+The standard map is replaced by the a global map roughly representing the
+political state of the world in the mid-19th century. 
+
+<p><li>
+There are thirteen great powers:  Britain, France, Russia, Holland,
+Turkey, China, Prussia, Austria, Japan, USA, CSA, Mexico, and Brazil.
+Powers begin the game with a number of units representing their relative
+strengths in the middle of the nineteenth century, and many powers begin
+with far-flung units in their historical colonial territories.
+<P>
+<center>
+<table border>
+<tr><th class=bodycopy bgcolor=#ff0000>Austria</th>
+	<td nowrap><tt>
+	Army Vienna
+	<td nowrap><tt>
+	Army Venice
+	<td nowrap><tt>
+	Army Budapest
+	<td nowrap><tt>
+	Fleet Croatia 
+	</tt></td>
+</tr>
+<tr><th class=bodycopy bgcolor=#00b200>Brazil</th>
+	<td nowrap><tt>
+	Fleet Recife
+	<td nowrap><tt>
+	Army Brasilia
+	<td nowrap><tt>
+	Army Oliveira 
+	<td nowrap><tt>
+	Fleet Rio de Janeiro
+	</tt></td>
+</tr>
+<tr><th rowspan=4 class=bodycopy bgcolor=#0000ff><font color=white>Britain</th>
+	<td nowrap><tt>
+	Army Delhi
+	<td nowrap><tt>
+	Fleet Gibraltar
+	<td nowrap><tt>
+	Fleet London
+	<td nowrap><tt>
+	Fleet Falkland Islands
+</tr><tr>
+	<td nowrap><tt>
+	Fleet Aden
+	<td nowrap><tt>
+	Fleet Bombay
+	<td nowrap><tt>
+	Fleet Singapore
+	<td nowrap><tt>
+	Fleet Nova Scotia
+</tr><tr>
+	<td nowrap><tt>
+	Army Dublin
+	<td nowrap><tt>
+	Army Quebec
+	<td nowrap><tt>
+	Army Vancouver
+	<td nowrap><tt>
+	Fleet Hong Kong
+</tr><tr>
+	<td nowrap><tt>
+	Army Perth
+	<td nowrap><tt>
+	Fleet Edinburgh
+	</tt></td>
+</tr>
+<tr><th rowspan=2 class=bodycopy bgcolor=yellow>China</th>
+	<td nowrap><tt>
+	Army Peking
+	<td nowrap><tt>
+	Army Shanghai
+	<td nowrap><tt>
+	Army Manchuria
+	<td nowrap><tt>
+	Army Canton
+</tr><tr>
+	<td nowrap><tt>
+	Army Wuhan
+	<td nowrap><tt>
+	Army Chungking
+	<td nowrap><tt>
+	Army Sinkiang
+	</tt></td>
+</tr>
+<tr><th class=bodycopy bgcolor=#4c0000><font color=white>CSA</th>
+	<td nowrap><tt>
+	Army Richmond
+	<td nowrap><tt>
+	Army Atlanta
+	<td nowrap><tt>
+	Army Austin
+	<td nowrap><tt>
+	Army New Orleans
+	</tt></td>
+</tr>
+<tr><th rowspan=3 class=bodycopy bgcolor=#33b2b2>France</th>
+	<td nowrap><tt>
+	Army Paris
+	<td nowrap><tt>
+	Fleet Nantes
+	<td nowrap><tt>
+	Army Cambodia
+	<td nowrap><tt>
+	Fleet Society Islands
+</tr><tr>
+	<td nowrap><tt>
+	Fleet Corsica
+	<td nowrap><tt>
+	Fleet Cayenne
+	<td nowrap><tt>
+	Fleet Monrovia
+	<td nowrap><tt>
+	Army Grain Coast
+</tr><tr>
+	<td nowrap><tt>
+	Army Marseilles
+	</tt></td>
+</tr>
+<tr><th rowspan=2 class=bodycopy bgcolor=#6699ff>Holland</th>
+	<td nowrap><tt>
+	Fleet Holland
+	<td nowrap><tt>
+	Fleet Ceylon
+	<td nowrap><tt>
+	Fleet Sumatra
+	<td nowrap><tt>
+	Fleet Cape Town
+</tr><tr>
+	<td nowrap><tt>
+	Fleet Java
+	<td nowrap><tt>
+	Army Transvaal
+	<td nowrap><tt>
+	Army Borneo
+	<td nowrap><tt>
+	Army Paramaribo
+	</tt></td>
+</tr>
+<tr><th class=bodycopy bgcolor=#006600><font color=white>Japan</th>
+	<td nowrap><tt>
+	Army Edo
+	<td nowrap><tt>
+	Fleet Sapporo
+	<td nowrap><tt>
+	Fleet Okinawa
+	<td nowrap><tt>
+	Fleet Kagoshima
+	</tt></td>
+</tr>
+<tr><th class=bodycopy bgcolor=#ff7f4c>Mexico</th>
+	<td nowrap><tt>
+	Fleet Merida
+	<td nowrap><tt>
+	Fleet Mazatlan
+	<td nowrap><tt>
+	Army Mexico City
+	</tt></td>
+</tr>
+<tr><th class=bodycopy bgcolor=black><font color=white>Prussia</th>
+	<td nowrap><tt>
+	Army Berlin
+	<td nowrap><tt>
+	Army Prussia
+	<td nowrap><tt>
+	Army Silesia
+	<td nowrap><tt>
+	Army Ruhr
+	</tt></td>
+</tr>
+<tr><th rowspan=3 class=bodycopy bgcolor=white>Russia</th>
+	<td nowrap><tt>
+	Army Warsaw
+	<td nowrap><tt>
+	Army Georgia
+	<td nowrap><tt>
+	Army Orenburg
+	<td nowrap><tt>
+	Fleet Port Arthur
+</tr><tr>
+	<td nowrap><tt>
+	Army Irkutsk
+	<td nowrap><tt>
+	Fleet Sevastopol
+	<td nowrap><tt>
+	Army Anchorage
+	<td nowrap><tt>
+	Fleet St Petersburg/sc
+</tr><tr>
+	<td nowrap><tt>
+	Army Omsk
+	<td nowrap><tt>
+	Army Moscow
+	<td nowrap><tt>
+	Army Vladivostok
+	</tt></td>
+</tr>
+<tr><th rowspan=2 class=bodycopy bgcolor=grey>Turkey</th>
+	<td nowrap><tt>
+	Fleet Angora/nc
+	<td nowrap><tt>
+	Fleet Cyprus
+	<td nowrap><tt>
+	Fleet Baghdad
+	<td nowrap><tt>
+	Army Constantinople
+</tr><tr>
+	<td nowrap><tt>
+	Army Sofia
+	<td nowrap><tt>
+	Army Cairo
+	</tt></td>
+</tr>
+<tr><th rowspan=2 class=bodycopy bgcolor=#ff00ff><font color=white>USA</th>
+	<td nowrap><tt>
+	Army Detroit
+	<td nowrap><tt>
+	Army Chicago
+	<td nowrap><tt>
+	Fleet Oregon
+	<td nowrap><tt>
+	Army Washington DC
+</tr><tr>
+	<td nowrap><tt>
+	Fleet New York
+	<td nowrap><tt>
+	Army San Francisco
+	</tt></td>
+</tr>
+</table>
+</center>
+<p><!li>
+ 
+<p><li>
+The standard game phases (Spring, Fall, Winter) are used, with the first
+game-phase being Spring, 1861.
+
+<p><li>
+A short game requires a player to possess 70 supply centers at the beginning
+of any Winter Adjustments phase. A long game requires a player to possess 84
+supply centers.
+<!As an optional rule, the game will also end on Spring 1901
+should no player possess the required number of supply centers.>
+
+<p><li>
+A power may build in any vacant supply center it owns, as long as that
+supply center is either one of his own home supply centers, or is the home
+supply center of any other power.
+
+
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="2"></a><b>Map Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+		<ol>
+<p><li>
+<u>Impassable Spaces.</u>
+The following areas are impassable: Great Lakes, Rocky Mountains, Andes,
+Switzerland, Sahara Desert, and Himalayas.  These areas are exactly like
+Switzerland in standard Diplomacy.
+
+<p><li>
+<u>Island Chains.</u>
+Island Chains are coastal territories that may be entered through any adjacent
+sea zones. They may be occupied by either armies or fleets. However, they do
+not act like canals.  The island chain spaces are:
+Hawaiian Islands, Galapagos Islands, Society Islands, Bahamas, Virgin Islands,
+Azores, Cape Verde Islands, Falkland Islands, South George Island, Corsica,
+Crete, Seychelles, Maldives, Andaman Islands, Okinawa, Carolines, Marshalls,
+Fiji, and New Zealand.  For example, a Fleet in the Andaman Islands may move
+to Gulf of Manaar, Bay of Bengal, Andaman Sea, or the East Indian Ocean.
+Similarly, a Fleet in Gulf of Manaar may convoy an Army to the Andaman
+Islands. However, a Fleet in Gulf of Manaar may not move to Andaman Sea.
+
+<p><li>
+<u>Large Island Chains.</u>
+Large Island Chains are essentially two coastal provinces surrounded by water
+and attached by a land bridge. Both armies and fleets may move from island to
+island. However, a fleet may not move from one sea zone to another on the
+opposite side of the Large Island Chain.   The two Large Island Chains are
+Cuba/Haiti and Luzon/Mindanao).
+For
+example, Luzon is attached to Luzon Strait, Philippine Sea, Bismark Sea, and
+Mindanao. An Army may move from Luzon to Mindanao. A Fleet may move from
+Luzon to Mindanao. A Fleet may move from Luzon to Luzon Strait. However,
+a Fleet may not move from Bismark Sea to Luzon Strait. 
+
+
+<p><li>
+<u>The Bosphorous.</u>
+The player that owns Constantinople (and <i>only</i> that player) may
+move a fleet directly from the Black Sea to the Aegean Sea, or vice-versa.
+
+<p><li>
+<u>Land Bridges.</u>
+There are a number of land bridges on the map.  These are pairs of land
+provinces which, although separated from each other by water, still allow
+both army and fleet movement from one to the other.  The land bridges are:
+Victoria/Vancouver, Victoria/Washington, Detroit/Minnesota, Nova Scotia/Quebec,
+Atlanta/Bahamas, Bahamas/Cuba, Cuba/Haiti, Hait/Virgin Islands,
+Dublin/Edinburgh, Gibraltar/Morocco, Denmark/Norway, Denmark/Sweden,
+Cypress/Angora, Cypress/Syria, Singapore/Malaysia, Luzon/Mindanao,
+Kagoshima/Edo, Edo/Sapporo, and Sakhurlin/Vladivostok.
+
+<p><li>
+<u>Wraparound.</u>
+Some sea zones can be found on both the left and the right side of the map.
+These are actually the same sea zones on both ends of the map. So in effect,
+a fleet coming from Kuril Sea could move into the Westerlies on the right side
+of the map and be adjacent to the Hawaiian Islands on the left side of the map.
+The wraparound spaces are: Bering Sea, Westerlies, West Pacific, Equatorial
+Counter Current, South West Pacific, and Antarctic Pacific.
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="3"></a><b>Design Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+<p>
+The Imperial variant was created by Michael David Roberts.
+More information can be found at
+<a href=http://www.variantbank.org/results/rules/i/imperial2.htm>The Variant Bank</a>.
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+<:
+footer()
+:>

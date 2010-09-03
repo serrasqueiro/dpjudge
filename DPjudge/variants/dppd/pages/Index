@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>DP: The DPjudge</title>
+<:
+page.include('stylesheet')
+page.include('functions')
+page.include('dppd')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<:
+id = None
+pouchLinks()
+header()
+:>
+
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey" width=20%><b>DPjudge Resources</b></td>
+<td align=center class="grey" width=40%><b>Current DPjudge Player?</b></td>
+<td align=center class="grey" width=40%><b>New Here?</b></td>
+</tr>
+<tr valign=top>
+<td align=center class=bodycopy rowspan=4>
+
+<:
+leftside()
+:>
+
+</td>
+<td>
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td align=center class="bodycopy">
+		<!--CURRENT MEMBER FORM BEGINS HERE-->
+		<script>
+		function mayLogin()
+		{
+			if(document.login.email.value=="")
+			{
+				alert("E-Mail address is required.");
+				return false;
+			}
+			if (document.login.password.value == ""
+			&& !document.login.forgot.checked)
+			{
+				alert("To login, specify or request your password.");
+				return false;
+			}
+			document.login.submit();
+		}
+		</script>
+		<form method=post name=login>
+		<input name=variant value=dppd type=hidden>
+		<input type=hidden name=page value=Login>
+		<table border=0 align=center>
+		<tr>
+		<td class="bodycopy" align="right"><b>E-Mail Address:&nbsp;</b></td>
+		<td><input name="email" type="text" class="inputBox" size=24></td>
+		</tr>
+		<tr>
+		<td class="bodycopy" align="right"><b>Your Password:&nbsp;</b></td>
+		<td><input name="password" type="password" class="inputBox" size=24
+	onchange='if(document.login.password.value!="")document.login.forgot.checked=false;reminder()'></td>
+		</tr>
+		<tr>
+		<script>
+		function reminder()
+		{
+			if (document.login.forgot.checked)
+			{
+				document.login.password.value = "";
+				document.login.go.value = "Send Reminder";
+			}
+			else document.login.go.value = "Log In";
+		}
+		</script>
+		<td class="bodycopy" align="right"><b>Forgot Password?&nbsp;</b></td>
+		<td class="bodycopy"><input name="forgot" type="checkbox" value="1"
+			onclick=reminder()>
+			E-mail it to me</td>
+		</tr>
+		<tr>
+		<td></td>
+		<td><input name="go" type="button" value="Log In"
+			onclick=mayLogin() class="inputSubmit">
+			</td>
+		</tr>
+			<tr><td align=center class=bodycopy colspan=2>
+			</td></tr>
+		</table>
+		</form>
+		<!--CURRENT MEMBER FORM ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+</td>
+<td>
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td align=center class="bodycopy">
+		<!--NEW HERE FORM BEGINS HERE-->		
+		<script>
+		function checkPass()
+		{
+			if (document.reg.name.value == ""
+			||	document.reg.email.value == ""
+			||	document.reg.password.value == "")
+			{
+				alert("Name, e-mail, and password are all required.");
+				return false;
+			}
+			if (document.reg.confirm.value != document.reg.password.value)
+			{
+				alert("Password and confirmation do not match.");
+				return false;
+			}
+			if (confirm(
+"NOTICE: By continuing you agree to abide by DPjudge rules and regulations " +
+"(house rules).  A link to these rules is provided at the top of this " +
+"Webpage.  If you have not read them yet, you are strongly encouraged to " +
+"click Cancel and do so now.  Even if you have read them, you are about " +
+"to read a frankly ridiculous amount of warning text reinforcing what you " +
+"have read, a recitation of ethical concepts that should be (but apparently " +
+"are not) common-sense.\n\n" +
+"Hit OK to continue ONLY if you have read the house rules and you " +
+"are ready to sit through (and will read) the strong warnings you're about " +
+"to be shown against breaking those rules.") == false
+			|| confirm(
+"WARNING #1: Failing to provide your FULL, REAL NAME when registering, " +
+"or registering twice under two separate e-mail addresses are both " +
+"BLACKLISTABLE offenses!\n\n" +
+"In case this isn't clear enough, DO NOT CREATE MULTIPLE REGISTRATIONS! " +
+"If you need someone to Master a game for you, just ask the Judgekeeper! " +
+"Do NOT UNDER ANY CIRCUMSTANCES create a false registration!  That " +
+"is CHEATING and you can and will be forbidden from using the DPjudges. " +
+"I don't know how many times I have to say it.  DO NOT DO IT!\n\n" +
+"Violations of this policies are detected both automatically and manually " +
+"by the DPjudge system and its maintainers.\n\n" +
+"Continue ONLY if you agree to and will " +
+"comply with these policies!\n\n") == false
+			|| confirm(
+"WARNING #2: If you wish to use the DPjudges to play a game with your " +
+"friends, EVERYONE in the game must be your friends!  It is a blatant " +
+"violation for some players in the game to be aware of the real-life " +
+"identities of one or more of the other players, unless ALL of the players " +
+"are aware of ALL player identities.  (To create this type of game, use a " +
+"'privacy password.')\n\n" +
+"The DPjudges allow two types of games, public and private. " +
+"If you join a public game, you are NOT to know any of the other players! " +
+"If you do, this creates an uneven playing field for the other players in " +
+"the game.  If you are able to see another player's facial expressions, " +
+"speak to him or her face-to-face or by telephone, and if you are aware " +
+"of another player's personality or play traits, while other players do " +
+"not have this cabability, this gives you a perceived advantage in the game " +
+"and is not tolerated.  If you want to play against people you know, you " +
+"need to have a non-playing human GameMaster run a private game for you " +
+"and your group.  This is easy: mail the 'dpjudge' or 'dpjgames' Yahoo! " +
+"Groups.  A volunteer will certainly step forward.  If you wish to play " +
+"against someone you know in a public game, you must inform the GameMaster " +
+"of the game of your situation before you join so that he can get the " +
+"consent of all the other players.\n\n" +
+"FAILURE TO ABIDE BY THIS POLICY MAY RESULT IN BLACKLISTING.\n\n" +
+"Continue ONLY if you understand and agree to this!") == false
+			|| confirm(
+"FINAL WARNING!  Due to violations of the policies to which you just " +
+"agreed, the DPjudge has become extremely " +
+"aggressive in automatically detecting players who disregard these rules.  " +
+"The judgekeeper and a team of dedicated 'house detectives' are now " +
+"automatically informed immediately of any suspect irregularity.\n\n" +
+"If you intend to cheat by playing two or more powers in a game after " +
+"creating a false registration, or if you intend to cheat by teaming up " +
+"with a friend and hiding your association from the other players, or " +
+"if you intend to cheat by abusing the power of the GameMaster, you should " +
+"know one thing.  You will be caught.  Quickly.  You will be exposed. " +
+"Completely.  And you will blacklisted.  Permanently.\n\n" +
+"IF YOU CHEAT, YOU WILL BE CAUGHT AND BLACKLISTED.  BELIEVE IT.\n\n" +
+"Continue ONLY if you understand and agree to this.\n\n") == false
+				) return false;
+			document.reg.submit();
+		}
+		</script>
+		<form method=post name=reg>
+		<input type=hidden name=page value=Register>
+		<input name=variant value=dppd type=hidden>
+		<table border=0 align=center>
+		<tr>
+		<td class="bodycopy" align=right><b>Your Name:&nbsp;</b></td>
+		<td><input name="name" type="text" class="inputBox" size=24></td>
+		</tr>
+		<tr>
+		<td class="bodycopy" align=right><b>E-Mail Address:&nbsp;</b></td>
+		<td><input name="email" type="text" class="inputBox" size=24></td>
+		</tr>
+		<tr>
+		<td class="bodycopy" align=right><b>Your Password:&nbsp;</b></td>
+		<td><input name="password" type="password" class="inputBox" size=24>
+		</td>
+		</tr>
+		<tr>
+		<td class="bodycopy" align=right><b>Password Again:&nbsp;</b></td>
+		<td><input name="confirm" type="password" class="inputBox" size=24></td>
+		</tr>
+		<tr>
+		<td align=center colspan=2>
+			<input name="" type="button" value="Become a DPjudge Player"
+			onclick=checkPass() class="inputSubmit"></td>
+		</tr>
+		</form>
+		</table>
+		<!--NEW HERE FORM ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>
+<tr><td colspan=2 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+	<td colspan=2 align=center class="grey"><b>Design Credits</b></td>
+</tr>
+<tr valign=top>
+	<td colspan=2 class="bodycopy">
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+		<tr valign=top>
+			<td class="bodycopy">
+<:
+page.include('credits')
+:>
+			</td>
+		</tr>
+	</table>
+	</td>
+	</tr>
+<:
+footer()
+:>
+

@@ -1,0 +1,199 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Void Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"><img src="<URL>/images/spacer.gif" width=1></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>The Void Variant</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Contents</b></td>
+<td align=center class="grey"><a name="1"></a><b>Basic Rules</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=3>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		<form action=<URL> target=crowded>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=void>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr><td class=bodycopy>
+
+<ol>
+<li>The normal rules of Diplomacy apply except where amended herein. 
+<p><li>The Void variant is played by 36 players. Each player begins the
+	game by owning a single unit on the standard Diplomacy map.
+	Each power is named for the starting location of his or her unit.
+	Each unit begins the game on one of the 36 <i>non-</i>supply center
+	locations that are adjacent to two or more supply centers.
+	Powers on land begin the game with an army; powers at sea begin
+	the game with a fleet.
+<p><li>The game starts in the Fall 1900 Movement phase, and
+	all of the thirty-four supply centers on the board are unowned
+	at the beginning of the game.  Obviously, at least two of the 36
+	players will be eliminated from the game after the first movement phase.
+<p><li>When building units, a unit may be built at any owned supply center.
+<p><li>The single-character abbreviation (for use in <tt>SIGNON</tt> and
+<tt>PRESS&nbsp;TO</tt> commands in the DPjudge's
+	<a href=<URL>?page=Email>e-mail messages</a>)
+	for each of the powers is as follows:
+<center>
+<table border>
+<tr class=bodycopy><th bgcolor=#4c99b2>Adriatic&nbsp;Sea:&nbsp;A</th><th bgcolor=#7fbf00>Aegean&nbsp;Sea:&nbsp;B</th><th bgcolor=#7fffff>Albania:&nbsp;C</th><th bgcolor=#4c00bf><font color=white>Apulia:&nbsp;D</th><th bgcolor=#ff0000>Armenia:&nbsp;E</th><th bgcolor=#bf7f00>Baltic&nbsp;Sea:&nbsp;F</th></tr>
+<tr class=bodycopy><th bgcolor=#bf007f><font color=white>Barents&nbsp;Sea:&nbsp;G</th>
+<th bgcolor=#000000><font color=white>Black&nbsp;Sea:&nbsp;H</th><th bgcolor=#0000ff><font color=white>Bohemia:&nbsp;I</th><th bgcolor=#ffff00>Burgundy:&nbsp;J</th><th bgcolor=#ff00ff>Clyde:&nbsp;K</th><th bgcolor=#00ffff>English&nbsp;Channel:&nbsp;L</th></tr>
+<tr class=bodycopy><th bgcolor=#b24c99>Finland:&nbsp;N</th><th bgcolor=#00bf7f>Galicia:&nbsp;P</th>
+	<th bgcolor=#007fbf><font color=white>Gascony:&nbsp;Q</th><th bgcolor=#ffffff>Gulf&nbsp;of&nbsp;Bothnia:&nbsp;R</th><th bgcolor=#b2b2b2>Gulf&nbsp;of&nbsp;Lyon:&nbsp;S</th><th bgcolor=#7f00bf><font color=white>Helgoland&nbsp;Bight:&nbsp;T</th></tr>
+	<tr class=bodycopy><th bgcolor=#59593f><font color=white>Ionian&nbsp;Sea:&nbsp;U</th><th bgcolor=#e57f19><font color=white>Livonia:&nbsp;V</th><th bgcolor=#99ff99 nowrap>Mid-Atlantic&nbsp;Ocean:&nbsp;W</th>
+	<th bgcolor=#00ff00>North&nbsp;Sea:&nbsp;X</th><th bgcolor=#9999ff>Norwegian&nbsp;Sea:&nbsp;Y</th><th bgcolor=#bf0000><font color=white>Picardy:&nbsp;Z</th></tr>
+	<tr class=bodycopy><th bgcolor=#ff9999>Piedmont:&nbsp;0</th><th bgcolor=#00bf00><font color=white>Prussia:&nbsp;1</th>
+<th bgcolor=#7fb27f>Ruhr:&nbsp;2</th><th bgcolor=#cccc4c>Silesia:&nbsp;3</th>
+<th bgcolor=#ff667f>Skagerrak:&nbsp;4</th><th bgcolor=#4c007f><font color=white>Tuscany:&nbsp;5</th></tr>
+<tr class=bodycopy><th bgcolor=#7f4c00><font color=white>Tyrolia:&nbsp;6</th><th bgcolor=#007f4c><font color=white>Tyrrhenian&nbsp;Sea:&nbsp;7</th><th bgcolor=#f0dc82>Ukraine:&nbsp;8</th><th bgcolor=#196619><font color=white>Wales:&nbsp;9</th><th bgcolor=#4cff4c><!font color=white>W&nbsp;Mediterranean&nbsp;Sea:&nbsp;+</th>
+<th bgcolor=#b2994c>Yorkshire:&nbsp;*</th></tr>
+</table>
+</center>
+Note that the Ken Lowe judge's avoidance of the letter "<tt>O</tt>" as
+a <tt>SIGNON</tt> power identifier is continued by the DPjudge in this
+variant (and in <a href=<URL>?page=about:chaos>chaos</a>), even though
+on the DPjudge, only the letter "<tt>M</tt>" is reserved (for the
+Master).  [The Ken Lowe
+judges use the letter "<tt>O</tt>" to identify all observers.]
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="3"></a><b>Design Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+
+<p>
+The Void variant was created by Mario Huys.
+His original motivation for the variant was based on his thoughts about
+what would be a proper setting for having a game start in a Fall
+turn, instead of the usual Spring or Winter turns.
+Since he had just completed implementing the
+<a href=<URL>?page=about:chaos>chaos</a> variant map for the DPjudge,
+the answer came to him quite naturally. A simple count of the locations
+that qualified for inclusion gave him the number of 36.  He considers it
+providential that this is the same number of strategems that are given
+in Sun Tsu's
+"Art of War," one of the bibles of Diplomacy players everywhere.
+<p>
+About a month later, there was a discussion
+on the <a href=http://groups.yahoo.com/dpjudge>dpjudge mailing list</a>
+about the power names used in DPjudge
+chaos as compared to those used in the Ken Lowe judge (Njudge) chaos.
+As he toyed with the idea of bringing the DPjudge solution to the Njudge,
+he started reading the Njudge documentation
+<!-- 
+(which is surprisingly elaborate and well-structured), -->
+(specifically its
+support for additional variants),
+<!-- (which OTOH is surprisingly inflexible, lots
+of things being hard-coded), -->
+and he found
+a passage in section 3.4.8 of the 
+documentation (found
+<a href=http://www.njudge.org/docs/VariantsHOWTO.html#3.4>here</a>),
+that says that the Ken Lowe judge can support any
+variant with 34 or fewer players, but that should be sufficient
+unless "you find something more insane than chaos."
+<!-- Well, here it is. -->
+<P>
+Realizing that the DPjudge does not have any such restriction,
+Mario set about implementing his creation on the DPjudge, in hopes
+of it becoming a success, inspiring change in the Njudge.
+<P>
+Some of the initial players of the variant wondered how the game would
+play if it began in Spring instead of Fall.  This is an interesting variant,
+but Mario comments on whether this would ever become official as follows:
+"It won't. I'm much too fond of the cannon fodder part. Fewer survivors means
+it's harder to outright kill the remaining contenders in the second and
+third year as there's almost always some SC to retreat to. A Spring start
+will probably mean more survivors, more like chaos with different power
+names. I don't want that. Let void be void."
+
+<P>
+Regarding the name of the variant, consider the
+<a href=http://www.pantheon.org/articles/c/chaos.html>origin of the
+word "chaos."</a>
+Chaos is from the Greek word <i>Khaos</i>, meaning "gaping void."
+How very appropriate. Mario actually originally
+chose the name mostly because in Void each player starts on the non-SC
+territories (or, in other variants, the usually "empty" spaces), but
+the Void variant actually embraces (by starting outside the
+Chaos starting locations) and extends (by allowing a bigger variety of
+starting positions after Winter 1900, depending on which centers remain
+empty) the Chaos variant.
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+<:
+footer()
+:>

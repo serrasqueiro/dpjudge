@@ -1,0 +1,255 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+page.include('payola')
+loadGame()
+page.game.logAccess(page.power, page.password)
+checkPassword()
+checkProposal()
+showGameHeader()
+:>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+<:
+gameHeader()
+:>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<:
+showReadyNotice()
+:>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Status</b></td>
+<:
+if not page.game.error:
+	page.write('<td align=center class="grey"><b>Communications</b></td>')
+if (page.power.name != 'MASTER' and page.power.balance is not None
+and page.game.phase not in ('FORMING', 'COMPLETED')):
+	page.write('<td align=center class="grey"><b>O%sers</b></td>' %
+		('rd','ff')[page.game.phase[-1] == 'M'])
+page.write('</tr>')
+checkErrors()
+:>
+<tr valign=top>
+<td>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+		<!--FLAG AND PLAYER INFORMATION TABLE BEGINS HERE-->
+<:
+powerHeader()
+:>
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr>
+		<td colspan=3 class="border" height=1><img
+			src="<URL>/images/spacer.gif" height=1></td>
+		</tr>
+		</table>
+		<!--FLAG AND PLAYER INFORMATION TABLE ENDS HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td align=center>
+		<!--MAPS, RESULTS, ENDGAME TABLE BEGINS HERE-->
+		<table border=0 align=center>
+<:
+#	----------------------------------------------------------------------
+def showLedgerButton():
+	if os.path.isfile(page.game.file('ledgers')): page.write(
+		"""
+		<form method=post>
+		<input type=hidden name=page value=View>
+		<input type=hidden name=file value=ledgers>
+		<input type=hidden name=game value=%s>
+		<input type=hidden name=power value=%s>
+		<input type=hidden name=password value=%s>
+		<tr><td class=bodycopy><b>Ledger:</b></td>
+		<td align=right class=bodycopy>Complete account ledger history</td>
+		<td><input class=inputSubmit type=submit value="Read"></td></tr>
+		</form>
+		""" % (page.game.name, page.power.name, page.password))
+#	----------------------------------------------------------------------
+def showPricesButton():
+	if (((page.power and page.power.name == 'MASTER')
+	or 'PUBLIC_TOTALS' in page.game.rules)
+	and os.path.isfile(page.game.file('chart'))):
+		page.write(
+			"""
+			<form method=post><input type=hidden name=page value=View>
+			<input type=hidden name=file value=chart>
+			<input type=hidden name=game value=%s>
+			<tr><td class=bodycopy><b>Bribes:</b></td>
+			<td align=right class=bodycopy><select name=phase class=bodycopy>
+			""" % page.game.name)
+		chart = open(page.game.file('chart'))
+		phases = [x.title() for x in chart if 'MOVEMENT' in x]
+		chart.close()
+		[page.write('<option' + ('>', ' selected>')[x == phases[-1]] + x)
+			for x in phases]
+		page.write("""
+			</select></td>
+			<td><input class=inputSubmit type=submit value="Read"></td></tr>
+			""")
+		if page.power: page.write(
+			"""
+			<input type=hidden name=power value=%s>
+			<input type=hidden name=password value=%s>
+			""" % (page.power.name, page.password))
+		page.write('</form>')
+#	----------------------------------------------------------------------
+def showTransferForm():
+	page.game.findGoners()
+	if not ((not page.game.await
+		or page.power.type) # exchange investors can transfer at all times
+	and (page.power.balance > 0)
+	and ('NO_DONATIONS' not in page.game.rules or not page.power.goner)
+	and ('NO_TRANSFER' not in page.game.rules)
+	and ('ONE_TRANSFER' not in page.game.rules
+		or len(page.power.sent) != (len(page.game.powers) - 1))
+	and ('NO_LOOTING' not in page.game.rules or not page.power.isDummy())
+	and (not page.power.ceo)): return
+	page.write(
+		"""
+		<form name=transferForm method=post>
+		<input type=hidden name=page value=Transfer>
+		<input type=hidden name=game value=%s>
+		<input type=hidden name=power value=%s>
+		<input type=hidden name=balance value=%d>
+		<input type=hidden name=password value=%s>
+		<tr><td class=bodycopy><b>Transfer:</b></td>
+		<td class=bodycopy align=right>Send
+		<input class=inputBox name=amount size=3 value=0>
+		AgP %s to
+		<select class=inputBox name=beneficiary>
+		""" % (page.game.name, page.power.name, page.power.balance,
+			page.password, 'ANON_TRANSFER' in page.game.rules and
+			'(anonymously)' or ''))
+	powers, others = [], []
+	for power in page.game.powers:
+		if 'VASSAL_DUMMIES' in page.game.rules and power.isDummy(): continue
+		if power.name not in page.power.sent:
+			if not power.type: powers += [power.name]
+			elif power.type not in ('OBSERVER', 'MONITOR'):
+				others += [power.name]
+	powers = sorted(powers) + sorted(others)
+	powers.remove(page.power.name)
+	for power in powers: page.write('<option value=%s>' % power + power)
+	page.write(
+		"""
+		</select></td>
+		<td><input class=inputSubmit type=submit value="Send"></td>
+		</tr></form>
+		""")
+#	----------------------------------------------------------------------
+def showBalance():
+	if page.power.type and len(page.power.funds) > 1:
+		page.write(
+			"""
+			<tr><td valign=top class=bodycopy><b>Portfolio:</b></td>
+			<td valign=top class=bodycopy align=right>
+			<table width=100%>
+			<tr>
+			<th width=25% valign=top class=bodycopy><u>Power</th>
+			<th width=25% valign=top class=bodycopy><u>Shares Owned</th>
+			<th width=25% valign=top class=bodycopy><u>Shares Issued</th>
+			<th width=25% valign=top class=bodycopy><u>Shares In IPO</th>
+			</tr>
+			""")
+		for stock, shares in page.power.funds.items():
+			for power in page.game.powers:
+				if not power.type and power.abbrev == stock: break
+			else: continue
+			issued = 0
+			for player in page.game.powers:
+				if player is not power: issued += player.funds.get(stock, 0)
+			page.write(
+				"""
+				<tr><td align=center class=bodycopy>%s</td>
+				<td align=center class=bodycopy>%d</td>
+				<td align=center class=bodycopy>%d</td>
+				<td align=center class=bodycopy>%d</td>
+				</tr>
+				""" % (power.name.title(),
+				shares, issued, power.funds.get(stock, 0)))
+		page.write('</table></td></tr>')
+	page.write(
+		"""
+		<tr><td class=bodycopy><b>Balance:</b></td>
+		<td class=bodycopy align=right>%d AgP</td></tr>
+		""" % page.power.balance)
+#	----------------------------------------------------------------------
+
+if page.power.name != 'MASTER':
+	showMessages()
+	powerInfo()
+showMapButtons()
+showResultsText()
+showPressArchive()
+if page.power.name != 'MASTER': showVariantInfo()
+showDocList( (	('summary', 'Game Summary'),
+				('EOG', 'End Of Game Statements'),
+				('chart', 'Bribe Chart'),
+				('ledgers', 'Offer Ledgers')))
+if (page.power.name != 'MASTER'
+and page.power.type not in ('OBSERVER', 'MONITOR')
+and page.game.phase not in ('FORMING', 'COMPLETED')):
+	showProposal()
+	showControlInfo()
+	showLedgerButton()
+	showBalance()
+	if page.pwdFlag == 1: showTransferForm()
+showPricesButton()
+if (page.power.name, page.pwdFlag) == ('MASTER', 1): showStatusFile()
+:>
+		</table>
+		<!--MAPS, RESULTS, ENDGAME TABLE ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--GAME INFORMATION TABLES END HERE -->
+	</td>
+<:
+if not page.game.error:
+	page.write(
+		"""
+		<td>
+		<!--COMMUNICATIONS TABLES GO HERE-->
+			<table border=0 cellpadding=10 cellspacing=0 width=100%>
+			<tr valign=top>
+			<td align=center>
+				<!--SEND PRESS TABLE BEGINS HERE-->		
+				<table border=0 align=center>
+				<tr>
+		""")
+	if 'message' in vars(page):
+		sendPress()
+		page.write('</tr><tr>')
+	showPressOptions()
+	page.write(
+		"""
+		</tr>
+		</table>
+		<!--SEND PRESS TABLE ENDS HERE-->
+		</td>
+		</tr>
+		</table>
+		</td>
+		""")
+if (page.power.name != 'MASTER'
+and page.game.phase not in ('FORMING', 'COMPLETED')): showPowerData()
+:>
+</tr>
+<:
+footer()
+:>

@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Shift Variants Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>The Shift Variants</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Contents</b></td>
+<td align=center class="grey"><a name="1"></a><b>Basic Rules</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=3>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		<center>
+		<form action=<URL> target=shiftleft>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=shiftleft>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Shift-Left Map">
+		</form>
+		<form action=<URL> target=shiftright>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=shiftright>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Shift-Right Map">
+		</form>
+		<form action=<URL> target=shiftaround>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=shiftaround>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Shift-Around Map">
+		</form>
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr><td class=bodycopy>
+
+The Shift variants are standard Diplomacy, played on the standard map
+with standard powers, with the single exception that each of the powers
+begins the game with his units occupying (and owning) the home centers
+of another power.  Each power's initial units are the same in number,
+unit type, and position as the standard setup for the power whose supply
+centers it is occupying.
+<p>
+Each power's home centers remain the same as in standard Diplomacy,
+so that no power may build a new unit until it has captured one of its
+own supply centers and then leaves it vacant in an adjustment phase.
+<p>
+<center>
+<table border>
+<tr bgcolor=#bbbbbb><th rowspan=2 class=bodycopy>Power</th>
+	<th class=bodycopy colspan=3>Starts In...</th></tr>
+<tr bgcolor=#bbbbbb>
+	<th class=bodycopy>Shift Left</th>
+	<th class=bodycopy>Shift Right</th>
+	<th class=bodycopy>Shift Around</th>
+</tr>
+<tr><th class=bodycopy>Austria</th>
+	<th class=bodycopy>France</th>
+	<th class=bodycopy>England</th>
+	<th class=bodycopy>France</th>
+</tr>
+<tr><th class=bodycopy>England</th>
+	<th class=bodycopy>Austria</th>
+	<th class=bodycopy>Italy</th>
+	<th class=bodycopy>Italy</th>
+</tr>
+<tr><th class=bodycopy>France</th>
+	<th class=bodycopy>Russia</th>
+	<th class=bodycopy>Austria</th>
+	<th class=bodycopy>Austria</th>
+</tr>
+<tr><th class=bodycopy>Germany</th>
+	<th class=bodycopy>Turkey</th>
+	<th class=bodycopy>Turkey</th>
+	<th class=bodycopy>Turkey</th>
+</tr>
+<tr><th class=bodycopy>Italy</th>
+	<th class=bodycopy>England</th>
+	<th class=bodycopy>Russia</th>
+	<th class=bodycopy>Russia</th>
+</tr>
+<tr><th class=bodycopy>Russia</th>
+	<th class=bodycopy>Italy</th>
+	<th class=bodycopy>France</th>
+	<th class=bodycopy>England</th>
+</tr>
+<tr><th class=bodycopy>Turkey</th>
+	<th class=bodycopy>Germany</th>
+	<th class=bodycopy>Germany</th>
+	<th class=bodycopy>Germany</th>
+</tr>
+</table>
+</center>
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="3"></a><b>Design Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+
+<p>
+The Shift Left and Shift Right variants were designed by Josh Smith.
+The Shift Around variant (identical to Shift Right except that Austria
+and Russia exchange their starting positions) was created by Dan
+Dzikowicz.
+
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+<:
+footer()
+:>

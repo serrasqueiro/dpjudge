@@ -1,0 +1,1194 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: E-Mailing The DPjudge</title>
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=2>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>Q&amp;A About The DPjudge E-Mail Interface</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=2 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Questions About...</b></td>
+<td align=center class="grey"><a name="1"></a><b>The recognized commands</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">The recognized commands</a><br>
+		<b>&middot;</b>&nbsp;<a href="#2">How to get a list of games and</a><br>
+		&nbsp;&nbsp;<a href="#2">information on a specific game</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">How to observe a game</a><br>
+		<b>&middot;</b>&nbsp;<a href="#4">How to join a game</a><br>
+		<b>&middot;</b>&nbsp;<a href="#5">How to sign on after having joined</a><br>
+		<b>&middot;</b>&nbsp;<a href="#6">How to check, submit, and clear</a><br>
+		&nbsp;&nbsp;<a href="#6">orders</a><br>
+		<b>&middot;</b>&nbsp;<a href="#7">How to send press</a><br>
+		<b>&middot;</b>&nbsp;<a href="#8">Sending illegal types of press</a><br>
+		<b>&middot;</b>&nbsp;<a href="#9">Ending a press message</a><br>
+		<b>&middot;</b>&nbsp;<a href="#10">Updating player information</a><br>
+		<b>&middot;</b>&nbsp;<a href="#11">Getting around wireless device</a><br>
+		&nbsp;&nbsp;<a href="#11">restrictions</a><br>
+		<b>&middot;</b>&nbsp;<a href="#12">How to resign</a><br>
+		<b>&middot;</b>&nbsp;<a href="#13">How to take over a vacant position</a><br>
+		<b>&middot;</b>&nbsp;<a href="#14">The Master's commands</a>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+<td>
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+		<b>What is the e-mail address of the DPjudge?</b><br>
+		This DPjudge (<ID>) responds to e-mail sent to
+		<a href=mailto:<MAIL>><tt><MAIL></tt></a>
+
+		<P><b>If I send an e-mail to the DPjudge, what commands may I include in that e-mail?</b><br>
+		The DPjudge recognizes only the following thirty commands:
+	
+			<P><table border=0 cellpadding=0 align=center>
+			<tr valign=top>
+			<td class="bodycopy">&middot;<a href=#signon>SIGNON</a><br>&middot;<a href=#signoff>SIGNOFF</a></td><td width=20></td>
+			<td class="bodycopy">&middot;<a href=#press>PRESS</a><br>&middot;<a href=#endpress>ENDPRESS</a></td><td width=20></td>
+			<td class="bodycopy">&middot;<a href=#broadcast>BROADCAST</a><br>&middot;<a href=#endbroadcast>ENDBROADCAST</a></td>
+			</tr>
+			<tr><td colspan=5 height=10></td></tr>
+			<tr valign=top>
+			<td class="bodycopy">&middot;<a href=#join>JOIN</a><br>&middot;<a href=#observe>OBSERVE</a> <i>(etc.)</td><td width=20></td>
+			<td class="bodycopy">&middot;<a href=#resign>RESIGN</a><br>&middot;<a href=#takeover>TAKEOVER</a></td><td width=20></td>
+			<td class="bodycopy">&middot;<a href=#status>STATUS</a><br>&middot;<a href=#clear>CLEAR</a></td>
+			</tr>
+			<tr><td colspan=5 height=10></td></tr>
+			<tr valign=top>
+			<td class="bodycopy">&middot;<a href=#address>SET ADDRESS</a><br>&middot;<a href=#password>SET PASSWORD</a></td><td width=20></td>
+			<td class="bodycopy">&middot;<a href=#wait>SET WAIT</a><br>&middot;<a href=#nowait>SET NOWAIT</a>
+			<br>&middot;<a href=#absence>SET ABSENCE</a></td>
+			<td width=20></td>
+			<td class="bodycopy">&middot;<a href=#list>LIST</a><br>&middot;<a href=#summary>SUMMARY</a><br>&middot;<a href=#history>HISTORY</a><br>&middot;<a href=#map>MAP</a></td>
+			</tr>
+			</table>
+
+		<P><b>Hey, you said there were <i>thirty</i> recognized commands!
+		That's only twenty-one!</b><br>
+		Okay, you're right.  I left out the nine "Master commands"
+		(those that may be used only by a game's Master). These are:
+	
+			<P><table border=0 cellpadding=0 align=center>
+			<tr valign=top>
+			  <td class="bodycopy" valign=top>&middot;<a href=#create>CREATE</a></td><td width=20></td>
+			  <td class="bodycopy">&middot;<a href=#process>PROCESS</a>
+			<br>&middot;<a href=#preview>PREVIEW</a>
+			</td>
+				<td width=20></td>
+			  <td class="bodycopy">&middot;<a href=#m_resign>RESIGN</a>
+			<br>&middot;<a href=#m_dummy>DUMMY</a>
+				<td width=20></td>
+			<td class="bodycopy">&middot;<a href=#official>OFFICIAL</a><br>&middot;<a href=#reveal>REVEAL</a></td>
+				<td width=20></td>
+			<td class="bodycopy" valign=top>&middot;<a href=#rollback>ROLLBACK</a><br>&middot;<a href=#deadline>SET DEADLINE</a></td>
+			</tr>
+			</table>
+	
+		<p>There; that makes thirty.  That's it. If you are familiar with the Ken Lowe Internet judge, you know that it supports a few more commands.  The DPjudge does <i>not</i> support these. Limit your messages to the commands listed above or the DPjudge will simply tell you it does not understand you.
+	
+		<P><i>Note that if a specific <a href=<URL>?page=Rules><tt>RULE</tt></a>
+		(<tt>PLAYER_DEADLINES</tt>) is used in a game, the
+		<tt>SET&nbsp;DEADLINE</tt>
+		command may be used by persons other than the Master.</i>
+
+		<P><b>Will some of the other Ken Lowe judge commands be supported
+		later?</b><br>
+		<tt>SET DRAW</tt> and <tt>TERMINATE</tt> almost
+		certainly will be (someday) -- as
+		for any other commands, though, don't hold your breath.  I don't
+		really see much of a need for them.
+	
+		<P> Here is a list of the capabilities provided by the E-Mail and the Web interfaces:
+	
+			<P><table border=0 bgcolor="#777777" cellspacing=1 align=center>
+			<tr>
+			<td class="bodycopy" align=center bgcolor="#FFFFFF"><b>E-Mail Interface</b></td>
+			<td class="bodycopy" align=center bgcolor="#FFFFFF"><b>Web Interface</b></td>
+			</tr>
+			<tr valign=top>
+			<td class="bodycopy" nowrap>
+			<font color=red>&nbsp;&middot;Sending Press<br>
+			&nbsp;&middot;Submitting Orders<br>
+			&nbsp;&middot;Changing <tt>WAIT</tt> Status<br>
+			&nbsp;&middot;Obtaining a Phase <tt>HISTORY</tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+			&nbsp;&middot;Obtaining a Game <tt>SUMMARY</tt><br>
+			&nbsp;&middot;Obtaining a Game <tt>MAP</tt></font><br>
+			&nbsp;&middot;Obtaining a Game <tt>LIST</tt><br>
+			&nbsp;&middot;Creating a Game<br>
+			&nbsp;&middot;Taking a Role in a Game<br>
+			&nbsp;&nbsp;(Joining, Taking Over)<br>
+			&nbsp;&middot;Modifying Player Data<br>
+			&nbsp;&nbsp;(e-mail address, password)<br>
+			&nbsp;&middot;Resigning From a Game</td>
+			<td class="bodycopy">
+			<font color=red>&nbsp;&middot;Sending Press<br>
+			&nbsp;&middot;Submitting Orders<br>
+			&nbsp;&middot;Changing <tt>WAIT</tt> Status<br>
+			&nbsp;&middot;Viewing Phase <tt>HISTORY</tt><br>
+			&nbsp;&middot;Viewing a Completed Game's <tt>SUMMARY</tt>&nbsp;<br>
+			&nbsp;&middot;Viewing a Game <tt>MAP</tt></font>&nbsp;<br>
+			&nbsp;&middot;Voting on Draw or Concession<br>
+			&nbsp;&middot;Reading Documentation<br>
+			&nbsp;&nbsp;(like you're doing now)<br>
+			&nbsp;&middot;<i>All</i> Other Activities Not Listed</td>
+			</tr>
+			</table>
+	
+	<!--
+		<P>Note that press can be composed at the Website as well, but this may not always be as convenient for the player.
+	-->
+		<P><b>Does upper- and lower-case ever matter in any command?</b><br>
+		No.  Never.
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="2"></a><b>How to get a list of games and information on a specific game</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+		<a name=list></a>
+		<b>How can I get a list of games I can play?</b><br>
+		It's as easy as sending a one-word e-mail to the DPjudge.  That word is <tt>LIST</tt>.  This request must be made when <i><u>not</u></i> signed on to a particular game, and in response you will get a list of all
+games on the DPjudge that are open to the public and are either forming or
+waiting for replacement players.  This list is short and contains very few
+details about each game. To get more information on a particular game, either
+go visit the game's Webpage (which the <tt>LIST</tt> response will give
+you) or, to get the information by e-mail, ask the next question....
+
+		<P><b>How do I find out about a game via e-mail?</b><br>
+		This is <i>also</i> done by using the <tt>LIST</tt> command.  You can either ask for the status of a specific game to be sent to you by putting:<br><tt>
+	&nbsp;&nbsp;&nbsp;&nbsp;LIST <i>gameName</i></tt><br>
+	or request the status of a game you have already signed on to (in the current e-mail message) by simply saying:<br><tt>
+	&nbsp;&nbsp;&nbsp;&nbsp;LIST</tt><br>
+	Note that if you are signed on to a particular game, you may not request a list for any game <i>other than</i> that one.
+
+		<a name=summary></a>
+		<P><b>That seems to give me only the up-to-date unit positions and game conditions.  Can I get historical information? How about the e-mail addresses of the players involved?</b><br>
+		You're asking about the <tt>SUMMARY</tt> command.  Ask for a game's <tt>SUMMARY</tt> the same way you ask for a <tt>LIST</tt> of a specific game.  The return e-mail will contain the historical ownership of supply centers, records of when each power was taken over by replacement players, and so forth.  As for player e-mail addresses, it is the hard-and-fast policy of the DPjudge to keep all e-mail addresses secret until the end of the game -- only a <tt>SUMMARY</tt> of a <i><u>completed</u></i> game will contain player e-mail addresses.
+
+		<a name=history></a>
+		<P><b>How about the complete history of the moves of a game?  Can I request that?</b><br>
+		Sure.  Just use the <tt>HISTORY</tt> command.  It has the same syntax as the <tt>SUMMARY</tt> command, and it returns you, in a single e-mail, and listed in order, all of the phase results for the game.
+
+		<a name=map></a>
+		<P><b>The maps I can see on the Website are pretty handy.  Can I get
+		them sent to me in e-mail?</b><br>
+		Yes, you can.  Just use the <tt>MAP</tt> command.
+		It has the same syntax as the <tt>SUMMARY</tt> command,
+		and it returns you, as an e-mail attachment, the <tt>.gif</tt>
+		map displaying the current positions in the game.  If you add
+		<tt>ps</tt> or <tt>pdf</tt> to the end of your <tt>MAP</tt> command,
+		you will be sent the PostScript or Adobe PDF file (respectively)
+		instead of the <tt>gif</tt> file.
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="3"></a><b>How to observe a game</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+		<b>Okay, let's talk about the different commands. Mind if we take that weird one first?  What do you mean by the "<i>(etc.)</i>" on the <tt>OBSERVE</tt> command?  What kind of command is that?</b><br>
+		<tt>OBSERVE</tt> is just one form of a command you use to join a game as something other than a "map-power." <i>(A "map-power" is a player that will own supply centers and units. You join as a "map-power" using the <tt>JOIN</tt> command, which we'll get to in a minute.)</i>  Joining as an Observer will allow you to send press, but take no other part in the game. Now I hear you asking, "Other than a map power or an observer, what else can I be?"  Well, other than <tt>OBSERVER</tt>, there is <tt>MONITOR</tt>, but after that, there's no single answer, because some games also support various <i>different</i> types of non-map powers (such as the Exchange variant's <tt>INVESTOR</tt> players.)
+
+		<P><b>What's the difference between a <tt>MONITOR</tt> and an <tt>OBSERVER</tt>?</b><br>
+		A <tt>MONITOR</tt> receives <i>only</i> the game's results (and deadline change notices, and draw or concession agreements).  An <tt>OBSERVER</tt> is eligible to send and receive press messages.  Also, an <tt>OBSERVER</tt> shows up on the Web as someone who can "Log In," while a <tt>MONITOR</tt> does not.  Additionally, a <tt>MONITOR</tt> is not required or expected to be a member of the DPjudge Player Database (DPPD) -- that is, the e-mail address does not need to identify any particular person. <tt>MONITOR</tt>s can therefore be used to update any automatic game-mapping and tracking sites (such as <a href=http://www.onesite.org>One Site</a>).
+
+		<P><b>Okay, I think I understand. <tt>JOIN</tt> is for recognized powers (specific nations that can
+own units and supply centers) in a game, and <tt>OBSERVE</tt> and similiar commands are for everyone else.</b><br>
+		You're a sharp one; yes, you got the right idea.  The DPjudge assigns  an identity to you when you participate in a game.  You can be a  map-power (either one of your choosing -- from among those map-powers still available -- or  assigned to you randomly at game start) <i>via</i> the <tt>JOIN</tt> command.  You can be a named observer (each observer has a unique name), in which case you specify your name when you enter the game using the <tt>OBSERVE</tt> command.  Or you can be another  recognized entity of a type specific to certain variant games.  One such  example is an investor, which is a recognized entity in the exchange variant.  You join a game as an investor <i>via</i> the <tt>INVEST</tt> command.  There are others, but you get the idea.
+
+	<a name=observe></a>
+		<P><b>Okay.  I understand what you mean now.  But how exactly do I use the <tt>JOIN</tt> and <tt>OBSERVE</tt> (and similar) command to get me into a game?</b><br>
+		To join the game as a map-power player, use the <tt>JOIN</tt> command. We'll discuss <tt>JOIN</tt> later, though.  Let's finish covering <tt>OBSERVE</tt> and its friends.
+	
+		<P>To join a game as a non-map-power, you use a command  with the following format:<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tt><i>playerType createYourName@gameName password</i></tt><br>
+		where <tt><i>playerType</i></tt> is (the first few letters, at least, of) the type of non-map power you wish to become.  For example, you could use <tt>OBSERVE</tt> or <tt>OBSERVER</tt> or <tt>OBS</tt> to become an observer, and you could use <tt>INVESTOR</tt> or <tt>INVEST</tt> or <tt>INV</tt> to become an investor.
+	
+		<P><tt><i>createYourName</i></tt> can be any name of your choosing (except stuff like <tt>MASTER</tt> or <tt>M</tt> or the names or initial letters of the map-powers, or any other player ID that is already spoken for). After the at-sign must be the  name of the game you wish to join.   And don't forget capitalization doesn't ever matter.
+	
+		<P><tt><i>password</i></tt> is a password of your choosing. You will need it to <tt>SIGNON</tt> to the game. Additionally, if you wish to change your <tt><i>playerType</i></tt> for any reason (for example, if you had joined the game as an <tt>OBSERVER</tt> but now wish to become a map-power by using the <tt>JOIN</tt> or <tt>TAKEOVER</tt> command), you will need to use this password in the command that you use to make the change. 
+	
+	<P><font color=red>Note that the GameMaster will have access to your
+	password, so you may not wish to use the same password that you use
+	to log into the DPPD or that you use on other accounts.</font>
+	
+		<P>As you can see, then, the DPjudge uniquely identifies each <tt>OBSERVER</tt>.  Contrast this with the Ken Lowe judge, in which each observer uses the same <tt>SIGNON&nbsp;O<i>gamename</i></tt> command. Here at the DPjudge, to interact with a game once you have joined it, you still use <tt>SIGNON</tt> command but the <tt>O</tt> is replaced by the player's chosen "ID" and an at-sign.  (See the discussion of the <tt>SIGNON</tt> command below for more details.)
+	
+		<P>Here are a couple examples of the "join but not as a map-power" command:
+	
+		<blockquote>
+		<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OBSERVE loudMouth@coolgame myPassword<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MONITOR nosyParker@yourGame peeping<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;INVEST DonTrump@monopoly iam_rich</tt>
+		</blockquote>
+	
+		<P>At present, Observers, Monitors, and Investors are the only known type of non-map-power, but in the future, there will be more.  You cannot just make one up, though.  That is,<blockquote>
+		<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SPY SpysAreUs@coolgame myPassword</tt></blockquote>
+		is neat, but will simply return you an error because the DPjudge doesn't know what a <tt>SPY</tt> is.  <i>(However, if you ask your GameMaster to add the line </i><tt>ALLOW SPY</tt><i> to the game's "status" file, then you <u>can</u> indeed become a <tt>SPY</tt> by sending in the line shown above.  Unless the DPjudge is taught otherwise, though, a <tt>SPY</tt> is just another name for an observer.)</i>
+
+		<p><b>Cool!!!  So I can name myself as an observer!  What happens if I sign on using the syntax that an observer would send to the Ken Lowe judge?  That is, by saying
+"<tt>SIGNON&nbsp;O<i>gameName&nbsp;password</i></tt>"?</b><br>
+		It won't work, since this is syntax that is not recognized by the DPjudge. The only way you can signon as a non-map-power is to use the <tt>SIGNON&nbsp;<i>yourCreatedName</i>@gameName&nbsp;<i>password</i></tt> version (the <tt>SIGNON</tt> command is discussed more completely below). The closest you can come to the Ken Lowe syntax is to use the single letter <tt>O</tt> as the name you create for yourself in the <tt>OBSERVE</tt> command.  You would still need to <tt>SIGNON</tt> with an at-sign (the command would be <tt>SIGNON&nbsp;O@<i>gameName&nbsp;password</i></tt>) and you will be the only person that will be allowed to have the name "<tt>O</tt>".  If someone else  tries to <tt>SIGNON</tt> as "<tt>O</tt>" they'll probably fail because they won't get your password right.
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="4"></a><b>How to join a game</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+	<a name=join></a>
+		<b>Fine.  Now I know how to join the game if I don't want to be a map-power.  But I want to play!  How do I join a game as a map-power?</b><br>
+		You'll use the <tt>JOIN</tt> command, which has the following syntax:<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tt>JOIN <i>gameName password</i></tt><br>
+		-or-<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<tt>JOIN [<i>powerName</i>@]<i>gameName password</i></tt>
+	
+	<P><font color=red>If the game is a <b>private</b> game,
+	you will need to add one more word to the end of your <tt>JOIN</tt>
+	command.  This is the game's "privacy password," which you must obtain
+	from the GameMaster.  Is is in this way that games can allow access
+	only to a specific invited group of players.</font>
+
+		<P>Note that, <i>unlike</i> the <tt>OBSERVE</tt> (and other non-map-power) game-entrance commands discussed above, the second word to the <tt>JOIN</tt> command <i><b>does not need to</b></i> contain a "player ID" <i>and</i> the game name -- it might simply be the game name.
+	
+		<p>When you <tt>JOIN</tt> a game <i>without</i> specifying a <tt><i>powerName</i></tt>, you will be automatically assigned a player ID of <tt>POWER#1</tt> or <tt>POWER#2</tt>, etc., etc. This player ID will be sent back to you in the response to your <tt>JOIN</tt> command. Yes, <tt>POWER#6</tt> is kind of boring as a player ID, but it's only temporary (when the game starts, you get to  be something special and exciting like <tt>AUSTRIA</tt>). 
+	
+		<P>If you want to send press or (God forbid!) <tt>RESIGN</tt> before the game starts, you will need to know your player ID (<tt>POWER#1</tt>, etc.) to use it in the <tt>SIGNON</tt> or <tt>RESIGN</tt> command (each of which is discussed below).
+	
+		<P>As soon as enough players have <tt>JOIN</tt>ed, the game will begin and you will be notified which power you will play.  Power assignment is completely random unless you selected a <tt><i>powerName</i></tt> in your <tt>JOIN</tt> command.  (That is, there is no such thing as a "preference list" such as is supported by the Ken Lowe judge).
+	
+		<P>If you specify a <tt><i>powerName</i></tt> when <tt>JOIN</tt>ing a game (which you can only do if a specific "rule" is in effect for the game), you will play that particular power when the game starts. Note that you must spell out the entire name of the power (that is, you may not abbreviate "<tt>Italy</tt>" as "<tt>I</tt>", etc.) and you must use the at-sign to separate your chosen <tt><i>powerName</i></tt> from the <tt><i>gameName</i></tt>.  If the <tt><i>powerName</i></tt> you specify is already spoken for, you will be told this in response, and you will <B><i><u>not</u></i></b> have <tt>JOIN</tt>ed the game.
+	
+		<p>You cannot <tt>JOIN</tt> a game that has already begun.
+	
+		<P>Here is an example <tt>JOIN</tt> command, which will result in your becoming <tt>POWER#1</tt> (or <tt>POWER#2</tt>, etc.) in the game named <tt>jigdy</tt>:<br>
+		<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JOIN jigdy mypassword</tt>
+	
+		<P>Note that the <tt>JOIN</tt> command is deliberately very different from the Ken Lowe command to join a game (which is <tt>SIGNON&nbsp;?<i>gamename&nbsp;password&nbsp;variantInfo...</i></tt>).  At the DPjudge, you do <i><u>not</u></i> specify any game variant information when joining a game.  At the DPjudge, we assume you know what you're getting yourself into.
+
+		<P><b>Can I both <tt>JOIN</tt> <i>and</i> <tt>OBSERVE</tt>? If I were a map-power, could I also enter the game as an observer, perhaps even more than once?</b><br>
+		Nope; if your e-mail address is already listed as being associated with some role in the game, you can't do something else.  If you have two e-mail addresses to use, though, you could indeed do this, but the game's Master, if he finds out what you've done, won't necessarily like you very much.  Also, the only way to pull this off is to create two separate registrations in the DPjudge Player Database, which is cheating and grounds for immediate blacklisting, so don't even try it.
+
+		<P>Once you are a map-power, you cannot assume any other role.  The only way out is to <tt>RESIGN</tt> (and again, the game's Master might not like you too much).  On the other hand, non-map-powers can change their <i>playerType</i> whenever they wish (for example, an observer could send an <tt>INVEST</tt> command to become an investor or a <tt>JOIN</tt> or <tt>TAKEOVER</tt> command to become a map-power).
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="5"></a><b>How to sign on after having joined</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+		<a name=signon></a>
+		<b>What is the syntax of the <tt>SIGNON</tt> command?</b><br>
+		The <tt>SIGNON</tt> command must contain exactly three space-separated words.
+	
+		<P>The first word, of course, is <tt>SIGNON</tt>.
+	
+		<P>The second word is used to specify <i>both</i> the power and the game name.  This is done in one of two ways:
+	
+		<ol>
+		<li>If signing on as a "map-power" (that is, a player that is eligible to own units) or as the Master, the initial letter of the power name can be given, followed <i>immediately</i> by the game name.  For example, the command<br>
+		<tt>&nbsp;&nbsp;&nbsp;&nbsp;SIGNON Ajigdy password</tt><br>
+		will signon to the game <tt>jigdy</tt> as the map-power which begins with "<tt>A</tt>" (Austria, assuming the game <tt>jigdy</tt> uses the standard map).  If the game has not yet started, and your player ID is something like <tt>POWER#3</tt>, you can either use the second <tt>SIGNON</tt> method (described below), or you can use your power <i>number</i> to <tt>SIGNON</tt> using this first method:<br>
+		<tt>&nbsp;&nbsp;&nbsp;&nbsp;SIGNON 3jigdy password</tt><br>
+		<li>Whether a "map-power" or not, an alternate form of the <tt>SIGNON</tt> can be used.  To signon this alternate way, give the <i>full name</i> of the power as which you intend to <TT>SIGNON</tt>, followed immediately by an at-sign (<tt>@</tt>) and the game name.  For example, the command<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;<tt>SIGNON austria@jigdy password</tt><br>
+		is identical to the earlier example. <font color=red><i>
+			<ul>
+			<li>This second method <u>must</u> be used to signon as an observer or other type of non-map-power.</i></font>
+			</ul>
+		</ol>
+	
+		<P>The third word must be either the player's password or the Master's password.
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="6"></a><b>How to check, submit, and clear orders</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+		<b>Can I submit orders via e-mail?</b><br>
+		Yes.  You can submit movement, retreat, and adjustment phase orders by e-mail.  Simply list the orders somewhere in your e-mail (after a <tt>SIGNON</tt> and not within a press message).  Orders must be <tt>completely</tt> submitted.  Everything you had on-file before will be thrown out and the orders in your e-mail used to replace them.
+
+		<a name=clear></a>
+		<P><b>How do I clear my orders via e-mail?</b><br>
+		Easy.  Just send a <tt>CLEAR</tt> command (after a <tt>SIGNON</tt>).
+
+		<a name=status></a>
+		<P><b>Can I check what my current orders are by e-mail?</b><br>
+		You sure can.  Just send a <tt>STATUS</tt> command (after a <tt>SIGNON</tt>).
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="7"></a><b>How to send press</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+		<a name=press></a>
+		<a name=broadcast></a>
+		<b>Okay, I've joined a game and I know how to <tt>SIGNON</tt>.  It looks like the most useful thing I can do using the e-mail interface is send press.  So teach me how. What is the syntax for the <tt>PRESS</tt> and <tt>BROADCAST</tt> commands?</b><br>
+		After the initial word in the command (<tt>PRESS</tt> or <tt>BROADCAST</tt>), you may specify one or more of the following four "options." 
+		
+		<ul>
+		<font color=red><li><i>No option from the list of four below may be given more than once.
+		<li>That is, you may use no more than one of the items from option group 1, no more than one from option group 2, etc.</i></font>
+		</ul>
+	
+		<ol>
+		<li><b><tt>TO <i>powerList</i></tt> <i>--or--</i><br>
+		<tt>+ <i>powerList</i></tt> <i>--or--</i><br>
+		<tt>+<i>powerList</i></tt></b><br>
+		This option is used to specify the player or players to which the press will be sent.
+		<font color=red><i><ul>
+		<li>You may <b><u>not</u></b> include this option if the command you are writing is <tt>BROADCAST</tt>
+		<li>However, this option is <b><u>required</u></b> if the command is <tt>PRESS</tt>.
+		</ul></i></font>
+		
+		<P><i>Note that although the plus-sign
+		is recognized as a synonym for <tt>TO</tt>, the minus sign (which
+		has a meaning in the Ken Lowe judge's <tt>PRESS</tt> command) is
+		not valid; to send a message to everyone <u>except</u> certain parties,
+		you need to list the receiving players.</i>
+		<P>
+	<li><b><tt>FAKE TO <i>powerList</i></tt> <i>--or--</i><br>
+			<tt>FAKE + <i>powerList</i></tt> <i>--or--</i><br>
+			<tt>FAKE +<i>powerList</i></tt> <i>--or--</i><br>
+			<tt>FAKE BROADCAST</tt></b><br>
+		This option is used to specify the player or players to whom the
+		press will <i>claim</i> to be addressed.  Note that if you
+		include the Master in the true recipients of the message, he
+		must be in the <tt>FAKE</tt> recipients, and vice-versa.
+		This option may <b><i>only</i></b> be used if the game allows
+		<tt>FAKE_PRESS</tt> and may only appear <i>after</i> any <tt>TO</tt>
+		option (option 1 above) has been given.
+		<p>
+	<li><b><tt>[FAKE] FROM <i>powerName</i></tt> <i>--or--</i><br>
+				<tt>WHITE</tt> <i>--or--</i><br>
+				<tt>GREY</tt> <i>--or--</i><br>
+				<tt>GRAY</tt></b><br>
+		This option is used to specify the player by whom the press
+		will <i>claim</i> to have been sent.  The <tt>GREY</tt> (or
+		<tt>GRAY</tt>) version of this option indicates the message is
+		to be sent anonymously.  The <tt>FROM</tt> version allows you
+		to specify a player (either by full-name or by initial letter if
+		a map-power) from whom the press will appear to have been
+		sent.  Note that  you may <i>not</i> claim that press comes
+		<tt>FROM</tt> the Master.
+		The <tt>FROM</tt> version of this option may <b><i>only</i></b>
+		be used if the game allows <tt>FAKE_PRESS</tt>, while <tt>GREY</tt>
+		(or <tt>GRAY</tt>) may only be used if the game allows grey or
+		fake press.
+	<P>
+	<li><b><tt>QUIET</tt></b><br>
+		This option, if given, indicates that no copy of the press should
+		be sent ("echoed") to the author.
+	</ol>
+	<P>
+	All lines in the e-mail that occur after a properly-written <tt>PRESS</tt>
+	or <tt>BROADCAST</tt> command will be considered text for the message until
+	an <tt>ENDPRESS</tt>, <tt>ENDBROADCAST</tt>, or <tt>SIGNOFF</tt>
+	command is found (or until the end of the e-mail message is reached).
+	The message will be sent as soon as one of these lines (or the end of
+	the e-mail message) is reached.
+
+<P><b>How do I specify a <tt><i>powerList</i></tt> to use in a <tt>TO</tt> or <tt>FAKE&nbsp;TO</tt> option?</b><br>
+A <i>powerList</i> is either:
+	<ul>
+	<li>the <i>full name</i> of a single power
+		(for map-powers and the Master, the initial letter of the name is
+		recognized, as is the power number [if a single digit] for unassigned
+		powers before a game starts).  For example:
+		<dd><tt>F</tt> or <tt>france</tt> or <tt>LoudMouthObserver</tt></dd>
+	<li>the initial letters of any number of map-powers (or numbers of
+
+		unassigned powers), one right after
+		the other.  For example:<br><tt>
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		Fra</tt><br>
+		would mean France, Russia, and Austria, and<br><tt>
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		124M</tt><br>
+		would mean Power#1, Power#2, Power#4, and the Master.
+	<li>a <i>comma-separated</i> list of the <i>full names</i> of powers.
+		For example:
+		<br><tt>
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		France,Russia, austria, Master, kibitzer#1</tt></dd>
+	</ul>	
+
+<P><b>Could you show me some example <tt>PRESS</tt>
+and <tt>BROADCAST</tt> commands?</b><br>
+	Sure I could.  
+Try these on for size.  As these examples show, there are often many different
+ways to write the same press command, and not all methods are shown below.
+
+<ol>
+<li>
+<tt>PRESS TO A</tt> <i>-or-</i><br>
+<tt>PRESS TO AUSTRIA</tt><br>
+The simplest possible example of a partial (non-broadcast) press message.
+This line begins a press message destined for Austria.  As long as the game does
+not allow only grey press, you will be identified as the sender of the message.
+
+<p><li>
+<tt>BROADCAST FROM G</tt> <i>-or-</i><br>
+<tt>BROADCAST FAKE FROM G</tt><br>
+This line begins a broadcast message that will claim to have been sent from Germany.
+
+<p><li>
+<tt>PRESS TO A FAKE TO AT</tt><br>
+This sends press to Austria and makes Austria think
+that Turkey got the message as well.  Note that because
+<tt>TO</tt> must precede <tt>FAKE TO</tt>, this
+command may <i><b>not</b></i> be written as:<br><tt>
+&nbsp;&nbsp;&nbsp;&nbsp;PRESS FAKE TO AT TO A</tt>
+
+<p><li>
+<tt>PRESS TO AUSTRIA FAKE BROADCAST</tt>   <i>-or-</i><br>
+<tt>PRESS FAKE BROADCAST TO AUSTRIA</tt><br>
+This sends press to Austria and makes Austria think everyone in the
+game received it.
+
+<p><li>
+<tt>BROADCAST FAKE TO AIRE</tt> <i>-or-</i><br>
+<tt>BROADCAST FAKE TO AUSTRIA,ENGLAND,ITALY,RUSSIA</tt><br>
+This line begins a broadcast message that will claim to have been sent only
+to Austria, England, Italy, and Russia.  Perhaps you are France and
+are part of a grand alliance to defeat Turkey, but you are not being
+true to the cause -- you are passing
+Turkey all of your correspondence with your allies (note that any game
+observers will see this press, though, so you should hope they don't tell
+your allies what you are doing).
+
+
+<p><li>
+<tt>PRESS WHITE TO AF</tt> <i>-or-</i><br>
+<tt>PRESS TO AF WHITE</tt><br>
+Sends press to Austria and France, and you will be identified as the sender.
+
+<p><li>
+<tt>PRESS GREY TO AF</tt> <i>-or-</i><br>
+<tt>PRESS GREY TO AUSTRIA, FRANCE</tt> <i>-or-</i><br>
+<tt>PRESS TO AUSTRIA, FRANCE GREY</tt><br>
+Sends press to Austria and France, but they won't know who it came from.  In
+the press you can write something identifying who you are, but the recipient
+will have doubts.
+
+<p><li>
+<tt>PRESS TO A FAKE FROM G</tt> <i>-or-</i><br>
+<tt>PRESS TO A FROM G</tt> <i>-or-</i><br>
+<tt>PRESS FAKE FROM G TO A</tt> <i>-or-</i><br>
+<tt>PRESS FROM G TO A</tt><br>
+Sends press to Austria, and he'll think it came from Germany.
+
+<p><li>
+<tt>PRESS TO A FAKE TO AR FROM T</tt> <i>-or-</i><br>
+<tt>PRESS TO A FAKE TO AR FAKE FROM T</tt> <i>-or-</i><br>
+<tt>PRESS TO A FROM T FAKE TO AR</tt> <i>-or-</i><br>
+<tt>PRESS TO A FAKE FROM T FAKE TO AR</tt> <i>-or-</i><br>
+<tt>PRESS FROM T TO A FAKE TO AR</tt> <i>-or-</i><br>
+<tt>PRESS FAKE FROM T TO A FAKE TO AR</tt><br>
+Sends press to Austria, who will be told (falsely) that the message
+also went to Russia, and that it came from Turkey.
+
+<p><li>
+<tt>PRESS WHITE TO A FAKE TO AI</tt><br>
+Sends press to Austria, and identifies who you are.  Austria will be told
+(falsely) that the message also went to Italy.
+</ol>
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="8"></a><b>Sending illegal types of press</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+		<b>If my game allows only grey press, do I need
+to say <tt>GREY</tt>?</b><br>
+	No.  It gets said for you automatically.
+
+<P><b>If a game is <tt>NO_PRESS</tt> or <tt>PUBLIC_PRESS</tt>
+press, does the e-mail interface keep me from violating these rules?</b><br>
+	Of course it does.  For example, only <tt>BROADCAST</tt> and
+	<tt>PRESS&nbsp;TO&nbsp;MASTER</tt> are allowed in a <tt>PUBLIC_PRESS</tt>
+	press game.  You will be lectured if you try to send any other kind
+	of press in such a game.
+
+<P><b>What happens if I try to do something illegal (like
+send press faked <tt>FROM</tt> the Master or send private press in a
+broadcast-only
+game)?  Will I crash the DPjudge or will it go through 
+and do what it can (for example, leaving out the "<tt>FAKE FROM M</tt>" part)?
+Will it alert the Master to someone trying to cheat?  Will it botch the press
+and let the other powers know who really sent it?</b><br>
+	It will send mail back to you saying, "you can't do that" but will tell
+	no one that you tried.  It will <b>not</b> send the press anywhere, but will
+	return it to you with its politely stated objection to your request.
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="9"></a><b>Ending a press message</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+		<a name=endpress></a>
+		<a name=signoff></a>
+		<a name=endbroadcast></a>
+		<b>What is the syntax for the <tt>ENDPRESS</tt>,
+<tt>ENDBROADCAST</tt>, and <tt>SIGNOFF</tt> commands?</b><br>
+	These three commands have the same syntax.  When found as the first
+	word on a line (not necessarily the <i>only</i> word, but the <i>first</i>
+	word), any message being composed is terminated and sent
+	immediately.  If the <tt>QUIET</tt> option was not used, an
+	echo of the press message will be also be e-mailed to you.
+	<P>
+	If the command is <tt>SIGNOFF</tt>, the DPjudge finishes processing
+	the e-mail message as if nothing else were contained in it from that
+	point forward.
+	Otherwise (if the command is <tt>ENDPRESS</tt> or <tt>ENDBROADCAST</tt>),
+	you may begin another <tt>PRESS</tt> or <tt>BROADCAST</tt>
+	message with your next command.
+	<P>
+	If you don't put any one of these commands in your 
+	message, then everything you have after your <tt>PRESS</tt>
+	(or <tt>BROADCAST</tt>) command gets sent up to the end of the message.
+	Which means if you have an automatic signature that gets added to
+	your outgoing e-mail to let everyone know how to contact you, you
+	will probably violate gunboat rules.  So make sure you have either
+	<tt>ENDPRESS</tt> or <tt>ENDBROADCAST</tt> or <tt>SIGNOFF</tt>
+	in your mail, and make sure to spell it correctly!
+
+<p><b>Is that true?  Does <tt>ENDBROADCAST</tt> stop
+<tt>PRESS</tt> as well?  And <tt>ENDPRESS</tt> can be used to stop a
+<tt>BROADCAST</tt>?</b><br>
+	Yes, to both counts.  I thought it was weird too, but the Ken Lowe judge
+	does it that way so I said, oh okay, whatever.
+
+<P><b>Other than the lines after my <tt>SIGNOFF</tt>, is
+there any other way I can put lines in my e-mail that will be
+ignored?</b><br>
+Yes.  Any line whose
+first non-whitespace characters are <tt>//</tt> will be ignored. This is
+true wherever the line appears in the e-mail, even if in the middle of
+a press message.  This ability to "comment out" lines may be useful to you
+if you want to set up an e-mail template containing your commonly used
+commands. Each line in your template can be commented out, and you can then
+simply remove the leading slashes on the lines you wish to use in the
+message to be sent.  In this way, you might only need to type the
+commands once.  For example:<tt>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;// CREATE mygamename mypassword
+<br>&nbsp;&nbsp;&nbsp;&nbsp;// here's the timing line I usually use
+<br>&nbsp;&nbsp;&nbsp;&nbsp;// TIMING NEXT 2D AT 12:00 GRACE 3D
+<br>&nbsp;&nbsp;&nbsp;&nbsp;SIGNON X@game password
+<br>&nbsp;&nbsp;&nbsp;&nbsp;// PRESS TO A
+<br>&nbsp;&nbsp;&nbsp;&nbsp;PRESS TO E
+</tt>
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="10"></a><b>Updating player information</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+		<a name=address></a>
+		<b>How do I change my e-mail address so that the
+game knows where I now am?</b><br>
+	Use the <tt>SET ADDRESS</tt> command.  To do so, simply <tt>SIGNON</tt>
+	to the game in an e-mail message and provide a line of the form:<br><tt>
+	&nbsp;&nbsp;&nbsp;&nbsp;
+		SET ADDRESS [<i>newAddress</i>[,<i>otherAddress</i>]...]</tt><br>
+	Any <tt><i>Address</i></tt> data that you provide should be a valid e-mail
+	address.  If you do not specify a <tt><i>newAddr</i></tt>, the e-mail 
+	address from which you sent the message will be used.  By providing
+	multiple addresses (joined by commas, with <i>no whitespace between
+	the addresses</i>, you may direct that the game send all e-mail to
+	you into more than one mailbox.
+
+		<a name=password></a>
+<P><b>How do I change my password?</b><br>
+	Use the <tt>SET PASSWORD</tt> command.  To do so, simply <tt>SIGNON</tt>
+	to the game in an e-mail message and provide a line of the form:<br><tt>
+	&nbsp;&nbsp;&nbsp;&nbsp;
+		SET PASSWORD <i>newPassword</i></tt><br>
+	It's that simple.  This command works whether you are a map power, an
+	observer or other non-map power, or the Master of the game.
+
+		<a name=wait></a>
+		<a name=nowait></a>
+<P><b>Can I change my "wait flag" via e-mail?</b><br>
+	Yep.  Just send in a <tt>SET WAIT</tt> or <tt>SET NOWAIT</tt> command
+	after a <tt>SIGNON</tt>.  That's all there is to it.
+
+<a name=absence></a>
+<P><b>What if I will be away?  Can I tell the game not to set deadlines on
+	specific dates?</b><br>
+	Yes.  For this, you would use the <tt>SET ABSENCE</tt> command.
+	This command establishes dates on which the game will not set a deadline.
+	Any player may use the <tt>SET&nbsp;ABSENCE</tt> command; however, only
+	the Master may introduce any absence longer than fourteen days.  To
+	set an absence, give a date in the same format as used for deadlines (for
+	example, <tt>23 JUL 2003</tt>), then optionally the word <tt>TO</tt> and
+	another date.  Deadlines will not be set on any of the days included in
+	the date range.  You may omit the first date (and begin with the word
+	<tt>TO</tt> to specify all dates from the current day to the specified
+	date.  Here are some examples:<br><tt>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SET ABSENCE 2 AUG 2003<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SET ABSENCE 2 AUG TO 8 AUG 2003<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SET ABSENCE TO 8 AUG 2003</tt>
+	<br>
+	Note that the game's current deadline is completely unaffected by a
+	<tt>SET&nbsp;ABSENCE</tt> command.  To change the current deadline in
+	any way, you must use the <tt>SET&nbsp;DEADLINE</tt> command.  Note
+	further that it is possible to set extensive absences by repeated use
+	of the command.  The Master should be vigilant to ensure that the power
+	to set absences will not be abused by any player.  The Master may also
+	use this command if he or she will be away and does not wish the game
+	to process during the absence.
+
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="11"></a><b>Getting around wireless device restrictions</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+		<b>I use a wireless device to send my e-mail, and it
+does not support my sending a newline character.  Is there anything I can
+do to be able to send multi-line messages to the DPjudge?</b><br>
+Yes.  If you begin a line with two backslash characters (<tt>\\</tt>),
+then the next non-whitespace character on that line (providing it is not
+a letter or a number) will serve as a newline character.  Here are some
+examples:<tt>
+<br>&nbsp;&nbsp;&nbsp;&nbsp;\\: signon Emygame mypasswd:list:signoff
+<br>&nbsp;&nbsp;&nbsp;&nbsp;\\\   summary mygame\history mygame
+<br>&nbsp;&nbsp;&nbsp;&nbsp;\\;&nbsp;signon&nbsp;Egame&nbsp;passwd;f&nbsp;lon&nbsp;-&nbsp;eng;press&nbsp;to&nbsp;f;This&nbsp;means&nbsp;war!!
+</tt>
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="12"></a><b>How to resign</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+		<a name=resign></a>
+		<b>Tell me about the <tt>RESIGN</tt> command.</b><br>
+	Well, I'd rather not; but okay, if I must.  The thing to remember about it
+	is that it has the same syntax as the <tt>SIGNON</tt> command:<br><tt>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		RESIGN <i><font color=red>initialLetterOfPowerName</font>gameName yourPassword</i></tt> -or-<br><tt>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		RESIGN <i><font color=red>completePowerName</font></i>@<i>gameName yourPassword</i></tt>
+	<P>
+	Note that, unlike the Ken Lowe judge, you do <b><u>not</u></b>
+	give the <tt>RESIGN</tt> command after a <tt>SIGNON</tt>.  Rather,
+	you give it <i><u>instead</u></i> of a <tt>SIGNON</tt>.  You may
+	send <tt>PRESS</tt> in this, your final message (get off a parting shot or
+	offer an apology).  Here is an example:<br><tt>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		RESIGN austria@theGame myPassword<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		PRESS TO MASTER<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		I am resigning now, and since I am conscientious like all<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		good players should be, I have found a replacement to take<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		my place.  His e-mail address is JoeBlow@somewhere.com.<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		and I've already told him to send in a TAKEOVER command.<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		ENDPRESS<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		BROADCAST<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		Goodbye, cruel world.</tt>
+	<P>
+	Note that if there is <i><b>any</b></i> problem with your e-mail message,
+	<u><i>anywhere in it</i></u>, you will not be <tt>RESIGN</tt>ed.  For
+	instance,
+	if you misspell <tt>PRESS</tt> in the above example, you will still be
+	playing Austria until you <tt>RESIGN</tt> in a perfect e-mail message.
+	If you do successfully <tt>RESIGN</tt>, this will be reported to you
+	in the response to your e-mail.
+	<P>
+	One final thing.  The Master may never <tt>RESIGN</tt>.  If he needs
+	to leave the game for any reason, he must find a replacement for himself
+	and serve until that replacement issues a <tt>TAKEOVER</tt> command.
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="13"></a><b>How to take over a vacant position</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<a name=takeover></a>
+		<!--ANSWERS BEGINS HERE-->
+		<b>I think I can guess what the <tt>TAKEOVER</tt> command
+does, but tell me anyway.</b><br>
+	Okay.  It allows a kind, much-appreciated soul to become a map-power in
+	a game that has already started.  Which means that one of the map-powers
+	has taken a powder and left the spot available.  The command has the
+	same syntax as <tt>SIGNON</tt> and <tt>RESIGN</tt>:<br><tt>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		TAKEOVER <i><font color=red>initialLetterOfPowerName</font>gameName yourPassword</i></tt> -or-<br><tt>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		TAKEOVER <i><font color=red>completePowerName</font></i>@<i>gameName yourPassword</i></tt>
+	<p>
+	Remember that, like the <tt>RESIGN</tt> command,
+	the <tt>TAKEOVER</tt> command does not <i>follow</i> a <tt>SIGNON</tt>
+	command but rather is used <i>instead</i> of a <tt>SIGNON</tt> command.
+	It does serve the same purpose as <tt>SIGNON</tt>, in that it
+	does sign you on to the game -- that is, you may send press in your
+	<tt>TAKEOVER</tt> message.  You are only allowed to
+	<tt>TAKEOVER</tt> vacant map-powers.  Here are the two possible ways
+	to <tt>TAKEOVER</tt> an abandoned position as Austria:<br><tt>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		TAKEOVER A<i>gamename password</i><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		TAKEOVER austria@<i>gamename password</i></tt>
+	<p>
+	Note that in a private game, the game's privacy password (as supplied
+	to you by the GameMaster) will need to be given after your personal
+	password.  For example, like this:
+		<br><tt>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		TAKEOVER austria@<i>gamename password privacyPassword</i></tt>
+	
+	<P><font color=red>Note that the GameMaster will have access to your
+	password, so you may not wish to use the same password that you use
+	to log into the DPPD or that you use on other accounts.</font>
+	<P>
+	The <tt>TAKEOVER</tt> command is also used to become the new Master of
+	a game.  The <tt><i>password</i></tt> that <u>must</u> be used is the
+	password of the current Master (who cannot resign his position).  The
+	proper way to hand a game over to a new Master is to locate the willing
+	replacement Master, give him the game's Master password, and have him
+	e-mail a "<tt>TAKEOVER&nbsp;master@<i>gamename&nbsp;password</i></tt>"
+	command.
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+<a name=mastery></a>
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="14"></a><b>The Master's commands</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->
+	<a name=create></a>
+		<b>What is the <tt>CREATE</tt> command?</b><br>
+	The <tt>CREATE</tt> command is used to create a new game and become
+	its GameMaster.  The syntax is as follows:<br><tt>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		CREATE <i>gamename password</i> [<i>ruleVariant</i>]<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		[<i>status file lines</i>]<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		[FORM]
+	<!--
+		<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		SIGNOFF
+	-->
+		</tt>
+	<!--	I made UNLISTing a game something that cannot be done, except
+			manually in the master status file
+		<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		[UNLISTED]</tt>
+	-->
+	<P>
+	A <tt><i>gamename</i></tt> may contain <u><i>only</i></u> alphabetic
+	characters (<tt>a</tt> through <tt>z</tt>), numeric characters
+	(<tt>0</tt> through <tt>9</tt>), and the underbar character.
+	<P>
+	The recognized <tt><i>ruleVariant</i></tt>s are: <tt>standard</tt>,
+	<tt>payola</tt>, and <tt>xtalball</tt>.
+	If not provided, the <tt><i>ruleVariant</i></tt>
+	will default to "<tt>standard</tt>."
+	<P>
+	Assuming no game with the given <tt><i>gamename</i></tt> exists,
+	a new game will be created, and the sender of the message will be
+	set as the game's Master.  If the message contains a line beginning
+	with the word <tt>FORM</tt>, the game will be immediately set up to
+	accept <tt>JOIN</tt> commands, etc.  Otherwise, the game will be put
+	in <i>preparation mode</i> (in this state, the game is as yet hidden
+	from the world) and the Master will be told how to access the game's
+	status file via the Web.
+	<P>
+	<!--
+	If the message contains a line beginning with the word <tt>UNLISTED</tt>,
+	only persons knowing the game name will know about the game (it will
+	not appear in the game lists on the Web, nor in the response to an
+	e-mailed <tt>LIST</tt> command or on The Diplomatic Pouch Openings List).
+	<P>
+	-->
+	Lines that appear in the e-mail after the <tt>CREATE</tt> command
+	(until any <tt>SIGNOFF</tt> command is encountered
+	<!--
+	-- <b><i>and note that a
+	</i><tt>SIGNOFF</tt><i> is always <u>required</u></i></b>
+	-->
+	-- with the
+	exception of any <tt>FORM</tt> line) are
+	put into the game's status file as part of its initial content.  The
+	various lines that are understood are all described in
+	<a href=<URL>?page=Status>the status file directive list</a> and in the
+	description of <a href=rules.html>the DPjudge rule set</a>.
+	Exceptions are the <tt>GAME</tt>, <tt>MASTER</tt>, and <tt>PHASE</tt>
+	status file directives, which will be silently ignored -- these cannot
+	be added to the status file by the <tt>CREATE</tt> command.
+    <P><i>(Masters should become familiar with the status file directives
+	and the rule set; these are used to govern all of the different game
+	parameters, including whether to make a game
+	</i><tt>PRIVATE</tt><i>, so that only invited players may
+	</i><tt>JOIN</tt><i>.)</i>
+	<P>
+	For example, the following e-mail message:
+	
+	<blockquote><tt>
+	CREATE mygamename masterPassword<br>
+	desc A standard game on the standard map.<br>
+	map standard<br>
+	timing move 2d<br>
+	Rule no_press coastal_Convoy<br>
+	rule power_choice<br>
+	form<br>
+	Signoff
+	</tt></blockquote>
+	will create a game (named <tt>mygamename</tt>)
+	that will be played on the standard map, that
+	will have two-day movement phase deadlines, and that will not allow press
+	but will allow landed fleets to convoy armies.
+	Additionally, players will be able to specify which power they want to
+	play (assuming their choice hasn't been spoken for already) when
+	<tt>JOIN</tt>ing
+	the game.  Finally, the message specifies that the game should be
+	allowed to form immediately (that is, the Master will not need to
+	visit the game's Web page to cause formation to begin).
+	<P>
+	Note that any errors in the the lines added to the status file are
+	<i><u>not</u></i>
+	reported by the e-mail response.  The Master will learn of any such
+	errors when he visits the game page on the Web.
+	<P>
+	Once he receives the e-mail reply to the <tt>CREATE</tt> command,
+	the Master also has an opportunity to modify the game
+	status file in any way, altering, deleting, or supplementing any lines
+	he may have provided beneath the <tt>CREATE</tt> command.
+	Again, consult <a href=<URL>?page=Status>the status file directive list</a>
+	for details on updating a game status file.  By sending extra lines
+	in the <tt>CREATE</tt> command and/or modifying the status file using the
+	Web page, the Master establishes all game parameters and rules, can provide
+	a description for the game, can set up <tt>DUMMY</tt> (unplayed) powers,
+	etc., etc.
+	<P>
+	When the Master decides that the game status file is ready (which could
+	be immediately -- he might not have needed or chosen to add any lines
+	to the status file at all), he can move the game out of <i>preparation
+	mode</i>. This is done by use of a checkbox that appears on the Master's
+	Webpage.  The Master may choose to either "Allow the game to form"
+	(meaning that the game will accept <tt>JOIN</tt> and other similar
+	e-mailed commands) or to "Set the game to active."
+	<P>
+	This latter option ("Set the game to active") is used only very rarely.
+	It would be used when
+	migrating a game in progress to the DPjudge or when otherwise setting up
+	a position.  Before using this option,
+	the Master would first be sure to add all power and player information,
+	set the current game <tt>PHASE</tt> (this is very important), and provide
+	unit locations and center ownership data in the status file.
+	If the Master does <i>not</i> change the current
+	game phase from <tt>FORMING</tt> and chooses the "Set game to active"
+	option, the powers in the game will be completely set up as if for the
+	first turn of the game.
+	Only if the Master <i>has</i> changed the game <tt>PHASE</tt> so that it
+	is no longer <tt>FORMING</tt> but is instead an actual phase in the
+	game flow, will the status file (presumably containing non-game-start
+	unit positions and center ownership, etc.) be left entirely
+	as-is by the "Set game to active" option.  Use of the "Set the game
+	to active" option requires a careful and attentive Master, who must
+	completely set up a game status file (including when the next
+	<tt>DEADLINE</tt> should fall, etc.).
+
+<a name=deadline></a>
+<P><b>What is the syntax of the <tt>SET DEADLINE</tt> command?</b><br>
+	This command (which sets the current deadline) has the following form:
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	SET DEADLINE <i>day month</i> [[<i>year</i>] [<i>hour</i>:<i>minute</i>]]
+	</tt><br>
+	That is, you <u>must</u> specify both a <tt><i>day</i></tt> (from 1 to
+	31) and a <tt><i>month</i></tt>
+	(this must be an <u>abbreviation</u>, such as <tt>JAN</tt> or <tt>NOV</tt>).
+	The <tt><i>year</i></tt>, if omitted, will be set to the current year,
+	and the time (<tt><i>hour</i>:<i>minute</i></tt>) will be set either to the
+	"<tt>AT</tt>" parameter from <a href=<URL>?page=Status#timing>the
+	<tt>TIMING</tt> line</a> of the game's status file, or (if the game
+	has no such timing parameter) to midnight (<tt>0:00</tt>).  A notice will
+	be broadcast to the game announcing the new deadline.
+	<P>
+	<i>Note that if a specific <tt>RULE</tt> (<tt>PLAYER_DEADLINES</tt>)
+	is used in a game, the <tt>SET&nbsp;DEADLINE</tt> command may be used
+	by persons other than the Master.</i>
+		
+<a name=process></a>
+<P><b>What is the <tt>PROCESS</tt> command?</b><br>
+	The <tt>PROCESS</tt> command will cause the game to immediately process
+	the current phase.  This command <i>can only be performed by the
+	Master</i> and is recognized if the word <tt>PROCESS</tt> appears as
+	the first word of any line outside a press message.
+	Note that the <tt>PROCESS</tt> command is <i>only</i> supported through
+	e-mail, though the Master can achieve the same effect by submitting
+	the final unsubmitted set of player orders and adjusting the deadline
+	to cause processing at the next scheduled check.
+	<P>
+	The one difference between <tt>PROCESS</tt> at the DPjudge
+	and <tt>PROCESS</tt> on the Ken Lowe judge is that the current phase
+	will <i><u>not</u></i> be processed unless all players have submitted
+	whatever they are required to submit for the phase.
+	However, the DPjudge <b><i>will</i></b> process a game even if all orders
+	are not yet submitted if an exclamation point is appended to the command,
+	like this: <tt>PROCESS!</tt>
+	If any player
+	has <i>not</i> submitted orders for a phase when a <tt>PROCESS!</tt>
+	command comes to a DPjudge, the judge will go
+	ahead and process the phase, defaulting anything that is unsubmitted
+	to <tt>HOLD</tt>s, <tt>WAIVE</tt>s, <tt>DISBAND</tt>s, and <tt>REMOVE</tt>s
+	chosen randomly.  Without the exclamation point, however, the DPjudge
+	doesn't get into this business; instead it will simply reply that the
+	game cannot yet be processed.  The Master has access to the file where
+	all player data is stored, and he can update that data if he needs to do so
+	before requesting a <tt>PROCESS</tt>.
+	<P>
+	Some variant game-phases may not be supported by the DPjudge.
+	That is, games may list phases (in their <tt>FLOW</tt>)
+	that are manually processed by the GameMaster.
+	When such a game phase is current, the Master must use the
+	<tt>PROCESS</tt> command to cause the DPjudge to advance the game to
+	the next phase.  Deadlines are still set for such phases (the Master is
+	declared late if the game is not instructed to <tt>PROCESS</tt> before
+	the deadline is reached).
+
+<a name=preview></a>
+<P><b>How about the <tt>PREVIEW</tt> command?</b><br>
+	The <tt>PREVIEW</tt> command is identical to the <tt>PROCESS</tt>
+	command except that the phase results are only "previewed."  This
+	means that the results are sent to the Master (and <i>only</i> to the
+	Master) via e-mail, and the game map and status file are not modified
+	(that is, the game is not advanced to the next phase; the current
+	phase is left unprocessed).
+
+<a name=m_resign></a>
+<P><b>How about the <tt>RESIGN</tt> command?</b><br>
+	The <tt>RESIGN</tt> command enables the Master to resign a player
+	from a game.  This is identical to if the player had resigned
+	themselves from the game.  Unfortunately, a lot of less experienced
+	players just stop playing without any notice.  This command lets the
+	Master resign the player <i>or</i> the Master can also "un-dummy" a
+	dummied player by using this command.
+
+<a name=m_dummy></a>
+<P><b>How about the <tt>DUMMY</tt> command?</b><br>
+	The <tt>DUMMY</tt> command is not meant as a reflection on your playing
+	abilities.  Instead, this allows a Master to set a particular power to
+	be played by the computer.  This is most useful when it is difficult to
+	find a replacement player for an abandoned power.  Sometimes, you do find
+	someone after the power has already been dummied.  You can then use the
+	<tt><a href=#m_resign>RESIGN</a></tt> command to un-dummy the dummied position.
+
+<a name=rollback></a>
+<P><b>How would I put a game back at a previous phase?</b><br>
+	You would do this using the <tt>ROLLBACK</tt> command.  This command
+	needs only the phase abbreviation after it -- for example, you might
+	say<br>
+	<tt>&nbsp;&nbsp;&nbsp;&nbsp;ROLLBACK&nbsp;F1901M</tt><br>
+	When you use the <tt>ROLLBACK</tt> command, the game will be put
+	back on that particular phase, all player orders will be cleared,
+	and a new deadline will be set.
+	Note that a this command may only
+	be used on an active game.  That is, once a game is completed,
+	<tt>ROLLBACK</tt> is no longer possible.  One reason for this is
+	the fact that once a game has completed, the game summary, indicating
+	player identities, has been published.
+
+<a name=official></a>
+<P><b>What is the <tt>OFFICIAL</tt> command?</b><br>
+	The <tt>OFFICIAL</tt> command has the syntax:<br><tt>
+	&nbsp;&nbsp;&nbsp;&nbsp;
+		OFFICIAL [<i>subject</i>]</tt><br>
+	This command allows the Master to cause any <tt>PRESS</tt> and
+	<tt>BROADCAST</tt> messages that are given later in the current e-mail
+	message to be delivered using the specified subject (rather than the usual
+	e-mail subject "Diplomacy press"), and without the usual press header
+	("Message from Master to Austria", etc.).
+	The <tt>OFFICIAL</tt> command applies to all <tt>PRESS</tt> and
+	<tt>BROADCAST</tt> messages until the end of the current e-mail
+	message or until another <tt>OFFICIAL</tt> command is given.  Note
+	that if no <tt><i>subject</i></tt> is provided in an
+	<tt>OFFICIAL</tt> command,
+	any subsequent <tt>PRESS</tt> and <tt>BROADCAST</tt> messages will
+	be sent as normal (with the usual subject and header).  The <tt>
+	OFFICIAL</tt> command is limited to 60 characters.
+
+<a name=reveal></a>
+<P><b>And the <tt>REVEAL</tt> command?</b><br>
+	The <tt>REVEAL</tt> command is just a single-word command.  If a game
+	uses the <tt>NO_REVEAL</tt> rule, the <tt>REVEAL</tt> command must
+	be sent in by the Master <i>after</i> the game completes when the
+	time is ripe for player identities to be revealed.  Only when this
+	command is sent in will the game be automatically reported for ranking
+	purposes, the final game summary be completed, etc., etc.
+		<!--ANSWERS ENDS HERE-->
+
+<P><b>What if I am Mastering a game and if, for whatever reason, I need to
+		give up my position?</b><br>
+	You (yes, you) are 100% responsible to locate a new human Master
+	for the game.  Until that person e-mails in a valid
+	<a href=#takeover><tt>TAKEOVER</tt></a> command, the game is
+	still entirely your responsibility.  Once you have located a willing
+	Master to take over for you, simply give that person the game's
+	current Master password and await his or her <tt>TAKEOVER</tt>
+	command.  You will be mailed to let you know when you are no longer
+	the Master of the game.
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>
+<:
+footer()
+:>

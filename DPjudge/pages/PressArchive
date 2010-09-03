@@ -1,0 +1,60 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+loadGame()
+if page.power: checkPassword()
+showGameHeader()
+:>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+<:
+gameHeader()
+:>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<:
+showReadyNotice()
+if page.power:
+	page.write('<tr><td><br>')
+	powerHeader()
+	page.write('<br></td></tr>')
+:>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Press Messages</b></td></tr>
+<tr><td align=center><table>
+<:
+validCodes = showPressArchive(page.message, vars(page).get('filter'))
+:>
+</table><hr><table>
+<:
+if page.message not in validCodes and validCodes: page.message = validCodes[-1]
+showPress(page.message in validCodes and page.message)
+:>
+</table><hr><table>
+<form><tr><td align=center>
+<:
+page.write("""<input class=inputSubmit type=button
+	onclick=window.history.go(%s) value="Back To Game Page"><p>
+	""" % page.count)
+:>
+</form></td></tr></table>
+</td></tr>
+<script>
+document.archive.message.focus();
+document.archive.message.select();
+</script>
+<:
+footer()
+:>

@@ -1,0 +1,52 @@
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Looking For Someone?</b></td>
+<td align=center class="grey"><b>Looking For Everyone?</b></td>
+</tr>
+<tr valign=top>
+<td>
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td align=center class="bodycopy">
+		<!--LOOKING FOR SOMEONE FORM BEGINS HERE-->
+		<form method=post name=lu>
+		<input name=variant value=dppd type=hidden>
+		<input type=hidden name=page value=View>
+		<table border=0 align=center>
+		<tr>
+		<td align=right class="bodycopy"><b>Name:&nbsp;</b></td>
+		<td><input name="name" type="text" class="inputBox" size=24
+		onchange='if(document.lu.name.value!=""){document.lu.email.value="";document.lu.submit();}'></td>
+		</tr>
+		<tr>
+		<td align=right class="bodycopy"><b>E-Mail Address:&nbsp;</b></td>
+		<td><input name="email" type="text" class="inputBox" size=24
+		onchange='if(document.lu.email.value!=""){document.lu.name.value="";document.lu.submit();}'></td>
+		</tr>
+		<tr>
+		<td></td>
+		<td><input type="submit" value="Look Up" class="inputSubmit"></td>
+		</tr>
+		</table>
+		</form>
+		<!--LOOKING FOR SOMEONE FORM ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+</td>
+<td>
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td align=center class="bodycopy">
+		<!--LOOKING AT EVERYONE FORM BEGINS HERE-->
+		<form method=post><input name=variant value=dppd type=hidden>
+		<input type=hidden name=page value=View>
+		&nbsp;<p>
+		<input type=submit value="List All DPPD Members" class="inputSubmit"
+		onclick='document.lu.email.value=document.lu.name.value="";document.lu.submit();'>
+		</form>
+		<!--LOOKING AT EVERYONE FORM ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>

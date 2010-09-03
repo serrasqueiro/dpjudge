@@ -1,0 +1,8 @@
+<:
+page.include('dppd')
+
+print 'UPDATING', page.status
+
+try: page.dppd.updateGame(page.status)
+except: print 'FAILED!'
+:>

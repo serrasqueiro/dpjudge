@@ -1,0 +1,22 @@
+<:
+page.include('dppd')
+import urllib
+#	-------------------------------------------------------
+#	page.dppd[0] is an e-mail address that a DPjudge wants
+#	us to check (and the message body is the message sent
+#	to that judge by that e-mail address.  Check membership
+#	status of self.dppd[0] and pack into a
+#			DPPD: #idNum email1,email2 First_Last
+#	header that we return to the requesting judge with that
+#	same message body (it will then fulfill the request).
+#	-------------------------------------------------------
+data, name = page.dppd.lookup(urllib.quote(page.email, '@')), ''
+if data.get('id') is None: id = 'NO-ID'
+else:
+	status = data.get('status', 'ACTIVE')
+	#	check for sponsor request
+	if status[0].isdigit() or status == 'ACTIVE': status = ''
+	name = data.get('name', '').replace(' ', '_')
+	id = status or ('#%s' % data['id'])
+print id, page.email, name
+:>

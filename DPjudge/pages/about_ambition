@@ -1,0 +1,257 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Ambition & Empire Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0
+		src="<URL>/images/dpjudge_logo.gif"
+		height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>The Ambition & Empire Variant</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Contents</b></td>
+<td align=center class="grey"><a name="1"></a><b>Basic Rules</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=7>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br>
+		<b>&middot;</b>&nbsp;<a href="#15">"Diplomacy Points"</a><br>
+		<b>&middot;</b>&nbsp;<a href="#2">Map Notes</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		<form action=<URL> target=ancmed>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=ambition>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr><td class=bodycopy>
+
+Ambition & Empire is a Diplomacy variant for ten players set in Europe at the conclusion of the Seven Years War (1756-63).  The title pays tribute to the empire-building, war-and-conquest philosophy held by the great leaders of the day; a remarkable cast of historical figures that included Frederick the Great of Prussia, Maria Theresa of Austria, and Catherine the Great of Russia.  This period would culminate with Napoleon, one of the greatest empire builders in history.
+
+<p>The first turn of the game is Spring 1763 Movement and the victory condition
+is 15 SC's.
+There are ten Great Powers, which start the game as follows:
+
+<P>
+<table border>
+<tr><th class=bodycopy bgcolor=orange>Saxony (X)
+<br>(The Polish-Lithuanian Commonwealth and the Electorate of Saxony)
+<td align=center nowrap><tt>Army Dresden
+<td align=center nowrap><tt>Army Warsaw
+</tr>
+<tr><th class=bodycopy bgcolor=pink>Sweden (W)
+<br>(The Kingdom of Sweden)
+<td align=center><tt>Fleet Stockholm
+<td align=center><tt>Army Abo
+</tr>
+<tr><th class=bodycopy bgcolor=maroon><font color=white>Spain
+<br>(The Kingdom of Spain)
+<td align=center><tt>Fleet Barcelona
+<td align=center><tt>Army Madrid
+</tr>
+<tr><th class=bodycopy bgcolor=purple><font color=white>Denmark
+<br>(The Kingdom of Denmark-Norway)
+<td align=center nowrap><tt>Fleet Christiania
+<td align=center nowrap><tt>Fleet Copenhagen
+</tr>
+<tr><th class=bodycopy bgcolor=red><font color=white>Austria
+<br>(The Hapsburg Empire)
+<td align=center><tt>Army Budapest
+<td align=center><tt>Army Vienna
+<td align=center><tt>Army Milan
+<td align=center><tt>Army Austrian Netherlands</tt>
+</tr>
+<tr><th class=bodycopy bgcolor=blue><font color=white>Britain
+<br>(The Kingdom of Great Britain and the Electorate of Hanover)
+<td align=center><tt>Fleet Edinburgh
+<td align=center><tt>Fleet Gibraltar
+<td align=center nowrap><tt>Fleet London
+<td align=center><tt>Army Hanover
+</tr>
+<tr><th class=bodycopy bgcolor=#00ffff>France
+<br>(The Kingdom of France)
+<td align=center><tt>Army Marseilles
+<td align=center><tt>Army Paris
+<td align=center><tt>Fleet Brest
+</tr>
+<tr><th class=bodycopy bgcolor=white>Russia
+<br>(The Russian Empire)
+<td align=center nowrap><tt>Fleet St Petersburg
+<td align=center><tt>Army Kiev
+<td align=center><tt>Army Moscow
+</tr>
+<tr><th class=bodycopy bgcolor=black><font color=white>Prussia
+<br>(The Kingdom of Prussia)
+<td align=center nowrap><tt>Army Koenigsberg
+<td align=center><tt>Army Berlin
+<td align=center><tt>Army Breslau
+</tr>
+<tr><th class=bodycopy bgcolor=yellow>Turkey
+<br>(The Ottoman Empire)
+<td align=center nowrap><tt>Army Constantinople
+<td align=center><tt>Army Arkara
+</tr>
+</table>
+<ul>
+<li>Crimea serves as a home SC for Russia if it is controlled by Russia. 
+<li>While the Austrian Netherlands starts out as an occupied SC owned by Austria, Austria may not build in the Austrian Netherlands.
+<li>The Great Powers that begin with two SC's (Saxony, Spain, Sweden, Denmark, and Turkey) may acquire a third home SC during the game.  This center is the first SC that the Great Power captures (which is not one of its own home centers being recaptured) on which he elects to place a newly built unit.  The Great Power may not acquire additional or subsequent home SCs during the game. 
+The third home SC may be either a minor power SC or the SC of another Great Power.  However, if the SC was originally another Great Power's home SC, its status does not change.  In other words, the SC functions as the home SC for whichever Great Power controls it during the game.
+</ul>
+In addition to the ten Great Powers, there is also a host of minor powers, which are non-player neutral Supply Centers (SCs) initially occupied by a unit (having the color green), and representing the smaller states of Europe and North Africa.  These include the following:
+<ul>
+<li><tt>Fleet Algiers</tt> (The Regency of Algiers, an autonomous province of the Ottoman Empire) 
+<li><tt>Army Baden-Wuerttemberg</tt> (representing the various small states of southwestern Germany, including the Margravates of Baden and the Duchy of Wurttemberg) 
+<li><tt>Army Bavaria</tt> (The Electorate of Bavaria)
+<li><tt>Fleet Courland</tt> (The Duchy of Courland, an autonomous fiefdom of Poland-Lithuania) 
+<li><tt>Army Hesse-Westphalia</tt> (representing the various small states of northwestern and central Germany, including the Earldoms of Hesse and the Duchy of Westphalia) 
+<li><tt>Army Crimea</tt> (The Khanate of Crimea, a vassal state of the Ottoman Empire that includes the lands of the Crimean and Nagay Tatars) 
+<li><tt>Army Mecklenburg</tt> (representing the Duchies of Mecklenburg) 
+<li><tt>Fleet Morocco</tt> (The Sultanate of Morocco)
+<li><tt>Army Papal States</tt>
+<li><tt>Fleet Portugal</tt> (The Kingdom of Portugal)
+<li><tt>Army Sardinia</tt> (The Kingdom of Sardinia)
+<li><tt>Army Switzerland</tt> (The Swiss Confederation) 
+<li><tt>Fleet Tunis</tt> (The Regency of Tunis,an autonomous province of the Ottoman Empire) 
+<li><tt>Army Tuscany</tt> (representing the Grand Duchy of Tuscany and Duchies of Modena, Reggio, and Parma) 
+<li><tt>Fleet Two Sicilies</tt> (representing the Kingdom of Naples and Kingdom of Sicily) 
+<li><tt>Fleet United Provinces</tt>
+<li><tt>Fleet Republic of Venice</tt></ul>
+Minor power units prevent a Great Power from simply moving into an empty space and gaining control of the SC.  To occupy a minor power SC, a Great Power must attack with support.  A minor power unit that is dislodged is disbanded.  If a Great Power does not occupy the minor power SC at the end of a Fall turn, the minor power's unit is automatically rebuilt in the Winter.   
+Minor power units do nothing but hold in place, unless the unit has been ordered by a Great Power using its Diplomacy Points.
+</td></tr></table>
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="15"></a><b>"Diplomacy Points"</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+At the start of the Spring and Fall turns, each Great Power receives one Diplomacy Point (DP) for each SC it controls, up to a maximum of three DPs per turn.  During each Spring and Fall turn, each Great Power may allocate none, some, or all of its DPs to minor powers that still have units on the map.  For each DP allocated, the allocating Great Power submits an order for that particular minor power.s unit.  A Great Power may also consolidate all of its DPs (if it has more than one) into a single order.  A Great Power may only order a minor power to hold or support.  A minor power may not be ordered to move or attack. 
+<p>
+Unused DPs may not be carried over into the next turn.  They are simply lost. 
+<p>
+DP allocation is not published in the adjudication, and is not revealed by the
+Master to any player during the game; only the end results are published. 
+<p>
+In recognition of the religious divisions in Europe and the Mediterranean world in 1763, there are restrictions on how players may allocate their DPs to minor powers.  Players may allocate DPs to any minor power in the game. However:
+<ul>
+<li>the Papal States may only be ordered to hold or support a unit belonging to a Catholic state (i.e., Austria, France, Poland & Saxony, Spain, Tuscany, Two Sicilies, and the Republic of Venice). 
+<li>a Muslim minor power (i.e., Algiers, Crimea, Morocco, and Tunis) may not be ordered to support an attack by a Christian Great Power into a space that is occupied by a Muslim unit (i.e., a unit of the Ottoman Empire or one of the Muslim minor powers) at the start of a turn. 
+<li>a Christian minor power may not be ordered to support an attack by the Ottoman Empire  into a space that is occupied by a Christian unit (a unit of any Great Power or minor power not listed as a Muslim unit above) at the start of a turn. 
+</ul>
+<p>
+In the event of a conflict, an order for a particular minor power's unit is followed if it is supported by more DPs than any conflicting order.   In case of a tie, the minor power unit will simply <tt>HOLD</tt>.
+<p>
+If, during a Spring or Fall turn, a Great Power allocates more DPs to minor powers than it is entitled to, all of that Great Power's DPs are forfeited for that particular turn.
+</td></tr></table>
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="2"></a><b>Map Notes</b></td></tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+<P>
+<ul>
+<li>There is no canal where Kiel is located in standard Diplomacy.
+<li>Lake Ladoga, the Russian body of water adjoining the spaces of St. Petersburg, Novgorod Territory, Karelia, and Moscow, is impassable.  A unit may not move from St. Petersburg to Novgorod Territory or vice versa.  Similarly, a unit may not move from Karelia to Moscow or vice versa. 
+<li>Gibraltar is a sea space that does not contain land.  Gibraltar does not break the coast of Andalusia or Morocco in two.  
+<li>Army movement across water is permitted without a convoy at crossing points indicated by arrows on the map: Edinburgh-Ireland; Ankara-Constantinople; and Copenhagen-Scania. 
+<li>The Island of Sicily is considered to be an integral part of the Two Sicilies space and is not a separate space of its own. 
+<li>The Islands of Iceland and Sardinia are passable and may be occupied. 
+<li>The Kingdom of Sardinia, a minor power, is represented by two spaces on the map: Savoy, a SC, and the Island of Sardinia. 
+<li>The Courland and Koenigsberg spaces border each other.  This means that Lithuania is cut off from the Baltic Sea and is impassable for fleet movement purposes. 
+<li>The boundaries of several minor powers, instead of being light green, match the color of one of the Great Powers.  These colored boundaries signify the historical relationship between that minor power and the corresponding Great Power (e.g., Crimea was a vassal state of the Ottoman Empire).  In terms of game play, the colored boundaries do not denote any special rule, benefit, or advantage. 
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="3"></a><b>Design Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+<p>
+The Ambition & Empire variant was created by Baron M. Powell and
+Jeffrey Kase.
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+<:
+footer()
+:>

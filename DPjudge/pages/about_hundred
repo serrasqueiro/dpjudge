@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Hundred Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>The Hundred Variant</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Contents</b></td>
+<td align=center class="grey"><a name="1"></a><b>Basic Rules</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=5>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br>
+		<b>&middot;</b>&nbsp;<a href="#2">Map Notes</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		<form action=<URL> target=hundred>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=hundred>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr><td class=bodycopy>
+	<ol>
+<li>
+The normal rules of the game of Diplomacy apply, with the following additions,
+exceptions, and clarifications.
+
+<p><li>
+The standard map is replaced by the "Hundred" variant map, representing
+England, France, the Lowlands and the Iberian peninsula at the time of
+the Hundred Years War.
+
+<p><li>
+There are three great powers. The starting units are as follows:
+<center>
+<table border>
+<tr><th class=bodycopy bgcolor=#cc0000><font color=white>Burgundy</th>
+	<td><tt>Army<br>Dijon</tt></tt>
+	<td><tt>Army<br>Luxembourg</tt></tt>
+	<td><tt>Army<br>Flanders</tt></tt>
+	<td><tt>Fleet<br>Holland</tt></tt>
+	<td><tt>&nbsp;</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=blue><font color=white>England</th>
+	<td><tt>Army<br>Calais</tt></td>
+	<td><tt>Army<br>Guyenne</tt></td>
+	<td><tt>Army<br>Normandy</tt></td>
+	<td><tt>Fleet<br>London</tt></td>
+	<td class=bodycopy><tt>Fleet<br>Devon</tt><! (see below)></td>
+</tr>
+<tr><th class=bodycopy bgcolor=#00b200><font color=white>France</font></th>
+	<td><tt>Army<br>Dauphine</tt></td>
+	<td><tt>Army<br>Orleanais</tt></td>
+	<td><tt>Army<br>Paris</tt></td>
+	<td><tt>Army<br>Toulouse</tt></td>
+	<td class=bodycopy><tt>Army<br>Provence</tt><br>(see below)</td>
+</tr>
+</table></center>
+ 
+<p><li>
+The game phases are not called "Spring" and "Fall," but the same rhythm of play
+as in standard Diplomacy is followed.  The game begins in 1425. Each turn
+represents five "real time" years, and has a movement phase followed by a
+retreat phase. Alternating turns have an adjustment phase (after retreats
+if required); the first of these being in 1430.
+
+<p><li>
+There are seventeen supply centers on the board. The winner is the power
+which holds nine or more supply centers during an adjustment phase.
+
+<p><li>
+A power may build in any vacant supply center it owns during an adjustment
+phase: there are no permanent "home centers." For example, France may build
+in London if it is vacant and if France owns it.
+
+
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="2"></a><b>Map Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+		<ol>
+<p><li>
+<u>Multi-Coast Provinces.</u>
+Northumbria has two coasts, West and East. Aragon has two coasts, North
+and South. Castile is not divided into coasts, so fleets entering Castile
+from Biscay can then proceed to the Mediterranean and vice versa.
+
+<p><li>
+<u>Land Bridge.</u>
+Units (armies and fleets) may move or give support from London to
+Calais or vice versa regardless of the presence of a fleet in the Strait
+of Dover. 
+
+<p><li>
+<u>Provence.</u>
+To represent the reliance on underpaid mercenary units, France begins the
+game with more units than it can afford. The army in Provence is considered
+a mercenary unit, and since this unit does not start in a Supply Center, France
+must capture at least one Supply Center before the initial adjustments in 1430
+to maintain all five units.  Should France fail to capture a Supply Center,
+it will be forced to remove one unit; however, it need not be the actual unit
+that started in Provence.  Instead, if he wishes, the French ruler may
+discharge other troops and keep the Provincial unit in his service.
+<P>
+Other than the ability to survive the first two game-turns without a
+supporting supply center, the unit in Provence is identical to
+all other French units, and its entry into conflict is at equal strength with
+all other units. Even in 1425, the unit moves and supports at full strength.
+<P>
+Provence is <b>not</b> a Supply Center and no units may be built there, nor
+does occupation of Provence provide any support for any unit.
+
+<!--
+ 6d) Variant: The English player may choose to start his Fleet Devon as Fleet English Channel. This gives England more striking power early in the game.  The decision to use this optional rule should be made prior to assigning powers to players. Obviously, the English Channel is not a supply center and no future English units can be built there, nor does occupation of the English Channel provide any support for any units.
+-->
+
+
+
+
+
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="3"></a><b>Design Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+<p>
+The Classical variant was created by Andy Schwarz and Vincent Mous.
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+<:
+footer()
+:>

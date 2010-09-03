@@ -1,0 +1,552 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: DPjudge Adjudication Algorithm</title>
+<style type="text/css">
+<:
+page.include('stylesheet')
+:>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=2>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif"
+		height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>Adjudication Algorithm</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">DPjudge questions</a>
+		</td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=2 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td width=300 align=center class="grey"><b>Adjudication&nbsp;Procedure</b></td>
+<td width=100% align=center class="grey"><a name="0"></a><b>Supporting Data
+	Structures</b></td>
+</tr>
+<tr valign=top>
+<td width=300>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#0">Supporting Data Structures<br>
+		<HR>
+		<b>&middot;</b>&nbsp;<a href="#1">Mark Invalid Orders</a><br>
+		<dd><b>&middot;</b>&nbsp;<a href="#1">Mark Invalid Convoys</a><br>
+		<dd><b>&middot;</b>&nbsp;<a href="#2">Mark Invalid Supports</a><br>
+
+		<b>&middot;</b>&nbsp;<a href="#3">Calculate Unit Strength</a><br>
+
+		<b>&middot;</b>&nbsp;<a href="#4">Determine Convoy Success<br>
+		<dd><b>&middot;</b>&nbsp;<a href="#4">Mark Endangered Convoys<br>
+		<dd><b>&middot;</b>&nbsp;<a href="#5">Mark Disrupted Convoys<br>
+
+		<b>&middot;</b>&nbsp;<a href="#6">Determine Bounces and Further Support Cuts<br>
+		<dd><b>&middot;</b>&nbsp;<a href="#6">Mark Place-Swap Bounces<br>
+		<dd><b>&middot;</b>&nbsp;<a href="#7">Mark Undestrength Attack Bounces<br>
+		<dd><b>&middot;</b>&nbsp;<a href="#8">Mark Self-Dislodge Bounces<br>
+		<dd><b>&middot;</b>&nbsp;<a href="#9">Mark Supports Cut By Dislodgements<br>
+
+		<b>&middot;</b>&nbsp;<a href="#10">Move Units<br>
+		<HR>
+		<b>&middot;</b>&nbsp;<a href="#11">Subroutines<br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+<td>
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->		
+
+		<ul>
+		<li>Data maintained for each and every unit:
+		<ul>
+		<li><i>Order</i>: the order to be issued (of course).
+		<li>A textual <b><font color=red>mark</font></b> (initially none) which
+			indicates the status of the order.  The order for any unit without
+			a mark will succeed.
+		<li><i>Support count</i>: the number of valid supports given to this
+			unit's order (initially zero).  This number determines what is
+			sometimes in the algorithm below called the unit's "strength."
+		<li><i>No help list</i>: a list of units owned
+			by the same power as the piece being attacked which are offering
+			support to the unit in its attempt to move into an occupied space.
+		</ul>
+		<li>Data maintained for each and every space on the board:
+		<ul>
+		<li><i>Combat list</i>: list of all units attempting to enter (or
+			remain in) the space.  Successful attacks and defenses are
+			decided using this list and the data concerning supports
+			that is maintained for each of the units.
+		</ul>
+		<li>Data to assist in convoy resolution:
+		<ul>
+		<li><i>Convoying armies list</i>: a list (initially empty)
+			that will contain all units that have been issued a valid
+			convoy order.
+		<li><i>Convoy succeeded list</i>: a list (initially empty) to
+			contain all units whose convoy orders succeeded.
+		</ul>
+		<!/ul>
+	</td></tr></table>
+
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="1"></a><b>Step 1. Mark All Invalid Convoy Orders</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWERS BEGINS HERE-->		
+
+		<ul>
+		<li>For all convoying armies:
+		<ul>
+		<li>If trying to convoy through a non-existent fleet,
+			either change the army's order to <tt><b>HOLD</b></tt> or
+			<font color=red><b>mark</b></font> the army "no convoy"
+			<i>(the decision as to which should be done is based
+			on a game option).</i>
+		<li>Otherwise, if trying to convoy through 
+			a fleet that did not order a matching convoy order,
+			<font color=red><b>mark</b></font> the army "no convoy."
+		<li>Otherwise, include this army in a "convoying armies list."
+		</ul>
+		<li>For all fleets issuing convoy orders:
+		<ul>
+		<li>If the army being convoyed does not exist, 
+			either change the fleet's order to <tt><b>HOLD</b></tt> or
+			<font color=red><b>mark</b></font> the fleet "void"
+			<i>(the decision as to which should be done is based
+			on a game option).</i>
+		<li>Otherwise, if the army being convoyed did not issue
+			the matching order, <font color=red><b>mark</b></font> the
+			fleet "void."
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="2"></a><b>Step 2. Mark All Invalid Support Orders</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--DESIGN CREDITS BEGIN HERE-->
+		<ul>
+		<li>For all units issuing support orders:
+		<ul>
+		<li>If the unit being supported does not exist, 
+			either change the supporting unit's order to <tt><b>HOLD</b></tt> or
+			<font color=red><b>mark</b></font> it "void"
+			<i>(the decision as to which should be done is based
+			on a game option)</i>
+		<li>Otherwise, if the unit being supported did not issue
+			the matching order, <font color=red><b>mark</b></font> the
+			supporting unit "void."
+		<li>Otherwise:
+			<ol>
+			<li>Increment the "support count" of the supported unit.
+			<li>If the supported unit is attacking a position that is
+				occupied by a unit owned by the same power that
+				owns the supporting unit, add the supporting unit to
+				the supported unit's "no help list."
+			</ol>
+
+		<!--ANSWERS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="3"></a><b>Step 3. Calculate Initial Combat Strengths</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--DESIGN CREDITS BEGIN HERE-->
+<!--
+	<li><b><u>Cut All Supports Made by Non-Convoyed Attacks</u></b>
+-->
+		<ul>
+		<li>For all <i>non-convoyed</i> move orders:
+		<ul>
+		<li>Execute the <tt><b>cutSupport</b></tt> procedure (found below).
+		</ul>
+		<li>For every space on the board:
+		<ul>
+		<li>Create a "combat list" containing all units that are
+			attempting to either move to or remain in that space.
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="3"></a><b>Step 4.  Mark Support Cuts Made by Convoyers and Mark Endangered Convoys</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--DESIGN CREDITS BEGIN HERE-->
+		<ul>
+		<li>For every army in the "convoying armies list":
+		<ul>
+		<li>Execute the <tt><b>checkDisruptions</b></tt> procedure (found below)
+		<li>If the army is not <b>mark</b>ed, execute the <tt><b>cutSupport</b></tt>
+			procedure for that army, and add the army to the "convoy succeeded
+			list."
+		<li>Otherwise (if the army is <b>mark</b>ed "convoy endangered"),
+			change the army's <font color=red><b>mark</b></font> to "convoy
+			under attack."
+		</ul>
+		<li>If the "convoy succeeded list" grew during this step, then
+			repeat this step.
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="2"></a><b>Step 5. Mark Convoy Disruptions And Support Cuts Made by Successful Convoys</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--DESIGN CREDITS BEGIN HERE-->
+		<ul>
+		<li>For every army in the "convoying armies list":
+		<ol>
+		<li>Execute the <tt><b>checkDisruptions</b></tt> procedure
+		<li>If the army is <b>mark</b>ed "convoy endangered,"
+			<ol>
+			<li>Change its <font color=red><b>mark</b></font> to
+				"no convoy."
+			<li>Set the number of supports the army is receiving
+				to zero.
+			<li><font color=red><b>Mark</b></font> as "no convoy" all
+				unmarked units that are offering support to this unit.
+			</ol>
+		<li>Otherwise, if the army is <b>mark</b>ed "convoy under attack,"
+			<ol>
+			<li>Remove the army's <b>mark</b>.
+			<li>Execute the <tt><b>cutSupport</b></tt> procedure for the army.
+			<li>Add the army to the "convoy succeeded list."
+			</ol>
+		</ol>
+		<li>If the "convoy succeeded list" grew during this step, then
+			return to step 4.
+		<!--DESIGN CREDITS ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="4"></a><b>Step 6.  Mark Bounces Caused by Inability to Swap Places</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<ul>
+		<li>For all moving units that are not convoying and are not
+			<b>mark</b>ed:
+		<ul>
+		<li>If the space to which the unit is moving is occupied by a
+			unit that is
+			<ol>
+			<li>not <b>mark</b>ed, and
+			<li>attempting to swap places with the first unit, and
+			<li>not being convoyed,
+			</ol>
+			then call this other unit the "swapper."
+		<li>If there is a "swapper," then
+			<ol>
+			<li>If the unit and the swapper are both owned by the same player
+				<i>or</i> if the "support count" for the unit, reduced by the
+				number of supports in its "no help list" is not greater than
+				the "support count" for the "swapper," then execute the
+				<tt><b>bounce</b></tt> procedure for the unit.
+			<li>If the unit and the swapper are both owned by the same player
+				<i>or</i> if the "support count" for the "swapper," reduced
+				by the number of supports in its "no help list" is not greater
+				than the "support count" for the unit, then execute the
+				<tt><b>bounce</b></tt> procedure for the swapper.
+			</ol>
+		</ul>
+		<li>If any unit was <b>mark</b>ed "bounce" during this step, repeat
+			this step.
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="2"></a><b>Step 7. Mark Bounces Suffered by Understrength Attackers</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--DESIGN CREDITS BEGIN HERE-->
+		<ul>
+		<li>For all spaces on the board:
+		<ul>
+		<li>For every unit in the "combat list" for that space:
+			<ul>
+			<li>If the unit meets <i>all</i> of the following requirements:
+				<ol>
+				<li>does not have a greater "support count" than
+					<i>every</i> other unit in the space's "combat list,"
+				<li>is attempting a move order, and
+				<li>is not <b>mark</b>ed,
+				</ol>
+				then execute the <tt><b>bounce</b></tt> procedure (described below)
+				for that unit.
+			</ul>
+		</ul>
+		<li>If any unit was <b>mark</b>ed "bounce" during this step, return
+			to step 6.
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="2"></a><b>Step 8. Mark Bounces Caused by Inability to Self-Dislodge</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--DESIGN CREDITS BEGIN HERE-->
+		<ul>
+		<li>For each space on the board:
+		<ul>
+		<li>If the "combat list" for that space includes one unit whose
+			"support count" is greater than that of <i>every</i> other
+			unit in the "combat list" for the space, and if
+			<ol>
+			<li>the unit is not <b>mark</b>ed, and
+			<li>the unit is attempting a move order,
+			</ol>
+			then call the unit occupying the space to which the move is
+			being made the "victim."
+		<li>If there is a "victim," but the "victim" was issued a
+			move order and is not <b>mark</b>ed, then there is no "victim."
+		<li>If there is still a "victim," but if the "victim" is owned
+			by the same power that owns the moving unit, there is no "victim."
+			Execute the <tt><b>bounce</b></tt> procedure for the moving
+			unit.
+		<li>If there is still a "victim", then subtract the number of
+			units listed in the moving unit's "no help" list from its
+			"support count."  If this result is no longer larger than 
+			the "support count" for all other units in the "combat list"
+			for the space, execute the <tt><b>bounce</b></tt> procedure for the
+			moving unit.
+		</ul>
+		<li>If any unit was <b>mark</b>ed "bounce" during this step, return to
+			step 6.
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="2"></a><b>Step 9. Mark Supports Cut By Dislodgements</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--DESIGN CREDITS BEGIN HERE-->
+		<ul>
+		<li>For every moving unit that is not <b>mark</b>ed:
+			<ul>
+			<li>Execute the <tt><b>cutSupport</b></tt> procedure.
+			</ul>
+		<li>If any unit was <b>mark</b>ed "cut" during this step, return to
+		step 6.
+	</td>
+	</tr>
+	</table>
+
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="5"></a><b>Step 10.  Move Units That Did Not Bounce</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+
+		<ul>
+		<li>For every moving unit that is not <b>mark</b>ed:
+		<ul>
+		<li>If the unit is moving to a space occupied by another unit,
+			and if that other unit is either <b>mark</b>ed or not moving, then
+			<ol>
+			<li><font color=red><b>Mark</b></font> the other unit "dislodged."
+			<li>If the dislodged unit had attempted a non-convoyed move into
+				the space from which its attacker came, and if the attacker
+				also was not convoyed, then <i>remove</i> the dislodged
+				unit from the "combat list" for the space from which the
+				attacker came.
+			<li>Create the "possible retreats" list for the dislodged unit
+				by listing all spaces on the board to which the unit could
+				move without convoying, but do not list the space from which
+				the dislodged unit's attacker came, nor any space with a
+				"combat list."
+			</ol>
+		<li>Execute the <tt><b>unbounce</b></tt> procedure for the space
+			being vacated by the moving unit.
+		<li>Move the unit to its destination space.
+	</ul>
+	</td>
+	</tr>
+	</table>
+
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="6"></a><b>Subroutines Used By the Steps Above</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+<dl>		
+<dt><tt><b>cutSupport</b></tt>, executed for a particular moving unit
+<dd>
+	If the move is to a location occupied by a supporting unit
+	that fits <i>all</i> of the following criteria:
+		<ol>
+		<li>is not already <b>mark</b>ed "cut" or "void,"
+		<li>is not owned by the same power as the moving unit,
+		<li>if (and only if) the moving unit is a convoyed army, the
+			supporting unit
+			is not offering support for or against any convoying fleet
+			(whose order is not marked "void"), and
+		<li><i><b>either</b></i> we are executing Step 9 of the main algorithm
+			<i><b>or</b></i> the supporting unit is not offering support for a
+			move into the space from which the moving unit originated.
+		</ol>
+		then do the following:
+		<ol>
+		<li><font color=red><b>Mark</b></font> the supporting unit "cut"
+		<li>Decrement the number of supports that the supported unit has.
+		<li>Remove the supporting unit from the supported unit's "no
+			help list" (if it appears there).
+		</ol>
+<dt>
+<HR width=80%>
+<dt><tt><b>checkDisruptions</b></tt>, executed for a particular convoying army
+<!dd>
+	<ul>
+	<li>For every fleet in the army's convoy path:
+		<ul>
+		<li>If the "combat list" for the space occupied by the fleet
+			contains a <i>single</i> unit with a higher support count
+			than <i>all</i> others, and if that single unit 
+			is not owned by the same power that owns the convoying
+			fleet, then <font color=red><b>mark</b></font> the convoying army
+			as "convoy endangered."
+		<li><i>(If the <tt><b>RULE SAFE_CONVOYS</b></tt> is in use,
+			an army is also <font color=red><b>mark</b></font>ed "convoy
+			engangered" if
+			the combat list for the space occupied by the fleet has more
+			than one unit tied with an equal greatest support count, and
+			if at least one of these units is not owned by the same power
+			that owns the convoying fleet, and if the convoying fleet is
+			not one of these units.)</i>
+		</ul>
+	</ul>
+
+<HR width=80%>
+<dt><tt><b>bounce</b></tt>, executed for a particular moving unit
+<!dd>
+	<ul>
+	<li><font color=red><b>Mark</b></font> the unit "bounce."
+	<li>Add the unit, with a "support count" of 0 and an empty
+		"no help" list, to the "combat list" for the space from
+		which it attempted to move.
+	</ul>
+
+<HR width=80%>
+<dt><tt><b>unbounce</b></tt>, executed for a particular space
+<!dd>
+	<ul>
+	<li>If there is a single unit in the "combat list" of the space which has
+		more strength than <i>all</i> others, and if this unit is
+		<b>mark</b>ed "bounce," then
+		<ul>
+		<li><font color=red><b>Remove the mark</b></font> of "bounce" from
+			that unit.
+		<li>If the unit is <b>mark</b>ed "dislodged," then
+			<font color=red><b>remove the mark</b></font> of "dislodged" from
+			that unit.
+		<li>Otherwise (if the unit was <i>not</i> marked "dislodged"),
+			remove the unit from the "combat list" of the space where it
+			began the turn, and execute this <tt><b>unbounce</b></tt> procedure
+			(recursively) for that space.
+		<!/ul>
+	<!/ul>
+
+<!/dl>
+
+
+	</td>
+	</tr>
+	</table>
+
+</td>
+</tr>
+<tr valign=top>
+<td colspan=2 align=right class="fineprint" bgcolor="#CCCCCC">The DPjudge is copyright © <:= '1995-%d' % time.localtime()[0] :> by Manus Hand. All rights reserved. </td>
+</tr>
+</table>
+
+</body>
+</html>
+

@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: About the DPjudge</title>
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=2>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0
+		src="<URL>/images/dpjudge_logo.gif"
+		height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>About the DPjudge</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=Policies">house rules</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=2 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Links to Answers About...</b></td>
+<td align=center class="grey"><a name="1"></a><b>The DPjudge in General</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+<!--		<b>&middot;</b>&nbsp;<a href="#1">About the DPjudge</a><br> -->
+		<b>&middot;</b>&nbsp;<a href="<URL>?page=Questions#2">The Web Interface</a><br>
+		&nbsp;&nbsp;(including the Season-By-Season Map)<br>
+		<b>&middot;</b>&nbsp;<a href="<URL>?page=Questions#3B">How and What to E-Mail the DPjudge</a><br>
+		<b>&middot;</b>&nbsp;<a href="<URL>?page=Rules">The Various Game "Rules"<br>
+		&nbsp;&nbsp;&nbsp;that the DPjudge Supports</a><br>
+		<b>&middot;</b>&nbsp;<a href="<URL>?page=Questions#4">Acronyms and Abbreviations</a><br>
+		<b>&middot;</b>&nbsp;<a href="<URL>?page=Questions#5">When the DPjudge Processes Moves</a><br>
+		<b>&middot;</b>&nbsp;<a href="<URL>?page=Questions#6">Mastering a DPjudge Game</a><br>
+		&nbsp;&nbsp;(including how a game gets created)<br>
+		<b>&middot;</b>&nbsp;<a href="<URL>?page=Questions#7">Move Adjudication Details</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+<td>
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+		<b>What is a DPjudge?</b><p>
+		The DPjudge is a Web and e-mail interface for players of the game of Diplomacy. The DPjudge allows GameMasters to create and run fully customizable games of Diplomacy (and many variants of Diplomacy) entirely online.  Using individual webpages at the DPjudge Website, players can
+		
+		<ul>
+		<li>send messages to other players (this is called sending "press"),
+		<li>enter orders for the various pieces on the board, and
+		<li>input other game information.
+		</ul>
+		
+		<P>The press messages are distributed by e-mail, and players may also compose and send press messages by e-mailing the DPjudge (using the proper syntax that instructs the DPjudge to whom the message should be sent).
+	
+		<P>Once a turn ends, the DPjudge determines the success or failure of the orders that were issued, and publishes the turn's results. For detailed instructions on using the DPjudge, see <a href=<URL>?page=Questions>Answers to Common Questions About the DPjudge</a>.
+		
+		<P>You can read all about how the DPjudge came to be, including an overview of its features, in <a href=<POUCH>/Zine/F1999R/Hand/dpjudge.html>an article in The Diplomatic Pouch Zine</a>.
+<P><HR>
+		<P><b>Okay, but what is Diplomacy?</b><p>
+		If you asked this question, you have my sympathy that you managed to live long enough to form intelligent questions without becoming acquainted with -- nay, addicted to -- Diplomacy.  I won't answer the question here, but will instead refer you to the Internet home page of the Diplomacy hobby, <a href=<POUCH>>The Diplomatic Pouch</a>, where you can find the answer you seek. The Pouch is chock full of more information on The Game than you can digest in one sitting -- one place to start is <a href=<POUCH>/Welcome.html>The Pouch's "Welcome" page</a>, where I wrote a quickie overview of Diplomacy itself.
+<P><HR>
+		
+		<P><b>To whom do we owe the pleasure?</b><p>
+		Hasbro, Inc., the holder of the copyright to Diplomacy, has proven to be a great friend to the online Diplomacy hobbyist.  Hasbro has recognized the strength of the Internet hobby and has actively promoted its free expansion by continuing the agreements made between the hobby and The Avalon Hill Game Company (former holder of the copyright on Diplomacy, and now a subsidiary of Hasbro).  These agreements fostered the projects that have grown the Internet Diplomacy community from nothing to tens of thousands of devoted players. The Diplomacy hobby is actively committed to assisting Hasbro in its  promotion of our game, and thanks Hasbro for its active promotion of the hobby.
+<P><HR>
+<P>	
+		<b>Why is it called the DPjudge?</b><p>
+		It was named after <a href=<POUCH>>The Diplomatic Pouch</a>, and was developed to become an adjunct to The Pouch.
+		
+<P><HR>
+		<P><b>How do I get started using the DPjudge?</b><p>
+		Well, you can read this common questions list, especially <a href=<URL>?page=Questions>the sections concerning how to use the Web and e-mail interfaces</a>). You probably don't need to know how to set up and run games quite yet, so you can come back to those sections later.  You will have to use e-mail to actually join a DPjudge game, and you'll probably want to use the Website to input your moves and see the game map, so get comfortable with both interfaces.
+		
+		<P>In the end, using the DPjudge is easy and intuitive, so the best way to learn is by using it.  Don't worry, just jump right in even if you're not completely sure about the format for your units' orders or something; the DPjudge is both robust and forgiving.
+		
+		<P>	If anything is unclear, or if you have any other questions, just ask your game's Master or <a href=mailto:manus@diplom.org>the DPjudgekeeper</a>.
+
+<P><HR>
+		<P><b>How does the DPjudge differ from the Ken Lowe judge?</b><p>
+		(For those who don't know, the Ken Lowe judge has long been the standard adjudicator for Internet Diplomacy play.)  <!-- In fact, the DPjudge is a direct outgrowth and continuation of the Ken Lowe effort. -->
+	
+		<P>The most obvious difference between the Ken Lowe judge and the DPjudge is that the Ken Lowe judge is entirely e-mail based, but the DPjudge also provides a Web interface, with game maps and game history information available to the players at the touch of a button.
+	
+		<P><a href=<URL>?page=Email>E-mail interaction to and from the DPjudge</a> was modeled in some of its particulars after the Ken Lowe judge, so that players use commands and receive mail in forms with which they are already familiar, and with which a number of existing tool programs are already compatible.
+	
+		<P>The press capabilities of the DPjudge mimic the Ken Lowe judge, extending them only slightly.  The only difference is that a DPjudge game that permits <tt>FAKE_PRESS</tt> allows a player to send messages that claim to have been sent from a particular other player (in the Ken Lowe judge, <tt>FAKE_PRESS</tt> is always sent anonymously).
+	
+		<P>In terms of adjudication, the DPjudge differs only slightly from the Ken Lowe judge.  The difference is in the handling of convoy paradoxes, and is explained completely in the <a href=<URL>?page=Questions>Common Questions</a> list.
+	
+		<P>Finally, the DPjudge implements coastal support differently than does the Ken Lowe judge.  A unit may only direct support to a <i>space</i>; never to a <i>coast</i>. For example, a fleet in Portugal may support a move from the Mid-Atlantic Ocean to Spain, but it may <i>not</i> specify a particular Spanish coast in that support order.  The support from Portugal is valid no matter which coast of Spain the Mid-Atlantic Ocean fleet attempts to land upon.  (This is the proper implementation of the rules of Diplomacy as written.)
+
+<!--
+<P><HR>
+		<P><b>Can the DPjudge work <i>with</i> the Ken Lowe judge?</b><p>
+		Yes. In fact, the DPjudge was originally created as a front-end to the Ken Lowe judge to support the Payola variant of Diplomacy.  The DPjudge would simply process the information gathered from the players and feed the results to the Ken Lowe judge as appropriate.
+	
+		<P>Only later was the DPjudge expanded to handle player press and to do move adjudication itself, rather than to rely on the Ken Lowe judge. Although games now run completely and independently using the DPjudge, the DPjudge does retain all its capability to interact with the Ken Lowe judge, serving as a Web and e-mail front-end for any game being run on such a judge.
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+</td>
+</tr>
+<:
+footer()
+:>

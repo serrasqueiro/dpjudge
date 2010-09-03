@@ -1,0 +1,75 @@
+<:
+#	----------------------------------------------------------------------
+def showOrderList():
+	if not page.power.units: return
+	page.write(
+		"""
+		<tr><td class=bodycopy align=center><font size=2>
+		<b>%s Orders</b></font><br>
+		""" % page.game.phaseName(form=2).title())
+	if 'NO_CHECK' in page.game.rules: page.write(
+		'<font color=red>Remember: '
+		'Specify the path of any convoying army '
+		'by listing the fleets involved!</font><p>')
+	rows = max(len(page.power.orders), 19) + 1
+	page.write(
+		'<textarea rows=%s cols=40 name=orders wrap=off class=inputBox>' % rows)
+	if 'orders' in vars(page): page.write(page.orders)
+	elif page.power.orders:
+		for unit, order in page.power.orders.items():
+			if 'NO_CHECK' in page.game.rules: page.write(order)
+			else: page.write(unit + ' ' + order)
+	elif 'NO_CHECK' not in page.game.rules:
+		for unit in page.power.units: page.write(unit + ' ')
+	page.write('</textarea></td></tr>')
+	return 1
+#	----------------------------------------------------------------------
+def showLists(orders = 0):
+	page.write(
+		"""
+		<td>
+		<!--MOVEMENT ORDERS TABLES GO HERE-->
+		<table border=0 cellpadding=2 cellspacing=2 width=100%>
+			<tr valign=top>
+			<td align=center>
+				<!--ORDER SUBMISSION TABLE BEGINS HERE-->		
+				<table border=0 align=center>
+		""")
+	if page.game.await or (not page.power.centers
+	and not page.power.units and not page.power.retreats): shown = 0
+	else:
+		page.write(
+			"""
+			<form %s>
+			<input type=hidden name=page value=Update>
+			<input type=hidden name=game value=%s>
+			<input type=hidden name=power value=%s>
+			<input type=hidden name=password value=%s>
+			<input type=hidden name=phase value=%s>
+			""" %
+			(('onSubmit="return false"',
+			  'method=post name=UpdateForm')[page.pwdFlag == 1],
+			page.game.name, page.power.name,
+			page.password, page.game.phaseAbbr()))
+		if page.game.phaseType == 'M': shown = showOrderList()
+		elif page.game.phaseType == 'A': shown = showAdjustList()
+		elif page.game.phaseType == 'R': shown = showRetreatList()
+		else: shown = None
+	if shown:
+		showWaitFlag()
+		changeButton()
+	else: showWaitNotice()
+	page.write('</td></tr>')
+	page.write(
+		"""
+		</td>
+		</tr>
+		<tr><td height=5></td></tr>
+		</table>
+		<!--ORDER SUBMISSION TABLE ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+		""")
+#	----------------------------------------------------------------------
+:>

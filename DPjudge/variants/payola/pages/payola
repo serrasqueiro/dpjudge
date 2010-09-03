@@ -1,0 +1,82 @@
+<:
+#	----------------------------------------------------------------------
+def showAcceptList():
+	accept = page.power.accept
+	if (not accept or not (page.power.units or page.power.retreats)
+	or ('PAY_DUMMIES' in page.game.rules
+	and 'VASSAL_DUMMIES' not in page.game.rules)
+	or (not page.power.centers and page.game.phaseType == 'A')): return
+	if ('VASSAL_DUMMIES' in page.game.rules
+	and not [x for x in page.game.powers if x.ceo == [page.power.name]]): return
+	page.write('<tr><td align=center class=bodycopy><b>Acceptance List: ')
+	page.write(page.game.await and '<tt>%s</tt></b>' % accept or
+		'</b><input class=inputBox name=accept maxlength=%d size=%d value=%s>' %
+		(len(page.game.map.powers), len(page.game.map.powers) + 2, accept))
+	page.write('</td></tr>')
+#	----------------------------------------------------------------------
+def showPowerData():
+	game, power = page.game, page.power
+	if power.balance is None: return
+	page.write('<td><table border=0 cellpadding=2 cellspacing=2 width=100%>')
+	if not game.await: page.write(
+		"""
+		<form %s><input type=hidden name=page value=Update>
+		<input type=hidden name=game value=%s>
+		<input type=hidden name=power value=%s>
+		<input type=hidden name=password value=%s>
+		<input type=hidden name=balance value=%d>
+		<input type=hidden name=phase value=%s>
+		""" %
+		(('onSubmit="return false"', 'method=post')[page.pwdFlag == 1],
+		game.name, power.name, page.password, power.balance,
+		game.phaseAbbr()))
+	showAcceptList()
+	if game.await:
+		showWaitNotice()
+		return page.write('</table></td>')
+	if game.phaseType == 'M': shown = showOfferList()
+	elif game.phaseType == 'A':
+		showDividends()
+		shown = showAdjustList()
+	elif game.phaseType == 'R': shown = showRetreatList()
+	elif game.phaseType == 'D': shown = showDividends()
+	else: shown = 0
+	if not shown: showWaitNotice()
+	elif game.phaseType != 'M' or power.units: showWaitFlag()
+	if shown or power.accept and power.centers: changeButton()
+	page.write('</table>')
+	page.write('</td>')
+#	----------------------------------------------------------------------
+def showDividends():
+	limit = page.power.dividendLimit()
+	if not limit: return
+	page.write(
+		"""
+		<tr><td align=center class=bodycopy>
+		<b>Fiscal %d Dividends:</b>
+		Disburse <select class=inputBox name=dividend><option>(NMR)
+		""" % page.game.year)
+	for div in range(limit + 1): page.write('<option%s>%d' %
+		(page.power.funds.get('/share') == div and ' selected' or '', div))
+	page.write('</select> AgP per Share</td></tr>')
+	return 1
+#	----------------------------------------------------------------------
+def showOfferList():
+	if 'VASSAL_DUMMIES' in page.game.rules and page.power.ceo: return
+	selfControl = 'PAY_DUMMIES' in page.game.rules and not page.power.isDummy()
+	page.write(
+		"""
+		<tr><td class=bodycopy align=center><font size=2>
+		<b>%s %s</b></font><br>
+		""" % (page.game.phaseName(form=2),
+			('Offer List','Orders')[selfControl]))
+	text = page.power.sheet[:] or selfControl and page.power.units or []
+	page.write('<textarea class=inputBox rows=%s cols=50 name=offers wrap=off>'
+		% (max(len(text), 19) + 1))
+	if 'offers' in vars(page): text = page.offers.split('\012')
+	if selfControl: text = [x[x.startswith('0 : ') * 4:] for x in text]
+	map(page.write, text)
+	page.write('</textarea></td></tr>')
+	return 1
+#	----------------------------------------------------------------------
+:>

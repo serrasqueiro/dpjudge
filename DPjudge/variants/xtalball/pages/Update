@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+page.include('xtalball')
+loadGame()
+checkPassword()
+showGameHeader()
+:>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+<:
+gameHeader()
+:>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<:
+showReadyNotice()
+:>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<:
+if page.power.name == 'MASTER' and 'access' in vars(page): showAccessLog()
+page.write(
+	"""
+	<tr valign=top bgcolor="#CCCCCC">
+	<td align=center class="grey"><b>Status</b></td>
+	""")
+
+#	----------------------------------------------------------------------
+def updateOrders():
+	#	-------------------------------------------------------------
+	#	Determine which order list (SOONER or LATER) is to be updated
+	#	-------------------------------------------------------------
+	if 'SOONER' in vars(page): lines, which = page.SOONER, 'SOONER'
+	elif 'LATER' in vars(page): lines, which = page.LATER, 'LATER'
+	else:
+		lines, which = '', 'LATER'
+		for power in page.game.powers:
+			if power.units and not power.list['SOONER']: which = 'SOONER'
+	page.game.updateOrders(page.power, lines.split('\012'), which)
+	if page.game.error: page.errorOrders = lines.split('\012')
+#	----------------------------------------------------------------------
+def updatePower():
+	if page.game.await or page.phase != page.game.phaseAbbr(): lockedUp()
+	if 'wait' in vars(page): page.power.wait = 1
+	elif page.power.wait: page.power.wait = None
+	if 'adjust' in vars(page): updateOffPhases()
+	else: updateOrders()
+#	----------------------------------------------------------------------
+page.game.error = []
+if page.power.name != 'MASTER':
+	updatePower()
+	if page.game.error:
+		page.write('<td align=center class="grey"><b>Erroneous Orders</b></td>')
+:>
+</tr>
+<tr valign=top>
+<td>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+		<!--FLAG AND PLAYER INFORMATION TABLE BEGINS HERE-->
+<:
+powerHeader()
+:>
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr>
+		<td colspan=3 class="border" height=1><img
+			src="<URL>/images/spacer.gif" height=1></td>
+		</tr>
+		</table>
+		<!--FLAG AND PLAYER INFORMATION TABLE ENDS HERE-->
+
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td align=center>
+		<!--MAPS, RESULTS, ENDGAME TABLE BEGINS HERE-->
+		<table border=0 align=center width=100%>
+<:
+if page.power.name != 'MASTER':
+	if page.game.error: problem()
+	else: finished()
+:>
+		</tr>
+		</table>
+		<!--SEND PRESS TABLE ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+</td>
+<:
+if page.power.name == 'MASTER': updateMaster()
+elif page.game.error and page.game.phase not in ('FORMING', 'COMPLETED'):
+	showOrders()
+:>
+</tr>
+<:
+footer()
+:>

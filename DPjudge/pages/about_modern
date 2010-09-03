@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Modern Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=4>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"><img src="<URL>/images/spacer.gif" width=1></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>The Modern Variant</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=2 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Contents</b></td>
+<td align=center class="grey"><a name="1"></a><b>Basic Rules</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=5>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+<!--		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br> -->
+		<b>&middot;</b>&nbsp;<a href="#2">Map Notes</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		<form action=<URL> target=modern>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=modern>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr><td class=bodycopy>
+		<!--BODYCOPY BEGINS HERE-->
+
+<ol>
+<li>The normal rules of the game of Diplomacy apply, with the following additions, exceptions, and clarifications.
+<p><li>The map that is used is a representation of Europe, western Asia, and
+northern Africa as the region was politically divided in the 1990's.  The map is similar
+in geography to the standard map, but includes more of Africa and the middle
+east.
+<p><li>There are 38 home centers and 26 neutral centers on the board,
+	making 64 total supply centers. To win the game, control of 33 centers is
+	needed. 
+<p><li>There are ten Great Powers, which start the game as follows:
+<table border>
+<tr><th class=bodycopy bgcolor=#ff00ff>Britain
+<td><tt>Fleet Edinburgh
+<td nowrap><tt>Fleet Gibraltar
+<td nowrap><tt>Fleet Liverpool
+<td><tt>Fleet London
+</tr>
+<tr><th class=bodycopy bgcolor=#cc8080>Egypt
+<td><tt>Fleet Alexandria
+<td><tt>Army Aswan
+<td><tt>Fleet Cairo
+</tr>
+<tr><th class=bodycopy bgcolor=#33b2b2>France
+<td><tt>Fleet Bordeaux
+<td><tt>Army Lyons
+<td><tt>Army Marseilles
+<td><tt>Army Paris
+</tr>
+<tr><th class=bodycopy bgcolor=black><font color=white>Germany
+<td><tt>Fleet Berlin
+<td><tt>Army Frankfurt
+<td><tt>Fleet Hamburg
+<td><tt>Army Munich
+</tr>
+<tr><th class=bodycopy bgcolor=#00b200>Italy
+<td><tt>Army Milan
+<td><tt>Fleet Naples
+<td><tt>Army Rome
+<td><tt>Fleet Venice
+</tr>
+<tr><th class=bodycopy bgcolor=white>Poland
+<td><tt>Fleet Gdansk
+<td><tt>Army Krakow
+<td><tt>Army Warsaw
+</tr>
+<tr><th rowspan=2 class=bodycopy bgcolor=#ff0000>Russia
+<td><tt>Army Gorky
+<td><tt>Army Moscow
+<td><tt>Army Murmansk
+<td><tt>Fleet Rostov
+</tr><tr>
+<td nowrap><tt>Fleet St Petersburg
+</tr>
+<tr><th class=bodycopy bgcolor=#ff9900>Spain
+<td><tt>Fleet Barcelona
+<td><tt>Army Madrid
+<td><tt>Army Seville
+</tr>
+<tr><th class=bodycopy bgcolor=#ffff00>Turkey
+<td><tt>Army Adana
+<td><tt>Fleet Ankara
+<td><tt>Army Istanbul
+<td><tt>Fleet Izmir
+</tr>
+<tr><th class=bodycopy bgcolor=#00ffff>Ukraine
+<td><tt>Army Kharkov
+<td><tt>Army Kiev
+<td><tt>Army Odessa
+<td nowrap><tt>Fleet Sevastopol
+</tr>
+</table>
+<p><li>The first turn of the game is Spring 1995 Movement.
+
+		<!--BODYCOPY ENDS HERE-->
+</td></tr></table>
+
+	</td>
+	</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="2"></a><b>Map Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+
+<ol>
+<li>
+Cairo, Hamburg and Istanbul behave as Kiel and Constantinople did in the original game: they have no coasts but fleets can pass through them to bodies of water of both sides. 
+<p><li>
+There is another canal linking Rostov and Volga, thus permitting access to the Caspian Sea to ships. Rostov is situated along the Don River which empties into the Black Sea, while the Volga empties into the Caspian Sea. In the real world there is a canal at Volgograd linking the two rivers, somewhere in the southern Volga region on the map. This is the only way to get ships into and out of the Caspian Sea. 
+<p><li>
+Iran is the only territory with multiple coasts in the game; the south coast touches the Arabian Sea and the Persian Gulf, while the north coast touches the Caspian Sea. 
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="3"></a><b>Design Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+<p>
+The Modern variant was created by Vincent Mous, who described it in
+a series of articles for <a href=<POUCH>>The Diplomatic Pouch</A> Zine,
+beginning with <a href=<POUCH>/Zine/W1995A/Mous/Modern.html>Modern Times</a>.
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+<:
+footer()
+:>

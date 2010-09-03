@@ -1,0 +1,303 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: DPjudge Order Format</title>
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>Formatting Unit Orders At the DPjudge</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+	<tr><td colspan=3 bgcolor="#CCCCCC" class="grey"
+		align=center><b>Questions About Issuing Orders</b></td></tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+		
+		<blockquote><i>[Note:  this explanation assumes a completely
+standard Diplomacy game.  For games that are of a non-standard
+variant (such as Payola or Crystal Ball), or games that are set
+up to use any of <a href=<URL>?page=Rules>the many different non-standard
+rules</a>, some additional restrictions may apply, and some of the
+restrictions listed here may <u>not</u> apply.  For the complete
+litany of formatting rules for such games, simply use the Website to enter some
+random garbage for your orders in the game, and the entire
+formatting rules for your game will be displayed.]</i></blockquote>
+<dl>
+<P>
+<dt><b>How do I start to write a movement phase order?</b>
+<dd>
+	Well, in a standard Diplomacy game, the DPjudge is kind enough to
+	start all your orders out for you (at the Website) by listing all
+	your units (their type -- army or fleet -- and location).  All
+	you have to do is add the order to the end of each line.  But in
+	case you really want to know how to specify the unit being ordered
+	(which is, in fact the first thing any order needs), here goes....
+<P>
+	Although this is optional, you might want to specify the unit type.
+	The unit type should be either "<tt>ARMY</tt>" or "<tt>FLEET</tt>"
+	(or more succinctly, "<tt>A</tt>" or "<tt>F</tt>").  As I say, this
+	is optional, if you omit a unit's type, it will be added for you.
+	<p>
+	The unit type (if given) must be followed by at least one space.
+	Then after the space, the location of the unit must be specified.
+	A large number of aliases are recognized for each place-name on the
+	map, but whatever you input (if understood) will be automatically
+	changed to the three-letter DPjudge abbreviation of the location.
+	(If you are unfamiliar with the DPjudge abbreviation of any location,
+	simply pull up the current game map and check.)
+<p>
+<dt><b>That's pretty easy (especially since that much
+is even done automatically for me).  What comes after the unit type
+and location?</b>
+<dd>
+	Well, the next thing you specify is the order type (move, hold, support,
+	or convoy).  These may be abbreviated, if you wish, using "<tt>M</tt>"
+	or a dash ("<tt>-</tt>" ) or "<tt>-&gt;</tt>" for move, "<tt>S</tt>" for
+	support, "<tt>C</tt>" for convoy, and "<tt>H</tt>" for hold.
+<p>
+<dt><b>Then what?</b>
+<dd>
+	Well, for simple hold orders, you are done.  Otherwise, the order type
+	must be followed by some more text.
+	<P>
+	For move orders, specify the destination location of the attempted movement.
+	(See the next question for how to specify the move of a convoying army.)
+	<p>
+	For support orders, specify the unit being supported (you can omit
+	the unit's type -- army or fleet -- if you wish, and it will be provided
+	for you).
+	<ul>
+	<li>If writing an order to support a unit's attempt to remain in its
+	position, you may optionally specify <tt>HOLD</tt> (or <tt>H</tt>) after
+	the supported unit.
+	<li>If the unit is being supported in an attempt to move, you must
+	specify a "move" symbol ("<tt>M</tt>", "<tt>-</tt>", or "<tt>-&gt;</tt>")
+	and the final destination of the unit.
+	</ul>
+	<P>
+	A convoy order is formatted just like an order that offers support
+	for a moving unit (except with "<tt>CONVOY</tt>" or "<tt>C</tt>" in
+	place of "<tt>SUPPORT</tt>" or "<tt>S</tt>" of course!)
+<P>
+<dt><b>Is that it?</b>
+<dd>
+	Yes, that's it.  Here are some examples of valid orders:
+	<table ALIGN=CENTER>
+	<tr>
+	<td class="bodycopy"><b><u>ORDER AS INPUT</u></b></td>
+	<td class="bodycopy"><b><u>AS SEEN BY DPJUDGE</u></b></td>
+	</tr>
+	<tr>
+	<td><tt>Army London Holds</tt></td>
+	<td><tt>A LON H</tt></td>
+	<tr>
+	</tr>
+	<td><tt>paris H</tt></td>
+	<td><tt>A PAR H</tt></td>
+	<tr>
+	</tr>
+	<td><tt>fleet nwg sea C norway - edi</tt></td>
+	<td><tt>F NWG C A NWY - EDI</tt></td>
+	<tr>
+	</tr>
+	<td nowrap><tt>Fleet Liverpool support army edinburgh</tt>&nbsp;&nbsp;</td>
+	<td><tt>F LVP S A EDI</tt></td>
+	<tr>
+	</tr>
+	<td><tt>irish -mid</tt></td>
+	<td><tt>F IRI - MAO</tt></td>
+	<tr>
+	</tr>
+	<td><tt>F mao -&gt; iri</tt></td>
+	<td><tt>F MAO - IRI</tt></td>
+	<tr>
+	</tr>
+	<td><tt>f wal s mao - iri</tt></td>
+	<td><tt>F WAL S F MAO - IRI</tt></td>
+	<tr>
+	</tr>
+	<td><tt>army yonkers move london</tt></td>
+	<td><tt>A YOR - LON</tt></td>
+	</tr>
+	</table>
+	(Yes, "Yonkers" is one of the many abbreviations for "Yorkshire."
+	See what I mean?  It's going to be hard to screw up.)
+<P>
+<dt><b>Hey wait, what about dual-coast
+provinces like Spain and Bulgaria?  What does the DPjudge need
+and what abbreviations will it accept?</b>
+<dd>
+	You <u>can</u> <i>always</i> specify a coast when one is involved (and
+	I'll tell you how to do so here in a minute), but you usually don't
+	really need to do so.  The
+	DPjudge is smart enough to figure out which coast you mean in all but
+	three cases (on the standard map): a move from Constantinople to Bulgaria,
+	and a move from either Portugal or the Mid-Atlantic Ocean to Spain.  In
+	those cases, the
+	coast <i>must</i> be specified.  (Yes, it <i>must</i> -- the DPjudge
+	will yell at you if you don't specify it.)
+	<P>
+	To specify a coast, simply list the coast (in any of a number of different
+	formats) right after the place-name.  For example:
+	"<tt>spa/sc</tt>", "<tt>Bulgaria(east)</tt>",
+	"<tt>Spain&nbsp;(north&nbsp;coast)</tt>."  Again, you can't really go wrong,
+	because if you do, the DPjudge will call you on it, offer you some
+	long-winded help, and make you try again.
+<P>
+<dt><b>Oh, come on.  There must be some catches.</b>
+<dd>
+	Okay, you're right.  But only two of them.  Here's one:
+	If you are writing an order to support a fleet in its move to a
+	multi-coast province, the coast to which it is moving must <b><i>not</i></b>
+	be specified.
+	<p>
+	For example, although the order for a fleet moving from Constantinople
+	to Bulgaria <i>must</i> include the destination coast:<br>
+	<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F CON - BUL/SC</tt><br>
+	a <i>support</i> for that same order can<i>not</i> specify the coast.
+	That is, the order<br>
+	<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A GRE S F CON - BUL/SC</tt><br>
+	will be rejected as invalid.  The order must be written without the
+	coast:<br>
+	<tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A GRE S F CON - BUL</tt><P>
+	This is because support is always to a <i>space</i> not to a coast.
+
+<a name=convoy></a>
+<P>
+<dt><b>Okay, that's not too bad.  What's the other
+catch?</b>
+<dd>
+	This catch (which will throw you if you have only played face-to-face
+	Diplomacy, and never in any automated e-mail games) is that a convoying
+	army must (in its order) specify its full path to its destination.
+	<P>
+	That is, if writing a convoy order, the location of all fleets to be
+	used must appear (in order of use), and a move order, with optional
+	space on either side, must separate these locations from each other
+	and from the army's origin and destination provinces.
+	<P>
+	Here are a couple examples:<br>
+		<tt>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		A BUL-AEG - ION -> TUN<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		A EDI-NTH-NWY</tt>
+	<br>Note that if you <i>fail</i> to list the path of an army that cannot
+	reach its destination <i>except</i> by convoy
+	(for example, with an order like <tt>A&nbsp;EDI-NWY</tt>), the
+	DPjudge will yell at you, so once again, you usually cannot go wrong.
+
+<P>
+<dt><b>How do I write proxy orders if they are in allowed in my
+	game?</b>
+<dd>
+	Proxy orders allow the owner of a unit to give up his control over
+	a unit, permitting a different power to issue an order to that unit
+	in the current movement phase.
+	If writing a proxy order, you must give (after the word "<tt>PROXY</tt>"
+	or "<tt>P</tt>") only the <i>full</i> name of the power to whom the
+	proxy is given.  For example:
+		<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		<tt>A LON PROXY FRANCE</tt>
+	<p>
+	Only the actual original owner of a unit may issue it a proxy order;
+	that is, units may not be "re-proxied" from one power to
+	another.  Note also that if a unit receives a proxy order,
+	but then, later in the power's list of orders (if the variant allows this),
+	an order is given to the unit, the unit will follow that order.  Units
+	that are proxied to a power that does not issue an order to that unit
+	will <tt>HOLD</tt> and will be eligible to receive support in place.
+
+<P>
+<dt><b>What about retreat and adjustment (build and
+remove) phase orders?  Anything I need to know about those?</b>
+<dd>
+	Not really.  Because orders for those phases are done by selecting
+	(using a pulldown box on the Webpage) from all the valid orders
+	you could possibly issue.  There's nothing to type, so there's no
+	way you could mess those orders up on the Web.
+	If you send retreat orders in via e-mail, they will look just like
+	movement orders, except in the case of a voluntary disband.  Here are
+	some examples:<br>
+		<tt>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		F livonia - stp/sc<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		Army london to wales<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		fleet trieste disband
+		</tt>
+	<br>
+	If you send adjustment orders in via e-mail, it's as simple as:<br>
+		<tt>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		BUILD A LON<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		REMOVE fleet livonia<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		B F TRI<br>
+		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		WAIVE</tt>
+<P>
+<dt><b>Okay, now I know everything (or at least everything
+you are going to tell me).  Any last words?</b>
+<dd>
+	Just a caution.  Remember that everything you just learned applies
+	only to the most standard of Diplomacy games.  If your game allows
+	you to give orders to units that do not exist (for example, the
+	Crystal Ball variant allows this), or if it is in any way non-standard,
+	you might have a bit more to learn.  But only a bit.  And it's easy
+	to learn.  Just enter some total garbage for your orders on the
+	Website and take a look
+	at the long complaint you get.  It will list all the rules for writing
+	orders in your game.
+</dd>
+</dl>
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<:
+footer()
+:>

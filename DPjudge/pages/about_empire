@@ -1,0 +1,233 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Empire Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"><img src="<URL>/images/spacer.gif" width=1></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>The Empire Variant</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Contents</b></td>
+<td align=center class="grey"><a name="1"></a><b>Basic Rules</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=5>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br>
+		<b>&middot;</b>&nbsp;<a href="#2">Map Notes</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		<form action=<URL> target=empire>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=empire>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr><td class=bodycopy>
+	<!ol>
+<!li>
+The normal rules of the game of Diplomacy apply, with the following additions,
+exceptions, and clarifications.
+<p><!li>
+The map that is used is a representation of North America, Central America,
+and the north-east section of South America,
+with political boundaries describing the break-up of the United States of
+America into five separate powers, and Canada into two powers.
+of the region.
+<p><!li>
+The ten powers in the game, with their home centers and the initial positions
+of their units, are shown below:
+<P>
+<center>
+<table border>
+<tr><th class=bodycopy bgcolor=white>British Columbia</th>
+	<td><tt>Fleet Anchorage</tt></tt>
+	<td><tt>Army Calgary</tt></tt>
+	<td><tt>Army Vancouver</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=#ff00ff>California</th>
+	<td><tt>Fleet San Diego</tt></tt>
+	<td><tt>Fleet San Francisco</tt></tt>
+	<td><tt>Army Los Angeles</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=red><font color=white>Cuba</th>
+	<td><tt>Army Holguin</tt></tt>
+	<td><tt>Fleet Havana</tt></tt>
+	<td><tt>Fleet Kingston</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=#ff9900>Florida</th>
+	<td><tt>Fleet Miami</tt></tt>
+	<td><tt>Army Jacksonville</tt></tt>
+	<td><tt>Army Tampa</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=black><font color=white>Heartland</th>
+	<td><tt>Army Chicago</tt></tt>
+	<td><tt>Army Milwaukee</tt></tt>
+	<td><tt>Army Minneapolis</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=#ffff00>Mexico</th>
+	<td><tt>Fleet Guadalajara</tt></tt>
+	<td><tt>Army Mexico</tt></tt>
+	<td><tt>Army Veracruz</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=#00ff00>New York</th>
+	<td><tt>Army New Jersey</tt></tt>
+	<td><tt>Fleet New York City</tt></tt>
+	<td><tt>Army Philadelphia</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=#b2b2b2>Peru</th>
+	<td><tt>Army Bogota</tt></tt>
+	<td><tt>Fleet Cali (north coast)</tt></tt>
+	<td><tt>Fleet Lima</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=#00ffff>Quebec</th>
+	<td><tt>Army Montreal</tt></tt>
+	<td><tt>Army Ungava</tt></tt>
+	<td><tt>Fleet Quebec City</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=blue><font color=white>Texas</th>
+	<td><tt>Army Dallas</tt></tt>
+	<td><tt>Fleet Houston</tt></tt>
+	<td><tt>Army San Antonio</tt></tt>
+</tr>
+</table>
+</center>
+<p><!li>
+The game-year proceeds as in the standard game (Spring, Fall, Winter)
+except that the game's first year is numbered 1999 (rather than 1901).
+<p><!li>
+The map contains fifty-eight supply centers as the standard map,
+and so the victory criteria is thirty supply centers.
+
+</td></tr></table>
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="2"></a><b>Map Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+
+<ol>
+<p><li>
+<u>Canals.</u>
+There are a few one-space canals that act like Kiel in standard Diplomacy.
+This means that the spaces have no coasts and fleets can exit on any side. 
+<ul>
+<li>Panama 
+<li>Ontario 
+<li>Michigan 
+<li>Upper Peninsula 
+<li>Chicago (see below) 
+</ul>
+Empire has one more Canal: the Hudson Canal between New York City and New
+York State. Fleets can move from one of these spaces to the other. 
+
+<p><li>
+<u>Waterways.</u>
+There are two waterways in Empire where fleets can move as though there were
+a coastline in the listed territories. These rivers do not impede army
+movement.  These two waterways are:
+<ul>
+<li>
+Mississippi (Chicago, Missouri, Kentucky, Tennessee, Arkansas, Deep South,
+Louisiana) 
+<li>St-Lawrence (Beauce, Montreal, NYS, Ontario, Quebec, Gaspe) 
+</ul>
+For example, a fleet could move from Tennessee to any of Kentucky, Missouri,
+Arkansas or Deep South.
+
+<p><li>
+<u>Land Bridges.</u>
+Units can move between Ungava and Nunavut. This does not block movement between Hudson Bay and the Sea of Labrador. 
+<P>
+Units can move between Michigan and the Upper Peninsula. This does not block movement between Lake Michigan and Lake Huron.
+
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="3"></a><b>Design Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+<p>
+The Empire variant was created by Vincent Mous. A
+<a href=<POUCH>/Online/variants/Empire/empire.html>full
+home page</a> for the variant is maintained at <a href=<POUCH>>The
+Diplomatic Pouch</a>.
+
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+<:
+footer()
+:>

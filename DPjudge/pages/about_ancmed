@@ -1,0 +1,290 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Ancient Mediterranean Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0
+		src="<URL>/images/dpjudge_logo.gif"
+		height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>The Ancient Mediterranean Variant</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Contents</b></td>
+<td align=center class="grey"><a name="1"></a><b>Basic Rules</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=5>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br>
+		<b>&middot;</b>&nbsp;<a href="#2">Map Notes</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		<form action=<URL> target=ancmed>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=ancmed>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr><td class=bodycopy>
+	<!ol>
+<!li>
+The normal rules of the game of Diplomacy apply, with the following additions,
+exceptions, and clarifications.
+<p><!li>
+The map that is used is a representation of the Mediterranean Sea and the
+land that borders it, with political boundaries describing the ancient empires
+of the region.
+<p><!li>
+The five powers in the game, and the initial positions of their units, are
+shown below:
+<center>
+<table border>
+<tr><th class=bodycopy bgcolor=red><font color=white>Rome</font></th>
+	<td><tt>Fleet Neapolis</tt></tt>
+	<td><tt>Army Roma</tt></tt>
+	<td><tt>Army Ravenna</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=blue><font color=white>Carthage</th>
+	<td><tt>Fleet Thaspus</tt></tt>
+	<td><tt>Army Cirta</tt></tt>
+	<td><tt>Army Carthage</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=ltgreen>Greece</th>
+	<td><tt>Fleet Sparta</tt></tt>
+	<td><tt>Army Athens</tt></tt>
+	<td><tt>Army Macedonia</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=black><font color=white>Persia</th>
+	<td><tt>Fleet Sidon</tt></tt>
+	<td><tt>Army Antioch</tt></tt>
+	<td><tt>Army Damascus</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=yellow>Egypt</th>
+	<td><tt>Fleet Alexandria</tt></tt>
+	<td><tt>Army Memphis</tt></tt>
+	<td><tt>Army Thebes</tt></tt>
+</tr>
+</table>
+</center>
+<p><!li>
+The game-year proceeds as in the standard game (Spring, Fall, Winter)
+except that the game's first year is numbered 1 (rather than 1901).
+<p><!li>
+The map contains the same number of supply centers as the standard map,
+and so the victory criteria is the same (18 supply centers).
+</ol>
+
+</td></tr></table>
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="2"></a><b>Map Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+
+<!ol>
+<p><!li>
+<u>Impassable Spaces.</u>
+Any areas that are not named on the board are not passable.
+The Atlantic Ocean cannot be occupied by any units.
+
+<p><!li>
+<u>Islands.</u>
+Islands are distinct spaces. An island may be occupied by an army or a fleet.
+Each island has one continuous coast, therefore a fleet on an island may move
+to any space adjacent to it. For example, a fleet could move from the Egyptian
+Sea to Crete in one turn, and then move to the Aegean Sea in the next turn.
+
+<p><!li>
+<u>Movement Across Narrow Straits.</u>
+Arrows on the board indicate two adjacent land (coastal) spaces. An army may
+move from one such space to the other in one turn without being convoyed.
+Because they are adjacent, fleets may also move from one space to the other
+in one turn. Note that the Tyrrhenean Sea is adjacent to the Ausonian Sea.
+
+<p><!li>
+<u>Byzantium.</u>
+Byzantium is one space which straddles a waterway. The waterway allows
+movement of a fleet in Byzantium to any adjacent coastal space or sea space.
+The waterway does not impede the movement of an army through Byzantium.
+Byzantium is a supply center. In other words, it works just like
+Constantinople in the standard game.
+
+<p><!li>
+<u>Baleares.</u>
+Baleares is a single space (which consists of the islands and the water around
+them). Since it contains both land and water, it can be occupied by a fleet or
+an army. However, since it is a single space, it can only be occupied by one
+unit at a time. Although an army can occupy Baleares, it cannot move there
+directly from the mainland spaces since the islands are too far from the coast.
+For an army to enter or leave Baleares, it would have to be convoyed by a fleet
+in the Berber Sea or the Ligurian Sea. Since Baleares consists mostly of water,
+it is considered a sea space for the purposes of convoys. Therefore, a fleet
+occupying Baleares may be used to convoy an army using the normal convoy rules.
+Baleares is a supply center.
+
+<p><!li>
+<u>Four-Way Intersection in the High Seas.</u>
+In the middle of the board there is an area where four sea spaces come together
+at one point. They are the Ausonian Sea, Messenian Sea, Gulf of Tacape and
+Libyan Sea. All four of these spaces are adjacent to each of the other three
+at that point. Therefore, a fleet in one of these spaces may move to any of
+the other three. In other words, a fleet in any of these spaces may move
+diagonally. 
+<p>
+By virtue of the expanse of the open seas, fleets can pass each other in a
+criss-cross fashion without impeding each others' movement. For example, a
+Roman fleet could move from the Ausonian Sea to the Libyan Sea and a Greek
+fleet could move from the Messenian Sea to the Gulf of Tacape on the same
+turn and both of these moves would be allowed. Note that this criss-crossing
+is not the same as two units exchanging places. For example, if a Roman fleet
+tried to move from the Ausonian Sea to the Libyan Sea and an Egyptian fleet
+tried to move from the Libyan Sea to the Ausonian Sea on the same turn, these
+moves would not be allowed due to the normal rules.
+
+<p><!li>
+<u>The Diolkos.</u>
+The border between Sparta and Athens effectively works like a canal. It cuts
+across the isthmus and allows fleets to move through. For example, a fleet in
+the Aegean Sea could move to Athens and then, on the following turn, to the
+Ionian Sea. Note that in game terms, this means Athens effectively has one
+continuous coast. Armies can freely move between Sparta and Athens. 
+<p>
+The historical precedence for this is not an actual canal. The Diolkos was a
+roadway built by the Greeks for the purpose of moving ships across the isthmus
+on large wheeled carts. You can still see the ruts in the ground today.
+<!
+See Ancient Diolkos of Corinth and The Diolkos and the Corinth Canal.
+>
+
+<p><!li>
+<u>The Nile River and Canal.</u>
+The Nile River acts as the boundary between the spaces on its east and west
+banks. The river is not a space on the board. It cannot be occupied by any
+units. However, it is considered to be navigable. Therefore, a fleet may move
+to and from spaces that are adjacent along the river. For example, moves from
+Sinai to Thebes, Thebes to Memphis, and Memphis to Alexandria would all be
+legal moves for a fleet. Memphis to Cyrene would not be a legal move for a
+fleet. Egypt can build fleets in any of its home supply centers. 
+<p>
+There is also a canal that connects the Nile River Delta to the Reed Sea. It
+acts as the boundary between Sinai and Thebes. It is also navigable and
+therefore allows fleet movement between Sinai, Thebes and Reed Sea. Reed Sea
+is not adjacent to the Gulf of Pelusium or Alexandria. Notice that due to the
+various waterways and coastlines, Sinai and Thebes each have one continuous
+coast. 
+<P>
+Armies can freely move across the Nile River and canal. 
+<P>
+There actually is much precedence for a canal connecting the Nile River to
+Reed Sea in ancient history. It required constant dredging to keep it clear
+of sand and therefore was subject to long periods in history of not being
+navigable (although this sporadic availability is not reflected in the game).
+<!
+See Pharaonic Egypt: Canals and Ancient Economies (this second article is long and does not deal with the canal directly, so search for the word "canal" using your browser's find command).
+>
+
+<p><!li>
+<u>The Nile River Delta.</u>
+The Nile Delta is not a distinct space on the board. It cannot be occupied by
+any units. There are four spaces which are in contact with the delta. They are
+Alexandria, Thebes, Sinai and the Gulf of Pelusium. All four of these spaces
+are considered to be adjacent to each of the other three, at all times, by
+virtue of the multiple water channels in the delta. This provides increased
+flexibility concerning the movement of fleets. A fleet in any of these four
+spaces may move to any of the other three. The delta does not impede the
+movement of armies. An army in any of the three land spaces in contact with
+the delta, may move to either of the other two. 
+<P>
+The key to remember is that Thebes is always adjacent to the Gulf of Pelusium
+<b>and</b> Alexandria is always adjacent to Sinai (in addition to the obvious
+adjacancies). For example, a fleet could move from Thebes to the Gulf of
+Pelusium and, on the same turn, an army or a fleet, could move from Alexandria
+to Sinai. It should be noted that this criss-crossing is not the same as two
+units exchanging places which is not allowed.
+
+</ul>
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="3"></a><b>Design Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+<p>
+The Ancient Mediterranean variant was created by Don Hessong.
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+<:
+footer()
+:>

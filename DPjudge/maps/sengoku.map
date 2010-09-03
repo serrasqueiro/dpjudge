@@ -1,0 +1,238 @@
+# DPjudge map data for Sengoku
+
+# Locations
+
+Aki                 = aki
+Ariake Bay          = arb
+Awa                 = awa
+Bingo               = bin
+Bitchu              = bit
+Bizen               = biz
+Bungo               = bun
+Bungo Strait        = bus
+Chikuzen            = chz
+Dewa                = dew
+Echigo              = ecg
+East China Sea      = ecs
+Echizen             = ecz
+Etchu               = etc
+Harima              = har
+Hida                = hid
+Higo                = hig
+Hitachi             = hit
+Hizen               = hiz
+Hoki                = hok
+Hyuga Coast         = hyc
+Hyuga               = hyu
+Inaba               = ina
+Inland Sea          = ins
+Ise                 = ise
+Iwami               = iwa
+Iwami Coast         = iwc
+Iyo                 = iyo
+Izumo               = izm
+Izu                 = izu
+Kaga                = kag
+Kai                 = kai
+Kanmon Strait       = kas
+Kawachi             = kaw
+Kazusa              = kaz
+Kii                 = kii
+Kii Straits         = kis
+Kozuke              = koz
+Kumano Sea          = kus
+Mikawa              = mik
+Mino                = min
+Musashi             = mus
+Mutsu               = mut
+Nagato              = nag
+Noto                = not
+North Pacific Ocean = npo
+North Shinano       = nsh
+North Sea of Japan  = nsj
+Omi                 = omi
+Osaka Bay           = osb
+Osumi               = osu
+Owari               = owa
+Pacific Ocean       = pao
+Sagami Bay          = sab
+Sanin Coast         = sac
+Sagami              = sag
+Sanuki              = san
+Satsuma             = sat
+Settsu              = set
+Shima               = shm
+Shimosa             = shs
+Shimotsuke          = sht
+Shuri Straits       = shu
+Sea of Japan        = soj
+South Pacific Ocean = spo
+South Shinano       = ssh
+South Sea of Japan  = ssj
+Suo                 = suo
+Suruga              = sur
+Suo Sea             = sus
+Tango               = tan
+Tsugaru Straits     = tgs
+Tosa                = tos
+Totomi              = tot
+Tosa Bay            = tsb
+Tsushima Straits    = tss
+Totomi Sea          = tts
+Toyama Bay          = tyb
+Wakasa Bay          = wab
+Yamashiro           = yas
+Yamato              = yat
+
+# Geography
+
+COAST AKI ABUTS BIN INS iwa izm SUO
+WATER ARB ABUTS ECS HYC HYU OSU SHU SPO
+COAST AWA ABUTS iyo KIS OSB SAN TOS
+COAST BIN ABUTS AKI BIT hok INS izm
+COAST BIT ABUTS BIN BIZ hok INS OSB SAN
+COAST BIZ ABUTS BIT HAR hok ina OSB tan
+COAST BUN ABUTS BUS CHZ hig hiz HYC HYU IYO SUS
+WATER BUS ABUTS BUN HYC IYO SUS TOS
+COAST CHZ ABUTS BUN HIZ KAS NAG SUS
+COAST DEW ABUTS ECG koz MUT NSJ sht
+COAST ECG ABUTS DEW ETC koz mus nsh NSJ TYB
+WATER ECS ABUTS ARB HIG HIZ OSU SAT SHU TSS
+COAST ECZ ABUTS hid KAG min omi TAN WAB
+COAST ETC ABUTS ECG hid kag NOT nsh ssh TYB
+COAST HAR ABUTS BIZ omi OSB SET tan yas
+LAND  HID ABUTS ECZ ETC KAG MIN NSH SSH
+COAST HIG ABUTS bun ECS HIZ hyu osu SAT
+COAST HIT ABUTS mus MUT NPO SHS sht
+COAST HIZ ABUTS bun CHZ ECS HIG KAS TSS
+COAST HOK ABUTS bin bit biz INA IZM SAC
+WATER HYC ABUTS ARB BUN BUS HYU SPO TOS TSB
+COAST HYU ABUTS ARB BUN hig HYC OSU sat
+COAST INA ABUTS biz HOK SAC TAN
+WATER INS ABUTS AKI BIN BIT IYO OSB SAN SUO SUS
+COAST ISE ABUTS min omi OWA SHM TTS yas yat
+COAST IWA ABUTS aki IWC IZM NAG suo
+WATER IWC ABUTS IWA IZM KAS NAG SAC SOJ SSJ
+COAST IYO ABUTS awa BUN BUS INS SAN SUS TOS
+COAST IZM ABUTS aki bin HOK IWA IWC SAC
+COAST IZU ABUTS SAB SAG SUR
+COAST KAG ABUTS ECZ etc hid NOT WAB
+LAND  KAI ABUTS MUS NSH SAG SSH SUR
+WATER KAS ABUTS CHZ HIZ IWC NAG SSJ SUS TSS
+COAST KAW ABUTS KII OSB SET yas yat
+COAST KAZ ABUTS NPO PAO SAB SAG SHS
+COAST KII ABUTS KAW KIS KUS OSB SHM TTS yat
+WATER KIS ABUTS AWA KII KUS OSB SPO TOS TSB
+LAND  KOZ ABUTS DEW ECG MUS SHT
+WATER KUS ABUTS KII KIS PAO SAB SPO TTS
+COAST MIK ABUTS min OWA TOT TTS
+LAND  MIN ABUTS ECZ HID ISE MIK OMI OWA SSH TOT
+LAND  MUS ABUTS ECG HIT KAI KOZ NSH SAG SHS SHT
+COAST MUT ABUTS DEW HIT NPO NSJ sht TGS
+COAST NAG ABUTS CHZ IWA IWC KAS SUO SUS
+COAST NOT ABUTS ETC KAG NSJ SOJ TYB WAB
+WATER NPO ABUTS HIT KAZ MUT PAO SHS TGS
+LAND  NSH ABUTS ECG ETC HID KAI MUS SSH
+WATER NSJ ABUTS DEW ECG MUT NOT SOJ TGS TYB
+LAND  OMI ABUTS ECZ HAR ISE MIN TAN YAS
+WATER OSB ABUTS AWA BIT BIZ HAR INS KAW KII KIS SAN SET
+COAST OSU ABUTS ARB ECS hig HYU SAT
+COAST OWA ABUTS ISE MIK min TTS
+WATER PAO ABUTS KAZ KUS NPO SAB SPO
+WATER SAB ABUTS IZU KAZ KUS PAO SAG SUR TOT TTS
+WATER SAC ABUTS HOK INA IWC IZM SOJ TAN WAB
+COAST SAG ABUTS IZU kai KAZ mus SAB shs sur
+COAST SAN ABUTS AWA BIT INS IYO OSB
+COAST SAT ABUTS ECS HIG hyu OSU
+COAST SET ABUTS HAR KAW OSB yas
+COAST SHM ABUTS ISE KII TTS yat
+COAST SHS ABUTS HIT KAZ mus NPO sag
+LAND  SHT ABUTS DEW HIT KOZ MUS MUT
+WATER SHU ABUTS ARB ECS SPO
+WATER SOJ ABUTS IWC NOT NSJ SAC SSJ WAB
+WATER SPO ABUTS ARB HYC KIS KUS PAO SHU TSB
+LAND  SSH ABUTS ETC HID KAI MIN NSH SUR TOT
+WATER SSJ ABUTS IWC KAS SOJ TSS
+COAST SUO ABUTS AKI INS iwa NAG SUS
+COAST SUR ABUTS IZU kai SAB sag ssh TOT
+WATER SUS ABUTS BUN BUS CHZ INS IYO KAS NAG SUO
+COAST TAN ABUTS biz ECZ har INA omi SAC WAB
+WATER TGS ABUTS MUT NPO NSJ
+COAST TOS ABUTS AWA BUS HYC IYO KIS TSB
+COAST TOT ABUTS MIK min SAB ssh SUR TTS
+WATER TSB ABUTS HYC KIS SPO TOS
+WATER TSS ABUTS ECS HIZ KAS SSJ
+WATER TTS ABUTS ISE KII KUS MIK OWA SAB SHM TOT
+WATER TYB ABUTS ECG ETC NOT NSJ
+WATER WAB ABUTS ECZ KAG NOT SAC SOJ TAN
+LAND  YAS ABUTS HAR ISE KAW OMI SET YAT
+LAND  YAT ABUTS ISE KAW KII SHM YAS
+
+# Politics
+
+ASAKURA   ()   ECZ OMI
+CHOSOKABE ()   IYO TOS
+HOJO      ()   IZU SAG
+MORI      (:R) IWA NAG
+ODA       (:D) MIK OWA
+SHIMAZU   ()   OSU SAT
+TAKEDA    ()   KAI SSH
+UESUGI    ()   ECG KOZ
+_NEUTRAL  ()   BIZ BUN HIZ MIN MUS YAS
+UNOWNED        BIN HIG HIT INA ISE IZM KAZ KII MUT NOT NSH SAN SET TOT YAT
+
+# Military
+
+ASAKURA
+F ECZ
+A OMI
+
+CHOSOKABE
+F IYO
+F TOS
+
+HOJO
+F IZU
+A SAG
+
+MORI
+F NAG
+A IWA
+
+ODA
+F MIK
+A OWA
+
+SHIMAZU
+A SAT
+F OSU
+
+TAKEDA
+A SSH
+A KAI
+
+UESUGI
+F ECG
+A KOZ
+
+_NEUTRAL
+DUMMY
+A HIZ
+A BUN
+A BIZ
+A YAS
+A MIN
+A MUS
+
+# Rules
+
+RULE BUILD_ANY
+RULE NO_DRAW
+RULE CD_DUMMIES
+RULE CD_BUILDS
+RULE IMMOBILE_DUMMIES
+VICTORY 15
+BEGIN SPRING 1570 MOVEMENT
+
+# End of DPjudge map data
+
