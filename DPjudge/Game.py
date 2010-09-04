@@ -104,7 +104,8 @@ class Game:
 				and self.canConvoy(mover, 'F', start, end, supporter))
 		army, pools = unit == 'A', [supporter]
 		for loc in [x.upper() for x in self.map.abutList(start)
-			if not (army and x.islower() or x.upper() in pools)]:
+			if not (army and x.islower())]:
+			if loc in pools: continue
 			where = loc[:3], loc
 			areaType = self.map.areatype(where[not army])
 			if (((areaType == 'WATER') == army
