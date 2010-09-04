@@ -54,12 +54,12 @@ elif id is not None:
 elif ('proceed' not in vars(page)
 and page.dppd.lookup(None, page.name) is not None):
 	id = page.dppd.lookup(None, page.name)
-	if type(id) is list and id: id = id[0]
+	if type(id) is not list: id = [id]
 	page.dppd.db.execute(
 		"""
-		select address from Email where userID = %d and status = "PRIMARY"
-		""" % id)
-	primary = page.dppd.db.fetchone()['address']
+		select address from Email where userID in (%s) and status = "PRIMARY"
+		""" % ','.join([`x['id']`.replace('L','') for x in id]))
+	primary '\\n or '.join([x['address'] for x in page.dppd.db.fetchall()])
 	page.write(
 		"""
 		<form name=form method=post>
@@ -70,12 +70,13 @@ and page.dppd.lookup(None, page.name) is not None):
 		<input type=hidden name=proceed value=1>
 		</form>
 		<script>
-		if (confirm("         Already Registered??  Same Name??\\n\\n" +
-					"The name %s is already registered with the DPPD.\\n" +
-			        "If you are the same person as %s and wish to\\n" +
-			        "add %s to the list of e-mail addresses that\\n" +
-			        "identify you, hit Cancel and log in using your\\n" +
-					"DPPD password and you can add this address!\\n\\n" +
+		if (confirm("       Already Registered??  Same Name??\\n\\n" +
+					"The name %s is already registered\\n" +
+					"with the DPPD.  If you are the same person as:\\n" +
+					"    %s\\n" + "and wish to add\\n    %s\\n" +
+					"to the list of e-mail addresses that identify you,\\n" +
+					"hit Cancel and log in using your DPPD password\\n" +
+					"and you can add this address.\\n\\n" +
 					"It is FORBIDDEN for the same person to create\\n" +
 					"more than one DPPD registration.\\n\\n" +
 					"Otherwise (if you are a different person with\\n" +
