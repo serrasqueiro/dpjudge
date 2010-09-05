@@ -455,22 +455,6 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	That is, orders are not checked to ensure they are compatible with
 	any restrictions placed by the league membership of the owning power.
 <!-- RULE END -->
-	<!--
-	THE REWRITE OF Game.canConvoy() OBVIATED THE FORMER EXCEPTION BELOW
-	<i>There is a single exception to this, which is
-	that in checking the validity of convoy orders in games that use the
-	<tt>COASTAL_CONVOY</tt>
-	rule, any potential convoy path that must include a coastal location will
-	require that the necessary coastal fleets be in place, or else the convoy
-	will be declared impossible.  For example, in a game allowing
-	<tt>COASTAL_CONVOY</tt>, if there is no fleet in either Kiel, Denmark,
-	or Sweden, the convoy order
-	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;F NTH C A LON - FIN</tt><br>
-	will be declared impossible (even though <tt>FICTIONAL_OK</tt> is in use).
-	This does violate the secrecy aspect of a <tt>BLIND</tt> game by alerting
-	the ordering player to the fact that these specific locations are not
-	occupied by fleets.</i>
-	-->
 
 <a name=SHOW_PHANTOM></a><p><dt><b><tt>SHOW_PHANTOM</tt></b><dd>
 <!-- RULE SHOW_PHANTOM !NO_CHECK -->
@@ -645,13 +629,30 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	movement.
 <!-- RULE END -->
 
-<a name=CONVOY_BACK></a><p><dt><b><tt>CONVOY_BACK</tt></b><dd>
-<!-- RULE CONVOY_BACK -->
-	Games using this rule will allow fleets to be used more than once in
-	a convoy chain.  For example, on the standard map, if this rule is
-	used, a fleet in the Adriatic Sea may participate in a convoy from
-	Greece to Naples (which would require an Ionian Sea fleet to be used
-	more than once in the convoy).
+<a name=NO_RETURN></a><p><dt><b><tt>NO_RETURN</tt></b><dd>
+<!-- RULE NO_RETURN -->
+    Games using this rule will forbid a unit being convoyed to travel a path
+    that includes a convoying unit more than once.  For example, on the
+    standard map, an army in Greece may be ordered to convoy to Naples along
+    a path that travels through the Ionian Sea more than once:
+    <tt>A GRE-ION-ADR-ION-NAP</tt>.  This rule would forbid such an order.
+    <P>
+    Notice that this rule only invalidates orders given to units that are to
+    be convoyed.  Orders given to convoyer units are never invalidated based
+    on whether an offered convoy would require that any convoyer be used
+    more than once.  For example, on the standard map,
+    <tt>F ADR C A GRE-NAP</tt> is <u>never</u> invalidated at order entry,
+    despite the fact that such a convoy would necessarily (provided that the
+    <a href="#COASTAL_CONVOY"><tt>COASTAL_CONVOY</tt></a> rule is not in
+    effect) travel through <tt>F ION</tt> twice.
+    <P>
+    <i>[Historical note: this rule originally was <tt>CONVOY_BACK</tt>, and
+    was used to <u>allow</u> return-pathing in convoy orders.  That rule was
+    not permitted in DPjudge games that were being used as simply Web front
+    ends to games on Ken Lowe judges, for the reason that the Ken Lowe judge
+    had a 255-character line limit on orders.  When the DPjudge dropped the
+    ability to be used to front-end Ken Lowe judge games, this rule took
+    its current form.]</i>
 <!-- RULE END -->
 </dl>
 

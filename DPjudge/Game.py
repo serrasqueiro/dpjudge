@@ -74,54 +74,36 @@ class Game:
 			if unit in owner.units or (not (coastRequired or '/' in unit)
 			and [1 for x in owner.units if not x.find(unit)]): return owner
 	#	---------------------------------------------------------------------
-	def convoyers(self, convoyer, army, start, end, pools):
-		sites, size, can = [start], 0, start == end
-		while len(sites) > size:
-			done, size = size, len(sites)
-			for site in sites[done:]:
-				for loc in self.map.abutList(site):
-					if not army: loc = loc[:3]
-					elif loc.islower(): continue
-					loc = loc.upper()
-					if loc in sites + pools: continue
-					where = loc[:3], loc
-					can |= where[not army] in (end, end[:3])
-					areaType = self.map.areatype(loc)
-					if (((areaType == 'WATER') == army
-					or areaType == 'PORT' or 'COASTAL_CONVOY' in self.rules)
-					and ('FICTIONAL_OK' in self.rules
-					or self.unitOwner('AF'[army] + ' ' + where[army]))):
-						sites += [where[army]]
-		if convoyer:
-			if 'COASTAL_CONVOY' in self.rules: sites += [convoyer.split('/')[0]]
-			guy = (convoyer, convoyer.split('/')[0])[army]
-		return can and (not convoyer or guy in sites), sites
+	def convoyer(self, army, thru):
+		areaType = self.map.areatype(thru[1])
+		return (((areaType == 'WATER') == army or areaType == 'PORT'
+			or areaType == 'COAST' and 'COASTAL_CONVOY' in self.rules)
+			and (self.unitOwner('AF'[army] + ' ' + thru[army], not army)
+			or 'FICTIONAL_OK' in self.rules))
 	#	---------------------------------------------------------------------
-	def canConvoy(self, mover, unit, start, end, supporter = 0):
-		if unit == '?':
-			return (self.canConvoy(mover, 'A', start, end, supporter)
-				or 'PORTAGE_CONVOY' in self.rules
-				and self.canConvoy(mover, 'F', start, end, supporter))
-		army, pools = unit == 'A', [supporter]
-		for loc in [x.upper() for x in self.map.abutList(start)
-			if not (army and x.islower())]:
+	def canConvoy(self, mover, unit, start, end, supporter = None):
+		army, pools, check = unit != 'F', [supporter], self.map.abutList(start)
+		if mover in check: check = [mover]
+		for loc in [x.upper() for x in check if not (army and x.islower())]:
 			if loc in pools: continue
-			where = loc[:3], loc
-			areaType = self.map.areatype(where[not army])
-			if (((areaType == 'WATER') == army
-			or areaType == 'PORT' or 'COASTAL_CONVOY' in self.rules)
-			and ('FICTIONAL_OK' in self.rules
-			or self.unitOwner('AF'[army] + ' ' + where[army], not army))):
-				can, pool = self.convoyers(mover, army, where[army], end, pools)
-				if can:
-					if not mover or 'CONVOY_BACK' in self.rules: return 1
-					abuts = [x.upper() for x in self.map.abutList(mover)]
-					if army or 'PORTAGE_CONVOY' in self.rules:
-						abuts = [x[:3] for x in abuts]
-					return (start in abuts or end in abuts
-						or len([0 for x in abuts if x in pool]) > 1)
-				if mover in pool: break
-				pools += pool
+			thru = loc[:3], loc
+			if not self.convoyer(army, thru): continue
+			pool, size, can = [thru[army]], 0, 0
+			while size < len(pool):
+				for next in self.map.abutList(pool[size]):
+					if not army: next = next[:3]
+					elif next.islower(): continue
+					if next in pools + pool: continue
+					next = next.upper()
+					thru = next[:3], next
+					can |= thru[not army] in (end, end[:3])
+					if can and (not mover or mover in pool): return 1
+					if self.convoyer(army, thru): pool += [thru[army]]
+				size += 1
+			if mover in pool: return
+			pools += pool
+		return (unit == '?' and 'PORTAGE_CONVOY' in self.rules
+			and self.canConvoy(mover, 'F', start, end, supporter))
 	#	---------------------------------------------------------------------
 	def validOrder(self, power, unit, order, report = 1):
 		"""
@@ -317,10 +299,9 @@ class Game:
 				return error.append('BAD MOVE ORDER: %s ' % unit + order)
 			ride = word[1::2]
 			for num, to in enumerate(ride):
-				if to in visit and 'CONVOY_BACK' not in rules:
-					return error.append(
-						'CONVOYING UNIT USED TWICE IN SAME CONVOY: %s ' %
-						unit + order)
+				if to in visit and 'NO_RETURN' in rules: return error.append(
+					'CONVOYING UNIT USED TWICE IN SAME CONVOY: %s ' %
+					unit + order)
 				visit += [to]
 				if (not self.abuts(unitType, src, orderType, to)
 				and (len(word) == 2 or unitType == 'A'
@@ -971,8 +952,11 @@ class Game:
 		rules, rulesAdded = self.rules[:], []
 		while 1:
 			addCopy, rulesAdded = rulesAdded[:], []
-			for each in addCopy or rules: #self.rules[:]:
+			for each in addCopy or rules:
 				if each not in rules: continue
+				if each not in ruleData:
+					self.error += ['NO SUCH RULE: ' + each]
+					continue
 				if ruleData[each]['variant'] not in ('', self.status[0]):
 					self.error += ['%sRULE %s REQUIRES %s VARIANT' %
 						('MAP ' * (each in self.metaRules), each,
