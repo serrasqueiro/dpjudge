@@ -81,12 +81,13 @@ class Game:
 			and (self.unitOwner('AF'[army] + ' ' + thru[army], not army)
 			or 'FICTIONAL_OK' in self.rules))
 	#	---------------------------------------------------------------------
-	def canConvoy(self, mover, unit, start, end, supporter = None):
+	def canConvoy(self, mover, unit, start, end, supporter = 0, checkBack = 0):
 		army, pools, check = unit != 'F', [supporter], self.map.abutList(start)
 		if mover in check: check = [mover]
 		for loc in [x.upper() for x in check if not (army and x.islower())]:
 			if loc in pools: continue
 			thru = loc[:3], loc
+			if checkBack and thru[not army] in (end, end[:3]): return 1
 			if not self.convoyer(army, thru): continue
 			pool, size, can = [thru[army]], 0, 0
 			while size < len(pool):
@@ -97,10 +98,15 @@ class Game:
 					next = next.upper()
 					thru = next[:3], next
 					can |= thru[not army] in (end, end[:3])
-					if can and (not mover or mover in pool): return 1
+					if can and (not mover or mover in pool
+					and 'NO_RETURN' not in self.rules): return 1
 					if self.convoyer(army, thru): pool += [thru[army]]
 				size += 1
-			if mover in pool: return
+			if mover in pool:
+				for omit in can * pool:
+					if not (self.canConvoy(0, unit, mover, start, omit, 1)
+					or self.canConvoy(0, unit, mover, end, omit, 1)): return
+				return can
 			pools += pool
 		return (unit == '?' and 'PORTAGE_CONVOY' in self.rules
 			and self.canConvoy(mover, 'F', start, end, supporter))
@@ -281,14 +287,15 @@ class Game:
 			and ('PORTAGE_CONVOY' not in rules
 			or map.areatype(unitLoc) not in ('COAST', 'PORT'))):
 				return error.append('UNIT CANNOT CONVOY: %s ' % unit + order)
-			#	-----------------------------
-			#	Step through every "- xxx" in
-			#	the order and ensure the unit
-			#	can get there at every step.
-			#	-----------------------------
+			#	-------------------------------------------
+			#	Step through every "- xxx" in the order and
+			#	ensure the unit can get there at every step
+			#	-------------------------------------------
 			src, orderType, visit = unitLoc, 'C-'[len(word) == 2], []
-			if word[-1] == unitLoc: return error.append(
-				'UNIT MAY ONLY MOVE TO NEW LOCATION: %s ' % unit + order)
+			if (word[-1] == unitLoc
+			and (orderType < 'C' or 'NO_RETURN' in self.rules)):
+				return error.append('MOVING UNIT MAY NOT RETURN: %s ' %
+					unit + order)
 			if orderType == 'C':
 				if map.areatype(word[-1]) not in ('COAST', 'PORT'):
 					return error.append(
