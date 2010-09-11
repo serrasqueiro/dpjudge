@@ -55,6 +55,7 @@ elif ('proceed' not in vars(page)
 and page.dppd.lookup(None, page.name) is not None):
 	id = page.dppd.lookup(None, page.name)
 	if type(id) is not list: id = [id]
+	if type(id[0]) != type(0L): id = [x['id'] for x in id]
 	page.dppd.db.execute(
 		"""
 		select address from Email where userID in (%s) and status = "PRIMARY"

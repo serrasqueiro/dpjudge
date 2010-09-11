@@ -81,13 +81,13 @@ class Game:
 			and (self.unitOwner('AF'[army] + ' ' + thru[army], not army)
 			or 'FICTIONAL_OK' in self.rules))
 	#	---------------------------------------------------------------------
-	def canConvoy(self, mover, unit, start, end, supporter = 0, checkBack = 0):
-		army, pools, check = unit != 'F', [supporter], self.map.abutList(start)
-		if mover in check: check = [mover]
+	def canConvoy(self, unit, start, end, via = 0, helper = 0):
+		army, pools, check = unit != 'F', [helper], self.map.abutList(start)
+		if via in check: check = [via]
 		for loc in [x.upper() for x in check if not (army and x.islower())]:
 			if loc in pools: continue
 			thru = loc[:3], loc
-			if checkBack and thru[not army] in (end, end[:3]): return 1
+			if helper and thru[not army] in (end, end[:3]): return 1
 			if not self.convoyer(army, thru): continue
 			pool, size, can = [thru[army]], 0, 0
 			while size < len(pool):
@@ -98,18 +98,18 @@ class Game:
 					next = next.upper()
 					thru = next[:3], next
 					can |= thru[not army] in (end, end[:3])
-					if can and (not mover or mover in pool
+					if can and (not via or via in pool
 					and 'NO_RETURN' not in self.rules): return 1
 					if self.convoyer(army, thru): pool += [thru[army]]
 				size += 1
-			if mover in pool:
+			if via in pool:
 				for omit in can * pool:
-					if not (self.canConvoy(0, unit, mover, start, omit, 1)
-					or self.canConvoy(0, unit, mover, end, omit, 1)): return
+					if not (self.canConvoy(unit, via, start, 0, omit)
+					or self.canConvoy(unit, via, end, 0, omit)): return
 				return can
 			pools += pool
 		return (unit == '?' and 'PORTAGE_CONVOY' in self.rules
-			and self.canConvoy(mover, 'F', start, end, supporter))
+			and self.canConvoy('F', start, end, via, helper))
 	#	---------------------------------------------------------------------
 	def validOrder(self, power, unit, order, report = 1):
 		"""
@@ -224,7 +224,7 @@ class Game:
 							'BAD CONVOY DESTINATION: %s ' % unit + order)
 				elif (not self.abuts(word[1], word[2], orderType, dest)
 				and	 (rcvr[0] == 'F' and 'PORTAGE_CONVOY' not in rules
-				or not self.canConvoy(0, word[1], word[2][:3], dest, unitLoc))):
+				or not self.canConvoy(word[1], word[2][:3], dest, 0, unitLoc))):
 					return error.append(
 						'SUPPORTED UNIT CANNOT REACH DESTINATION: %s ' %
 						unit + order)
@@ -263,7 +263,7 @@ class Game:
 			#	-----------------------------------------------------
 			#	...or that the fleet can perform the described convoy
 			#	-----------------------------------------------------
-			elif not self.canConvoy(unitLoc, rcvr[0], rcvr[2:5], dest):
+			elif not self.canConvoy(rcvr[0], rcvr[2:5], dest, unitLoc):
 				return error.append(
 					'IMPOSSIBLE CONVOY ORDER: %s ' % unit + order)
 			#	-----------------------------------------------------
