@@ -34,6 +34,8 @@ gameHeader()
 <:
 #	----------------------------------------------------------------------
 def showPrices():
+	if 'phase' not in dir(page): page.phase = page.game.phase
+	show = done = page.phase == 'COMPLETED'
 	page.write(
 		"""
 		<tr valign=top bgcolor="#CCCCCC">
@@ -42,16 +44,17 @@ def showPrices():
 		<tr valign=top>
 		<td>
 		<center><table><tr><td>
-		""" % page.phase)
+		""" % (page.phase, 'Completed Game')[done])
 	page.write('<pre>')
 	file, show = open(page.game.file(page.file), encoding='latin-1'), 0
 	for line in file:
-		if 'MOVEMENT' in line: show = line.strip().title() == page.phase
+		if not done and 'MOVEMENT' in line:
+			show = line.strip().title() == page.phase
 		elif show:
 			word = line.split()
 			if not word: page.write()
-			elif (page.power and page.power.name == 'MASTER'
-			or page.game.phase == 'COMPLETED'): page.write(line[:-1])
+			elif page.power and page.power.name == 'MASTER'	or done:
+				page.write(line[:-1])
 			else:
 				if line[0] != ' ': unit = ' '.join(word[:2])
 				if len(word[0]) == 1 and word[-1][0].isdigit():

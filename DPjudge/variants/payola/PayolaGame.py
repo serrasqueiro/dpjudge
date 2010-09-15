@@ -639,6 +639,7 @@ class PayolaGame(Game):
 		if mailTo: self.mail.write(
 			'OFFICIAL Payola bribe results %s %.1s%s%.1s\n' %
 			tuple([self.name] + self.phase.split()), 0)
+		blind = 'BLIND' in self.rules
 		for power in self.powers:
 			if not power.offers and (not power.balance
 			or power.isDummy() and not power.ceo): continue
@@ -669,12 +670,12 @@ class PayolaGame(Game):
 			elif 'HIDE_OFFERS' not in self.rules:
 				status = 1
 				for key in [x for x in self.orders.values() if power in x.cost]:
-					off = key.format(power, 'BLIND' in self.rules)
-					if off[0] == '0':
+					off = key.format(power, blind)
+					if off.strip()[0] == '0':
 						if self.unitOwner(key.unit) == power:
 							if 'PAY_DUMMIES' in self.rules: continue
-						elif ('BLIND' in self.rules
-						and 'ZERO_FOREIGN' not in self.rules): continue
+						elif blind and 'ZERO_FOREIGN' not in self.rules:
+							continue
 					self.mail.write('YOUR ACCEPTED BRIBES WERE:\n' * status +
 						off)
 					status = 0
