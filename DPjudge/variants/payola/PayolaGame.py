@@ -671,7 +671,7 @@ class PayolaGame(Game):
 				status = 1
 				for key in [x for x in self.orders.values() if power in x.cost]:
 					off = key.format(power, blind)
-					if off.strip()[0] == '0':
+					if not off.amt:
 						if self.unitOwner(key.unit) == power:
 							if 'PAY_DUMMIES' in self.rules: continue
 						elif blind and 'ZERO_FOREIGN' not in self.rules:
@@ -683,7 +683,7 @@ class PayolaGame(Game):
 					self.mail.write('NONE OF YOUR BRIBES WERE ACCEPTED\n')
 				self.mail.write('YOUR OFFER SHEET WAS:\n')
 				for offer in power.sheet:
-					if 'PAY_DUMMIES' in self.rules and offer.startswith('0'):
+					if 'PAY_DUMMIES' in self.rules and offer[:1] == '0':
 						continue
 					self.mail.write(
 						'%*s%s\n' % (6 - offer.find(' '), '', offer))
@@ -691,9 +691,7 @@ class PayolaGame(Game):
 				'THE PREVIOUS BALANCE OF YOUR BANK ACCOUNT WAS:%7d AgP\n' %
 					power.balance)
 				if power.overpaid: self.mail.write(
-#				'TO AVOID OVERDRAFT, YOUR OFFERS WERE REDUCED BY:%5d AgP EACH\n'
 				'EACH OFFER WAS SUBJECT TO BRIBE REDUCTION RULES %5d TIME%s\n'
-#				'(TO AVOID OVERDRAFT)\n'
 					% (power.overpaid, 'S'[power.overpaid < 2:]))
 				self.mail.write(
 				'TOTAL COST TO YOU OF THE BRIBES YOU OFFERED WAS:%5d AgP\n' %
