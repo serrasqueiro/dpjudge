@@ -192,8 +192,8 @@
 %
 % * ArrowArrive  used in blind games
 % * ArrowDepart
-% * ArrowArriveRetreat
-% * ArrowDepartRetreat
+% * ArrowRetreatArrive
+% * ArrowRetreatDepart
 % * FindUnit
 % * LoseUnit
 %
@@ -499,7 +499,7 @@
 } bind def
 
 % draw an arrow indicating an arrival order to a destination point during retreat
-/ArrowArriveRetreat {
+/ArrowRetreatArrive {
 
 % positon origin at base of arrow with arrow point along x axis
   gsave
@@ -536,7 +536,7 @@
 } bind def
 
 % draw an arrow indicating a departure order from a source point during retreat
-/ArrowDepartRetreat {
+/ArrowRetreatDepart {
     gsave Red ArrowDepart grestore
 } bind def
 
