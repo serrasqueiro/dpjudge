@@ -1156,21 +1156,17 @@ class Game:
 		fileName = host.dpjudgeDir + '/maps/' + self.name + password
 		infileName, outfileName = fileName + '_.pdf', fileName + '.pdf'
 		params = []
-		if self.map.pagesize:
-			params += '-sPAGESIZE=' + self.map.pagesize
+		if self.map.pagesize: params = ['-sPAPERSIZE=' + self.map.pagesize]
 		#	----------------------------------------
 		#	Add more parameters before this comment.
 		#	----------------------------------------
-		if os.name == 'nt':
-			params = map(lambda x: '"' + x + '"', params)
-		params = ' '.join(params)
-		if params: params += ' '
+		if os.name == 'nt': params = ['"%s"' % x for x in params]
+		params = ' '.join(params) + ' %s.ps ' % fileName + infileName
 		#	-----------------------------------------------------------------
 		#	(We could run psselect -_2-_1 xx.ps 2>/dev/null > tmp.ps and then
 		#	run the ps2pdf on the tmp.ps file, but we now pdf the full game.)
 		#	-----------------------------------------------------------------
-		os.system(host.packageDir + '/tools/ps2pdf ' + params + fileName + '.ps ' +
-			infileName)
+		os.system(host.packageDir + '/tools/ps2pdf ' + params)
 		os.chmod(infileName, 0666)
 		#	-------------------------------------------------
 		#	But now we have to rotate it 90 degrees clockwise

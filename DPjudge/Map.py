@@ -215,7 +215,7 @@ class Map:
 						'standard_glhetg':	(17, 32, 597, 532),
 						'v8':				(17, 32, 597, 532),
 						'void':				(15, 16, 590, 511),
-						'youngstown':		(14, 20, 544, 490),
+						'youngstown':		(15, 33, 495, 467),
 					}.get(self.rootMap, None)
 		if self.bbox:
 			self.size = (self.bbox[2]-self.bbox[0], self.bbox[3]-self.bbox[1])
