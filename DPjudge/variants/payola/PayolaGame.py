@@ -49,12 +49,12 @@ class PayolaGame(Game):
 				self.plateau[offer.power] += offer.plateau
 		#	------------------------------------------------------------------
 		def format(self, power = 0, blind = 0, hide = 0):
-			if power: flag, amt = ' ', self.cost.get(power, 0)
+			if power: flag, self.amt = ' ', self.cost.get(power, 0)
 			else:
 				pay = self.power.fullAccept.index(self.power.abbrev)
 				flag = ' *'[self.seqs[pay] is None and not hide]
-				amt = self.total
-			return ' %s %3d : %s %s\n' % (flag, amt, self.unit,
+				self.amt = self.total
+			return ' %s %3d : %s %s\n' % (flag, self.amt, self.unit,
 				blind and ('%s(%s)' % ((' ' * 9)[len(self.unit):],
 				self.power.game.map.ownWord[self.power.name])) or self.order)
 	#	----------------------------------------------------------------------
@@ -671,7 +671,7 @@ class PayolaGame(Game):
 				status = 1
 				for key in [x for x in self.orders.values() if power in x.cost]:
 					off = key.format(power, blind)
-					if not off.amt:
+					if not key.amt:
 						if self.unitOwner(key.unit) == power:
 							if 'PAY_DUMMIES' in self.rules: continue
 						elif blind and 'ZERO_FOREIGN' not in self.rules:

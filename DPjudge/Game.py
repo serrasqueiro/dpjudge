@@ -1153,9 +1153,8 @@ class Game:
 		#	---------------------------------------------------------
 		#	Make a .pdf file with the final page(s) from the .ps file
 		#	---------------------------------------------------------
-		fileName = host.dpjudgeDir + '/maps/' + self.name + password
+		fileName, params = host.dpjudgeDir + '/maps/' + self.name + password, []
 		infileName, outfileName = fileName + '_.pdf', fileName + '.pdf'
-		params = []
 		if self.map.pagesize: params = ['-sPAPERSIZE=' + self.map.pagesize]
 		#	----------------------------------------
 		#	Add more parameters before this comment.
