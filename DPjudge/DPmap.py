@@ -1,6 +1,7 @@
 #!/usr/bin/env python -SO
 
 import sys
+import os
 from codecs import open
 
 class PostScriptMap:
@@ -16,7 +17,8 @@ class PostScriptMap:
 		self.pages, self.sc, show = 0, '', 1
 		self.started = self.scBefore = section = lastSection = lastLine = None
 		power = season = year = None
-		self.map, self.orders, self.retreats, self.ownerOrder = [], [], [], []
+		self.map, self.lang, self.LANG = [], dict(), dict()
+		self.orders, self.retreats, self.ownerOrder = [], [], []
 		self.vassals, dislodgements, successes, retractions = {}, {}, {}, {}
 		self.owner, self.adj, self.units = {}, {}, {}
 		self.startDoc(mapFile)
@@ -72,7 +74,7 @@ class PostScriptMap:
 					title = name + ', '
 					if section == 'S' and not self.pages:
 						if lowWord[-1][0] + lowWord[-1][-1] != '()': title = ''
-						title += 'Game Start'
+						title += self.translate('Game Start', 1)
 					else:
 						season, year = lowWord[where + 1:where + 3]
 						if year == 'of': year = lowWord[where + 3]
@@ -109,7 +111,7 @@ class PostScriptMap:
 				if power != thisPower:
 					powerOrder = powerDecl = power = thisPower
 					if power in self.vassals:
-						powerDecl += ' ControlledBy ' + self.vassals[power]
+						powerDecl = self.vassals[power] + ' Controls ' + powerDecl
 						powerOrder += ' (' + self.vassals[power] + ')'
 					if section not in 'OU':
 						if section != 'R': self.outFile.write(
@@ -214,10 +216,9 @@ class PostScriptMap:
 			#	Adjustment orders (modify the units list for final map)
 			#	-------------------------------------------------------
 			if word[1] in ('DEFAULTS,', 'REMOVES', 'BUILDS', 'BUILD'):
-				self.adj.setdefault(power,
-					[word[1][0] == 'B' and 'BUILDS ' or 'REMOVES'])
+				self.adj.setdefault(power, [self.translate(word[1][0] == 'B' and 'BUILDS' or 'REMOVES', 0, ['BUILDS', 'REMOVES'])])
 				if word[2][:5] == 'WAIVE':
-					self.adj[power] += ['WAIVED']
+					self.adj[power] += [self.translate('WAIVED')]
 					continue
 				which = 3 + (word[1][0] == 'D')
 				unit = word[which][0]
@@ -400,7 +401,7 @@ class PostScriptMap:
 				elif di:
 					successes[di['nick']] = len(self.orders)
 				self.orders += [' %c %.3s %-15s ' %
-					(unit, si and si['nick'] or '???', order) + (msg and msg or submsg)]
+					(unit, si and si['nick'] or '???', order) + self.translate(msg and msg or submsg)]
 			if graph and section in 'MRA': graphics += ['%s%d %d ' %
 				(msg and 'FailedOrder ' or '', (si or di)['x'],
 				(si or di)['y']) + graph + (msg and ' OkOrder' or '')]
@@ -428,7 +429,6 @@ class PostScriptMap:
 			{'type': unit, 'loc': where, 'built': built})
 	#	----------------------------------------------------------------------
 	def reportSCOwner(self):
-		fmt = '(%-11s %-7s %s) WriteOwner\n'
 		#	-------------------
 		#	SC ownership report
 		#	-------------------
@@ -461,44 +461,146 @@ class PostScriptMap:
 				seq.remove(power)
 				seq.insert(seq.index(controller) + 1, ' ' + power)
 			# Remove all powers with no units, SCs or vassals.
-			for owner, idx in [(x, seq.index(x) + 1) for x in seq if x[0] != ' '
-			and not self.units.get(x, 0)]:
-				if idx >= len(seq) or seq[idx][0] != ' ': seq.remove(owner)
+			for owner in [x for x in seq if x[0] != ' ']:
+				if not len(self.units.get(owner, [])) and not len(self.owner.get(owner, [])):
+					idx = seq.index(owner)
+					if idx + 1 == len(seq) or seq[idx + 1][0] != ' ':
+						seq.remove(owner)
 			for owner in seq:
 				power = owner.lstrip()
-				status = power == 'UNOWNED' and ' ' or ('(%d/%d)' %
-					(len(self.units.get(power, [])),
-					len(self.owner.get(power, []))))
-				temp = (fmt %
-					(owner, status, ' '.join(self.owner.get(power, []))))
+				status = ' '
+				if power == 'UNOWNED':
+					status = '%-18s' % self.translate('UNOWNED')
+				else:
+					status = ('(%d/%d)' % (len(self.units.get(power, [])),
+						len(self.owner.get(power, []))))
+					status = '%-10s %-7s' % (owner, status)
+				temp = ('(%s %s) WriteOwner\n' %
+					(status, ' '.join(self.owner.get(power, []))))
 				self.outFile.write(temp.encode('latin-1'))
 		#	-------------
 		#	SC coloration
 		#	-------------
 		self.outFile.write(self.sc.encode('latin-1'))
 	#	----------------------------------------------------------------------
+	#	Searches the ps-file for all procedures required for DPmap.
+	#	If one is not found, it will be replaced by a stub.
+	#	This will normally consist of popping off its parameters.
+	#	In the array of tuples below, the first parameter is the name, the 
+	#	second is the number of parameters (0 by default).
+	#	Note that tuples that only consist of 1 parameter still require a ','
+	#	at the end, otherwise they will be parsed as mere strings.
+	#	For a different stub behavior, write out the stub at the end of this 
+	#	method.
+	#	----------------------------------------------------------------------
 	def startDoc(self, mapFile):
 		try: file = open(mapFile + '.ps', 'rU', encoding = 'latin-1')
 		except: 
 			try: file = open(mapFile, 'rU', encoding = 'latin-1')
 			except: raise CannotOpenPostScriptFile
-		info = 0
+
+		self.procs = [];
+		# Basic procedures
+		# Note: The stub for ShowPage executes showpage.
+		self.procs += [
+			('ShowPage',),
+		]
+		# Text procedures
+		self.procs += [
+			('DrawTitle', 1), 
+			('OrderReport',), ('RetreatReport',), ('OwnerReport',), ('AdjustReport',), 
+			('WriteOrder', 1), ('WriteRetreat', 1), ('WriteOwner', 1), ('WriteAdjust', 1), 
+		]
+		# Basic map draw procedures
+		# Note: The stub for DrawNames calls DrawName on every province name.
+		self.procs += [
+			('DrawMap',),
+			('DrawNames',), ('DrawName', 3),
+			('DrawArmy', 2), ('DrawFleet', 2), 
+		]
+		# Basic orders
+		self.procs += [
+			('OkOrder',), ('FailedOrder',), 
+			('ArrowMove', 4), ('ArrowHold', 4), ('ArrowSupport', 6), ('ArrowConvoy', 6), 
+			('ArrowRetreat', 2), 
+		]
+		# Supply centers
+		#	Note: For the procedure supply, it's not possible to judge how many
+		#	parameters are on the stack. The bigger problem is that the supply
+		#	center procs themselves might not be defined, so a more thorough
+		#	solution might be not to generate these lines at all.
+		self.procs += [
+			('supply',), 
+		]
+		# Build/destroy orders 
+		self.procs += [
+			('BuildUnit', 2), ('DestroyUnit', 2), ('DisbandUnit', 2), ('RemoveUnit', 2),  
+		]
+		# Blind orders 
+		self.procs += [
+			('ArrowArrive', 2), ('ArrowDepart', 2), ('ArrowRetreatArrive', 2), ('ArrowRetreatDepart', 2), ('FindUnit', 2), ('LoseUnit', 2),
+		]
+		# Vassal orders 
+		self.procs += [
+			('Controls',),
+		]
+
+		procsNeeded = dict.fromkeys([p[0] for p in self.procs])
+
+		info, endSetup = 0, None
 		for line in file.readlines():
-			word = line.strip().upper().split()
-			if word[:2] == ['%', 'MAP']: info = 0
-			elif word[:2] == ['%', 'INFO']: info = 1
-			elif info:
-				try: self.map += [{	'x': int(word[1]), 'y': int(word[2]),
-									'nick': word[3], 'name': ' '.join(word[4:])
+			word = line.split()
+			upWord = [x.upper() for x in word]
+			if upWord[:2] == ['%', 'MAP']: info = 0
+			elif upWord[:2] == ['%', 'INFO']: info = 1
+			elif upWord[:2] == ['%', 'LANG']: info = 2
+			elif info == 1:
+				try: self.map += [{	'x': int(upWord[1]), 'y': int(upWord[2]),
+									'nick': upWord[3], 'name': ' '.join(upWord[4:])
 								 }]
 				except: raise BadSiteInfoLine
-			else: self.outFile.write(line.encode('latin-1'))
+			elif info == 2:
+				word = map(lambda x: x.strip(), ' '.join(word[1:]).split('='))
+				try: self.lang[word[0]], self.LANG[word[0].upper()] = word[1], word[1].upper()
+				except: raise BadLangLine
+			elif not word:
+				if endSetup: endSetup += '\n'
+				else: self.outFile.write('\n')
+			elif word[0] == '%%EndSetup':
+				if endSetup:
+					self.outFile.write(endSetup.encode('latin-1'))
+				endSetup = line
+			elif word[0][0] == '%':
+				if endSetup: endSetup += '\n' + line
+				else: self.outFile.write(line.encode('latin-1'))
+			else:
+				if endSetup:
+					self.outFile.write(endSetup.encode('latin-1'))
+					endSetup = None
+				if word[0][0] == '/':
+					try: del procsNeeded[word[0][1:]]
+					except: pass
+				self.outFile.write(line.encode('latin-1'))
 		file.close()
-		self.outFile.write('/DrawNames {\n')
-		for data in [x for x in self.map if '/' not in x['nick']]:
-			temp = '%(x)d %(y)d (%(nick)s) DrawName\n' % data
-			self.outFile.write(temp.encode('latin-1'))
-		self.outFile.write('} bind def\n')
+
+		if procsNeeded.keys():
+			self.outFile.write('% Stubs\n')
+			for p in self.procs:
+				if not p[0] in procsNeeded: continue
+				self.outFile.write('/%s where {pop} { /%s {' % (p[0], p[0]))
+				if len(p) == 2:
+					self.outFile.write(' '.join(['pop'] * p[1]))
+				elif p[0] == 'ShowPage':
+					self.outFile.write('showpage')
+				elif p[0] == 'DrawNames':
+					self.outFile.write('\n')
+					for data in [x for x in self.map if '/' not in x['nick']]:
+						temp = '\t%(x)d %(y)d (%(nick)s) DrawName\n' % data
+						self.outFile.write(temp.encode('latin-1'))
+				self.outFile.write('} bind def } ifelse\n')
+		if endSetup:
+			self.outFile.write(endSetup.encode('latin-1'))
+			
 		self.pages, self.started = 0, None
 	#	----------------------------------------------------------------------
 	def endDoc(self):
@@ -580,6 +682,15 @@ class PostScriptMap:
 		sys.stdout.write(('CANNOT LOOKUP %s\n' % name).encode('latin-1'))
 		raise OhCrap 
 	#	----------------------------------------------------------------------
+	def translate(self, term, case = 0, alternatives = None):
+		altLen = 0
+		if alternatives:
+			altLen = max(map(lambda x: len(self.translate(x, case)), alternatives))
+		if case:
+			return ('%-' + str(altLen) + 's') % (self.lang.get(term, term))
+		else:
+			return ('%-' + str(altLen) + 's') % (self.LANG.get(term.upper(), term.upper()))
+	#	----------------------------------------------------------------------
 	def positions(self, name = None, season = None, year = None):
 		complete = not self.started
 		if complete: self.startPage('%s, After %s %d' % (name, season, year))
@@ -591,8 +702,8 @@ class PostScriptMap:
 			for power in [x for x in self.ownerOrder
 				if x in self.units and self.units[x]]:
 				if power in self.vassals:
-					temp += (time and '(%s (%s)) WriteOrder\n'
-					or '%s ControlledBy %s\n') % (power, self.vassals[power])
+					temp += (time and '(%s (%s)) WriteOrder\n' % (power, self.vassals[power])
+						or '%s Controls %s\n' % (self.vassals[power], power))
 				else: temp += (time and '(%s) WriteOrder\n' or '%s\n') % power
 				for unit in self.units[power]:
 					if time: temp += '( %c %s) WriteOrder\n' % (unit['type'],
@@ -602,15 +713,18 @@ class PostScriptMap:
 						('Fleet', 'Army')[unit['type'] == 'A'])
 		self.outFile.write(temp.encode('latin-1'))
 		if complete: self.endPage()
+		
 	#	----------------------------------------------------------------------
 
 if __name__ == '__main__':
 	if len(sys.argv) == 1:
 		sys.argv += [os.path.dirname(sys.argv[0]) + '/maps/standard']
 	if len(sys.argv) == 2: sys.argv += [0]
-	if len(sys.argv) > 3 or sys.argv[1] == '-?':
-		temp = ('Usage: %s [.../mapDir/mapName] [viewer] '
-				'< resultsFile > outputPSfile\n' %
+	if len(sys.argv) == 3: sys.argv += [0]
+	if len(sys.argv) == 4: sys.argv += [0]
+	if len(sys.argv) > 5 or sys.argv[1] == '-?':
+		temp = ('Usage: %s [.../mapDir/mapName] [viewer] [resultsFile] [outputPSfile]'
+			'< resultsFile > outputPSfile\n' %
 			os.path.basename(sys.argv[0]))
 		sys.stderr.write(temp.encode('latin-1'))
-	else: PostScriptMap(sys.argv[1], 0, 0, sys.argv[2])
+	else: PostScriptMap(sys.argv[1], sys.argv[3], sys.argv[4], sys.argv[2])

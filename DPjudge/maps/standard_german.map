@@ -1,0 +1,98 @@
+USE standard.map
+
+adr      ->  Adria                         = adr
+aeg      ->  Aegaeis                       = aeg
+alb      ->  Albanien                      = alb
+ank      ->  Ankara                        = ank
+apu      ->  Apulien                       = apu
+arm      ->  Armenien                      = arm
+bal      ->  Ostsee                        = ost
+bar      ->  Barentssee                    = bar
+bel      ->  Belgien                       = bel
+ber      ->  Berlin                        = ber
+bla      ->  Schwarzes Meer                = swa
+boh      ->  Boehmen                       = boe
+bot      ->  Bottnischer Meerbusen         = bot
+bre      ->  Brest                         = bre
+bud      ->  Budapest                      = bud
+bul      ->  Bulgarien                     = bul
+bul/ec   ->  Bulgarien (Ostkueste)         = bul/ok bul(ok)
+bul/sc   ->  Bulgarien (Suedkueste)        = bul/sk bul(sk)
+bur      ->  Burgund                       = bur
+cly      ->  Clyde                         = cly
+con      ->  Konstantinopel                = kon
+den      ->  Daenemark                     = dae
+eas      ->  Oestliches Mittelmeer         = oes
+edi      ->  Edinburgh                     = edi
+eng      ->  Aermelkanal                   = aer
+fin      ->  Finnland                      = fin
+gal      ->  Galizien                      = gal
+gas      ->  Gascogne                      = gas
+gre      ->  Griechenland                  = gri
+hel      ->  Helgolaender Bucht            = hel
+hol      ->  Niederlande                   = nie
+ion      ->  Ionisches Meer                = ion
+iri      ->  Irische See                   = iri
+kie      ->  Kiel                          = kie
+lon      ->  London                        = lon
+lvn      ->  Livland                       = lvl
+lvp      ->  Liverpool                     = lvp
+lyo      ->  Golfe du Lion                 = gol
+mao      ->  Mittelatlantik                = mit
+mar      ->  Marseille                     = mar
+mos      ->  Moskau                        = mos
+mun      ->  Muenchen                      = mue
+naf      ->  Nordafrika                    = naf
+nao      ->  Nordatlantik                  = nat
+nap      ->  Neapel                        = nea
+nth      ->  Nordsee                       = nse
+nwg      ->  Europaeisches Nordmeer        = eur
+nwy      ->  Norwegen                      = nrw
+par      ->  Paris                         = par
+pic      ->  Picardie                      = pic
+pie      ->  Piemont                       = pie
+por      ->  Portugal                      = por
+pru      ->  Preussen                      = pre
+rom      ->  Rom                           = rom
+ruh      ->  Rheinland                     = rhe
+rum      ->  Rumaenien                     = rum
+ser      ->  Serbien                       = ser
+sev      ->  Sewastopol                    = sew
+sil      ->  Schlesien                     = sle
+ska      ->  Skagerrak                     = ska
+smy      ->  Smyrna                        = smy
+spa      ->  Spanien                       = spa
+spa/nc   ->  Spanien (Nordkueste)          = spa/nk spa(nk)
+spa/sc   ->  Spanien (Suedkueste)          = spa/sk spa(sk)
+stp      ->  St. Petersburg                = stp
+stp/nc   ->  St. Petersburg (Nordkueste)   = stp/nk stp(nk)
+stp/sc   ->  St. Petersburg (Suedkueste)   = stp/sk stp(sk)
+swe      ->  Schweden                      = swe
+syr      ->  Syrien                        = syr
+tri      ->  Triest                        = tri
+tun      ->  Tunis                         = tun
+tus      ->  Toskana                       = tos
+tyr      ->  Tirol                         = tir
+tys      ->  Tyrrhenisches Meer            = tyr
+ukr      ->  Ukraine                       = ukr
+ven      ->  Venedig                       = ven
+vie      ->  Wien                          = wie
+wal      ->  Wales                         = wal
+war      ->  Warschau                      = war
+wes      ->  Westliches Mittelmeer         = wes
+yor      ->  Yorkshire                     = yor
+swi      ->  Schweiz                       = swz
+
+AUSTRIA -> OESTERREICH (OESTERREICHISCHE:A)
+ENGLAND -> ENGLAND     (ENGLISCHE)
+FRANCE  -> FRANKREICH  (FRANZOESISCHE)
+GERMANY -> DEUTSCHLAND (DEUTSCHE:G)
+ITALY   -> ITALIEN     (ITALIENISCHE)
+RUSSIA  -> RUSSLAND    (RUSSISCHE)
+TURKEY  -> TUERKEI     (TUERKISCHE)
+
+FLOW        FRUEHJAHR:MOVEMENT,RETREATS
+FLOW        HERBST:MOVEMENT,RETREATS
+FLOW        WINTER:ADJUSTMENTS
+BEGIN       FRUEHJAHR 1901 MOVEMENT
+
