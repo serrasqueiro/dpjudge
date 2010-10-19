@@ -117,6 +117,7 @@
 % * ArrowHold
 % * ArrowSupport
 % * ArrowConvoy
+% * ArrowRetreat
 %
 % * BuildUnit    draws ray around newly built unit
 % * DestroyUnit  draws slash through destroyed unit
@@ -972,23 +973,19 @@ end TextTitleFont AdaptStartToFont /TitleCoords xd
 /TunisColour { .50 0 .25 setrgbcolor } bd /TunisContrast { 1 setgray } bd
 
 /set_country { % N shorthand piececolour contrast => -
+  load /Contrast xs
+  load /PieceColour xs
+  /Shorthand xs
+  /country xs
   changeController {
-    pop
-    load /ControllerColour xs
-    pop
-    /controllerCountry xs
+    /changeController false def
   }{
-    load /Contrast xs
-    load dup /PieceColour xs
-    /ControllerColour xs
-    /Shorthand xs
-    dup /country xs
-    /controllerCountry xs
+    /PieceColour load /ControllerColour xs
+    country /controllerCountry xs
   } ifelse
-  /changeController false def
 } bd
 
-/ControlledBy {
+/Controls {
   /changeController true def
 } bd
 

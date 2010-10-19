@@ -170,56 +170,90 @@ class Map:
 			self.firstYear = int(phase[1])
 		except: error += ['BAD PHASE IN MAP FILE: ' + self.phase]
 		self.victory = self.victory or [centers // 2 + 1]
-		#	-------------------------------------------------
-		#	Determine pagesize (None for letter, the default)
-		#	-------------------------------------------------
-		self.pagesize = { 'youngstown': 'a4'
-						}.get(self.rootMap, None)
+		#	----------------------
+		#	Load map specific info
+		#	----------------------
+		return self.loadInfo()
+		
+	#	----------------------------------------------------------------------
+	def loadInfo(self):
+		error = self.error
+		self.victory = self.victory or [centers // 2 + 1]
+		#	-----------------
+		#	Open ps info file
+		#	-----------------
+		try: file = open(host.packageDir + '/maps/psinfo',
+			encoding = 'latin-1')
+		except: return error.append('PSINFO FILE NOT FOUND')
+		#	------------------------------------
+		#	Assign default values
+		#	Order: bbox papersize rotation blind
+		#	------------------------------------
+		self.bbox, self.papersize, self.rotation = None, '', 3
+		defVals = [ '' ] * 3
+		curVals = defVals[:]
+		
+		#	-----------------------------------------------------------
+		#	Parse the file, searching for the map name
+		#	and determining its parameter values
+		#	Missing values are replaced with the default values.
+		#   Special values:
+		#		'_': replace with the default value
+		#		'-': copy the corresponding value for the preceding map
+		#		'=': copy all remaining values from the preceding map
+		#	-----------------------------------------------------------
+		for line in file:
+			word = line.split()
+			if not word or word[0][0] == '#': continue
+			curName = word.pop(0)
+			for idx in range(len(defVals)):
+				if len(word) <= idx or word[idx] == '_':
+					curVals[idx] = defVals[idx]
+				elif word[idx] == '-':
+					pass
+				elif word[idx] == '=':
+					break
+				else:
+					curVals[idx] = word[idx]
+			if curName == self.rootMap:
+				break
+		
+		if curName != self.rootMap:
+			return error.append('MAP NOT DEFINED IN PSINFO FILE: ' + self.rootMap)	
+		#	------------------------------------------------------
+		#	Determine bbox and pixel size of graphic map at 72 dpi
+		#	after rotation (for .gif file creation and display)
+		#	------------------------------------------------------
+		if curVals[0] != '':
+			try: 
+				bbox = [eval(x) for x in curVals[0].split(',')]
+				if bbox and len(bbox) != 4:
+					error.append('BBOX NOT CORRECT IN PSINFO FOR MAP: ' + self.rootMap)
+				else: 
+					self.bbox = bbox
+			except: 
+				error.append('BBOX NOT CORRECT IN PSINFO FOR MAP: ' + self.rootMap)
+		#	-------------------
+		#	Determine papersize
+		#	-------------------
+		if curVals[1] != '':
+				self.papersize = curVals[1]
 		#	-----------------------------------------
 		#	Determine rotation from page orientation: 
 		#		Portrait:	0 (No rotation)
 		#		Landscape:	3 (270 degrees rotation)
 		#		(Seascape:	1 (90 degrees rotation))
 		#	-----------------------------------------
-		self.rotation = {	'empire':	0,
-						}.get(self.rootMap, 3)
-		#	------------------------------------------------------
-		#	Determine bbox and pixel size of graphic map at 72 dpi
-		#	after rotation (for .gif file creation and display)
-		#	------------------------------------------------------
-		self.bbox = {	'1900':				(27, 28, 565, 523),
-						'aberration':		(19, 20, 632, 490),
-						'ambition': 		(30, 22, 548, 479),
-						'ancmed':			(21, 50, 598, 482),
-						'brazilian':		(17, 32, 597, 532),
-						'britain':			(17, 32, 597, 532),
-						'canton':			(17, 18, 634, 481),	
-						'chaos':			(15, 16, 590, 511),
-						'chromatic':		(42, 28, 555, 530),
-						'classical':		(17, 75, 595, 461),
-						'crowded':			(15, 16, 598, 517),
-						'empire':			(12, 22, 471, 520),
-						'fiveman':			(17, 32, 597, 532),
-						'hundred':			(87, 33, 451, 519),
-						'imperial':			(6,  12, 786, 405),
-						'loeb9':			(17, 16, 597, 516),
-						'milan':			(17, 10, 597, 516),
-						'minorpower':		(15, 13, 590, 511),
-						'modern':			(72, 41, 584, 524),
-						'pure':				(16, 119, 458, 517),
-						'renaissance':		(17, 32, 597, 532),
-						'sailho':			(81, 49, 574, 518),
-						'sengoku':	    	(20, 22, 584, 503),
-						'standard':			(17, 32, 597, 532),
-						'standard_french':	(17, 32, 597, 532),
-						'standard_glhetg':	(17, 32, 597, 532),
-						'v8':				(17, 32, 597, 532),
-						'void':				(15, 16, 590, 511),
-						'youngstown':		(15, 33, 495, 467),
-					}.get(self.rootMap, None)
-		if self.bbox:
-			self.size = (self.bbox[2]-self.bbox[0], self.bbox[3]-self.bbox[1])
-		else: self.size = (580, 500) # <-- standard
+		if curVals[2] != '':
+			try: 
+				rotation = eval(curVals[2])
+				if rotation not in range(4):
+					error.append('ROTATION VALUE NOT IN 0 TO 3 IN PSINFO FOR MAP: ' + self.rootMap)
+				else: 
+					self.rotation = rotation
+			except: 
+				error.append('ROTATION VALUE NOT IN 0 TO 3 IN PSINFO FOR MAP: ' + self.rootMap)
+
 	#	----------------------------------------------------------------------
 	def load(self, fileName = 0):
 		error = self.error
@@ -296,7 +330,9 @@ class Map:
 			#	----------------------------
 			#	Game phase FLOW for this map
 			#	----------------------------
-			elif upword == 'FLOW': self.flow += word[1:]
+			elif upword == 'FLOW': 
+				if len(word) == 1: self.flow = []
+				else: self.flow += word[1:]
 			#	-----------------------------
 			#	Person to NOTIFY on gamestart
 			#	-----------------------------
@@ -526,10 +562,17 @@ class Map:
 			#	----------------------
 			else:
 				if upword in ('NEUTRAL', 'CENTERS'): upword = 'UNOWNED'
-				power = (0, upword)[upword != 'UNOWNED']
+				oldPower, power = 0, (0, upword)[upword != 'UNOWNED']
+				if len(word) > 2 and word[1] == '->': 
+					oldPower = power
+					word = word[2:]
+					power = word[0].upper() 
+					if power in ('NEUTRAL', 'CENTERS', 'UNOWNED'): power = 0
+					if not oldPower or not power: error += ['RENAMING UNOWNED DIRECTIVE NOT ALLOWED']
+					else: self.renamePower(oldPower, power)						
+				upword = power or 'UNOWNED'
 				if power and upword not in self.powName.values():
 					self.powName[upword] = power = power.replace('+', '')
-				upword = power or 'UNOWNED'
 				if upword != 'UNOWNED' and len(word) > 1 and word[1][0] == '(':
 					self.ownWord[upword] = word[1][1:-1] or power
 					if ':' in word[1]:
@@ -595,6 +638,22 @@ class Map:
 					sites.remove(eval('old' + attr))
 					sites.append(eval('new' + attr))
 				except: pass
+	#	----------------------------------------------------------------------
+	def renamePower(self, old, new):
+		if old not in self.powName.values(): 
+			return error.append('RENAMING UNDEFINED POWER ' + old)
+		[x.pop(old, None) for x in (self.powName, self.ownWord, self.abbrev)]
+		if old == new: return
+		for data in (self.home, self.units, self.centers, self.powers, self.factory, self.partisan):
+			try:
+				data[new] = data[old]
+				del data[old]
+			except: pass
+		for data in (self.militia, self.reserves):
+			try:
+				data.remove(old)
+				data.append(new)
+			except: pass
 	#	----------------------------------------------------------------------
 	def drop(self, place, deCoast = 0):
 		[self.locs.remove(x) for x in self.locs if x.upper().startswith(place)]

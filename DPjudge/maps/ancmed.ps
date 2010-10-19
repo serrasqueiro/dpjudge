@@ -168,7 +168,7 @@
 	/CARTHAGE (C) /Blue /White p
 	/GREECE (G) /Green /Black p
 	/ROME (R) /Red /Black p
-	/PERSIA (D) /Black /White p
+	/PERSIA (P) /Black /White p
 	/UNOWNED (?) /Brown /White p
 	end
 } bd
@@ -746,14 +746,14 @@
 		{ /Count 0 def /Y 124.24 def false true } bind
 		{
 			Count 8 ge { false true } {
-				81 SplitString
+				80 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
 				21.6 Y moveto show
 				true false
 			} ifelse
 		} bind
 		{
-			81 SplitString [ exch {
+			80 SplitString [ exch {
 				21.6 52.24 moveto show
 			} /exec load ] cvx /Finish xd
 			true true
@@ -765,7 +765,7 @@
 				( more\)) show
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 81 SplitString pop true false } bind
+		{ /Count Count 1 add def 80 SplitString pop true false } bind
 	]
 	/Start {
 		TextFixedFont 8 scalefont setfont
@@ -798,26 +798,26 @@
 		{ /Count 0 def /Y 124.24 def false true } bind
 		{
 			Count 8 ge { false true } {
-				36 SplitString
+				37 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
-				415.2 Y moveto show
+				410.4 Y moveto show
 				true false
 			} ifelse
 		} bind
 		{
-			36 SplitString [ exch {
-				415.2 52.24 moveto show
+			37 SplitString [ exch {
+				410.4 52.24 moveto show
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				415.2 52.24 moveto (... \() show
+				410.4 52.24 moveto (... \() show
 				Count dup 1 add log iceiling string cvs show
 				( more\)) show
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 36 SplitString pop true false } bind
+		{ /Count Count 1 add def 37 SplitString pop true false } bind
 	]
 	/Start {
 		TextFixedFont 8 scalefont setfont
@@ -989,7 +989,7 @@
 		/InTextMode false def
 		gsave
 		27.6 136 554.4 420 rectclip
-		24.6 135.9 translate 0.6348 0.6348 scale -14.57 -12 translate
+		24.6 135.9 translate .6348 .6348 scale -14.57 -12 translate
 		ArrowColor
 		[ ] 0 setdash
 	} if
@@ -1037,7 +1037,7 @@
 } bd
 /IncludeSeas {
 	gsave
-	0.1429 0.1429 scale
+	.1429 .1429 scale
 	/f { closepath gsave SeaBlue fill grestore stroke } bd
 	7 setlinewidth [ ] 0 setdash 0 setlinecap 0 setlinejoin BorderBlack
 	OutlineAncmedSeawater
@@ -1045,7 +1045,7 @@
 } bd
 /IncludeLands {
 	gsave
-	0.1429 0.1429 scale
+	.1429 .1429 scale
 	/f { closepath gsave LandBrown fill grestore stroke } bd
 	7 setlinewidth [ ] 0 setdash 0 setlinecap 0 setlinejoin BorderBlack
 	OutlineAncmedLandcolor
@@ -1053,7 +1053,7 @@
 } bd
 /IncludeBorders {
 	gsave
-	0.1429 0.1429 scale
+	.1429 .1429 scale
 	/f { stroke } bd
 	7 setlinewidth [ ] 0 setdash 0 setlinecap 0 setlinejoin BorderBlack
 	OutlineAncmedBlack
@@ -1061,7 +1061,7 @@
 } bd
 /IncludeRivers {
 	gsave
-	0.1429 0.1429 scale
+	.1429 .1429 scale
 	/f { stroke } bd
 	7 setlinewidth [ ] 0 setdash 0 setlinecap 0 setlinejoin Blue
 	OutlineAncmedRiverwater
@@ -1069,7 +1069,7 @@
 } bd
 /IncludeArrows {
 	gsave
-	0.1429 0.1429 scale
+	.1429 .1429 scale
 	/f { fill } bd
 	Black
 	OutlineAncmedArrowcolor

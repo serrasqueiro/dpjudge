@@ -25,7 +25,8 @@ class Mail:
 				self.mail = smtplib.SMTP()
 			self.msg, self.mailAs, self.mailTo = '', mailAs, sendTo.split(',')
 			self.mail.connect(host.smtpService)
-		else: self.mail = os.popen(host.packageDir + '/tools/sendmail -t', 'w')
+		elif host.sendmailDir:
+			self.mail = os.popen(host.sendmailDir + '/sendmail -t', 'w')
 		self.write('To: %s\nFrom: %s\nReply-To: %s\nDate: %s\n'
 			'Subject: %s\n%s\n\n' % (sendTo, mailAs, mailAs,
 			self.logTimeFormat(), subject, header), 0)

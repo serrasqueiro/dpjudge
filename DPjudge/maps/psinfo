@@ -1,0 +1,46 @@
+# Format: 
+#  variant bbox=None papersize=letter rotation=3
+# Use the '_' placeholder to select a default value before the end of the line.
+# Use the '-' placeholder to copy the value of the preceding variant.
+# Use the '=' placeholder to copy all remaining values of the preceding variant.
+
+# Standard and its variants
+standard 21,22,588,518
+standard_dutch 21,22,584,518
+standard_french 21,22,564,502
+standard_german 21,22,584,518
+standard_glhetg 21,22,555,494
+
+# Based on the old standard
+brazilian 17,32,587,532
+britain =
+fiveman =
+milan =
+renaissance =
+v8 =
+
+# Chaos and other mega-player variants
+chaos 15,16,578,511
+crowded =
+minorpower =
+void =
+
+# Other standard variants
+loeb9 17,16,587,516
+
+# Others
+1900 27,28,555,523
+aberration 19,20,622,490
+ancmed 21,50,588,482
+ambition 30,22,538,479
+canton 17,18,624,481
+chromatic 42,28,545,530
+classical 17,75,583,461
+empire 12,272,461,756
+hundred 87,33,441,519
+imperial 10,12,1179,607 _ 0
+modern 72,41,573,524
+pure 16,119,498,517
+sailho 81,49,564,518
+sengoku 20,22,574,503
+youngstown 15,31,524,480 a4

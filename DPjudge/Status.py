@@ -117,7 +117,7 @@ class Status:
 			observers += self.game.map.notify
 			observers.append(self.game.master[1])
 			observers = [x for x in observers if x is not None]
-			mail = Mail.Mail(', '.join(observers), 'Game creation', '', 
+			mail = Mail.Mail(', '.join(observers), 'Game creation', ('', dir + '/mail')[host.copy], 
 				host.dpjudge, '')
 			mail.write("Game '%s' has been created.  Finish preparation at:\n"
 				'  %s%s?game=%s\n\nWelcome to the DPjudge.' %

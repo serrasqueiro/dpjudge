@@ -520,7 +520,7 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	number of centers on the map.
 
 <A name=FLOW></a>
-<p><dt><b><tt>FLOW <i>season</i>:<i>phase</i>[,<i>phase</i>...] ...</tt></b><dd>
+<p><dt><b><tt>FLOW [<i>season</i>:<i>phase</i>[,<i>phase</i>...] ...]</tt></b><dd>
 	This line specifies the sequence of phases through a game year.
 	Each season must be followed by a colon and then immediately (no
 	intervening whitespace) by one or more phase types.  If more than
@@ -535,6 +535,11 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	&nbsp;&nbsp;
 	FLOW WINTER:ADJUSTMENTS
 	</tt><br>
+	If no parameters are given with the FLOW directive, the whole flow is reset. 
+	This can be useful if you're USEing a given map, and want to redefine its flow. 
+	Note that if no other FLOW directive follows, the flow will revert to the default 
+	given above.
+	<br>
 	Each individual phase type must begin with a unique letter.
 	Additionally, the phase names <tt>MOVEMENT</tt>, <tt>RETREATS</tt>, and
 	<tt>ADJUSTMENTS</tt> are reserved (and therefore, so are the initial

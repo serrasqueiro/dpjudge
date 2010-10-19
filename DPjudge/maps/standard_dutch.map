@@ -1,0 +1,99 @@
+USE standard.map
+
+adr     ->  Adriatische Zee                = adr adriatische
+aeg     ->  Egeïsche Zee                   = ege egeïsche
+alb     ->  Albanië                        = alb
+ank     ->  Ankara                         = ank
+apu     ->  Apulië                         = apu
+arm     ->  Armenië                        = arm
+bal     ->  Baltische Zee                  = bal baltische
+bar     ->  Barentszzee                    = bar barents barentsz barentszee barentsz+zee barents+zee
+bel     ->  België                         = bel
+ber     ->  Berlijn                        = ber
+bla     ->  Zwarte Zee                     = zwa zwarte
+boh     ->  Bohemië                        = boh
+bot     ->  Botnische Golf                 = bot botnische
+bre     ->  Brest                          = bre
+bud     ->  Budapest                       = bud
+bul     ->  Bulgarije                      = bul
+bul/ec  ->  Bulgarije (oostkust)           = bul/ok bul(ok)
+bul/sc  ->  Bulgarije (westkust)           = bul/wk bul(wk)
+bur     ->  Bourgondië                     = bou boe boergondië bourgogne
+cly     ->  Clyde                          = cly
+con     ->  Constantinopel                 = con kon konstantinopel
+den     ->  Denemarken                     = den
+eas     ->  Oostelijke Middellandse Zee    = omz oos oostelijke
+edi     ->  Edinburgh                      = edi edinburg
+eng     ->  Het Kanaal                     = kan
+fin     ->  Finland                        = fin
+gal     ->  Galicië                        = gal
+gas     ->  Gascogne                       = gas
+gre     ->  Griekenland                    = gri
+hel     ->  Helgoland Bocht                = hel helgoland
+hol     ->  Holland                        = hol
+ion     ->  Ionische Zee                   = ion ionische
+iri     ->  Ierse Zee                      = ier ierse
+kie     ->  Kiel                           = kie
+lon     ->  Londen                         = lon
+lvn     ->  Lijfland                       = lij
+lvp     ->  Liverpool                      = lvp
+lyo     ->  Golfe du Lion                  = lio gdl Golf+van+Lion
+mao     ->  Mid-Atlantische Oceaan         = mao mid midden-atlantische+oceaan midatlantische+oceaan midatlantische midden+atlantische+oceaan middenatlantische midden+atlantische
+mar     ->  Marseille                      = mar
+mos     ->  Moskou                         = mos
+mun     ->  Munchen                        = mun
+naf     ->  Noord-Afrika                   = naf noord+afrika noordafrika
+nao     ->  Noord-Atlantische Oceaan       = nao noord+atlantische noordatlantische
+nap     ->  Napels                         = nap
+nth     ->  Noordzee                       = nrd
+nwg     ->  Noorse Zee                     = nrs noorse
+nwy     ->  Noorwegen                      = nwg
+par     ->  Parijs                         = par
+pic     ->  Picardië                       = pic
+pie     ->  Piemonte                       = pie pië piëmont
+por     ->  Portugal                       = por
+pru     ->  Pruisen                        = pru
+rom     ->  Rome                           = rom
+ruh     ->  Ruhr                           = ruh
+rum     ->  Roemenië                       = roe rmn
+ser     ->  Servië                         = ser
+sev     ->  Sevastopol                     = sev
+sil     ->  Silezië                        = sil
+ska     ->  Skagerrak                      = ska
+smy     ->  Smyrna                         = smy
+spa     ->  Spanje                         = spa
+spa/nc  ->  Spanje (noordkust)             = spa/nk spa(nk)
+spa/sc  ->  Spanje (zuidkust)              = spa/zk spa(zk)
+stp     ->  Sint-Petersburg                = stp sint+petersburg st+petersburg
+stp/nc  ->  Sint-Petersbourg (noordkust)   = stp/nk stp(nk) sint+petersburg/nk st+petersburg/nk
+stp/sc  ->  Sint-Petersburg (zuidkust)     = stp/zk stp(zk) sint+petersburg/nk st+petersburg/nk
+swe     ->  Zweden                         = zwe
+syr     ->  Syrië                          = syr
+tri     ->  Triëste                        = tri
+tun     ->  Tunesië                        = tun
+tus     ->  Toscane                        = tos
+tyr     ->  Tirol                          = trl tir
+tys     ->  Tyrreense Zee                  = trn tyr tyrreense
+ukr     ->  Oekraïne                       = oek
+ven     ->  Venetië                        = ven
+vie     ->  Wenen                          = wen
+wal     ->  Wales                          = wal
+war     ->  Warschau                       = war
+wes     ->  Westelijke Middellandse Zee    = wmz wes westelijke
+yor     ->  Yorkshire                      = yor
+swi     ->  Zwitserland                    = zwi
+
+AUSTRIA -> OOSTENRIJK (OOSTENRIJKSE:A)
+ENGLAND -> ENGELAND   (ENGELSE)
+FRANCE  -> FRANKRIJK  (FRANSE)
+GERMANY -> DUITSLAND  (DUITSE:G)
+ITALY   -> ITALIË     (ITALIAANSE)
+RUSSIA  -> RUSLAND    (RUSSISCHE)
+TURKEY  -> TURKIJE    (TURKSE)
+
+REFLOW
+FLOW        LENTE:MOVEMENT,RETREATS
+FLOW        HERFST:MOVEMENT,RETREATS
+FLOW        WINTER:ADJUSTMENTS
+BEGIN       LENTE 1901 MOVEMENT
+

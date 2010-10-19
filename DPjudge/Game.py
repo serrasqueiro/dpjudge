@@ -1020,6 +1020,7 @@ class Game:
 		words = subject.split()
 		if (self.name and self.name not in words
 		and '(%s)' % self.name not in words): subject += ' (%s)' % self.name
+		copyFile = copyFile or host.copyFile
 		self.mail = Mail(mailTo, subject,
 			copy = copyFile and self.file(copyFile),
 			mailAs = mailAs or self.master[1], header = 'Errors-To: ' +
@@ -1102,16 +1103,16 @@ class Game:
 		root = host.dpjudgeDir + '/maps/' + self.name + password
 		file = root + '.'
 		upscale = host.imageResolution / 72.
-		origin = None
-		if self.map.bbox: origin = `self.map.bbox[0] * upscale` + ' ' + `self.map.bbox[1] * upscale`
+		origin = size = None
+		if self.map.bbox: 
+			origin = [self.map.bbox[0] * upscale, self.map.bbox[1] * upscale]
+			size = [(self.map.bbox[2] - self.map.bbox[0]) * upscale, (self.map.bbox[3] - self.map.bbox[1]) * upscale]
 		if os.name == 'nt':
 			inp = ('%sppm' % file, '< %sdat' % file, '< %sdta' % file, '< %sdat' % file)
 			outp = ('>%s;' % inp[1][1:], '>%s;' % inp[2][1:], '>%s;' % inp[1][1:])
-			size = `self.map.size[0] * upscale` + ' ' + `(self.map.size[1] - 2) * upscale`
 		else:
-			inp = ('%sppm' % file, '2>/dev/null', '2>/dev/null', '2>/dev/null')
+			inp = ('%sppm' % file, '', '', '')
 			outp = ('|', '|', '|')
-			size = `self.map.size[0] * upscale` + ' ' + `self.map.size[1] * upscale`
 		toolDir = host.packageDir + '/tools'
 		chop = ('%s/psselect -p_%%d %sps %s %s'
 				'%s/gs -q -r%d -dSAFER -sDEVICE=ppmraw -sOutputFile=%sppm %s;' %
@@ -1125,14 +1126,12 @@ class Game:
 			make += '%s/pnmflip -r%d %s %s' % (toolDir, self.map.rotation * 90, inp[idx], outp[idx])
 			idx += 1
 		if origin:
-			make += '%s/pnmcut %s %s %s %s' % (toolDir, origin, size, inp[idx], outp[idx])
+			make += '%s/pnmcut %d %d %d %d %s %s' % (toolDir, origin[0], origin[1], size[0], size[1], inp[idx], outp[idx])
 			idx += 1
 			make += '%s/pnmcrop -white %s %s' % (toolDir, inp[idx], outp[idx])
 			idx += 1
 		else:
 			make += '%s/pnmcrop -white %s %s' % (toolDir, inp[idx], outp[idx])
-			idx += 1
-			make += '%s/pnmcut 0 0 %s %s %s' % (toolDir, size, inp[idx], outp[idx])
 			idx += 1
 		make +=	'%s/ppmtogif -interlace %s > %%s' %	(toolDir, inp[idx])
 		for page in (1, 2):
@@ -1155,7 +1154,7 @@ class Game:
 		#	---------------------------------------------------------
 		fileName, params = host.dpjudgeDir + '/maps/' + self.name + password, []
 		infileName, outfileName = fileName + '_.pdf', fileName + '.pdf'
-		if self.map.pagesize: params = ['-sPAPERSIZE=' + self.map.pagesize]
+		if self.map.papersize: params = ['-sPAPERSIZE=' + self.map.papersize]
 		#	----------------------------------------
 		#	Add more parameters before this comment.
 		#	----------------------------------------
