@@ -443,8 +443,8 @@
 %
 % * ArrowArrive  used in blind games
 % * ArrowDepart
-% * ArrowArriveRetreat
-% * ArrowDepartRetreat
+% * ArrowRetreatArrive
+% * ArrowRetreatDepart
 % * FindUnit
 % * LoseUnit
 %
@@ -1954,7 +1954,7 @@ Countries {
 } bd
 
 % draw an arrow indicating an arrival order to a destination point during retreat
-/SingleArrowArriveRetreat {
+/SingleArrowRetreatArrive {
 
 % positon origin at base of arrow with arrow point along x axis
   gsave
@@ -1993,18 +1993,18 @@ Countries {
   grestore
 } bind def
 
-/ArrowArriveRetreat { % x y => -
+/ArrowRetreatArrive { % x y => -
   SwitchToMapMode
 
   DoublePoint {
-    SingleArrowArriveRetreat
+    SingleArrowRetreatArrive
   } if
-  SingleArrowArriveRetreat
+  SingleArrowRetreatArrive
 } bd
 
 % draw an arrow indicating a departure order from a source point during retreat
-/ArrowDepartRetreat {
-    gsave Red ArrowDepart grestore
+/ArrowRetreatDepart {
+  gsave Red ArrowDepart grestore
 } bind def
 
 % draw the given name centered just below the specified point
@@ -8500,7 +8500,7 @@ S
 969 114 l
 S
 *U
-} bd    
+} bd
 
 /DrawMap {
 
