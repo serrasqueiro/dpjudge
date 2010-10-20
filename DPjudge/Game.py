@@ -94,9 +94,9 @@ class Game:
 				for next in self.map.abutList(pool[size]):
 					if not army: next = next[:3]
 					elif next.islower(): continue
-					if next in pools + pool: continue
 					next = next.upper()
 					thru = next[:3], next
+					if thru[army] in pools + pool: continue
 					can |= thru[not army] in (end, end[:3])
 					if can and (not via or via in pool
 					and 'NO_RETURN' not in self.rules): return 1
