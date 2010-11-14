@@ -73,7 +73,7 @@ class Power:
 				self.game.delay = None
 				self.game.changeStatus('waiting')
 			when = self.game.phaseAbbr()
-			if self.player[1:2] !=[when]:
+			if self.player[1:2] != [when]:
 				if when[0] == '?': when = self.game.outcome[0]
 				self.player[:0] = [when]
 			else: del self.player[0]
