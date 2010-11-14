@@ -72,15 +72,12 @@ class Power:
 					'?/?')['BLIND' in self.game.rules])]
 				self.game.delay = None
 				self.game.changeStatus('waiting')
-			#if self.game.phase == self.game.map.phase:
-				#self.player = []
-			if (len(self.player) > 1
-			and self.player[1] == self.game.phaseAbbr()): del self.player[0]
-			else:
-				when = self.game.phaseAbbr()
+			when = self.game.phaseAbbr()
+			if self.player[1:2] !=[when]:
 				if when[0] == '?': when = self.game.outcome[0]
 				self.player[:0] = [when]
-				if self.player: self.player[:0] = ['RESIGNED']
+			else: del self.player[0]
+			if self.player: self.player[:0] = ['RESIGNED']
 			if 'BLIND' in self.game.rules: self.removeBlindMaps(self.password)
 			self.password = None
 			if not self.isDummy() and self.address:
