@@ -10,20 +10,18 @@ standard_dutch 21,22,584,518
 standard_french 21,22,564,502
 standard_german 21,22,584,518
 standard_glhetg 21,22,555,494
-
-# Based on the old standard
-brazilian 17,32,587,532
+brazilian 21,22,588,518
 britain =
-fiveman =
 milan =
 renaissance =
-v8 =
+crowded 21,22,550,486
+fiveman 21,22,588,526
+v8 21,22,579,510
 
 # Chaos and other mega-player variants
-chaos 15,16,578,511
-crowded =
-minorpower =
-void =
+void 21,20,584,508
+chaos =
+minorpower 20,22,571,506
 
 # Other standard variants
 loeb9 17,16,587,516
@@ -32,7 +30,7 @@ loeb9 17,16,587,516
 1900 27,28,555,523
 aberration 19,20,622,490
 ancmed 21,50,588,482
-ambition 30,22,538,479
+ambition 30,22,539,478
 canton 17,18,624,481
 chromatic 42,28,545,530
 classical 17,75,583,461

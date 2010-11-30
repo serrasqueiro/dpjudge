@@ -1,0 +1,21 @@
+USE minorpower.map
+
+BEGIN WINTER 1900 ADJUSTMENTS
+RULE VASSAL_DUMMIES
+RULE PAY_DUMMIES
+RULE !BUILD_ANY
+
+DUMMY BELGIUM HOLLAND GREECE TUNIS PORTUGAL NORWAY
+DUMMY BULGARIA RUMANIA SERBIA DENMARK SWEDEN SPAIN
+Belgium  -> _Belgium
+Bulgaria -> _Bulgaria
+Spain    -> _Spain
+Serbia   -> _Serbia
+Sweden   -> _Sweden
+Greece   -> _Greece
+Tunis    -> _Tunis
+Rumania  -> _Rumania
+Denmark  -> _Denmark
+Holland  -> _Holland
+Norway   -> _Norway
+Portugal -> _Portugal

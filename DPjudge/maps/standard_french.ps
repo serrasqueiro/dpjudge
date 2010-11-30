@@ -100,7 +100,7 @@
 % unowned = inoccupés
 % builds = construit
 % removes = enlève
-% builds waived = renonce à construire
+% waived = renoncée
 % disband = démanteler
 % cut = coupée
 % bounce = rebond
@@ -797,9 +797,9 @@
 	SwitchToTextMode
 	gsave
 	Black 6 setlinewidth
-	24.60 113 536.40 474 rectstroke
-	LandBrown 1.50 setlinewidth
-	25.35 113.75 534.90 472.50 rectstroke
+	24.6 113 536.4 474 rectstroke
+	LandBrown 1.5 setlinewidth
+	25.35 113.75 534.9 472.5 rectstroke
 	grestore
 } bd
 /Owner <<
@@ -809,19 +809,19 @@
 			Count 9 ge { false true } {
 				113 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
-				21.60 Y moveto show
+				21.6 Y moveto show
 				true false
 			} ifelse
 		} bind
 		{
 			113 SplitString [ exch {
-				21.60 24.24 moveto show
+				21.6 24.24 moveto show
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				21.60 24.24 moveto (... \() show
+				21.6 24.24 moveto (... \() show
 				Count dup 1 add log iceiling string cvs show
 				( more\)) show
 			} bd false true
@@ -861,19 +861,19 @@
 			Count 9 ge { false true } {
 				42 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
-				568.80 Y moveto show
+				568.8 Y moveto show
 				true false
 			} ifelse
 		} bind
 		{
 			42 SplitString [ exch {
-				568.80 24.24 moveto show
+				568.8 24.24 moveto show
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				568.80 24.24 moveto (... \() show
+				568.8 24.24 moveto (... \() show
 				Count dup 1 add log iceiling string cvs show
 				( more\)) show
 			} bd false true
@@ -882,7 +882,7 @@
 	]
 	/Start {
 		TextHeadingFont 8 scalefont setfont
-		568.80 104.24 moveto
+		568.8 104.24 moveto
 		(Ajustements) show
 		TextFixedFont 8 scalefont setfont
 		/StepIndex 0 def
@@ -917,19 +917,19 @@
 			Count 8 ge { false true } {
 				42 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
-				568.80 Y moveto show
+				568.8 Y moveto show
 				true false
 			} ifelse
 		} bind
 		{
 			42 SplitString [ exch {
-				568.80 112.24 moveto show
+				568.8 112.24 moveto show
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				568.80 112.24 moveto (... \() show
+				568.8 112.24 moveto (... \() show
 				Count dup 1 add log iceiling string cvs show
 				( more\)) show
 			} bd false true
@@ -938,7 +938,7 @@
 	]
 	/Start {
 		TextHeadingFont 8 scalefont setfont
-		568.80 184.24 moveto
+		568.8 184.24 moveto
 		(Retraites) show
 		TextFixedFont 8 scalefont setfont
 		/StepIndex 0 def
@@ -972,19 +972,19 @@
 			Count 43 ge { false true } {
 				42 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
-				568.80 Y moveto show
+				568.8 Y moveto show
 				true false
 			} ifelse
 		} bind
 		{
 			42 SplitString [ exch {
-				568.80 192.24 moveto show
+				568.8 192.24 moveto show
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				568.80 192.24 moveto (... \() show
+				568.8 192.24 moveto (... \() show
 				Count dup 1 add log iceiling string cvs show
 				( more\)) show
 			} bd false true
@@ -1021,15 +1021,15 @@
 	SwitchToTextMode
 	TextTitleFont 24 scalefont setfont
 	(Diplomacy)
-	568.80 572.72 moveto show
+	568.8 572.72 moveto show
 	TextTitleFont 16 scalefont setfont
 	dup stringwidth pop dup 201.6 gt {
-		568.80 550 moveto
+		568.8 550 moveto
 		201.6 exch div dup 1 scale exch
 		0 4.48 rmoveto show
 		1 exch div 1 scale
 	} {
-		pop 568.80 554.48 moveto show
+		pop 568.8 554.48 moveto show
 	} ifelse
 } bd
 /SwitchToTextMode {
@@ -1044,8 +1044,8 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		gsave
-		27.60 116 530.40 468 rectclip
-		24.60 114.68 translate .8541 .8541 scale -22 -25 translate
+		27.6 116 530.4 468 rectclip
+		26.1 116 translate .8494 .8494 scale -22 -25 translate
 		ArrowColor
 		[ ] 0 setdash
 	} if

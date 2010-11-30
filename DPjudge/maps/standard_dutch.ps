@@ -29,7 +29,7 @@
 %  376  205 BUD    Budapest
 %  415  148 BUL    Bulgarije
 %  448  151 BUL/OK Bulgarije (oostkust)
-%  424  121 BUL/WK Bulgarije (westkust)
+%  424  121 BUL/ZK Bulgarije (zuidkust)
 %  166  387 CLY    Clyde
 %  471  106 CON    Constantinopel
 %  281  351 DEN    Denemarken
@@ -367,7 +367,7 @@
 	(SPA) 122 165 g
 	(STP) 465 403 g
 	(BUL/OK) 448 151 b
-	(BUL/WK) 424 121 b
+	(BUL/ZK) 424 121 b
 	(SPA/NK) 77 211 b
 	(SPA/ZK) 101 109 b
 	(STP/NK) 476 474 b
@@ -777,9 +777,9 @@
 	SwitchToTextMode
 	gsave
 	Black 6 setlinewidth
-	24.60 97 555.60 490 rectstroke
-	LandBrown 1.50 setlinewidth
-	25.35 97.75 554.10 488.50 rectstroke
+	24.6 97 555.6 490 rectstroke
+	LandBrown 1.5 setlinewidth
+	25.35 97.75 554.1 488.5 rectstroke
 	grestore
 } bd
 /Owner <<
@@ -789,19 +789,19 @@
 			Count 7 ge { false true } {
 				117 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
-				21.60 Y moveto show
+				21.6 Y moveto show
 				true false
 			} ifelse
 		} bind
 		{
 			117 SplitString [ exch {
-				21.60 24.24 moveto show
+				21.6 24.24 moveto show
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				21.60 24.24 moveto (... \() show
+				21.6 24.24 moveto (... \() show
 				Count dup 1 add log iceiling string cvs show
 				( more\)) show
 			} bd false true
@@ -1023,8 +1023,8 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		gsave
-		27.60 100 549.60 484 rectclip
-		24.60 98.26 translate .8847 .8847 scale -22 -25 translate
+		27.6 100 549.6 484 rectclip
+		26.1 99.58 translate .8799 .8799 scale -22 -25 translate
 		ArrowColor
 		[ ] 0 setdash
 	} if
