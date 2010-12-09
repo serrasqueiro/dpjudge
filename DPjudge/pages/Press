@@ -125,9 +125,8 @@ def showPressArea():
 				<tr><th align=left valign=top class=bodycopy>Address As If Sent
 				<select name=claimFrom class=inputBox>
 				""")
-			for power in page.game.powers:
-				if power.type != 'MONITOR' and power is page.power: page.write(
-					'<option value=%s%s>From ' %
+			for power in [x for x in page.game.powers if x.type != 'MONITOR']:
+				page.write('<option value=%s%s>From ' %
 					(power.name, ' selected' * (power is page.power)) +
 					page.game.anglify(power.name))
 			page.write('<option value=(ANON)>Anonymously</select>')
