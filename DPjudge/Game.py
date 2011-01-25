@@ -2887,7 +2887,7 @@ class Game:
 	def moveResults(self):
 		self.resolveMoves()
 		list = ['Movement results for ' + self.phaseName(), '']
-		self.result[None] = 'invalid'
+		self.result[None], rules = 'invalid', self.rules
 		for power in [x for x in self.powers if x.units]:
 			for unit in power.units:
 				#	--------------------------------------------------------
@@ -2898,7 +2898,7 @@ class Game:
 				#	should have reached landfall.  We mark them "no convoy".
 				#	--------------------------------------------------------
 				notes = self.result[unit][:]
-				if 'BLIND' in self.rules:
+				if 'BLIND' in rules:
 					if 'void' in notes:
 						notes.remove('void')
 						if self.command[unit].count('-') > 1:
@@ -2921,12 +2921,12 @@ class Game:
 			#	-------------------------------------------
 			#	Add any invalid orders (if NO_CHECK is set)
 			#	-------------------------------------------
-			if 'NO_CHECK' in self.rules:
+			if 'NO_CHECK' in rules:
 				for invalid, order in power.orders.items():
 					if invalid[:7] in ('INVALID', 'REORDER'): list += [
 						'%s: %s.  (*%s*)' %
 						(self.anglify(power.name), order, invalid[:7].lower())]
-			if 'BLIND' in self.rules: list += ['SHOW']
+			if 'BLIND' in rules: list += ['SHOW']
 			list += ['']
 		#	----------------------
 		#	Determine any retreats
@@ -2953,7 +2953,7 @@ class Game:
 		#	List all possible retreats
 		#	--------------------------
 		if self.dislodged:
-			if 'BLIND' in self.rules: who = (['SHOW', 'MASTER'] +
+			if 'BLIND' in rules: who = (['SHOW', 'MASTER'] +
 				[x.name for x in self.powers if x.omniscient])
 			dis = ['\nThe following units were dislodged:\n']
 			for power in self.powers:
@@ -2963,9 +2963,9 @@ class Game:
 						self.anglify(self.map.ownWord[power.name]) +
 						self.anglify(unit, retreating = 1))
 					toWhere, line = power.retreats.get(unit), ''
-					if ('NO_RETREAT' in self.rules
-					or	power.isDummy() and 'CD_DUMMIES' in self.rules
-					and not power.ceo and 'CD_RETREATS' not in self.rules):
+					if ('NO_RETREAT' in rules or power.isDummy()
+					and not power.ceo and ('IMMOBILE_DUMMIES' in rules
+					or 'CD_DUMMIES' in rules > 'CD_RETREATS' in rules)):
 						text += ' was destroyed.'
 						del self.dislodged[unit]
 						try: del power.retreats[unit]
@@ -2979,7 +2979,7 @@ class Game:
 					#	If this is a BLIND game, add a line before the result
 					#	text line specifying who should NOT see result text.
 					#	-----------------------------------------------------
-					if 'BLIND' in self.rules:
+					if 'BLIND' in rules:
 						show = [x for x,y in self.visible(power, unit, 'H').
 							items() if y & 8 and x in self.map.powers]
 						who += [x for x in show if x not in who]
@@ -2993,7 +2993,7 @@ class Game:
 					#	------------------------------------
 					dis += [y.replace('\0377', '-')
 						for y in textwrap.wrap(text.replace('-', '\0377'), 75)]
-			if 'BLIND' in self.rules:
+			if 'BLIND' in rules:
 				list += [' '.join(who)]
 				dis += ['SHOW']
 			list += dis + ['']

@@ -117,6 +117,12 @@ leftside()
 				alert("Password and confirmation do not match.");
 				return false;
 			}
+			pwd = document.reg.password.value;
+			if (pwd.indexOf("'") > -1 || pwd.indexOf(" ") > -1)
+			{
+				alert("Password may not contain spaces or apostrophes.");
+				return false;
+			}
 			if (confirm(
 "NOTICE: By continuing you agree to abide by DPjudge rules and regulations " +
 "(house rules).  A link to these rules is provided at the top of this " +
