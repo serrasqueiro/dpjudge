@@ -1548,6 +1548,7 @@ class Game:
 		self.mail.close()
 	#	----------------------------------------------------------------------
 	def ownership(self, unowned = None, playing = None):
+		rules = self.rules
 		if unowned is None: unowned = self.map.home.get('UNOWNED', [])[:]
 		if self.phase != self.map.phase:
 			for power in self.powers:
@@ -1555,7 +1556,7 @@ class Game:
 				power.centers = [x for x in power.centers
 								if x not in ('SC?', 'SC*')]
 				homes = self.map.home[power.name]
-				if ('GARRISON' in self.rules and not power.centers
+				if ('GARRISON' in rules and not power.centers
 				and not power.type and (power.ceo
 				or power.player and not power.isResigned())
 				and not [0 for x in self.powers for y in x.units
@@ -1566,14 +1567,14 @@ class Game:
 					if 0 < held < len(homes): power.centers += (['SC*'] *
 						len(self.map.partisan.get(power.name, [])))
 		lines = ['']
-		if 'VASSAL_DUMMIES' in self.rules:
+		if 'VASSAL_DUMMIES' in rules:
 			lines += ['Vassal status of minor powers:', '']
 			lines += ['%s is a vassal of %s.' %
 				(self.anglify(x.name), self.anglify(x.ceo[0]))
 				for x in self.powers if x.ceo]
 			lines += [self.anglify(x.name) + ' is independent.'
 				for x in self.powers if x.isDummy() and not x.ceo]
-		if 'BLIND' in self.rules and not playing:
+		if 'BLIND' in rules and not playing:
 			lines += ['SHOW MASTER ' + ' '.join([x.name for x in self.powers
 				if x.units or x.centers or x.omniscient])]
 		lines += ['\nOwnership of supply centers:\n']
@@ -1583,18 +1584,28 @@ class Game:
 			if power == 'UNOWNED': powerName, centers = power, unowned
 			else: powerName, centers = power.name, power.centers
 			if centers.count('SC?') == len(centers): continue
-			if 'BLIND' in self.rules and not playing:
-				lines += ['SHOW MASTER ' + ' '.join([x.name
-					for x in self.powers if x is power or x.omniscient])]
 			if centers is not unowned:
 				[unowned.remove(x) for x in centers if x in unowned]
-			lines += [y.replace('\0377', '-') for y in textwrap.wrap(
-				('%-11s ' % (self.anglify(powerName) + ':') + ', '.join(
-				[x == 'SC!' and 'Undetermined Home SC' or x
-				for x in map(self.anglify, sorted(centers))
-				if x not in ('SC?', 'SC*')]) +
-				'.').replace('-', '\0377'), 75, subsequent_indent = ' ' * 12)]
-		if 'BLIND' in self.rules and not playing: lines += ['SHOW']
+			powerName = self.anglify(powerName) + ':'
+			for other in self.powers:
+				if other is power:
+					centers = [(x, 'Undetermined Home SC')[x == 'SC!']
+						for x in sorted(centers) if x[-1] not in '?*']
+				elif 'PERSIAN' in self.rules: centers = [x for x in sorted(centers)
+					if x[-1] not in '?*!' and [1 for y in other.units +
+						(self.map.home[other.name], other.centers)['VENETIAN' in rules]
+						if self.visible(other, '? ' + y.split()[-1])[other.name] & 2]]
+				else: continue
+				if not centers: continue
+				if not playing:
+					if other is not power: lines += ['SHOW ' + other.name]
+					elif 'BLIND' in rules: lines += ['SHOW MASTER ' + ' '.join([x.name
+						for x in self.powers if x is power or x.omniscient])]
+				lines += [y.replace('\0377', '-') for y in textwrap.wrap(
+					('%-11s %s.' % (powerName,
+					', '.join(map(self.anglify, centers)))).replace('-', '\0377'),
+					75, subsequent_indent = ' ' * 12)]
+		if 'BLIND' in rules and not playing: lines += ['SHOW']
 		return lines + ['']
 	#	----------------------------------------------------------------------
 	def mailResults(self, body, subject):
@@ -2560,8 +2571,9 @@ class Game:
 		return ' '.join([new[0], `year`, new[1]])
 	#	----------------------------------------------------------------------
 	def checkPhase(self):
-		if (self.phase in (None, 'FORMING', 'COMPLETED')
-		or	self.phaseType == 'M'): return []
+		if self.phase in (None, 'FORMING', 'COMPLETED'): return []
+		if self.phaseType == 'M':
+			return 'PERSIAN' in self.rules and self.ownership() or []
 		if self.phaseType == 'R':
 			if [1 for x in self.powers if x.retreats]: return []
 			for power in self.powers: power.retreats, power.adjust = {}, []

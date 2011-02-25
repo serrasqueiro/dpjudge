@@ -179,6 +179,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=NO_RETURN>NO_RETURN
 <option value=NO_REVEAL>NO_REVEAL
 <option value=ORDER_ANY>ORDER_ANY
+<option value=PERSIAN>PERSIAN
 <option value=PLAYER_DEADLINES>PLAYER_DEADLINES
 <option value=PORTAGE_CONVOY>PORTAGE_CONVOY
 <option value=POWER_CHOICE>POWER_CHOICE
@@ -764,7 +765,9 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	<li>the units (and possibly the orders of those units) owned by other
 		powers, provided that the unit started or ended the turn in or adjacent
 		to a home supply center of the player in question (regardless
-		of whether or not that center is currently owned by the player).
+		of whether or not that center is currently owned by the player, and
+		&mdash; as in the case of games using the <tt>MOBILIZE</tt> rule &mdash;
+		even if the center has never been owned by the player).
 		<i>See <tt>VENETIAN</tt>, below, for an alternative.</i>
 	<li>his own list of owned supply centers,
 	<li>his own unit-count, center-count, and adjustment phase status
@@ -794,10 +797,11 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	appearing in the results.  However, convoyed armies that were issued
 	orders that would have been <tt>(*void*)</tt> are <i>re-</i>annotated
 	in the results with the <tt>(*no&nbsp;convoy*)</tt> annotation.</li>
+	<li>The <tt>FICTIONAL_OK</tt> rule is in effect.</li>
 	<li>The <tt>HIDE_ABSENTEES</tt> rule is in effect.</li>
 	<li>The <tt>HIDE_LATE_POWERS</tt> rule is in effect.</li>
 	<li>The <tt>SHOW_PHANTOM</tt> rule is in effect.</li>
-	<li>The <tt>FICTIONAL_OK</tt> rule is in effect.</li>
+	<li>The <tt>SILENT_ABSENCES</tt> rule is in effect.</li>
 	<li>The <tt>NO_DIAS</tt> rule is disallowed.</li>
 	</ul>
 	Note that visibility is determined by the <i>space</i>, not the coast,
@@ -805,7 +809,6 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	unit that can support it, or that it can support.  For example, a fleet
 	in the Western Mediterranean <i><u>can</u></i> "see" a fleet on the
 	<i>north</i> coast of Spain, <i>and vice-versa</i>!
-	This rule automatically includes the <tt>SILENT_ABSENCES</tt> rule.
 	Note also that the <tt>BLIND</tt> rule may have some further effects if used
 	in different rule variants (such as Payola&nbsp;&#8212;
 	<a href=#TINCUP>see below</a>).
@@ -829,8 +832,15 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	(or, if specified, a <tt>MYOPIC</tt>) game.
 <!-- RULE END -->
 
+<a name=PERSIAN></a><p><dt><b><tt>PERSIAN</tt></b><dd>
+<!-- RULE PERSIAN !MYOPIC +BLIND -->
+	A <tt>PERSIAN</tt> game is a <tt>BLIND</tt> game (as described above)
+	with the addition that players are informed of the ownership of any
+	and all supply centers that are within their "field of vision".
+<!-- RULE END -->
+
 <a name=MYOPIC></a><p><dt><b><tt>MYOPIC</tt></b><dd>
-<!-- RULE MYOPIC !VENETIAN +BLIND -->
+<!-- RULE MYOPIC !VENETIAN !PERSIAN +BLIND -->
 	A <tt>MYOPIC</tt> game is a <tt>BLIND</tt> game (as described above)
 	except that players <i>never</i> see any units other than their own.
 <!-- RULE END -->
