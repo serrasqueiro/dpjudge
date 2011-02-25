@@ -230,7 +230,7 @@
 	20 0 l 20 -1 l 17 -1 l 17 -2 l % D turret
 	23 -2 l 23 -3 l 25 -3 l 25 -5 l % stern
 	24 -5 l 24 -7 l p
-	s Controlled { s 6 w ControllerColor k r } if 2 w Contrast k r PieceColor f
+	s Controlled { s 6 w Outer k r } if 2 w Contrast k r Paint f
 	Offset aload pop m
 	MapUnitLetterFont z
 	Contrast Letter h
@@ -244,13 +244,13 @@
 	.5 .5 x
 	0 8 t
 	n 0 0 9 0 360 a p % wheel
-	Controlled { s 6 w ControllerColor k r } if 2 w Contrast k
+	Controlled { s 6 w Outer k r } if 2 w Contrast k
 	-20 7 m 10 7 l 10 3 l 14 3 l
 	14 1 l -16 1 l -16 3 l -20 3 l p % barrel
 	4 2 m 24 -8 l 26 -8 l 18 -8 l -2 2 l % carriage
-	s Controlled { s 6 w ControllerColor k r } if 2 w Contrast k r PieceColor f
+	s Controlled { s 6 w Outer k r } if 2 w Contrast k r Paint f
 	n 0 0 9 0 360 a p % wheel
-	PieceColor f
+	Paint f
 	Offset aload pop m
 	MapUnitLetterFont z
 	Contrast Letter h
@@ -408,12 +408,12 @@
 	t
 	.5 .5 x
 	Controlled {
-		ControllerColor
+		Outer
 		n 0 0 8 0 360 a f
 		Contrast
 		n 0 0 6 0 360 a f
 	} if
-	PieceColor
+	Paint
 	n 0 0 4 0 360 a f
 	r
 	end
@@ -2694,8 +2694,8 @@ MapUnitLetterFont z
 {
 	5 2 roll exch load exch load
 	2 index [ exch n 0 0 m true charpath pathbbox 3 2 roll add -2 div 3 1 roll add -2 div exch ] 3 1 roll 6 4 roll
-	6 dict begin /LongName xd /ShortName xd /Contrast xd /PieceColor xd /Offset xd /Letter xd currentdict end
-	[ /Power 3 2 roll { dup /Controlled ChangeController put ChangeController { dup /ControllerColor Power /PieceColor get put /ChangeController false def } if } /exec load /def load ] cvx
+	6 dict begin /LongName xd /ShortName xd /Contrast xd /Paint xd /Offset xd /Letter xd currentdict end
+	[ /Power 3 2 roll { dup /Controlled ChangeController put ChangeController { dup /Outer Power /Paint get put /ChangeController false def } if } /exec load /def load ] cvx
 	currentdict end 3 1 roll def begin
 } VisitPowers
 r
