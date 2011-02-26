@@ -293,7 +293,7 @@ class Game:
 			#	-------------------------------------------
 			src, orderType, visit = unitLoc, 'C-'[len(word) == 2], []
 			if (word[-1] == unitLoc
-			and (orderType != 'C' or 'NO_RETURN' in self.rules)):
+			and (orderType != 'C' or 'NO_RETURN' in rules)):
 				return error.append('MOVING UNIT MAY NOT RETURN: %s ' %
 					unit + order)
 			if orderType == 'C':
@@ -1548,6 +1548,7 @@ class Game:
 		self.mail.close()
 	#	----------------------------------------------------------------------
 	def ownership(self, unowned = None, playing = None):
+		rules = self.rules
 		if unowned is None: unowned = self.map.home.get('UNOWNED', [])[:]
 		if self.phase != self.map.phase:
 			for power in self.powers:
@@ -1555,7 +1556,7 @@ class Game:
 				power.centers = [x for x in power.centers
 								if x not in ('SC?', 'SC*')]
 				homes = self.map.home[power.name]
-				if ('GARRISON' in self.rules and not power.centers
+				if ('GARRISON' in rules and not power.centers
 				and not power.type and (power.ceo
 				or power.player and not power.isResigned())
 				and not [0 for x in self.powers for y in x.units
@@ -1566,14 +1567,14 @@ class Game:
 					if 0 < held < len(homes): power.centers += (['SC*'] *
 						len(self.map.partisan.get(power.name, [])))
 		lines = ['']
-		if 'VASSAL_DUMMIES' in self.rules:
+		if 'VASSAL_DUMMIES' in rules:
 			lines += ['Vassal status of minor powers:', '']
 			lines += ['%s is a vassal of %s.' %
 				(self.anglify(x.name), self.anglify(x.ceo[0]))
 				for x in self.powers if x.ceo]
 			lines += [self.anglify(x.name) + ' is independent.'
 				for x in self.powers if x.isDummy() and not x.ceo]
-		if 'BLIND' in self.rules and not playing:
+		if 'BLIND' in rules and not playing:
 			lines += ['SHOW MASTER ' + ' '.join([x.name for x in self.powers
 				if x.units or x.centers or x.omniscient])]
 		lines += ['\nOwnership of supply centers:\n']
@@ -1583,18 +1584,28 @@ class Game:
 			if power == 'UNOWNED': powerName, centers = power, unowned
 			else: powerName, centers = power.name, power.centers
 			if centers.count('SC?') == len(centers): continue
-			if 'BLIND' in self.rules and not playing:
-				lines += ['SHOW MASTER ' + ' '.join([x.name
-					for x in self.powers if x is power or x.omniscient])]
 			if centers is not unowned:
 				[unowned.remove(x) for x in centers if x in unowned]
-			lines += [y.replace('\0377', '-') for y in textwrap.wrap(
-				('%-11s ' % (self.anglify(powerName) + ':') + ', '.join(
-				[x == 'SC!' and 'Undetermined Home SC' or x
-				for x in map(self.anglify, sorted(centers))
-				if x not in ('SC?', 'SC*')]) +
-				'.').replace('-', '\0377'), 75, subsequent_indent = ' ' * 12)]
-		if 'BLIND' in self.rules and not playing: lines += ['SHOW']
+			powerName = self.anglify(powerName) + ':'
+			for other in self.powers:
+				if other is power:
+					centers = [(x, 'Undetermined Home SC')[x == 'SC!']
+						for x in sorted(centers) if x[-1] not in '?*']
+				elif 'PERSIAN' in self.rules: centers = [x for x in sorted(centers)
+					if x[-1] not in '?*!' and [1 for y in other.units +
+						(self.map.home[other.name], other.centers)['VENETIAN' in rules]
+						if self.visible(other, '? ' + y.split()[-1])[other.name] & 2]]
+				else: continue
+				if not centers: continue
+				if not playing:
+					if other is not power: lines += ['SHOW ' + other.name]
+					elif 'BLIND' in rules: lines += ['SHOW MASTER ' + ' '.join([x.name
+						for x in self.powers if x is power or x.omniscient])]
+				lines += [y.replace('\0377', '-') for y in textwrap.wrap(
+					('%-11s %s.' % (powerName,
+					', '.join(map(self.anglify, centers)))).replace('-', '\0377'),
+					75, subsequent_indent = ' ' * 12)]
+		if 'BLIND' in rules and not playing: lines += ['SHOW']
 		return lines + ['']
 	#	----------------------------------------------------------------------
 	def mailResults(self, body, subject):
@@ -2560,8 +2571,9 @@ class Game:
 		return ' '.join([new[0], `year`, new[1]])
 	#	----------------------------------------------------------------------
 	def checkPhase(self):
-		if (self.phase in (None, 'FORMING', 'COMPLETED')
-		or	self.phaseType == 'M'): return []
+		if self.phase in (None, 'FORMING', 'COMPLETED'): return []
+		if self.phaseType == 'M':
+			return 'PERSIAN' in self.rules and self.ownership() or []
 		if self.phaseType == 'R':
 			if [1 for x in self.powers if x.retreats]: return []
 			for power in self.powers: power.retreats, power.adjust = {}, []
@@ -2887,7 +2899,7 @@ class Game:
 	def moveResults(self):
 		self.resolveMoves()
 		list = ['Movement results for ' + self.phaseName(), '']
-		self.result[None] = 'invalid'
+		self.result[None], rules = 'invalid', self.rules
 		for power in [x for x in self.powers if x.units]:
 			for unit in power.units:
 				#	--------------------------------------------------------
@@ -2898,7 +2910,7 @@ class Game:
 				#	should have reached landfall.  We mark them "no convoy".
 				#	--------------------------------------------------------
 				notes = self.result[unit][:]
-				if 'BLIND' in self.rules:
+				if 'BLIND' in rules:
 					if 'void' in notes:
 						notes.remove('void')
 						if self.command[unit].count('-') > 1:
@@ -2921,12 +2933,12 @@ class Game:
 			#	-------------------------------------------
 			#	Add any invalid orders (if NO_CHECK is set)
 			#	-------------------------------------------
-			if 'NO_CHECK' in self.rules:
+			if 'NO_CHECK' in rules:
 				for invalid, order in power.orders.items():
 					if invalid[:7] in ('INVALID', 'REORDER'): list += [
 						'%s: %s.  (*%s*)' %
 						(self.anglify(power.name), order, invalid[:7].lower())]
-			if 'BLIND' in self.rules: list += ['SHOW']
+			if 'BLIND' in rules: list += ['SHOW']
 			list += ['']
 		#	----------------------
 		#	Determine any retreats
@@ -2953,7 +2965,7 @@ class Game:
 		#	List all possible retreats
 		#	--------------------------
 		if self.dislodged:
-			if 'BLIND' in self.rules: who = (['SHOW', 'MASTER'] +
+			if 'BLIND' in rules: who = (['SHOW', 'MASTER'] +
 				[x.name for x in self.powers if x.omniscient])
 			dis = ['\nThe following units were dislodged:\n']
 			for power in self.powers:
@@ -2963,9 +2975,9 @@ class Game:
 						self.anglify(self.map.ownWord[power.name]) +
 						self.anglify(unit, retreating = 1))
 					toWhere, line = power.retreats.get(unit), ''
-					if ('NO_RETREAT' in self.rules
-					or	power.isDummy() and 'CD_DUMMIES' in self.rules
-					and not power.ceo and 'CD_RETREATS' not in self.rules):
+					if ('NO_RETREAT' in rules or power.isDummy()
+					and not power.ceo and ('IMMOBILE_DUMMIES' in rules
+					or 'CD_DUMMIES' in rules > 'CD_RETREATS' in rules)):
 						text += ' was destroyed.'
 						del self.dislodged[unit]
 						try: del power.retreats[unit]
@@ -2979,7 +2991,7 @@ class Game:
 					#	If this is a BLIND game, add a line before the result
 					#	text line specifying who should NOT see result text.
 					#	-----------------------------------------------------
-					if 'BLIND' in self.rules:
+					if 'BLIND' in rules:
 						show = [x for x,y in self.visible(power, unit, 'H').
 							items() if y & 8 and x in self.map.powers]
 						who += [x for x in show if x not in who]
@@ -2993,7 +3005,7 @@ class Game:
 					#	------------------------------------
 					dis += [y.replace('\0377', '-')
 						for y in textwrap.wrap(text.replace('-', '\0377'), 75)]
-			if 'BLIND' in self.rules:
+			if 'BLIND' in rules:
 				list += [' '.join(who)]
 				dis += ['SHOW']
 			list += dis + ['']
