@@ -293,7 +293,7 @@ class Game:
 			#	-------------------------------------------
 			src, orderType, visit = unitLoc, 'C-'[len(word) == 2], []
 			if (word[-1] == unitLoc
-			and (orderType < 'C' or 'NO_RETURN' in self.rules)):
+			and (orderType != 'C' or 'NO_RETURN' in rules)):
 				return error.append('MOVING UNIT MAY NOT RETURN: %s ' %
 					unit + order)
 			if orderType == 'C':

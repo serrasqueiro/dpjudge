@@ -7,9 +7,12 @@ os.sys.path[:0] = [os.path.dirname(os.path.abspath(os.sys.argv[0])) + '/..']
 import host
 from Game import Game, Power, Mail, Status
 
-host.packageDir = __path__[0]
-host.dpjudgeDir = host.hostDir + '/web'
-host.gameDir = host.hostDir + '/games'
+try: host.packageDir
+except: host.packageDir = __path__[0]
+try: host.dpjudgeDir
+except: host.dpjudgeDir = host.hostDir + '/web'
+try: host.gameDir
+except: host.gameDir = host.hostDir + '/games'
 
 if __name__ != '__main__': from Page import Page
 

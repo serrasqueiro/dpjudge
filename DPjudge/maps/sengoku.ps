@@ -106,11 +106,29 @@
 /max { 2 copy lt { exch } if pop } bd
 /secure_atan { 2 copy 0 eq exch 0 eq and { pop pop 0 } { atan } ifelse } bd
 /center { 3 2 roll add 2 div 3 1 roll add 2 div exch } bd
+/a /arc ld
+/c /curveto ld
+/d /setdash ld
+/f /fill ld
+/h /show ld
+/k /stroke ld
+/l /lineto ld
+/m /moveto ld
+/n /newpath ld
+/o /rotate ld
+/p /closepath ld
+/r /grestore ld
+/s /gsave ld
+/t /translate ld
+/w /setlinewidth ld
+/x /scale ld
+/y /scalefont ld
+/z /setfont ld
 /Powers 20 dict def
 %%IncludeResource: font Helvetica-Bold
-/MapUnitLetterFont /Helvetica-Bold findfont 14 scalefont def
+/MapUnitLetterFont /Helvetica-Bold findfont 14 y def
 %%IncludeResource: font Helvetica-Bold
-/MapNameFont /Helvetica-Bold findfont 14 scalefont def
+/MapNameFont /Helvetica-Bold findfont 14 y def
 %%IncludeResource: font Courier
 /TextFixedFont /Courier findfont def
 %%IncludeResource: font Courier-Bold
@@ -118,49 +136,32 @@
 %%IncludeResource: font Times-Roman
 /TextTitleFont /Times-Roman findfont def
 /PageSetup {
-	612 0 translate
-	90 rotate
+	612 0 t
+	90 o
 	/FinishReport { } def /InTextMode true def
 	Black
 	MovePhase
 } bd
 /ShowPage {
 	DrawAliases
-	InTextMode { FinishReport } { grestore } ifelse
+	InTextMode { FinishReport } { r } ifelse
 	showpage
 } bd
 /VisitColors {
 	3 dict begin
 	/c xd /r xd /g xd
-	/Black 0 g
-	/White .9 g
-	/Grey .7 g
-	/DarkGrey .5 g
 	/BorderBlack .1 g
 	/MountainGrey .5 g
 	/IceGrey .9 g
 	/ArrowBlack 0 g
 	/ArrowWhite .9 g
-	/Red 1 0 0 r
-	/Blue 0 0 1 r
-	/Mauve 1 0 1 r
-	/Magenta 1 0 1 r
-	/Yellow 1 1 0 r
-	/Green 0 .7 0 r
-	/Brown .6 .45 .2 r
-	/Turquoise .2 .7 .7 r
-	/LightBlue .4 .6 1 r
-	/DarkGreen 0 .4 0 r
-	/LightGreen 0 .9 0 r
-	/Forest 0 .5 0 r
-	/Teal 0 .6 .6 r
-	/Tan .6 .6 .2 r
-	/Cyan 0 1 1 r
-	/Orange 1 .6 0 r
+	/White .9 g
+	/Black 0 g
 	/LandBrown .8 .7 .4 r
 	/SeaBlue .1 .4 .6 r
 	/ArrowRed 1 0 0 r
 	/ArrowBlue .529 .808 .922 r
+	/DarkGreen 0 .4 0 r
 	/@Green 0 .502 0 r
 	/@Olive .502 .502 0 r
 	/@Purple .502 0 .502 r
@@ -169,8 +170,9 @@
 	/@Navy 0 0 .502 r
 	/@HotPink 1 .412 .706 r
 	/@LimeGreen .196 .804 .196 r
+	/Brown .6 .45 .2 r
 	end
-} bd
+} def
 /VisitPowers {
 	1 dict begin
 	/p xd
@@ -185,86 +187,75 @@
 	/NEUTRAL ( ) /@LimeGreen /White p
 	/UNOWNED (?) /Brown /White p
 	end
+} def
+/Controls {
+	/ChangeController true def
 } bd
 /DrawFleet {
 	SwitchToMapMode
 	Power begin
-	gsave
-	translate
-	.8 .8 scale
-	0 8 translate
-	3 dict begin
-	/m /moveto ld
-	/l /lineto ld
-	/p { lineto closepath } bd
-	2 .5 div setlinewidth [] 0 setdash
-	gsave
-	.5 .5 scale
-	-35 -16 translate
-	newpath
+	s t
+	.8 .8 x
+	0 8 t
+	s
+	.5 .5 x -35 -16 t
 	12 3 m 12 9 l 9 12 l 6 13 l 6 17 l % bow
-	9 17 l 9 23 l 2 22 l 7 16 l 6 16 l 1 22 l % bowsprit
+	9 17 l 9 23 l 2 22 l 7 16 l 6 16 l
+	1 22 l % bowsprit
 	6 27 l 12 37 l 15 45 l % front sail
-	19 44 l 19 48 l 16 48 l 15 49 l 19 49 l 19 55 l 20 55 l 20 49 l 24 49 l 23 48 l 20 48 l 20 44 l % front mast
-	24 43 l 24 34 l 27 29 l 33 29 l 33 32 l 25 32 l 28 39 l 31 51 l % mid sail left
-	35 50 l 35 54 l 30 54 l 29 55 l 35 55 l 35 63 l 36 63 l 36 56 l 36 55 l 42 55 l 41 54 l 36 54 l 36 50 l % mid mast
-	41 49 l 41 32 l 36 32 l 36 29 l 39 29 l 41 43 l % mid sail right
-	45 43 l 45 47 l 41 47 l 41 48 l 45 48 l 45 55 l 46 55 l 46 48 l 51 48 l 50 47 l 46 47 l 46 43 l % rear mast
-	48 43 l 49 28 l 51 28 l 51 31 l 54 33 l 54 23 l 57 26 l 57 22 l 56 21 l % rear sail and flag
-	56 15 l 59 12 l 59 7 l 57 4 l 55 3 p % bow
-	gsave Contrast stroke grestore
-	PieceColour fill
-	grestore
-	end
-	Offset aload pop moveto
-	MapUnitLetterFont setfont
-	Contrast Letter show
-	grestore
+	19 44 l 19 48 l 16 48 l 15 49 l 19 49 l
+	19 55 l 20 55 l 20 49 l 24 49 l 23 48 l
+	20 48 l 20 44 l % front mast
+	24 43 l 24 34 l 27 29 l 33 29 l 33 32 l
+	25 32 l 28 39 l 31 51 l % mid sail left
+	35 50 l 35 54 l 30 54 l 29 55 l 35 55 l
+	35 63 l 36 63 l 36 56 l 36 55 l 42 55 l
+	41 54 l 36 54 l 36 50 l % mid mast
+	41 49 l 41 32 l 36 32 l 36 29 l 39 29 l
+	41 43 l % mid sail right
+	45 43 l 45 47 l 41 47 l 41 48 l 45 48 l
+	45 55 l 46 55 l 46 48 l 51 48 l 50 47 l
+	46 47 l 46 43 l % rear mast
+	48 43 l 49 28 l 51 28 l 51 31 l 54 33 l
+	54 23 l 57 26 l 57 22 l 56 21 l % rear sail and flag
+	56 15 l 59 12 l 59 7 l 57 4 l 55 3 l p % bow
+	s Controlled { s 12 w Outer k r } if 4 w Contrast k r Paint f
+	r
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	r
 	end
 } bd
 /DrawArmy {
 	SwitchToMapMode
 	Power begin
-	gsave
-	translate
-	.8 .8 scale
-	0 8 translate
-	3 setlinewidth [] 0 setdash
-	newpath
-	-20 7 moveto 30 0 rlineto 0 -4 rlineto 4 0 rlineto
-	0 -2 rlineto -30 0 rlineto 0 2 rlineto -4 0 rlineto
-	0 4 rlineto                                         % barrel
-	4 2 moveto 20 -10 rlineto 2 0 rlineto -8 0 rlineto
-	-20 10 rlineto                                      % carriage
-	Contrast stroke
-	0 0 9 0 360 arc                                     % wheel
-	closepath
-	Contrast stroke
-	newpath
-	-20 7 moveto 30 0 rlineto 0 -4 rlineto 4 0 rlineto
-	0 -2 rlineto -30 0 rlineto 0 2 rlineto -4 0 rlineto
-	0 4 rlineto                                         % barrel
-	4 2 moveto 20 -10 rlineto 2 0 rlineto -8 0 rlineto
-	-20 10 rlineto                                      % carriage
-	PieceColour fill
-	0 0 9 0 360 arc                                     % wheel
-	closepath
-	PieceColour fill
-	Offset aload pop moveto
-	MapUnitLetterFont setfont
-	Contrast Letter show
-	grestore
+	s t
+	.8 .8 x
+	0 8 t
+	n 0 0 9 0 360 a p % wheel
+	Controlled { s 6 w Outer k r } if 2 w Contrast k
+	-20 7 m 10 7 l 10 3 l 14 3 l
+	14 1 l -16 1 l -16 3 l -20 3 l p % barrel
+	4 2 m 24 -8 l 26 -8 l 18 -8 l -2 2 l % carriage
+	s Controlled { s 6 w Outer k r } if 2 w Contrast k r Paint f
+	n 0 0 9 0 360 a p % wheel
+	Paint f
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	r
 	end
 } bd
 /DrawAlias {
 	SwitchToMapMode
-	gsave
-	3 1 roll translate
-	.8 .8 scale
-	0 -14 translate
-	MapNameFont setfont
-	dup stringwidth pop -2 div 0 neg moveto show
-	grestore
+	s
+	3 1 roll t
+	.8 .8 x
+	0 -14 t
+	MapNameFont z
+	dup stringwidth pop -2 div 0 neg m h
+	r
 } bd
 /DrawName {
 	pop pop pop
@@ -356,7 +347,7 @@
 	(ARB) 199 72 w
 	(SHU) 149 22 w
 	end
-} bd
+} def
 /VisitSupplies {
 	1 dict begin
 	/s xd
@@ -398,25 +389,35 @@
 	/SAT 106 138 s
 	/OSU 143 123 s
 	end
-} bd
+} def
 /supply {
 	SwitchToMapMode
 	Power begin
-	gsave
-	translate
-	1.2 1.2 scale
-	PieceColour
-	newpath 0 0 4 0 360 arc fill
-	grestore
+	s
+	t
+	1.2 1.2 x
+	Controlled {
+		Outer
+		n 0 0 8 0 360 a f
+		Contrast
+		n 0 0 6 0 360 a f
+	} if
+	Paint
+	n 0 0 4 0 360 a f
+	r
 	end
 } bd
+/SetArrowStateOk {
+	[] 0 d
+} bd
 /OkOrder {
-	SwitchToMapMode
-	[] 0 setdash
+	/SetArrowState /SetArrowStateOk ld
+} bd
+/SetArrowStateFailed {
+	[4 6] 2 d
 } bd
 /FailedOrder {
-	SwitchToMapMode
-	[4 6] 2 setdash
+	/SetArrowState /SetArrowStateFailed ld
 } bd
 /MovePhase {
 	/ArrowColor /ArrowBlack ld
@@ -438,40 +439,40 @@
 } bd
 /TraceSingleArrowHead {
 	% draw the arrow head ...
-	newpath
-	dup -5 moveto
-	dup 20 add 0 lineto
-	dup 5 lineto
-	closepath
+	n
+	dup -5 m
+	dup 20 add 0 l
+	dup 5 l
+	p
 } bd
 /TraceDoubleArrowHead {
 	% draw the double arrow head ...
-	newpath
-	dup -5 moveto
+	n
+	dup -5 m
 	dup 19.8 add
-	dup -1 lineto
-	dup -5 lineto
-	dup 20 add 0 lineto
-	dup 5 lineto
-	1 lineto
-	dup 5 lineto
-	closepath
+	dup -1 l
+	dup -5 l
+	dup 20 add 0 l
+	dup 5 l
+	1 l
+	dup 5 l
+	p
 } bd
 /PaintArrowMove {
-	gsave
-	3 index 3 index translate
+	s
+	3 index 3 index t
 	3 2 roll sub 3 1 roll exch sub exch
 	2 copy dup mul exch dup mul add sqrt 3 1 roll exch secure_atan
-	.8 .8 scale
-	0 8 translate
-	rotate
+	.8 .8 x
+	0 8 t
+	o
 	.8 div ArrowBase sub
 	% if base of arrow is long enough, shorten it enough
 	% to e.g. move arrow start beyond support circle
 	dup 14 gt {
-		14 14 0 translate sub
+		14 14 0 t sub
 	} {
-		0 translate 0
+		0 t 0
 	} ifelse
 	% if base is still too long, shorten it some more
 	% to make arrow head touch support circle
@@ -480,118 +481,124 @@
 	} {
 		pop 0
 	} ifelse
-	1 setlinewidth
+	1 w
 	TraceArrowHead
-	stroke
+	k
 	% now the shaft ...
-	2 setlinewidth
-	0 0 moveto
-	0 lineto
-	stroke
-	grestore
+	2 w
+	0 0 m
+	0 l
+	k
+	r
 } bd
 /PaintArrowCircle {
-	gsave
+	s
 	5 1 roll
-	3 index 3 index translate
+	3 index 3 index t
 	3 2 roll sub 3 1 roll exch sub exch
 	2 copy dup mul exch dup mul add sqrt 3 1 roll exch secure_atan
-	.8 .8 scale
-	0 8 translate
-	rotate
+	.8 .8 x
+	0 8 t
+	o
 	.8 div
 	1 index sub
 	% if base of arrow is long enough, shorten it enough
 	% to e.g. move arrow start beyond support circle
 	dup 14 gt {
-		14 14 0 translate sub
+		14 14 0 t sub
 	} {
-		0 translate 0
+		0 t 0
 	} ifelse
 	% draw the circle ...
-	1 setlinewidth
-	newpath
-	2 copy add 0 4 3 roll 0 360 arc
-	closepath stroke
+	1 w
+	n
+	2 copy add 0 4 3 roll 0 360 a
+	p k
 	% now the shaft ...
-	2 setlinewidth
-	0 0 moveto
-	0 lineto
-	stroke
-	grestore
+	2 w
+	0 0 m
+	0 l
+	k
+	r
 } bd
 /PaintArrowArrive {
-	gsave
-	translate
-	.8 .8 scale
-	0 8 translate
-	180 rotate 54 ArrowBase add neg 0 translate
+	s
+	t
+	.8 .8 x
+	0 8 t
+	180 rotate 54 ArrowBase add neg 0 t
 	40
-	1 setlinewidth
+	1 w
 	TraceArrowHead
-	stroke
+	k
 	% now the shaft ...
-	2 setlinewidth
-	0 0 moveto
-	0 lineto
-	stroke
-	-5 0 moveto -10 0 lineto
-	-15 0 moveto -20 0 lineto
-	stroke
-	grestore
+	2 w
+	0 0 m
+	0 l
+	k
+	-5 0 m -10 0 l
+	-15 0 m -20 0 l
+	k
+	r
 } bd
 /PaintArrowDepart {
-	gsave
-	translate
-	.8 .8 scale
-	0 8 translate
-	-54 0 translate
+	s
+	t
+	.8 .8 x
+	0 8 t
+	-54 0 t
 	40
-	2 setlinewidth
-	0 0 moveto
-	0 lineto
-	-6 0 moveto -10 0 lineto
-	-16 0 moveto -20 0 lineto
-	stroke
-	grestore
+	2 w
+	0 0 m
+	0 l
+	-6 0 m -10 0 l
+	-16 0 m -20 0 l
+	k
+	r
 } bd
 /ArrowMove {
 	SwitchToMapMode
-	gsave
+	SetArrowState
+	s
 	PaintArrowMove
-	grestore
+	r
 } bd
 /ArrowHold {
 	SwitchToMapMode
-	gsave
+	SetArrowState
+	s
 	24 PaintArrowCircle
-	grestore
+	r
 } bd
 /ArrowSupport {
 	SwitchToMapMode
-	gsave
+	SetArrowState
+	s
 	center
 	8 PaintArrowCircle
-	grestore
+	r
 } bd
 /ArrowConvoy {
 	SwitchToMapMode
-	gsave
+	SetArrowState
+	s
 	center
 	12 PaintArrowCircle
-	grestore
+	r
 } bd
 /ArrowArrive {
 	SwitchToMapMode
-	gsave
+	SetArrowState
+	s
 	PaintArrowArrive
-	grestore
+	r
 } bd
 /ArrowDepart {
 	SwitchToMapMode
-	gsave
+	SetArrowState
+	s
 	PaintArrowDepart
-	grestore
+	r
 } bd
 /ArrowRetreat {
 	RetreatPhase
@@ -615,89 +622,89 @@
 } bd
 /BuildUnit {
 	SwitchToMapMode
-	gsave
-	translate
+	s
+	t
 	ArrowWhite
-	.8 .8 scale
-	0 8 translate
-	6 setlinewidth [ 3.14 6.28 ] 1.57 setdash
-	newpath
-	0 0 24 0 360 arc
-	closepath stroke
-	grestore
+	.8 .8 x
+	0 8 t
+	6 w [ 3.14 6.28 ] 1.57 d
+	n
+	0 0 24 0 360 a
+	p k
+	r
 } bd
 /SlashUnit {
-	gsave
-	3 1 roll translate
-	.8 .8 scale
-	0 8 translate
-	newpath
-	-21 -16 moveto
-	11 16 lineto
-	21 16 lineto
-	-11 -16 lineto
-	closepath
+	s
+	3 1 roll t
+	.8 .8 x
+	0 8 t
+	n
+	-21 -16 m
+	11 16 l
+	21 16 l
+	-11 -16 l
+	p
 	exec
-	grestore
+	r
 } bd
 /DestroyUnit {
 	SwitchToMapMode
-	{ ArrowRed fill } SlashUnit
+	{ ArrowRed f } SlashUnit
 } bd
 /DisbandUnit {
 	SwitchToMapMode
-	{ gsave ArrowWhite fill grestore ArrowRed stroke 1 setlinewidth [ ] 0 setdash } SlashUnit
+	{ s ArrowWhite f r 1 w ArrowRed k } SlashUnit
 } bd
 /RemoveUnit {
 	SwitchToMapMode
-	{ ArrowWhite fill } SlashUnit
+	{ ArrowWhite f } SlashUnit
 } bd
 /FindUnit {
 	SwitchToMapMode
-	gsave
-	translate
+	s
+	t
 	ArrowBlue
-	.8 .8 scale
-	0 8 translate
-	6 setlinewidth [ 3.14 6.28 ] 1.57 setdash
-	newpath
-	0 0 24 0 360 arc
-	closepath stroke
-	grestore
+	.8 .8 x
+	0 8 t
+	6 w [ 3.14 6.28 ] 1.57 d
+	n
+	0 0 24 0 360 a
+	p k
+	r
 } bd
 /LoseUnit {
 	SwitchToMapMode
-	gsave
-	translate
+	s
+	t
 	ArrowBlue
-	.8 .8 scale
-	0 8 translate
-	4 setlinewidth
-	-12 4 moveto
-	-8 7 -4 7 0 4 curveto
-	4 1 8 1 12 4 curveto
-	-12 -4 moveto
-	-8 -1 -4 -1 0 -4 curveto
-	4 -7 8 -7 12 -4 curveto
-	stroke
-	grestore
+	.8 .8 x
+	0 8 t
+	4 w
+	-12 4 m
+	-8 7 -4 7 0 4 c
+	4 1 8 1 12 4 c
+	-12 -4 m
+	-8 -1 -4 -1 0 -4 c
+	4 -7 8 -7 12 -4 c
+	k
+	r
 } bd
 /QueryUnit {
 	SwitchToMapMode
-	gsave
-	translate
+	s
+	t
 	ArrowWhite
-	.8 .8 scale
-	0 8 translate
-	4 setlinewidth
-	-12 4 moveto
-	-8 7 -4 7 0 4 curveto
-	4 1 8 1 12 4 curveto
-	-12 -4 moveto
-	-8 -1 -4 -1 0 -4 curveto
-	4 -7 8 -7 12 -4 curveto
-	stroke
-	grestore
+	.8 .8 x
+	0 8 t
+	4 w
+	-12 4 m
+	-8 7 -4 7 0 4 c
+	4 1 8 1 12 4 c
+	-12 -4 m
+	-8 -1 -4 -1 0 -4 c
+	4 -7 8 -7 12 -4 c
+	k
+	r
 } bd
 /SplitString {
 	7 dict begin
@@ -754,18 +761,18 @@
 	end
 } bd
 /DrawBorders {
-	gsave
-	TextFixedFont 8 scalefont setfont
-	grestore
+	s
+	TextFixedFont 8 y z
+	r
 } bd
 /DrawFrame {
 	SwitchToTextMode
-	gsave
-	Black 6 setlinewidth
-	24.60 113 546 474 rectstroke
-	LandBrown 1.50 setlinewidth
-	25.35 113.75 544.50 472.50 rectstroke
-	grestore
+	s
+	Black 6 w
+	24.6 113 546 474 rectstroke
+	LandBrown 1.5 w
+	25.35 113.75 544.5 472.5 rectstroke
+	r
 } bd
 /Owner <<
 	/Steps [
@@ -774,27 +781,27 @@
 			Count 9 ge { false true } {
 				115 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
-				21.60 Y moveto show
+				21.6 Y m h
 				true false
 			} ifelse
 		} bind
 		{
 			115 SplitString [ exch {
-				21.60 24.24 moveto show
+				21.6 24.24 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				21.60 24.24 moveto (... \() show
-				Count dup 1 add log iceiling string cvs show
-				( more\)) show
+				21.6 24.24 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
 			} bd false true
 		} bind
 		{ /Count Count 1 add def 115 SplitString pop true false } bind
 	]
 	/Start {
-		TextFixedFont 8 scalefont setfont
+		TextFixedFont 8 y z
 		/StepIndex 0 def
 		/Step Steps 0 get def
 		/Finish { } def
@@ -824,32 +831,32 @@
 		{ /Count 0 def /Y 96.24 def false true } bind
 		{
 			Count 8 ge { false true } {
-				40 SplitString
+				39 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
-				578.40 Y moveto show
+				583.2 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			40 SplitString [ exch {
-				578.40 24.24 moveto show
+			39 SplitString [ exch {
+				583.2 24.24 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				578.40 24.24 moveto (... \() show
-				Count dup 1 add log iceiling string cvs show
-				( more\)) show
+				583.2 24.24 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 40 SplitString pop true false } bind
+		{ /Count Count 1 add def 39 SplitString pop true false } bind
 	]
 	/Start {
-		TextHeadingFont 8 scalefont setfont
-		578.40 96.24 moveto
-		(Adjustments) show
-		TextFixedFont 8 scalefont setfont
+		TextHeadingFont 8 y z
+		583.2 96.24 moveto
+		(Adjustments) h
+		TextFixedFont 8 y z
 		/StepIndex 0 def
 		/Step Steps 0 get def
 		/Finish { } def
@@ -879,32 +886,32 @@
 		{ /Count 0 def /Y 168.24 def false true } bind
 		{
 			Count 7 ge { false true } {
-				40 SplitString
+				39 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
-				578.40 Y moveto show
+				583.2 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			40 SplitString [ exch {
-				578.40 104.24 moveto show
+			39 SplitString [ exch {
+				583.2 104.24 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				578.40 104.24 moveto (... \() show
-				Count dup 1 add log iceiling string cvs show
-				( more\)) show
+				583.2 104.24 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 40 SplitString pop true false } bind
+		{ /Count Count 1 add def 39 SplitString pop true false } bind
 	]
 	/Start {
-		TextHeadingFont 8 scalefont setfont
-		578.40 168.24 moveto
-		(Retreats) show
-		TextFixedFont 8 scalefont setfont
+		TextHeadingFont 8 y z
+		583.2 168.24 moveto
+		(Retreats) h
+		TextFixedFont 8 y z
 		/StepIndex 0 def
 		/Step Steps 0 get def
 		/Finish { } def
@@ -934,29 +941,29 @@
 		{ /Count 0 def /Y 544.24 def false true } bind
 		{
 			Count 45 ge { false true } {
-				40 SplitString
+				39 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
-				578.40 Y moveto show
+				583.2 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			40 SplitString [ exch {
-				578.40 176.24 moveto show
+			39 SplitString [ exch {
+				583.2 176.24 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				578.40 176.24 moveto (... \() show
-				Count dup 1 add log iceiling string cvs show
-				( more\)) show
+				583.2 176.24 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 40 SplitString pop true false } bind
+		{ /Count Count 1 add def 39 SplitString pop true false } bind
 	]
 	/Start {
-		TextFixedFont 8 scalefont setfont
+		TextFixedFont 8 y z
 		/StepIndex 0 def
 		/Step Steps 0 get def
 		/Finish { } def
@@ -983,49 +990,46 @@
 } bd
 /DrawTitle {
 	SwitchToTextMode
-	TextTitleFont 24 scalefont setfont
+	TextTitleFont 24 y z
 	(Diplomacy)
-	578.40 572.72 moveto show
-	TextTitleFont 16 scalefont setfont
-	dup stringwidth pop dup 192.0 gt {
-		578.40 550 moveto
-		192.0 exch div dup 1 scale exch
-		0 4.48 rmoveto show
-		1 exch div 1 scale
+	583.2 572.72 m h
+	TextTitleFont 16 y z
+	dup stringwidth pop dup 187.2 gt {
+		583.2 550 m
+		187.2 exch div dup 1 x exch
+		0 4.48 rmoveto h
+		1 exch div 1 x
 	} {
-		pop 578.40 554.48 moveto show
+		pop 583.2 554.48 m h
 	} ifelse
 } bd
 /SwitchToTextMode {
 	InTextMode {
 		FinishReport /FinishReport { } def
 	} {
-		grestore /InTextMode true def
+		r /InTextMode true def
 	} ifelse
 } bd
 /SwitchToMapMode {
 	InTextMode {
 		FinishReport /FinishReport { } def
 		/InTextMode false def
-		gsave
-		27.60 116 540 468 rectclip
-		26.09 113 translate .4827 .4827 scale
+		s
+		27.6 116 540 468 rectclip
+		26.09 113 t .4827 .4827 x 0 0 t
 		ArrowColor
-		[ ] 0 setdash
+		OkOrder
 	} if
 } bd
 /PaintMap {
 	SwitchToMapMode
-	3 dict begin
-	/m /moveto ld /l /lineto ld /c /curveto ld
-	gsave
+	s
 	SeaBlue
 	0 0 1125 982 rectfill
 	IncludeSeaBorders
 	IncludeLand
 	IncludeInternalBorders
-	grestore
-	end
+	r
 } bd
 /DrawMap {
 	PageSetup
@@ -1048,76 +1052,75 @@
 } bd
 /NameTerritories {
 	SwitchToMapMode
-	gsave
+	s
 	{ DarkGreen 3 2 roll DrawAlias } bind
 	{ DarkGreen 3 2 roll DrawAlias } bind
 	{ White 3 2 roll DrawAlias } bind
 	VisitTerritories
-	grestore
+	r
 } bd
 /IncludeSeaBorders {
-	gsave
-	.1667 .1667 scale
-	/f { stroke } bd
-	6 setlinewidth [ ] 0 setdash 0 setlinecap 0 setlinejoin BorderBlack
+	s
+	.1667 .1667 x
+	/fk { k } bd
+	6 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
 	OutlineWaterBlack
 	OutlineWater2Grey
-	grestore
+	r
 } bd
 /IncludeLand {
-	gsave
-	.1667 .1667 scale
-	/f { closepath gsave LandBrown fill grestore stroke } bd
-	6 setlinewidth [ ] 0 setdash 0 setlinecap 0 setlinejoin BorderBlack
+	s
+	.1667 .1667 x
+	/fk { p s LandBrown f r k } bd
+	6 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
 	OutlineContinentGreen
-	grestore
+	r
 } bd
 /IncludeInternalBorders {
-	gsave
-	.1667 .1667 scale
-	/f { stroke } bd
-	6 setlinewidth [ ] 0 setdash 0 setlinecap 0 setlinejoin BorderBlack
+	s
+	.1667 .1667 x
+	/fk { k } bd
+	6 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
 	OutlineInternalBlack
 	OutlineInternal2Grey
-	grestore
+	r
 } bd
 /ConnectCrossings {
 	1 dict begin
-	gsave
+	s
 	ArrowBlack
-	/c {
-		gsave
-		3 index 3 index translate
+	/cn {
+		s
+		3 index 3 index t
 		3 2 roll sub 3 1 roll exch sub exch
 		2 copy dup mul exch dup mul add sqrt 3 1 roll exch secure_atan
-		.8 .8 scale
-		%$/ $MapUnitOffsetX $MapUnitOffsetY translate
-		rotate
-		.8 div
-		4.5
+		.8 .8 x
+		0 0 t
+		o
+		.8 div 4.5 sub
 		% draw the arrow head ...
-		newpath
-		dup -0.75 moveto
-		dup -3.0 lineto
-		dup 4.5 add 0 lineto
-		dup 3.0 lineto
-		0.75 lineto
+		n
+		dup -0.75 m
+		dup -3.0 l
+		dup 4.5 add 0 l
+		dup 3.0 l
+		0.75 l
 		% again the arrow head at the other side ...
-		4.5 0.75 lineto
-		4.5 3.0 lineto
-		0 0 lineto
-		4.5 -3.0 lineto
-		4.5 -0.75 lineto
+		4.5 0.75 l
+		4.5 3.0 l
+		0 0 l
+		4.5 -3.0 l
+		4.5 -0.75 l
 		% close
-		closepath
-		fill
-		grestore
+		p
+		f
+		r
 		pop
 	} bd
-	/1 431 365 437 341 c
-	/2 201 355 170 333 c
-	/3 277 267 241 265 c
-	grestore
+	/1 431 365 437 341 cn
+	/2 201 355 170 333 cn
+	/3 277 267 241 265 cn
+	r
 	end
 } bd
 /OutlineWaterBlack {
@@ -1137,7 +1140,7 @@
 	4101 4044 4091 3976 4106 3918 c
 	4112 3893 4134 3875 4142 3852 c
 	4162 3799 4164 3755 4164 3702 c
-	f
+	fk
 	4662 5886 m
 	4662 5823 4691 5785 4715 5730 c
 	4730 5695 4735 5659 4757 5628 c
@@ -1151,17 +1154,17 @@
 	5239 5302 5273 5295 5303 5307 c
 	5346 5324 5375 5374 5418 5395 c
 	5464 5418 5546 5421 5598 5430 c
-	f
+	fk
 	6282 5538 m
 	6612 5625 l
 	6744 5646 l
-	f
+	fk
 	4338 3732 m
 	4385 3794 4509 3801 4584 3810 c
 	4607 3813 4621 3832 4644 3837 c
 	4694 3850 4759 3855 4812 3857 c
 	4879 3860 4938 3832 5004 3828 c
-	f
+	fk
 	1122 2310 m
 	1083 2363 1035 2364 984 2397 c
 	927 2434 882 2491 828 2532 c
@@ -1187,21 +1190,21 @@
 	3379 3348 3417 3344 3443 3362 c
 	3490 3392 3525 3452 3570 3478 c
 	3701 3552 3872 3510 4014 3546 c
-	f
+	fk
 	6 2292 m
 	57 2275 117 2274 168 2253 c
 	186 2245 204 2217 226 2221 c
 	264 2229 287 2290 324 2308 c
 	489 2391 641 2494 828 2532 c
-	f
+	fk
 	5676 2328 m
 	5726 2327 5774 2300 5826 2293 c
 	5952 2277 6077 2269 6204 2241 c
 	6380 2202 6562 2136 6744 2136 c
-	f
+	fk
 	0 2292 m
 	6 2292 l
-	f
+	fk
 	5466 2184 m
 	5462 2063 5471 1912 5401 1806 c
 	5373 1765 5330 1775 5292 1755 c
@@ -1222,26 +1225,26 @@
 	5655 219 5659 183 5683 157 c
 	5709 129 5746 116 5768 84 c
 	5792 47 5781 13 5832 0 c
-	f
+	fk
 	2592 2154 m
 	2610 2082 l
-	f
+	fk
 	1074 2040 m
 	1158 2094 l
-	f
+	fk
 	4614 2064 m
 	4619 2022 4662 1993 4664 1956 c
 	4666 1927 4630 1907 4619 1884 c
 	4603 1853 4618 1727 4650 1709 c
 	4685 1690 4736 1725 4770 1734 c
 	4813 1745 4860 1720 4890 1692 c
-	f
+	fk
 	1770 1866 m
 	1848 1770 l
-	f
+	fk
 	2964 1722 m
 	3072 1764 l
-	f
+	fk
 	4632 1722 m
 	4608 1708 4584 1714 4560 1704 c
 	4501 1680 4453 1639 4386 1638 c
@@ -1251,13 +1254,13 @@
 	3933 1625 3895 1596 3846 1599 c
 	3826 1601 3811 1616 3792 1621 c
 	3712 1643 3656 1663 3588 1710 c
-	f
+	fk
 	1608 1602 m
 	1464 1590 l
-	f
+	fk
 	6 1386 m
 	354 1554 l
-	f
+	fk
 	3432 1464 m
 	3410 1440 3382 1413 3366 1385 c
 	3357 1371 3357 1348 3345 1336 c
@@ -1275,13 +1278,13 @@
 	2079 972 l
 	2083 1026 l
 	2058 1176 l
-	f
+	fk
 	0 1386 m
 	6 1386 l
-	f
+	fk
 	1344 1140 m
 	1812 1260 l
-	f
+	fk
 	2064 714 m
 	2022 665 1951 642 1896 619 c
 	1870 608 1851 588 1824 580 c
@@ -1291,13 +1294,13 @@
 	1532 433 1536 392 1574 354 c
 	1613 315 1672 291 1705 245 c
 	1761 170 1766 84 1794 0 c
-	f
+	fk
 	1146 702 m
 	1512 480 l
-	f
+	fk
 	696 414 m
 	610 375 500 330 468 234 c
-	f
+	fk
 } bd
 /OutlineWater2Grey {
 	822 5880 m
@@ -1318,25 +1321,25 @@
 	1738 3672 l
 	1893 3438 l
 	1962 3276 l
-	f
+	fk
 	2424 3198 m
 	2420 3153 2381 3132 2359 3096 c
 	2313 3017 2276 2942 2274 2850 c
-	f
+	fk
 	3198 3168 m
 	3233 2982 l
 	3234 2874 l
-	f
+	fk
 	228 2220 m
 	234 2164 252 2102 300 2066 c
 	319 2053 342 2059 360 2041 c
 	405 1999 443 1945 492 1908 c
-	f
+	fk
 	2628 1398 m
 	2768 1240 l
 	2862 1204 l
 	2994 1086 l
-	f
+	fk
 	3348 1338 m
 	3367 1314 3383 1283 3404 1261 c
 	3425 1238 3451 1230 3466 1200 c
@@ -1351,7 +1354,7 @@
 	4550 1172 4565 1199 4590 1209 c
 	4618 1219 4650 1212 4680 1219 c
 	4708 1225 4728 1247 4758 1254 c
-	f
+	fk
 	6 210 m
 	288 255 l
 	432 234 l
@@ -1362,10 +1365,10 @@
 	1428 290 l
 	1536 294 l
 	1620 318 l
-	f
+	fk
 	0 210 m
 	6 210 l
-	f
+	fk
 } bd
 /OutlineContinentGreen {
 	6318 5724 m
@@ -1685,7 +1688,7 @@
 	6191 5826 6203 5798 6228 5790 c
 	6251 5782 6257 5824 6276 5826 c
 	6319 5829 6299 5746 6318 5724 c
-	f
+	fk
 	2628 2094 m
 	2653 2042 2686 2075 2724 2046 c
 	2736 2036 2724 2027 2730 2016 c
@@ -1743,7 +1746,7 @@
 	2424 1944 2411 1967 2418 1980 c
 	2422 1988 2466 2030 2472 2034 c
 	2517 2064 2587 2053 2628 2094 c
-	f
+	fk
 	1020 2028 m
 	1054 2045 1084 2054 1098 2010 c
 	1101 1998 1076 1980 1086 1962 c
@@ -1838,856 +1841,423 @@
 	978 2070 l
 	990 2082 l
 	1020 2028 l
-	f
+	fk
 } bd
 /OutlineInternalBlack {
 	5622 5220 m
 	5650 5220 5675 5200 5706 5208 c
 	5720 5211 5737 5224 5754 5220 c
-	5765 5217 5773 5208 5784 5202 c
-	5788 5199 5797 5204 5802 5202 c
-	5817 5195 5828 5177 5844 5172 c
-	5856 5167 5873 5175 5886 5172 c
-	5926 5161 5957 5119 5970 5082 c
-	5974 5069 5966 5061 5964 5052 c
-	5961 5040 5966 5027 5964 5016 c
-	5960 5000 5951 4974 5958 4956 c
-	5969 4922 5991 4894 6000 4860 c
-	6003 4844 5994 4829 5994 4812 c
-	5994 4804 5992 4794 5994 4788 c
-	6000 4776 l
-	5997 4768 5985 4764 5982 4758 c
-	5982 4746 l
-	5970 4734 l
-	5961 4713 5976 4695 5982 4680 c
-	5987 4662 5983 4644 5988 4626 c
-	5990 4617 5998 4607 5994 4596 c
-	5982 4584 l
-	5975 4560 5960 4537 5946 4518 c
-	5937 4506 5922 4503 5916 4494 c
-	5912 4488 5914 4475 5910 4470 c
-	5899 4456 5889 4447 5880 4434 c
-	5880 4422 l
-	5875 4412 5865 4407 5862 4398 c
+	5786 5211 5812 5182 5844 5172 c
+	5906 5151 5945 5155 5970 5082 c
+	5982 5044 5944 4997 5958 4956 c
+	5975 4903 6020 4836 6000 4776 c
+	5995 4761 5976 4748 5970 4734 c
+	5952 4690 6012 4639 5994 4596 c
+	5963 4521 5887 4474 5862 4398 c
 	5841 4337 5909 4297 5886 4242 c
-	5877 4222 5863 4206 5844 4194 c
-	5839 4191 5830 4196 5826 4194 c
-	5805 4183 5794 4155 5784 4140 c
-	5777 4129 5764 4121 5760 4110 c
-	5757 4104 5751 4078 5754 4074 c
-	5760 4061 5805 4049 5796 4026 c
-	5788 4008 5766 4003 5754 3996 c
-	5726 3980 5700 3961 5670 3954 c
-	5655 3950 5624 3950 5610 3954 c
-	5604 3955 5600 3964 5592 3960 c
-	5579 3953 5591 3949 5586 3942 c
-	5580 3933 5564 3916 5556 3912 c
-	5549 3908 5538 3914 5532 3912 c
-	5517 3905 5509 3891 5496 3882 c
-	5484 3874 5466 3876 5454 3870 c
-	5474 3845 5455 3857 5448 3834 c
-	5445 3825 5455 3825 5454 3816 c
-	5452 3802 5443 3790 5448 3774 c
-	5451 3760 5458 3750 5466 3738 c
-	5468 3733 5463 3724 5466 3720 c
-	5473 3707 5496 3700 5502 3684 c
-	5505 3672 5487 3651 5484 3642 c
-	5479 3627 5491 3600 5484 3588 c
-	5477 3577 5464 3578 5460 3564 c
-	5454 3548 5454 3495 5460 3480 c
-	5464 3465 5477 3452 5484 3438 c
-	5488 3426 5490 3413 5496 3402 c
-	5496 3390 l
-	5502 3381 5518 3377 5526 3372 c
-	5544 3358 5558 3330 5550 3306 c
+	5863 4187 5786 4173 5760 4110 c
+	5741 4065 5808 4055 5796 4026 c
+	5781 3992 5699 3961 5670 3954 c
+	5649 3948 5604 3966 5592 3960 c
+	5578 3952 5575 3921 5556 3912 c
+	5524 3896 5485 3885 5454 3870 c
+	5474 3845 5438 3811 5448 3774 c
+	5451 3760 5458 3731 5466 3720 c
+	5473 3707 5502 3697 5502 3678 c
+	5502 3612 5434 3555 5460 3480 c
+	5467 3458 5483 3408 5496 3390 c
+	5515 3362 5566 3356 5550 3306 c
 	5536 3266 5503 3256 5478 3228 c
 	5468 3217 5462 3193 5448 3186 c
-	5441 3182 5430 3188 5424 3186 c
-	5414 3181 5408 3174 5400 3168 c
-	5388 3168 l
-	5368 3159 5331 3144 5310 3162 c
-	5301 3168 5307 3174 5298 3180 c
-	5285 3187 5273 3189 5262 3204 c
+	5386 3152 5309 3140 5262 3204 c
 	5246 3224 5236 3260 5208 3270 c
-	5177 3280 5162 3237 5142 3222 c
-	5133 3215 5112 3201 5100 3204 c
-	5092 3205 5083 3218 5076 3222 c
-	5070 3224 5063 3219 5058 3222 c
-	5046 3234 l
-	5018 3249 4976 3278 4986 3318 c
-	4988 3327 5002 3348 4998 3360 c
-	4993 3371 4975 3378 4968 3384 c
-	4949 3397 4928 3416 4902 3408 c
-	4895 3405 4889 3393 4884 3390 c
-	4878 3386 4865 3388 4860 3384 c
-	4832 3363 4869 3357 4860 3336 c
-	4856 3326 4839 3321 4836 3312 c
-	4834 3306 4838 3298 4836 3294 c
-	4832 3286 4821 3283 4818 3276 c
-	4815 3271 4818 3257 4818 3252 c
-	4818 3214 4840 3201 4866 3174 c
-	4874 3164 4879 3149 4890 3144 c
-	4898 3139 4911 3144 4920 3138 c
-	4933 3126 4932 3105 4938 3090 c
-	4939 3084 4948 3077 4950 3072 c
-	4954 3053 4925 3046 4914 3036 c
-	4898 3021 4883 2999 4866 2988 c
-	4846 2975 4815 2977 4794 2970 c
-	4789 2968 4780 2972 4776 2970 c
-	4763 2963 4767 2956 4764 2946 c
-	4757 2925 4755 2908 4776 2892 c
-	4788 2881 4804 2879 4818 2868 c
-	4797 2847 4774 2833 4758 2814 c
-	4755 2810 4759 2799 4758 2796 c
-	4746 2784 l
-	4744 2776 4742 2754 4746 2748 c
-	4757 2724 4776 2723 4776 2694 c
-	4776 2680 4780 2658 4776 2646 c
-	4772 2634 4752 2616 4752 2604 c
-	4752 2579 4798 2569 4788 2538 c
-	4774 2498 4734 2457 4752 2406 c
-	4755 2394 4767 2386 4776 2376 c
-	4779 2371 4779 2362 4788 2358 c
-	4817 2341 4820 2388 4842 2394 c
-	4844 2394 4852 2383 4860 2388 c
-	4871 2394 4878 2404 4890 2412 c
-	4900 2418 4916 2426 4926 2436 c
-	4937 2447 4944 2464 4962 2472 c
-	4970 2475 4983 2467 4992 2472 c
-	4999 2475 5003 2485 5010 2490 c
-	5020 2496 5036 2501 5046 2508 c
-	5059 2517 5068 2529 5082 2538 c
-	5106 2554 5131 2557 5154 2580 c
-	5177 2603 5246 2620 5226 2670 c
-	5218 2688 5202 2701 5190 2718 c
-	5186 2723 5181 2736 5178 2742 c
-	5168 2753 5157 2757 5148 2766 c
-	5142 2778 l
-	5138 2780 5127 2781 5124 2784 c
-	5110 2794 5100 2809 5088 2820 c
-	5076 2826 l
-	5073 2830 5077 2839 5076 2844 c
-	5072 2853 5066 2861 5070 2874 c
-	5071 2878 5082 2900 5082 2904 c
-	5078 2918 5048 2932 5040 2940 c
-	5022 2955 5013 2980 5004 3000 c
-	4968 2976 l
-	4957 2996 4967 2987 4974 3006 c
-	4982 3032 4941 3036 4926 3036 c
-	f
-	5316 4122 m
-	5340 4086 l
-	5334 4080 l
-	5334 4056 l
+	5172 3281 5145 3212 5112 3204 c
+	5096 3200 5088 3217 5076 3222 c
+	4997 3248 4985 3285 4998 3360 c
+	5033 3354 5076 3355 5094 3396 c
+	5099 3409 5091 3424 5100 3438 c
+	5115 3460 5131 3479 5142 3504 c
+	5150 3524 5123 3536 5130 3552 c
+	5149 3597 5194 3545 5214 3558 c
+	5248 3579 5203 3616 5208 3642 c
+	5211 3660 5237 3665 5244 3684 c
+	5247 3695 5235 3716 5232 3726 c
+	5251 3735 5271 3719 5286 3726 c
+	5300 3732 5294 3747 5304 3756 c
+	5315 3765 5343 3771 5352 3786 c
+	5372 3820 5354 3870 5358 3900 c
+	5358 3906 5376 3918 5376 3924 c
+	5376 3959 5345 3959 5382 3996 c
 	5328 4038 l
-	5382 3996 l
-	5358 3966 l
-	5364 3954 l
-	5364 3936 l
-	5448 3876 l
-	f
-	5370 3918 m
-	5358 3888 l
-	5370 3852 l
-	5352 3834 l
-	5352 3786 l
-	5304 3756 l
-	5286 3726 l
-	5268 3732 l
-	5232 3726 l
-	5235 3716 5247 3695 5244 3684 c
-	5237 3665 5211 3660 5208 3642 c
-	5214 3630 l
-	5214 3625 5211 3616 5214 3612 c
-	5221 3595 5238 3573 5214 3558 c
-	5194 3545 5149 3597 5130 3552 c
-	5123 3536 5150 3524 5142 3504 c
-	5130 3492 l
-	5125 3480 5123 3466 5118 3456 c
-	5114 3448 5104 3444 5100 3438 c
-	5091 3424 5099 3409 5094 3396 c
-	5079 3361 5036 3349 5004 3360 c
-	f
-	5748 2526 m
-	5706 2538 l
-	5622 2610 l
-	5610 2610 l
-	5544 2634 l
-	5514 2628 l
-	5508 2634 l
-	5484 2634 l
-	5460 2646 l
-	5412 2628 l
-	5376 2634 l
-	5358 2646 l
-	5394 2706 l
-	5400 2718 l
-	5430 2718 l
-	5442 2742 l
-	5478 2772 l
-	5478 2796 l
-	5478 2856 l
-	5472 2868 l
-	5496 2910 l
-	5496 2940 l
-	5502 2958 l
-	5490 2970 l
-	5502 3006 l
-	5508 3042 l
-	5526 3066 l
-	5556 3078 l
-	5556 3090 l
-	5580 3126 l
-	5598 3126 l
-	5622 3150 l
-	5628 3192 l
-	5640 3204 l
-	5652 3246 l
-	5646 3270 l
-	5664 3288 l
-	5664 3336 l
-	5682 3360 l
-	5682 3414 l
-	5700 3432 l
-	5706 3462 l
-	5718 3474 l
-	5724 3528 l
-	5766 3582 l
-	5766 3600 l
-	5784 3624 l
-	5784 3642 l
-	5844 3672 l
-	5868 3726 l
-	5874 3738 l
-	5862 3786 l
-	5886 3804 l
-	5910 3834 l
-	5940 3822 l
-	5994 3816 l
-	f
+	5316 4122 l
+	fk
+	5376 3924 m
+	5454 3870 l
+	fk
+	5814 2730 m
+	5770 2730 5754 2753 5718 2766 c
+	5663 2784 5613 2798 5592 2862 c
+	5582 2890 5620 2911 5628 2934 c
+	5641 2974 5623 3025 5634 3066 c
+	5639 3088 5611 3112 5610 3132 c
+	5607 3167 5649 3210 5652 3246 c
+	5662 3377 5724 3522 5784 3642 c
+	5798 3670 5827 3655 5844 3672 c
+	5893 3721 5831 3801 5910 3834 c
+	5923 3839 5971 3816 5994 3816 c
+	fk
+	4758 2940 m
+	4716 2946 4686 2987 4656 3012 c
+	4593 3062 4456 3092 4380 3054 c
+	4356 3082 4340 3148 4380 3174 c
+	4391 3181 4412 3185 4422 3198 c
+	4443 3228 4436 3276 4458 3306 c
+	4478 3334 4516 3305 4542 3318 c
+	4563 3328 4571 3349 4590 3360 c
+	4608 3369 4654 3345 4680 3354 c
+	4720 3367 4756 3446 4806 3402 c
+	4818 3390 4857 3359 4860 3348 c
+	4864 3329 4842 3325 4836 3312 c
+	4825 3291 4808 3255 4818 3228 c
+	4837 3169 4916 3155 4932 3108 c
+	4935 3097 4955 3071 4950 3060 c
+	4939 3038 4859 2981 4836 2976 c
+	4816 2971 4792 2979 4776 2970 c
+	4748 2954 4755 2908 4776 2892 c
+	4788 2881 4804 2879 4818 2868 c
+	4792 2842 4722 2795 4746 2748 c
+	4762 2715 4791 2691 4776 2646 c
+	4772 2634 4752 2616 4752 2604 c
+	4752 2581 4790 2571 4788 2544 c
+	4784 2500 4723 2446 4758 2394 c
+	4767 2380 4790 2344 4812 2358 c
+	4821 2363 4827 2391 4842 2394 c
+	4861 2397 4882 2351 4890 2340 c
+	4944 2370 l
+	5010 2316 l
+	5082 2328 l
+	fk
+	4848 3372 m
+	4904 3419 4945 3412 4998 3360 c
+	fk
 	4134 3348 m
-	4130 3341 4128 3328 4122 3324 c
-	4113 3317 4097 3311 4092 3300 c
-	4088 3293 4093 3282 4092 3276 c
-	4080 3264 l
-	4072 3246 4082 3217 4086 3204 c
-	4091 3183 4080 3167 4080 3150 c
-	4080 3140 4090 3136 4086 3126 c
-	4083 3119 4072 3114 4068 3108 c
-	4053 3085 4042 3060 4032 3036 c
-	4020 3024 l
+	4119 3318 4093 3297 4080 3264 c
+	4062 3223 4101 3162 4086 3126 c
+	4070 3089 4035 3060 4020 3024 c
 	4013 3007 4016 2985 4008 2970 c
-	3997 2952 3975 2946 3960 2940 c
-	3948 2928 l
-	3938 2922 3931 2929 3924 2916 c
-	3918 2905 3928 2893 3930 2886 c
-	3932 2876 3926 2865 3930 2856 c
-	3942 2818 3985 2805 4014 2784 c
-	4028 2772 4044 2755 4056 2742 c
-	4056 2730 l
-	4065 2710 4085 2694 4098 2676 c
-	4098 2664 l
-	4108 2646 4131 2633 4152 2640 c
-	4166 2644 4174 2661 4188 2670 c
-	4202 2679 4217 2685 4230 2700 c
-	4233 2703 4232 2719 4236 2724 c
-	4258 2757 4299 2756 4320 2784 c
-	4325 2791 4341 2799 4344 2808 c
+	3988 2937 3912 2939 3924 2892 c
+	3939 2830 3965 2820 4014 2784 c
+	4061 2748 4072 2664 4122 2640 c
+	4171 2615 4223 2707 4242 2730 c
+	4269 2763 4328 2762 4344 2808 c
 	4346 2815 4334 2831 4338 2844 c
 	4341 2859 4355 2866 4362 2880 c
 	4370 2897 4357 2927 4362 2946 c
-	4366 2962 4365 2980 4368 3000 c
-	4380 3012 l
-	4383 3020 4381 3044 4380 3054 c
-	4368 3066 l
-	4365 3072 4370 3083 4368 3090 c
-	4361 3104 4347 3124 4356 3144 c
-	4368 3174 4404 3173 4422 3198 c
-	4422 3210 l
-	4426 3214 4438 3222 4440 3228 c
-	4442 3236 4437 3248 4440 3258 c
-	4441 3263 4450 3270 4452 3276 c
-	4455 3286 4451 3296 4458 3306 c
-	4478 3334 4516 3305 4542 3318 c
-	4549 3321 4552 3332 4560 3336 c
-	4569 3340 4568 3333 4578 3342 c
-	4581 3344 4582 3356 4590 3360 c
-	4599 3365 4607 3355 4614 3354 c
-	4628 3350 4665 3349 4680 3354 c
-	4709 3363 4729 3402 4758 3414 c
-	4772 3420 4804 3406 4812 3396 c
-	4812 3384 l
-	4816 3377 4824 3371 4830 3366 c
-	4842 3372 l
-	f
-	5616 3126 m
-	5628 3084 l
-	5634 3066 l
-	5622 3048 l
-	5622 2994 l
-	5628 2934 l
-	5592 2862 l
-	5610 2838 l
-	5682 2766 l
-	5718 2766 l
-	5754 2742 l
-	5814 2730 l
-	f
-	4386 3060 m
-	4434 3066 l
-	4488 3060 l
-	4572 3060 l
-	4626 3024 l
-	4656 3012 l
-	4686 2970 l
-	4716 2970 l
-	4752 2940 l
-	f
+	4370 2980 4380 3015 4380 3054 c
+	fk
+	4926 3036 m
+	4989 3036 4953 3005 4968 2976 c
+	5004 3000 l
+	5013 2980 5022 2955 5040 2940 c
+	5048 2932 5078 2918 5082 2904 c
+	5087 2882 5059 2853 5076 2826 c
+	5087 2806 5125 2790 5142 2778 c
+	5181 2746 5226 2688 5226 2634 c
+	5358 2646 l
+	5358 2716 5449 2720 5478 2772 c
+	5491 2796 5470 2845 5472 2868 c
+	5473 2883 5490 2895 5496 2910 c
+	5508 2939 5482 2964 5490 2988 c
+	5497 3010 5506 3050 5526 3066 c
+	5534 3072 5548 3068 5556 3078 c
+	5579 3107 5570 3118 5610 3132 c
+	fk
+	3966 2814 m
+	3938 2790 3910 2792 3882 2778 c
+	3832 2753 3803 2710 3780 2670 c
+	3773 2658 3754 2651 3750 2640 c
+	3745 2628 3765 2604 3774 2598 c
+	3798 2578 3861 2533 3852 2496 c
+	3845 2469 3843 2428 3828 2406 c
+	3807 2375 3770 2373 3750 2346 c
+	3740 2333 3749 2317 3744 2304 c
+	3734 2281 3696 2262 3696 2238 c
+	3696 2229 3708 2214 3702 2202 c
+	3684 2167 3638 2169 3624 2136 c
+	3613 2111 3641 2074 3606 2052 c
+	3564 2025 3536 2054 3498 2064 c
+	3470 2070 3458 2049 3438 2046 c
+	3425 2043 3400 2048 3384 2046 c
+	3384 2088 l
+	fk
 	2874 2808 m
-	2856 2724 l
-	2856 2676 l
 	2856 2640 l
-	2886 2598 l
 	2880 2562 l
-	f
+	fk
 	3090 2808 m
 	3102 2760 l
-	3102 2688 l
 	3096 2676 l
-	3114 2640 l
-	3120 2586 l
 	3126 2568 l
-	3102 2532 l
 	3078 2472 l
-	f
-	3960 2808 m
-	3924 2784 l
-	3882 2778 l
-	3840 2742 l
-	3786 2700 l
-	3780 2670 l
-	3750 2640 l
-	3774 2598 l
-	3828 2544 l
-	3852 2496 l
-	3828 2406 l
-	3750 2346 l
-	3744 2304 l
-	3702 2244 l
-	3696 2238 l
-	3702 2202 l
-	3672 2166 l
-	3660 2166 l
-	3624 2136 l
-	3630 2094 l
-	3618 2058 l
-	3660 2016 l
-	3684 1992 l
-	3744 2004 l
-	3792 1986 l
-	3804 1974 l
-	3852 1986 l
-	3882 1992 l
-	3948 2046 l
-	f
-	4344 2796 m
-	4356 2784 l
-	4356 2760 l
-	4392 2718 l
-	4392 2706 l
-	4428 2646 l
-	4428 2628 l
-	4440 2616 l
-	4452 2580 l
-	4434 2526 l
-	4422 2520 l
-	4428 2490 l
-	4458 2382 l
-	4500 2382 l
-	4512 2370 l
-	4536 2370 l
-	4578 2364 l
-	4608 2400 l
-	4614 2442 l
-	4662 2484 l
-	4662 2496 l
-	4686 2532 l
-	4692 2622 l
-	4758 2724 l
-	f
+	fk
+	4338 2802 m
+	4357 2782 4352 2762 4368 2742 c
+	4404 2692 4437 2637 4452 2580 c
+	4460 2546 4434 2540 4422 2520 c
+	4408 2497 4442 2397 4458 2382 c
+	4473 2366 4482 2389 4500 2382 c
+	4540 2365 4581 2347 4608 2400 c
+	4614 2412 4605 2429 4614 2442 c
+	4638 2479 4669 2491 4686 2532 c
+	4697 2559 4682 2593 4692 2622 c
+	4705 2662 4750 2680 4758 2724 c
+	fk
 	2550 2772 m
 	2550 2741 2547 2717 2532 2694 c
 	2524 2682 2494 2668 2502 2652 c
 	2508 2637 2567 2624 2550 2598 c
 	2537 2578 2495 2601 2478 2592 c
-	2455 2579 2469 2554 2460 2538 c
-	2448 2519 2423 2529 2406 2526 c
-	2396 2523 2390 2511 2382 2508 c
-	2359 2498 2323 2512 2304 2514 c
-	2267 2517 2233 2509 2202 2502 c
-	2159 2491 2114 2509 2076 2490 c
-	2055 2479 2042 2460 2022 2448 c
-	2012 2442 1996 2441 1986 2436 c
-	1976 2431 1982 2424 1974 2418 c
-	1970 2415 1959 2414 1956 2412 c
-	1947 2406 1941 2397 1932 2394 c
-	1921 2390 1911 2394 1902 2388 c
-	1886 2377 1864 2360 1854 2346 c
-	1841 2329 1833 2304 1812 2292 c
-	1800 2292 l
-	1783 2280 1767 2272 1752 2262 c
-	1743 2256 1726 2247 1722 2238 c
-	1719 2233 1724 2224 1722 2220 c
-	1716 2210 1697 2180 1686 2178 c
-	1683 2177 1664 2189 1662 2190 c
-	1639 2195 1612 2184 1590 2190 c
-	1579 2192 1560 2206 1548 2202 c
-	1532 2196 1521 2178 1506 2172 c
-	1500 2169 1493 2174 1488 2172 c
-	1477 2167 1465 2158 1458 2148 c
-	1436 2119 1424 2090 1398 2064 c
-	f
-	5232 2634 m
-	5292 2634 l
-	5304 2646 l
-	5352 2646 l
-	f
-	5514 2622 m
+	2450 2576 2473 2536 2442 2526 c
+	2338 2491 2222 2529 2112 2502 c
+	2062 2489 2010 2447 1974 2418 c
+	1953 2401 1922 2401 1902 2388 c
+	1863 2362 1850 2314 1812 2292 c
+	1787 2277 1756 2268 1734 2250 c
+	1714 2234 1716 2185 1686 2178 c
+	1677 2175 1595 2190 1584 2196 c
+	1632 2244 1652 2236 1590 2268 c
+	1594 2293 1617 2300 1632 2322 c
+	1647 2345 1620 2349 1626 2370 c
+	1634 2405 1663 2429 1614 2454 c
+	fk
+	5358 2646 m
+	5393 2616 5406 2634 5442 2646 c
+	5463 2653 5493 2629 5514 2628 c
+	5533 2626 5556 2635 5580 2628 c
+	5641 2607 5685 2546 5748 2526 c
+	fk
+	5226 2634 m
+	4860 2388 l
+	fk
+	5520 2628 m
 	5496 2580 l
-	f
+	fk
 	2970 2256 m
-	2994 2280 l
-	3006 2304 l
-	3024 2310 l
-	3042 2328 l
-	3054 2328 l
-	3114 2376 l
-	3132 2376 l
-	3162 2418 l
 	3222 2454 l
-	3246 2478 l
-	3270 2484 l
 	3300 2514 l
-	3318 2502 l
-	3342 2496 l
 	3354 2484 l
-	3438 2490 l
 	3450 2490 l
-	3468 2508 l
-	3480 2508 l
-	3522 2550 l
 	3594 2586 l
-	f
+	fk
 	2472 2166 m
-	2472 2220 l
-	2478 2274 l
-	2478 2340 l
-	2490 2376 l
-	2508 2394 l
-	2502 2412 l
-	2514 2442 l
-	2526 2466 l
-	2592 2472 l
-	2628 2526 l
-	2652 2544 l
-	2670 2526 l
-	2670 2514 l
-	2682 2448 l
-	2634 2424 l
-	2640 2412 l
-	2640 2376 l
-	2670 2340 l
-	2676 2322 l
-	2730 2232 l
-	f
-	3462 2490 m
-	3474 2466 l
-	3474 2442 l
-	3486 2430 l
-	3492 2406 l
-	3492 2382 l
-	3510 2370 l
-	3546 2328 l
-	3546 2256 l
-	3558 2196 l
-	3618 2136 l
-	f
+	2489 2218 2463 2282 2478 2340 c
+	2483 2361 2499 2374 2508 2394 c
+	2516 2414 2493 2448 2526 2466 c
+	2544 2476 2573 2458 2592 2472 c
+	2607 2482 2628 2549 2652 2544 c
+	2671 2539 2694 2466 2682 2448 c
+	2670 2430 2639 2454 2634 2424 c
+	2622 2357 2710 2290 2730 2232 c
+	fk
+	3456 2496 m
+	3483 2462 3472 2416 3492 2382 c
+	3503 2361 3533 2352 3546 2328 c
+	3575 2269 3520 2153 3624 2136 c
+	fk
 	3924 2340 m
-	3908 2342 3875 2367 3882 2388 c
-	3894 2400 l
-	3896 2419 3903 2425 3912 2442 c
-	3922 2463 3921 2483 3948 2490 c
-	3964 2494 3971 2483 3984 2478 c
-	3990 2475 4001 2481 4008 2478 c
-	4026 2468 4027 2449 4050 2448 c
-	4081 2445 4092 2456 4116 2472 c
-	4123 2476 4136 2493 4146 2490 c
+	3850 2352 3906 2479 3948 2490 c
+	3988 2500 4016 2450 4050 2448 c
+	4083 2445 4126 2497 4146 2490 c
 	4155 2486 4158 2465 4170 2460 c
 	4188 2450 4200 2477 4218 2472 c
 	4233 2466 4244 2448 4260 2442 c
 	4275 2435 4298 2443 4314 2436 c
-	4326 2429 4348 2405 4356 2394 c
-	4358 2389 4354 2380 4356 2376 c
-	4368 2364 l
-	4370 2348 4367 2334 4362 2322 c
-	4362 2310 l
+	4350 2417 4386 2345 4362 2310 c
 	4342 2281 4300 2306 4278 2310 c
-	4259 2313 4250 2298 4236 2292 c
-	4222 2286 4204 2295 4194 2298 c
-	4180 2301 4158 2291 4146 2298 c
+	4240 2316 4192 2274 4146 2298 c
 	4128 2306 4110 2340 4086 2328 c
-	4045 2307 4060 2269 4068 2238 c
-	4069 2231 4077 2229 4074 2220 c
+	4023 2296 4089 2256 4074 2220 c
 	4068 2205 4054 2198 4050 2184 c
-	f
-	1614 2454 m
-	1633 2444 1652 2425 1644 2400 c
-	1640 2389 1628 2380 1626 2370 c
-	1620 2349 1647 2345 1632 2322 c
-	1617 2300 1594 2293 1590 2268 c
-	1638 2250 l
-	1590 2202 l
-	f
-	4860 2382 m
-	4890 2322 l
-	4878 2304 l
-	f
-	4896 2346 m
-	4926 2358 l
-	4944 2370 l
-	4962 2346 l
-	5010 2316 l
-	5052 2328 l
-	5082 2328 l
-	f
+	fk
 	4422 2346 m
-	4470 2292 l
-	4464 2256 l
-	4464 2238 l
-	4422 2202 l
-	4422 2190 l
-	4410 2178 l
-	4410 2160 l
-	4392 2142 l
-	4350 2064 l
-	f
+	4432 2325 4459 2312 4470 2292 c
+	4490 2250 4437 2224 4422 2202 c
+	4395 2164 4371 2106 4350 2064 c
+	fk
+	4890 2340 m
+	4878 2304 l
+	fk
 	3288 2208 m
-	3306 2220 l
-	3312 2238 l
-	3330 2238 l
-	3372 2280 l
-	3420 2286 l
-	3474 2298 l
-	f
-	1698 2178 m
-	1752 2160 l
-	1770 2148 l
-	1818 2142 l
-	f
-	3384 2088 m
-	3378 2052 l
-	3392 2044 3426 2063 3438 2046 c
-	3447 2031 3431 2013 3426 2004 c
-	3423 2000 3426 1990 3426 1986 c
-	3414 1974 l
-	3414 1962 l
-	3399 1941 3401 1931 3396 1908 c
-	3393 1896 3383 1888 3378 1878 c
-	3374 1871 3377 1859 3372 1854 c
-	3358 1838 3336 1828 3318 1824 c
-	3288 1816 3297 1845 3288 1860 c
-	3284 1865 3272 1871 3270 1878 c
-	3267 1887 3273 1898 3270 1908 c
-	3266 1917 3245 1940 3234 1944 c
-	3221 1948 3197 1923 3186 1920 c
-	3160 1911 3138 1915 3114 1920 c
-	f
-	3444 2052 m
-	3476 2068 3500 2061 3534 2052 c
-	3546 2040 l
-	3567 2031 3596 2050 3612 2058 c
-	f
+	3345 2246 3389 2298 3474 2298 c
+	fk
+	1398 2064 m
+	1463 2129 1484 2196 1584 2196 c
+	fk
+	1692 2184 m
+	1722 2158 1777 2142 1818 2142 c
+	fk
+	3618 2058 m
+	3630 2045 3679 2008 3684 1992 c
+	3701 1921 3632 1880 3594 1842 c
+	3618 1788 l
+	3660 1758 l
+	fk
+	3438 2046 m
+	3438 2006 3418 1982 3402 1950 c
+	3384 1915 3393 1869 3360 1842 c
+	3337 1823 3313 1835 3294 1830 c
+	3279 1825 3261 1782 3258 1770 c
+	3253 1750 3302 1678 3324 1668 c
+	3347 1656 3362 1697 3384 1686 c
+	3402 1675 3407 1629 3444 1650 c
+	3515 1689 3464 1807 3534 1842 c
+	3546 1848 3579 1842 3594 1842 c
+	fk
+	3948 2046 m
+	3834 1974 l
+	3744 2004 l
+	3684 1992 l
+	fk
 	2442 2004 m
-	2472 1968 l
-	2520 1926 l
-	2520 1908 l
-	2532 1896 l
+	2514 1938 l
 	2538 1866 l
-	2538 1812 l
-	2562 1782 l
-	2562 1740 l
-	2544 1722 l
-	2568 1680 l
-	2574 1614 l
-	2616 1578 l
-	2634 1554 l
-	2664 1536 l
-	2664 1518 l
-	2676 1500 l
-	f
-	3678 1986 m
-	3678 1949 3673 1895 3642 1872 c
-	3633 1865 3621 1864 3612 1860 c
-	3604 1856 3601 1845 3594 1842 c
-	3578 1834 3551 1847 3534 1842 c
-	3528 1840 3520 1828 3516 1824 c
-	3504 1812 l
-	3497 1798 3501 1779 3498 1764 c
-	3492 1742 3489 1712 3480 1692 c
-	3475 1682 3462 1675 3456 1668 c
-	3452 1663 3452 1654 3444 1650 c
-	3430 1642 3403 1651 3396 1662 c
-	3390 1669 3397 1678 3384 1686 c
-	3362 1697 3347 1656 3324 1668 c
-	3315 1672 3299 1689 3294 1698 c
-	3290 1703 3292 1716 3288 1722 c
-	3280 1731 3269 1731 3264 1740 c
-	3246 1768 3272 1801 3288 1824 c
-	f
+	2601 1897 2670 1823 2724 1806 c
+	2740 1800 2761 1810 2778 1806 c
+	2821 1795 2874 1788 2922 1788 c
+	fk
+	3114 1920 m
+	3138 1915 3160 1911 3186 1920 c
+	3197 1923 3221 1948 3234 1944 c
+	3263 1934 3294 1857 3294 1830 c
+	fk
 	612 1872 m
-	666 1818 l
-	678 1818 l
-	708 1800 l
-	726 1806 l
-	750 1770 l
-	804 1716 l
-	846 1722 l
-	858 1728 l
-	912 1674 l
-	948 1662 l
-	954 1668 l
-	978 1662 l
-	984 1632 l
-	990 1590 l
-	984 1566 l
-	1002 1530 l
-	1044 1548 l
+	638 1818 686 1819 726 1806 c
+	758 1795 765 1731 804 1716 c
+	823 1707 843 1732 858 1728 c
+	878 1721 893 1686 912 1674 c
+	933 1659 960 1675 978 1662 c
+	1007 1638 980 1562 1002 1530 c
 	1116 1566 l
 	1188 1632 l
-	1254 1644 l
 	1302 1650 l
-	f
-	2544 1872 m
-	2586 1866 l
-	2616 1866 l
-	2658 1836 l
-	2676 1836 l
-	2688 1824 l
-	2700 1824 l
-	2724 1806 l
-	2778 1806 l
-	2802 1794 l
-	2886 1794 l
-	2922 1788 l
-	f
-	3600 1836 m
-	3618 1812 l
-	3618 1788 l
-	3636 1782 l
-	3660 1758 l
-	f
-	1788 1368 m
-	1830 1410 l
-	1842 1428 l
-	1890 1428 l
-	1914 1440 l
-	1986 1536 l
-	2040 1578 l
-	2058 1608 l
-	2088 1638 l
-	2100 1638 l
-	2112 1656 l
-	2136 1662 l
-	2160 1686 l
-	2226 1692 l
-	2250 1704 l
-	2358 1710 l
-	2472 1680 l
-	2478 1686 l
-	2520 1686 l
-	2538 1704 l
-	f
-	1002 1524 m
-	996 1482 l
-	990 1464 l
-	1008 1416 l
-	1014 1362 l
-	1032 1344 l
-	1038 1314 l
-	1050 1314 l
-	1104 1296 l
-	1122 1320 l
+	fk
+	2538 1866 m
+	2538 1800 2593 1729 2520 1686 c
+	2478 1661 2416 1692 2382 1704 c
+	2328 1721 2273 1703 2226 1692 c
+	2204 1686 2179 1697 2160 1686 c
+	2108 1655 2079 1621 2040 1578 c
+	2023 1560 2002 1557 1986 1536 c
+	1963 1505 1950 1464 1914 1440 c
+	1892 1425 1862 1439 1842 1428 c
+	1818 1415 1813 1380 1788 1368 c
+	fk
+	2544 1704 m
+	2580 1602 l
+	2676 1500 l
+	fk
+	1002 1530 m
+	1002 1451 987 1296 1104 1296 c
+	1092 1226 1052 1180 1014 1122 c
+	997 1097 961 1082 948 1056 c
+	923 1006 893 952 876 900 c
+	866 872 888 860 894 840 c
+	901 808 897 767 912 732 c
+	930 688 954 664 954 612 c
+	fk
+	1104 1296 m
 	1200 1362 l
 	1230 1314 l
 	1290 1320 l
 	1320 1260 l
-	1338 1260 l
 	1380 1236 l
-	f
-	1104 1290 m
-	1086 1254 l
-	1086 1224 l
-	1068 1188 l
-	1020 1140 l
-	990 1098 l
-	948 1056 l
-	948 1038 l
-	930 1014 l
-	930 1002 l
-	900 972 l
-	894 924 l
-	876 900 l
-	876 864 l
-	894 840 l
-	888 804 l
-	912 762 l
-	912 732 l
-	924 720 l
-	948 672 l
-	948 648 l
-	954 612 l
-	f
+	fk
 	558 1002 m
-	642 984 l
-	660 984 l
 	678 966 l
-	708 972 l
 	756 978 l
-	816 966 l
-	888 942 l
-	f
+	894 942 l
+	fk
 } bd
 /OutlineInternal2Grey {
 	5574 3936 m
-	5598 3912 l
-	5604 3888 l
-	5652 3858 l
 	5700 3816 l
 	5766 3798 l
 	5802 3834 l
-	5826 3810 l
 	5868 3786 l
-	f
+	fk
 	4422 3408 m
 	4458 3312 l
-	f
+	fk
 	4026 3372 m
-	4074 3342 l
-	4104 3366 l
-	4128 3342 l
-	4182 3354 l
-	f
+	4039 3365 4053 3331 4074 3342 c
+	4082 3346 4094 3367 4104 3366 c
+	4139 3360 4139 3325 4182 3354 c
+	fk
 	5550 3312 m
 	5652 3276 l
-	f
+	fk
 	4080 3126 m
-	4212 3114 l
-	4230 3126 l
-	4290 3126 l
-	4314 3138 l
-	4350 3132 l
-	f
+	4147 3103 4219 3120 4290 3126 c
+	4314 3128 4323 3145 4350 3132 c
+	fk
 	3696 3048 m
-	3696 3024 l
-	3714 3012 l
-	3774 2964 l
-	3816 2952 l
-	3870 2916 l
-	3930 2916 l
-	f
+	3696 2985 3776 2974 3816 2952 c
+	3834 2940 3848 2921 3870 2916 c
+	3887 2911 3911 2916 3930 2916 c
+	fk
 	2082 2820 m
-	2082 2784 l
 	2106 2754 l
 	2106 2682 l
 	2124 2598 l
 	2082 2490 l
-	f
+	fk
 	3552 2706 m
-	3564 2658 l
-	3576 2646 l
-	3582 2604 l
-	3606 2586 l
-	3648 2634 l
-	3661 2618 3685 2583 3714 2598 c
-	3726 2604 3738 2620 3750 2628 c
-	f
+	3554 2688 3585 2577 3606 2586 c
+	3623 2593 3634 2620 3648 2634 c
+	3687 2587 3703 2596 3750 2628 c
+	fk
 	2664 2538 m
-	2766 2538 l
 	2784 2550 l
 	2826 2550 l
-	2844 2568 l
 	2880 2568 l
-	2892 2556 l
-	2976 2532 l
 	2988 2532 l
-	3024 2502 l
-	3036 2502 l
 	3066 2478 l
-	3084 2478 l
-	3108 2460 l
-	3132 2460 l
 	3174 2418 l
-	f
+	fk
 	2454 2532 m
-	2466 2523 2481 2507 2496 2502 c
-	2514 2494 2538 2514 2538 2484 c
-	2532 2478 l
-	2526 2466 l
-	f
+	2486 2510 2552 2506 2526 2466 c
+	fk
 	2130 2502 m
-	2118 2478 l
-	2118 2460 l
 	2094 2406 l
-	2112 2358 l
-	2112 2346 l
 	2136 2310 l
-	2142 2268 l
-	2154 2256 l
 	2166 2148 l
-	f
+	fk
 	3846 2472 m
-	3876 2484 l
 	3924 2472 l
-	f
+	fk
 	3492 2376 m
-	3482 2362 3472 2344 3468 2328 c
-	3463 2309 3470 2287 3468 2268 c
-	3462 2262 l
-	3457 2245 3467 2224 3462 2208 c
-	3449 2171 3424 2144 3402 2112 c
-	3402 2100 l
-	3373 2055 3341 2117 3324 2130 c
-	3307 2141 3298 2129 3294 2154 c
-	f
+	3456 2323 3481 2266 3462 2208 c
+	3450 2172 3422 2131 3402 2100 c
+	3376 2059 3296 2136 3294 2154 c
+	fk
 	4464 2376 m
-	4428 2346 l
-	4410 2346 l
-	4398 2334 l
-	4368 2334 l
-	f
+	4436 2348 4406 2334 4368 2334 c
+	fk
 	4584 2370 m
-	4584 2357 4588 2349 4590 2340 c
-	4591 2329 4585 2330 4584 2322 c
-	4578 2295 4598 2275 4620 2268 c
+	4584 2331 4576 2282 4620 2268 c
 	4636 2262 4654 2273 4668 2262 c
-	4681 2251 4680 2231 4698 2220 c
-	4707 2213 4723 2213 4734 2208 c
-	f
+	4693 2241 4701 2224 4734 2208 c
+	fk
 	570 1386 m
-	642 1422 l
-	720 1434 l
-	750 1440 l
-	816 1428 l
-	858 1392 l
-	882 1386 l
-	924 1362 l
-	1014 1374 l
-	f
+	630 1386 679 1457 750 1440 c
+	768 1435 799 1437 816 1428 c
+	853 1406 882 1372 924 1362 c
+	956 1353 986 1369 1014 1374 c
+	fk
 	780 786 m
-	780 814 787 825 810 840 c
-	819 846 831 859 846 852 c
+	780 812 809 870 846 852 c
 	867 841 866 822 894 822 c
-	f
+	fk
 } bd
 {
 	currentdict end 3 1 roll [ exch /setgray load ] cvx def begin
@@ -2696,16 +2266,17 @@
 }{
 	currentdict end 6 1 roll [ 5 1 roll /setcmykcolor load ] cvx def begin
 } bind VisitColors
-gsave
-MapUnitLetterFont setfont
+s
+MapUnitLetterFont z
 {
 	exch load exch load
-	2 index [ exch newpath 0 0 moveto true charpath pathbbox 3 2 roll add -2 div 3 1 roll add -2 div exch ] 3 1 roll
-	4 dict begin /Contrast xd /PieceColour xd /Offset xd /Letter xd currentdict end
-	[ /Power 3 2 roll /def load ] cvx
+	2 index [ exch n 0 0 m true charpath pathbbox 3 2 roll add -2 div 3 1 roll add -2 div exch ] 3 1 roll
+	4 dict begin /Contrast xd /Paint xd /Offset xd /Letter xd currentdict end
+	[ /Power 3 2 roll { dup /Controlled ChangeController put ChangeController { dup /Outer Power /Paint get put /ChangeController false def } if } /exec load /def load ] cvx
 	currentdict end 3 1 roll def begin
 } VisitPowers
-grestore
+r
+/ChangeController false def
 { currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind VisitSupplies
 /SHIMAZUCENTER /SHIMAZU ld
 /MORICENTER /MORI ld

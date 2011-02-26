@@ -4,43 +4,51 @@
 # Use the '-' placeholder to copy the value of the preceding variant.
 # Use the '=' placeholder to copy all remaining values of the preceding variant.
 
-# Standard and its variants
-standard 21,22,588,518
-standard_dutch 21,22,584,518
-standard_french 21,22,564,502
-standard_german 21,22,584,518
-standard_glhetg 21,22,555,494
+# Standard
+standard 21,22,584,518
+standard_dutch 21,22,579,518
+standard_french 21,22,560,502
+standard_german 21,22,579,518
+standard_glhetg 21,22,550,494
 
-# Based on the old standard
-brazilian 17,32,587,532
-britain =
-fiveman =
-milan =
-renaissance =
-v8 =
+# Standard map variants 
+brazilian 21,22,584,518
+britain 21,22,584,518
+chaos 21,20,584,508
+milan 21,22,584,518
+minorpower 20,22,571,506
+renaissance 21,22,584,518
+crowded 21,22,550,486
+fiveman 21,22,584,518
+v8 21,22,579,510
+void 21,20,584,508
 
-# Chaos and other mega-player variants
-chaos 15,16,578,511
-crowded =
-minorpower =
-void =
-
-# Other standard variants
+# Expansions to the standard map
 loeb9 17,16,587,516
+youngstown 15,31,524,480 A4
 
-# Others
+# Europe
 1900 27,28,555,523
 aberration 19,20,622,490
-ancmed 21,50,588,482
-ambition 30,22,538,479
-canton 21,22,584,454
-chromatic 42,28,545,530
+ancmed 21,50,584,474
+ambition 30,22,539,478
 classical 17,75,583,461
-empire 12,272,461,756
 hundred 87,33,441,519
-imperial 10,12,1179,607 _ 0
 modern 72,41,573,524
+
+# Asia
+canton 21,22,584,454
+sengoku 21,22,574,502
+
+# America
+empire 12,272,461,756 _ 0
+
+# World
+imperial 10,12,1179,607
+
+# Uncategorized
+# Imaginary
+chromatic 42,28,545,530
 pure 16,119,498,517
 sailho 81,49,564,518
-sengoku 20,22,574,503
-youngstown 15,31,524,480 a4
+

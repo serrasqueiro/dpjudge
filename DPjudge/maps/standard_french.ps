@@ -100,7 +100,7 @@
 % unowned = inoccupés
 % builds = construit
 % removes = enlève
-% builds waived = renonce à construire
+% waived = renoncée
 % disband = démanteler
 % cut = coupée
 % bounce = rebond
@@ -123,6 +123,24 @@
 /max { 2 copy lt { exch } if pop } bd
 /secure_atan { 2 copy 0 eq exch 0 eq and { pop pop 0 } { atan } ifelse } bd
 /center { 3 2 roll add 2 div 3 1 roll add 2 div exch } bd
+/a /arc ld
+/c /curveto ld
+/d /setdash ld
+/f /fill ld
+/h /show ld
+/k /stroke ld
+/l /lineto ld
+/m /moveto ld
+/n /newpath ld
+/o /rotate ld
+/p /closepath ld
+/r /grestore ld
+/s /gsave ld
+/t /translate ld
+/w /setlinewidth ld
+/x /scale ld
+/y /scalefont ld
+/z /setfont ld
 /FindAndEncodeFont {
 	findfont dup length dict begin {
 		1 index /FID ne {
@@ -137,9 +155,9 @@
 } def
 /Powers 20 dict def
 %%IncludeResource: font Helvetica-Bold
-/MapUnitLetterFont /Helvetica-Bold FindAndEncodeFont 14 scalefont def
+/MapUnitLetterFont /Helvetica-Bold FindAndEncodeFont 14 y def
 %%IncludeResource: font Helvetica-Bold
-/MapNameFont /Helvetica-Bold FindAndEncodeFont 14 scalefont def
+/MapNameFont /Helvetica-Bold FindAndEncodeFont 14 y def
 %%IncludeResource: font Courier
 /TextFixedFont /Courier FindAndEncodeFont def
 %%IncludeResource: font Courier-Bold
@@ -147,51 +165,40 @@
 %%IncludeResource: font Times-Roman
 /TextTitleFont /Times-Roman FindAndEncodeFont def
 /PageSetup {
-	612 0 translate
-	90 rotate
+	612 0 t
+	90 o
 	/FinishReport { } def /InTextMode true def
 	Black
 	MovePhase
 } bd
 /ShowPage {
 	DrawAliases
-	InTextMode { FinishReport } { grestore } ifelse
+	InTextMode { FinishReport } { r } ifelse
 	showpage
 } bd
 /VisitColors {
 	3 dict begin
 	/c xd /r xd /g xd
-	/Black 0 g
-	/White .9 g
-	/Grey .7 g
-	/DarkGrey .5 g
 	/BorderBlack .1 g
 	/MountainGrey .5 g
 	/IceGrey .9 g
 	/ArrowBlack 0 g
 	/ArrowWhite .9 g
-	/Red 1 0 0 r
-	/Blue 0 0 1 r
-	/Mauve 1 0 1 r
-	/Magenta 1 0 1 r
-	/Yellow 1 1 0 r
-	/Green 0 .7 0 r
-	/Brown .6 .45 .2 r
-	/Turquoise .2 .7 .7 r
-	/LightBlue .4 .6 1 r
-	/DarkGreen 0 .4 0 r
-	/LightGreen 0 .9 0 r
-	/Forest 0 .5 0 r
-	/Teal 0 .6 .6 r
-	/Tan .6 .6 .2 r
-	/Cyan 0 1 1 r
-	/Orange 1 .6 0 r
+	/White .9 g
+	/Black 0 g
 	/LandBrown .8 .7 .4 r
 	/SeaBlue .1 .4 .6 r
 	/ArrowRed 1 0 0 r
 	/ArrowBlue .529 .808 .922 r
+	/DarkGreen 0 .4 0 r
+	/Red 1 0 0 r
+	/Blue 0 0 1 r
+	/Turquoise .2 .7 .7 r
+	/Green 0 .7 0 r
+	/Yellow 1 1 0 r
+	/Brown .6 .45 .2 r
 	end
-} bd
+} def
 /VisitPowers {
 	1 dict begin
 	/p xd
@@ -204,81 +211,65 @@
 	/TURQUIE (T) /Yellow /Black (LA TURQUIE) p
 	/UNOWNED (?) /Brown /White () p
 	end
+} def
+/Controls {
+	/ChangeController true def
 } bd
 /DrawFleet {
 	SwitchToMapMode
 	Power begin
-	gsave
-	translate
-	.5 .5 scale
-	0 8 translate
-	2 setlinewidth [] 0 setdash
-	newpath
-	-26 -7 moveto 0 5 rlineto 7 0 rlineto 0 1 rlineto   % to bow
-	-3 0 rlineto 0 1 rlineto 7 0 rlineto 0 1 rlineto    % A turret
-	-3 0 rlineto 0 1 rlineto 8 0 rlineto 0 -2 rlineto   % B turret
-	1 0 rlineto 0 4 rlineto 1 0 rlineto 0 2 rlineto     % conn tower
-	2 0 rlineto 0 -1 rlineto 1 0 rlineto 0 4 rlineto    % Infra struct
-	2 0 rlineto 0 5 rlineto 1 0 rlineto 0 -5 rlineto    % funnel 1
-	2 0 rlineto 0 -4 rlineto 1 0 rlineto 0 3 rlineto    % funnel 2
-	2 0 rlineto 0 5 rlineto 1 0 rlineto 0 -5 rlineto    % mast 2
-	2 0 rlineto 0 -8 rlineto 2 0 rlineto 0 2 rlineto    % funnel 2
-	8 0 rlineto 0 -1 rlineto -3 0 rlineto 0 -1 rlineto  % C turret
-	7 0 rlineto 0 -1 rlineto -3 0 rlineto 0 -1 rlineto  % D turret
-	6 0 rlineto 0 -1 rlineto 2 0 rlineto 0 -2 rlineto   % stern
-	-1 0 rlineto 0 -2 rlineto
-	closepath
-	gsave Contrast stroke grestore
-	PieceColour fill
-	Offset aload pop moveto
-	MapUnitLetterFont setfont
-	Contrast Letter show
-	grestore
+	s t
+	.5 .5 x
+	0 8 t
+	-26 -7 m -26 -2 l -19 -2 l -19 -1 l % to bow
+	-22 -1 l -22 0 l -15 0 l -15 1 l % A turret
+	-18 1 l -18 2 l -10 2 l -10 0 l % B turret
+	-9 0 l -9 4 l -8 4 l -8 6 l % conn tower
+	-6 6 l -6 5 l -5 5 l -5 9 l % Infra struct
+	-3 9 l -3 14 l -2 14 l -2 9 l % funnel 1
+	0 9 l 0 5 l 1 5 l 1 8 l % funnel 2
+	3 8 l 3 13 l 4 13 l 4 8 l % mast 2
+	6 8 l 6 0 l 8 0 l 8 2 l % funnel 2
+	16 2 l 16 1 l 13 1 l 13 0 l % C turret
+	20 0 l 20 -1 l 17 -1 l 17 -2 l % D turret
+	23 -2 l 23 -3 l 25 -3 l 25 -5 l % stern
+	24 -5 l 24 -7 l p
+	s Controlled { s 6 w Outer k r } if 2 w Contrast k r Paint f
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	r
 	end
 } bd
 /DrawArmy {
 	SwitchToMapMode
 	Power begin
-	gsave
-	translate
-	.5 .5 scale
-	0 8 translate
-	3 setlinewidth [] 0 setdash
-	newpath
-	-20 7 moveto 30 0 rlineto 0 -4 rlineto 4 0 rlineto
-	0 -2 rlineto -30 0 rlineto 0 2 rlineto -4 0 rlineto
-	0 4 rlineto                                         % barrel
-	4 2 moveto 20 -10 rlineto 2 0 rlineto -8 0 rlineto
-	-20 10 rlineto                                      % carriage
-	Contrast stroke
-	0 0 9 0 360 arc                                     % wheel
-	closepath
-	Contrast stroke
-	newpath
-	-20 7 moveto 30 0 rlineto 0 -4 rlineto 4 0 rlineto
-	0 -2 rlineto -30 0 rlineto 0 2 rlineto -4 0 rlineto
-	0 4 rlineto                                         % barrel
-	4 2 moveto 20 -10 rlineto 2 0 rlineto -8 0 rlineto
-	-20 10 rlineto                                      % carriage
-	PieceColour fill
-	0 0 9 0 360 arc                                     % wheel
-	closepath
-	PieceColour fill
-	Offset aload pop moveto
-	MapUnitLetterFont setfont
-	Contrast Letter show
-	grestore
+	s t
+	.5 .5 x
+	0 8 t
+	n 0 0 9 0 360 a p % wheel
+	Controlled { s 6 w Outer k r } if 2 w Contrast k
+	-20 7 m 10 7 l 10 3 l 14 3 l
+	14 1 l -16 1 l -16 3 l -20 3 l p % barrel
+	4 2 m 24 -8 l 26 -8 l 18 -8 l -2 2 l % carriage
+	s Controlled { s 6 w Outer k r } if 2 w Contrast k r Paint f
+	n 0 0 9 0 360 a p % wheel
+	Paint f
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	r
 	end
 } bd
 /DrawAlias {
 	SwitchToMapMode
-	gsave
-	3 1 roll translate
-	.5 .5 scale
-	0 -14 translate
-	MapNameFont setfont
-	dup stringwidth pop -2 div 0 neg moveto show
-	grestore
+	s
+	3 1 roll t
+	.5 .5 x
+	0 -14 t
+	MapNameFont z
+	dup stringwidth pop -2 div 0 neg m h
+	r
 } bd
 /DrawName {
 	pop pop pop
@@ -374,7 +365,7 @@
 	(STP/CS) 430 402 b
 	(SUI) 247 218 m
 	end
-} bd
+} def
 /VisitSupplies {
 	1 dict begin
 	/s xd
@@ -413,25 +404,35 @@
 	/HOL 236 302 s
 	/SUÈ 346 405 s
 	end
-} bd
+} def
 /supply {
 	SwitchToMapMode
 	Power begin
-	gsave
-	translate
-	.5 .5 scale
-	PieceColour
-	newpath 0 0 4 0 360 arc fill
-	grestore
+	s
+	t
+	.5 .5 x
+	Controlled {
+		Outer
+		n 0 0 8 0 360 a f
+		Contrast
+		n 0 0 6 0 360 a f
+	} if
+	Paint
+	n 0 0 4 0 360 a f
+	r
 	end
 } bd
+/SetArrowStateOk {
+	[] 0 d
+} bd
 /OkOrder {
-	SwitchToMapMode
-	[] 0 setdash
+	/SetArrowState /SetArrowStateOk ld
+} bd
+/SetArrowStateFailed {
+	[4 6] 2 d
 } bd
 /FailedOrder {
-	SwitchToMapMode
-	[4 6] 2 setdash
+	/SetArrowState /SetArrowStateFailed ld
 } bd
 /MovePhase {
 	/ArrowColor /ArrowBlack ld
@@ -453,40 +454,40 @@
 } bd
 /TraceSingleArrowHead {
 	% draw the arrow head ...
-	newpath
-	dup -5 moveto
-	dup 20 add 0 lineto
-	dup 5 lineto
-	closepath
+	n
+	dup -5 m
+	dup 20 add 0 l
+	dup 5 l
+	p
 } bd
 /TraceDoubleArrowHead {
 	% draw the double arrow head ...
-	newpath
-	dup -5 moveto
+	n
+	dup -5 m
 	dup 19.8 add
-	dup -1 lineto
-	dup -5 lineto
-	dup 20 add 0 lineto
-	dup 5 lineto
-	1 lineto
-	dup 5 lineto
-	closepath
+	dup -1 l
+	dup -5 l
+	dup 20 add 0 l
+	dup 5 l
+	1 l
+	dup 5 l
+	p
 } bd
 /PaintArrowMove {
-	gsave
-	3 index 3 index translate
+	s
+	3 index 3 index t
 	3 2 roll sub 3 1 roll exch sub exch
 	2 copy dup mul exch dup mul add sqrt 3 1 roll exch secure_atan
-	.5 .5 scale
-	0 8 translate
-	rotate
+	.5 .5 x
+	0 8 t
+	o
 	.5 div ArrowBase sub
 	% if base of arrow is long enough, shorten it enough
 	% to e.g. move arrow start beyond support circle
 	dup 14 gt {
-		14 14 0 translate sub
+		14 14 0 t sub
 	} {
-		0 translate 0
+		0 t 0
 	} ifelse
 	% if base is still too long, shorten it some more
 	% to make arrow head touch support circle
@@ -495,118 +496,124 @@
 	} {
 		pop 0
 	} ifelse
-	1 setlinewidth
+	1 w
 	TraceArrowHead
-	stroke
+	k
 	% now the shaft ...
-	2 setlinewidth
-	0 0 moveto
-	0 lineto
-	stroke
-	grestore
+	2 w
+	0 0 m
+	0 l
+	k
+	r
 } bd
 /PaintArrowCircle {
-	gsave
+	s
 	5 1 roll
-	3 index 3 index translate
+	3 index 3 index t
 	3 2 roll sub 3 1 roll exch sub exch
 	2 copy dup mul exch dup mul add sqrt 3 1 roll exch secure_atan
-	.5 .5 scale
-	0 8 translate
-	rotate
+	.5 .5 x
+	0 8 t
+	o
 	.5 div
 	1 index sub
 	% if base of arrow is long enough, shorten it enough
 	% to e.g. move arrow start beyond support circle
 	dup 14 gt {
-		14 14 0 translate sub
+		14 14 0 t sub
 	} {
-		0 translate 0
+		0 t 0
 	} ifelse
 	% draw the circle ...
-	1 setlinewidth
-	newpath
-	2 copy add 0 4 3 roll 0 360 arc
-	closepath stroke
+	1 w
+	n
+	2 copy add 0 4 3 roll 0 360 a
+	p k
 	% now the shaft ...
-	2 setlinewidth
-	0 0 moveto
-	0 lineto
-	stroke
-	grestore
+	2 w
+	0 0 m
+	0 l
+	k
+	r
 } bd
 /PaintArrowArrive {
-	gsave
-	translate
-	.5 .5 scale
-	0 8 translate
-	180 rotate 54 ArrowBase add neg 0 translate
+	s
+	t
+	.5 .5 x
+	0 8 t
+	180 rotate 54 ArrowBase add neg 0 t
 	40
-	1 setlinewidth
+	1 w
 	TraceArrowHead
-	stroke
+	k
 	% now the shaft ...
-	2 setlinewidth
-	0 0 moveto
-	0 lineto
-	stroke
-	-5 0 moveto -10 0 lineto
-	-15 0 moveto -20 0 lineto
-	stroke
-	grestore
+	2 w
+	0 0 m
+	0 l
+	k
+	-5 0 m -10 0 l
+	-15 0 m -20 0 l
+	k
+	r
 } bd
 /PaintArrowDepart {
-	gsave
-	translate
-	.5 .5 scale
-	0 8 translate
-	-54 0 translate
+	s
+	t
+	.5 .5 x
+	0 8 t
+	-54 0 t
 	40
-	2 setlinewidth
-	0 0 moveto
-	0 lineto
-	-6 0 moveto -10 0 lineto
-	-16 0 moveto -20 0 lineto
-	stroke
-	grestore
+	2 w
+	0 0 m
+	0 l
+	-6 0 m -10 0 l
+	-16 0 m -20 0 l
+	k
+	r
 } bd
 /ArrowMove {
 	SwitchToMapMode
-	gsave
+	SetArrowState
+	s
 	PaintArrowMove
-	grestore
+	r
 } bd
 /ArrowHold {
 	SwitchToMapMode
-	gsave
+	SetArrowState
+	s
 	24 PaintArrowCircle
-	grestore
+	r
 } bd
 /ArrowSupport {
 	SwitchToMapMode
-	gsave
+	SetArrowState
+	s
 	center
 	8 PaintArrowCircle
-	grestore
+	r
 } bd
 /ArrowConvoy {
 	SwitchToMapMode
-	gsave
+	SetArrowState
+	s
 	center
 	12 PaintArrowCircle
-	grestore
+	r
 } bd
 /ArrowArrive {
 	SwitchToMapMode
-	gsave
+	SetArrowState
+	s
 	PaintArrowArrive
-	grestore
+	r
 } bd
 /ArrowDepart {
 	SwitchToMapMode
-	gsave
+	SetArrowState
+	s
 	PaintArrowDepart
-	grestore
+	r
 } bd
 /ArrowRetreat {
 	RetreatPhase
@@ -630,89 +637,89 @@
 } bd
 /BuildUnit {
 	SwitchToMapMode
-	gsave
-	translate
+	s
+	t
 	ArrowWhite
-	.5 .5 scale
-	0 8 translate
-	6 setlinewidth [ 3.14 6.28 ] 1.57 setdash
-	newpath
-	0 0 24 0 360 arc
-	closepath stroke
-	grestore
+	.5 .5 x
+	0 8 t
+	6 w [ 3.14 6.28 ] 1.57 d
+	n
+	0 0 24 0 360 a
+	p k
+	r
 } bd
 /SlashUnit {
-	gsave
-	3 1 roll translate
-	.5 .5 scale
-	0 8 translate
-	newpath
-	-21 -16 moveto
-	11 16 lineto
-	21 16 lineto
-	-11 -16 lineto
-	closepath
+	s
+	3 1 roll t
+	.5 .5 x
+	0 8 t
+	n
+	-21 -16 m
+	11 16 l
+	21 16 l
+	-11 -16 l
+	p
 	exec
-	grestore
+	r
 } bd
 /DestroyUnit {
 	SwitchToMapMode
-	{ ArrowRed fill } SlashUnit
+	{ ArrowRed f } SlashUnit
 } bd
 /DisbandUnit {
 	SwitchToMapMode
-	{ gsave ArrowWhite fill grestore ArrowRed stroke 1 setlinewidth [ ] 0 setdash } SlashUnit
+	{ s ArrowWhite f r 1 w ArrowRed k } SlashUnit
 } bd
 /RemoveUnit {
 	SwitchToMapMode
-	{ ArrowWhite fill } SlashUnit
+	{ ArrowWhite f } SlashUnit
 } bd
 /FindUnit {
 	SwitchToMapMode
-	gsave
-	translate
+	s
+	t
 	ArrowBlue
-	.5 .5 scale
-	0 8 translate
-	6 setlinewidth [ 3.14 6.28 ] 1.57 setdash
-	newpath
-	0 0 24 0 360 arc
-	closepath stroke
-	grestore
+	.5 .5 x
+	0 8 t
+	6 w [ 3.14 6.28 ] 1.57 d
+	n
+	0 0 24 0 360 a
+	p k
+	r
 } bd
 /LoseUnit {
 	SwitchToMapMode
-	gsave
-	translate
+	s
+	t
 	ArrowBlue
-	.5 .5 scale
-	0 8 translate
-	4 setlinewidth
-	-12 4 moveto
-	-8 7 -4 7 0 4 curveto
-	4 1 8 1 12 4 curveto
-	-12 -4 moveto
-	-8 -1 -4 -1 0 -4 curveto
-	4 -7 8 -7 12 -4 curveto
-	stroke
-	grestore
+	.5 .5 x
+	0 8 t
+	4 w
+	-12 4 m
+	-8 7 -4 7 0 4 c
+	4 1 8 1 12 4 c
+	-12 -4 m
+	-8 -1 -4 -1 0 -4 c
+	4 -7 8 -7 12 -4 c
+	k
+	r
 } bd
 /QueryUnit {
 	SwitchToMapMode
-	gsave
-	translate
+	s
+	t
 	ArrowWhite
-	.5 .5 scale
-	0 8 translate
-	4 setlinewidth
-	-12 4 moveto
-	-8 7 -4 7 0 4 curveto
-	4 1 8 1 12 4 curveto
-	-12 -4 moveto
-	-8 -1 -4 -1 0 -4 curveto
-	4 -7 8 -7 12 -4 curveto
-	stroke
-	grestore
+	.5 .5 x
+	0 8 t
+	4 w
+	-12 4 m
+	-8 7 -4 7 0 4 c
+	4 1 8 1 12 4 c
+	-12 -4 m
+	-8 -1 -4 -1 0 -4 c
+	4 -7 8 -7 12 -4 c
+	k
+	r
 } bd
 /SplitString {
 	7 dict begin
@@ -769,24 +776,30 @@
 	end
 } bd
 /DrawBorders {
-	gsave
-	TextFixedFont 8 scalefont setfont
-	grestore
+	s
+	TextFixedFont 8 y z
+	r
 } bd
 /ReplaceAdjustmentName {
 	dup length 0 gt {
 		dup 0 get 32 ne {
 			( ) search {
-				exch pop
-				10 1 index length sub dup 0 gt {
-					3 2 roll dup length 3 2 roll dup 3 1 roll sub getinterval exch
+				exch pop true exch
+				0 3 index {
+					32 ne { exit } if 1 add
+				} forall dup 4 index length eq {
+					pop 3 1 roll pop pop false
 				} {
-					pop
+					dup 0 eq { pop } {
+						4 3 roll dup length 3 2 roll dup 3 1 roll sub getinterval 3 1 roll
+					} ifelse
 				} ifelse
-				dup cvn load exec Power /DefiniteName get dup length 0 gt { exch } if pop
+			} { false exch } ifelse
+			dup cvn load exec Power /DefiniteName get dup length 0 gt { exch } if pop
+			exch {
 				dup length dup 12 lt { 12 } { dup } ifelse 1 add
 				dup 4 index length add string
-				3 2 roll 1 add 1 3 index { 1 index exch 32 put } for
+				3 2 roll 1 3 index 1 sub { 1 index exch 32 put } for
 				dup 0 5 4 roll putinterval
 				dup 3 2 roll 4 3 roll putinterval
 			} if
@@ -795,41 +808,41 @@
 } bd
 /DrawFrame {
 	SwitchToTextMode
-	gsave
-	Black 6 setlinewidth
-	24.60 113 536.40 474 rectstroke
-	LandBrown 1.50 setlinewidth
-	25.35 113.75 534.90 472.50 rectstroke
-	grestore
+	s
+	Black 6 w
+	24.6 115.11 531.6 469.79 rectstroke
+	LandBrown 1.5 w
+	25.35 115.86 530.1 468.29 rectstroke
+	r
 } bd
 /Owner <<
 	/Steps [
 		{ /Count 0 def /Y 104.24 def false true } bind
 		{
 			Count 9 ge { false true } {
-				113 SplitString
+				112 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
-				21.60 Y moveto show
+				21.6 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			113 SplitString [ exch {
-				21.60 24.24 moveto show
+			112 SplitString [ exch {
+				21.6 24.24 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				21.60 24.24 moveto (... \() show
-				Count dup 1 add log iceiling string cvs show
-				( more\)) show
+				21.6 24.24 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 113 SplitString pop true false } bind
+		{ /Count Count 1 add def 112 SplitString pop true false } bind
 	]
 	/Start {
-		TextFixedFont 8 scalefont setfont
+		TextFixedFont 8 y z
 		/StepIndex 0 def
 		/Step Steps 0 get def
 		/Finish { } def
@@ -861,30 +874,30 @@
 			Count 9 ge { false true } {
 				42 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
-				568.80 Y moveto show
+				568.8 Y m h
 				true false
 			} ifelse
 		} bind
 		{
 			42 SplitString [ exch {
-				568.80 24.24 moveto show
+				568.8 24.24 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				568.80 24.24 moveto (... \() show
-				Count dup 1 add log iceiling string cvs show
-				( more\)) show
+				568.8 24.24 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
 			} bd false true
 		} bind
 		{ /Count Count 1 add def 42 SplitString pop true false } bind
 	]
 	/Start {
-		TextHeadingFont 8 scalefont setfont
-		568.80 104.24 moveto
-		(Ajustements) show
-		TextFixedFont 8 scalefont setfont
+		TextHeadingFont 8 y z
+		568.8 104.24 moveto
+		(Ajustements) h
+		TextFixedFont 8 y z
 		/StepIndex 0 def
 		/Step Steps 0 get def
 		/Finish { } def
@@ -917,30 +930,30 @@
 			Count 8 ge { false true } {
 				42 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
-				568.80 Y moveto show
+				568.8 Y m h
 				true false
 			} ifelse
 		} bind
 		{
 			42 SplitString [ exch {
-				568.80 112.24 moveto show
+				568.8 112.24 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				568.80 112.24 moveto (... \() show
-				Count dup 1 add log iceiling string cvs show
-				( more\)) show
+				568.8 112.24 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
 			} bd false true
 		} bind
 		{ /Count Count 1 add def 42 SplitString pop true false } bind
 	]
 	/Start {
-		TextHeadingFont 8 scalefont setfont
-		568.80 184.24 moveto
-		(Retraites) show
-		TextFixedFont 8 scalefont setfont
+		TextHeadingFont 8 y z
+		568.8 184.24 moveto
+		(Retraites) h
+		TextFixedFont 8 y z
 		/StepIndex 0 def
 		/Step Steps 0 get def
 		/Finish { } def
@@ -972,27 +985,27 @@
 			Count 43 ge { false true } {
 				42 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
-				568.80 Y moveto show
+				568.8 Y m h
 				true false
 			} ifelse
 		} bind
 		{
 			42 SplitString [ exch {
-				568.80 192.24 moveto show
+				568.8 192.24 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				568.80 192.24 moveto (... \() show
-				Count dup 1 add log iceiling string cvs show
-				( more\)) show
+				568.8 192.24 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
 			} bd false true
 		} bind
 		{ /Count Count 1 add def 42 SplitString pop true false } bind
 	]
 	/Start {
-		TextFixedFont 8 scalefont setfont
+		TextFixedFont 8 y z
 		/StepIndex 0 def
 		/Step Steps 0 get def
 		/Finish { } def
@@ -1019,42 +1032,40 @@
 } bd
 /DrawTitle {
 	SwitchToTextMode
-	TextTitleFont 24 scalefont setfont
+	TextTitleFont 24 y z
 	(Diplomacy)
-	568.80 572.72 moveto show
-	TextTitleFont 16 scalefont setfont
+	568.8 572.72 m h
+	TextTitleFont 16 y z
 	dup stringwidth pop dup 201.6 gt {
-		568.80 550 moveto
-		201.6 exch div dup 1 scale exch
-		0 4.48 rmoveto show
-		1 exch div 1 scale
+		568.8 550 m
+		201.6 exch div dup 1 x exch
+		0 4.48 rmoveto h
+		1 exch div 1 x
 	} {
-		pop 568.80 554.48 moveto show
+		pop 568.8 554.48 m h
 	} ifelse
 } bd
 /SwitchToTextMode {
 	InTextMode {
 		FinishReport /FinishReport { } def
 	} {
-		grestore /InTextMode true def
+		r /InTextMode true def
 	} ifelse
 } bd
 /SwitchToMapMode {
 	InTextMode {
 		FinishReport /FinishReport { } def
 		/InTextMode false def
-		gsave
-		27.60 116 530.40 468 rectclip
-		24.60 114.68 translate .8541 .8541 scale -22 -25 translate
+		s
+		27.6 118.11 525.6 463.79 rectclip
+		26.1 118.11 t .8417 .8417 x -22 -25 t
 		ArrowColor
-		[ ] 0 setdash
+		OkOrder
 	} if
 } bd
 /PaintMap {
 	SwitchToMapMode
-	3 dict begin
-	/m /moveto ld /l /lineto ld /c /curveto ld
-	gsave
+	s
 	SeaBlue
 	22 25 628 551 rectfill
 	IncludeLand
@@ -1062,8 +1073,7 @@
 	IncludeBorders
 	IncludeMountain
 	IncludeLake
-	grestore
-	end
+	r
 } bd
 /DrawMap {
 	PageSetup
@@ -1082,7 +1092,7 @@
 } bd
 /NameTerritories {
 	SwitchToMapMode
-	gsave
+	s
 	{ DarkGreen 3 2 roll DrawAlias } bind
 	{ DarkGreen 3 2 roll DrawAlias } bind
 	{ White 3 2 roll DrawAlias } bind
@@ -1090,43 +1100,43 @@
 	{ pop pop pop } bind
 	{ pop pop pop } bind
 	VisitTerritories
-	grestore
+	r
 } bd
 /IncludeLand {
-	gsave
-	/f { closepath gsave LandBrown fill grestore stroke } bd
-	.75 setlinewidth [ ] 0 setdash 0 setlinecap 0 setlinejoin BorderBlack
+	s
+	/fk { p s LandBrown f r k } bd
+	.75 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
 	OutlineStandardLandBrown
 	OutlineStandardBrown
-	grestore
+	r
 } bd
 /IncludeInternalBorders {
-	gsave
-	/f { stroke } bd
-	.75 setlinewidth [ 4.5 1.5 ] 2.25 setdash 0 setlinecap 0 setlinejoin BorderBlack
+	s
+	/fk { k } bd
+	.75 w [ 4.5 1.5 ] 2.25 d 0 setlinecap 0 setlinejoin BorderBlack
 	OutlineStandardBlack
-	grestore
+	r
 } bd
 /IncludeBorders {
-	gsave
-	/f { stroke } bd
-	1.5 setlinewidth [ ] 0 setdash 0 setlinecap 0 setlinejoin BorderBlack
+	s
+	/fk { k } bd
+	1.5 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
 	OutlineStandardBorderBlack
-	grestore
+	r
 } bd
 /IncludeMountain {
-	gsave
-	/f { closepath gsave MountainGrey fill grestore stroke } bd
-	1.5 setlinewidth [ ] 0 setdash 0 setlinecap 0 setlinejoin BorderBlack
+	s
+	/fk { p s MountainGrey f r k } bd
+	1.5 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
 	OutlineStandardGrey
-	grestore
+	r
 } bd
 /IncludeLake {
-	gsave
-	/f { closepath gsave SeaBlue fill grestore stroke } bd
-	.75 setlinewidth [ ] 0 setdash 0 setlinecap 0 setlinejoin BorderBlack
+	s
+	/fk { p s SeaBlue f r k } bd
+	.75 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
 	OutlineStandardBlue
-	grestore
+	r
 } bd
 /OutlineStandardLandBrown {
 	549 25 m
@@ -1577,7 +1587,7 @@
 	650 576 l
 	650 25 l
 	549 25 l
-	f
+	fk
 	22 80 m
 	32 86 l
 	40 93 l
@@ -1610,7 +1620,7 @@
 	239 25 l
 	22 25 l
 	22 80 l
-	f
+	fk
 } bd
 /OutlineStandardBrown {
 	130 300 m
@@ -1690,7 +1700,7 @@
 	136 306 l
 	135 302 l
 	130 300 l
-	f
+	fk
 	109 335 m
 	115 335 l
 	118 337 l
@@ -1722,7 +1732,7 @@
 	103 347 l
 	103 339 l
 	109 335 l
-	f
+	fk
 	537 56 m
 	527 50 l
 	518 49 l
@@ -1732,7 +1742,7 @@
 	531 43 l
 	532 49 l
 	537 56 l
-	f
+	fk
 	437 37 m
 	435 36 l
 	426 37 l
@@ -1750,7 +1760,7 @@
 	435 30 l
 	438 34 l
 	437 37 l
-	f
+	fk
 	306 80 m
 	300 83 l
 	298 79 l
@@ -1765,7 +1775,7 @@
 	305 60 l
 	305 72 l
 	306 80 l
-	f
+	fk
 	243 104 m
 	235 102 l
 	231 100 l
@@ -1780,7 +1790,7 @@
 	248 130 l
 	249 123 l
 	243 104 l
-	f
+	fk
 	250 160 m
 	242 154 l
 	237 152 l
@@ -1790,7 +1800,7 @@
 	249 147 l
 	252 152 l
 	250 160 l
-	f
+	fk
 	173 129 m
 	168 129 l
 	165 126 l
@@ -1798,14 +1808,14 @@
 	173 120 l
 	178 125 l
 	173 129 l
-	f
+	fk
 	224 443 m
 	219 443 l
 	214 436 l
 	219 432 l
 	224 439 l
 	224 443 l
-	f
+	fk
 	185 461 m
 	192 470 l
 	196 476 l
@@ -1815,7 +1825,7 @@
 	188 471 l
 	184 465 l
 	185 461 l
-	f
+	fk
 	363 373 m
 	360 366 l
 	359 361 l
@@ -1824,7 +1834,7 @@
 	350 369 l
 	355 373 l
 	363 373 l
-	f
+	fk
 	302 348 m
 	305 344 l
 	304 336 l
@@ -1834,7 +1844,7 @@
 	294 346 l
 	298 350 l
 	302 348 l
-	f
+	fk
 	174 421 m
 	170 423 l
 	164 418 l
@@ -1844,7 +1854,7 @@
 	170 414 l
 	173 417 l
 	174 421 l
-	f
+	fk
 } bd
 /OutlineStandardBlack {
 	639 259 m
@@ -1858,36 +1868,36 @@
 	532 303 l
 	509 290 l
 	499 288 l
-	f
+	fk
 	499 288 m
 	492 277 l
 	486 261 l
 	463 243 l
 	451 231 l
 	440 214 l
-	f
+	fk
 	498 288 m
 	466 288 l
 	443 286 l
 	421 282 l
 	402 277 l
-	f
+	fk
 	401 265 m
 	401 278 l
-	f
+	fk
 	401 278 m
 	399 297 l
-	f
+	fk
 	399 297 m
 	387 310 l
-	f
+	fk
 	398 297 m
 	417 304 l
 	424 315 l
 	423 323 l
 	430 335 l
 	430 347 l
-	f
+	fk
 	430 347 m
 	427 364 l
 	425 378 l
@@ -1895,7 +1905,7 @@
 	413 387 l
 	403 388 l
 	393 396 l
-	f
+	fk
 	430 347 m
 	440 347 l
 	454 358 l
@@ -1907,205 +1917,205 @@
 	546 406 l
 	577 412 l
 	650 420 l
-	f
+	fk
 	415 413 m
 	420 427 l
 	422 455 l
 	424 531 l
-	f
+	fk
 	378 365 m
 	361 367 l
-	f
+	fk
 	355 373 m
 	342 381 l
-	f
+	fk
 	309 336 m
 	300 329 l
 	294 329 l
 	288 337 l
-	f
+	fk
 	293 320 m
 	298 286 l
-	f
+	fk
 	298 286 m
 	307 292 l
-	f
+	fk
 	307 292 m
 	324 297 l
-	f
+	fk
 	324 297 m
 	326 319 l
-	f
+	fk
 	324 297 m
 	345 290 l
-	f
+	fk
 	308 293 m
 	311 272 l
-	f
+	fk
 	298 286 m
 	266 271 l
-	f
+	fk
 	266 271 m
 	248 294 l
-	f
+	fk
 	266 271 m
 	253 251 l
-	f
+	fk
 	271 349 m
 	265 354 l
 	252 355 l
 	241 341 l
 	236 328 l
 	240 319 l
-	f
+	fk
 	271 362 m
 	264 369 l
 	261 381 l
 	266 389 l
-	f
+	fk
 	309 357 m
 	294 354 l
-	f
+	fk
 	169 359 m
 	153 359 l
-	f
+	fk
 	173 410 m
 	176 380 l
-	f
+	fk
 	176 380 m
 	165 375 l
-	f
+	fk
 	176 380 m
 	180 362 l
-	f
+	fk
 	180 362 m
 	187 346 l
 	186 332 l
-	f
+	fk
 	186 332 m
 	180 322 l
-	f
+	fk
 	180 322 m
 	176 307 l
 	181 296 l
-	f
+	fk
 	192 323 m
 	179 321 l
-	f
+	fk
 	186 332 m
 	174 330 l
 	158 335 l
-	f
+	fk
 	193 367 m
 	180 363 l
-	f
+	fk
 	129 300 m
 	103 284 l
-	f
+	fk
 	132 276 m
 	103 283 l
 	71 295 l
 	22 316 l
-	f
+	fk
 	71 295 m
 	108 335 l
-	f
+	fk
 	170 422 m
 	185 461 l
-	f
+	fk
 	158 410 m
 	160 407 l
-	f
+	fk
 	185 479 m
 	141 576 l
-	f
+	fk
 	215 435 m
 	202 425 l
-	f
+	fk
 	224 439 m
 	269 447 l
-	f
+	fk
 	156 230 m
 	169 234 l
-	f
+	fk
 	169 234 m
 	181 254 l
-	f
+	fk
 	181 254 m
 	181 273 l
-	f
+	fk
 	168 234 m
 	175 220 l
 	184 218 l
 	196 223 l
-	f
+	fk
 	196 223 m
 	205 234 l
 	217 243 l
 	222 255 l
-	f
+	fk
 	222 255 m
 	227 264 l
-	f
+	fk
 	223 256 m
 	211 260 l
 	197 255 l
 	181 255 l
-	f
+	fk
 	197 223 m
 	199 203 l
-	f
+	fk
 	199 203 m
 	213 214 l
 	227 217 l
-	f
+	fk
 	199 203 m
 	179 191 l
 	167 178 l
-	f
+	fk
 	137 122 m
 	165 123 l
-	f
+	fk
 	178 126 m
 	230 124 l
-	f
+	fk
 	261 169 m
 	249 160 l
-	f
+	fk
 	232 100 m
 	236 76 l
-	f
+	fk
 	240 140 m
 	240 130 l
-	f
+	fk
 	272 78 m
 	256 71 l
-	f
+	fk
 	354 110 m
 	346 106 l
-	f
+	fk
 	402 49 m
 	408 40 l
-	f
+	fk
 	410 32 m
 	407 25 l
-	f
+	fk
 	467 58 m
 	456 55 l
 	447 43 l
 	438 35 l
-	f
+	fk
 	432 107 m
 	431 117 l
-	f
+	fk
 	484 129 m
 	491 93 l
-	f
+	fk
 	440 94 m
 	452 88 l
 	471 93 l
 	491 93 l
-	f
+	fk
 	491 93 m
 	512 100 l
 	531 105 l
@@ -2113,109 +2123,109 @@
 	565 103 l
 	578 110 l
 	592 121 l
-	f
+	fk
 	586 146 m
 	592 120 l
-	f
+	fk
 	592 120 m
 	601 94 l
-	f
+	fk
 	601 94 m
 	619 89 l
 	650 93 l
-	f
+	fk
 	600 95 m
 	549 59 l
-	f
+	fk
 	281 215 m
 	281 206 l
 	267 197 l
 	259 188 l
-	f
+	fk
 	259 188 m
 	251 180 l
-	f
+	fk
 	258 188 m
 	267 176 l
 	279 164 l
 	285 155 l
-	f
+	fk
 	285 155 m
 	300 141 l
-	f
+	fk
 	300 141 m
 	309 125 l
-	f
+	fk
 	309 125 m
 	323 114 l
 	327 104 l
-	f
+	fk
 	308 126 m
 	294 121 l
-	f
+	fk
 	304 143 m
 	299 141 l
-	f
+	fk
 	285 155 m
 	269 144 l
-	f
+	fk
 	343 260 m
 	344 245 l
-	f
+	fk
 	319 235 m
 	315 219 l
-	f
+	fk
 	340 203 m
 	342 215 l
 	350 226 l
 	357 231 l
 	361 240 l
-	f
+	fk
 	307 237 m
 	319 235 l
-	f
+	fk
 	319 235 m
 	330 242 l
 	345 245 l
-	f
+	fk
 	345 245 m
 	353 241 l
 	361 241 l
-	f
+	fk
 	361 241 m
 	375 238 l
 	389 233 l
 	401 227 l
 	410 221 l
 	415 216 l
-	f
+	fk
 	299 209 m
 	303 216 l
 	315 219 l
-	f
+	fk
 	315 219 m
 	319 211 l
 	325 204 l
 	340 203 l
-	f
+	fk
 	340 203 m
 	337 195 l
 	341 185 l
 	351 183 l
 	355 177 l
-	f
+	fk
 	470 131 m
 	454 136 l
-	f
+	fk
 	394 565 m
 	394 576 l
-	f
+	fk
 	200 300 m
 	214 294 l
-	f
+	fk
 	63 100 m
 	66 107 l
-	f
+	fk
 } bd
 /OutlineStandardBorderBlack {
 	224 74 m
@@ -2223,52 +2233,52 @@
 	213 52 l
 	217 39 l
 	217 25 l
-	f
+	fk
 	650 140 m
 	627 148 l
 	626 160 l
 	614 165 l
 	607 160 l
 	600 162 l
-	f
+	fk
 	446 142 m
 	436 141 l
 	433 143 l
 	429 134 l
 	433 128 l
 	427 120 l
-	f
+	fk
 	418 120 m
 	417 130 l
 	410 136 l
 	401 126 l
 	394 129 l
-	f
+	fk
 	394 129 m
 	385 124 l
 	374 120 l
-	f
+	fk
 	374 120 m
 	372 107 l
 	362 98 l
-	f
+	fk
 	374 120 m
 	370 135 l
 	362 145 l
-	f
+	fk
 	351 136 m
 	362 145 l
-	f
+	fk
 	362 145 m
 	359 152 l
 	359 161 l
 	353 162 l
 	355 177 l
-	f
+	fk
 	355 177 m
 	367 175 l
 	383 171 l
-	f
+	fk
 	383 171 m
 	390 185 l
 	402 185 l
@@ -2279,16 +2289,16 @@
 	422 209 l
 	415 211 l
 	415 217 l
-	f
+	fk
 	415 217 m
 	426 225 l
-	f
+	fk
 	426 225 m
 	426 239 l
 	418 246 l
 	414 255 l
 	402 264 l
-	f
+	fk
 	402 264 m
 	396 254 l
 	389 252 l
@@ -2296,17 +2306,17 @@
 	376 264 l
 	370 254 l
 	359 258 l
-	f
+	fk
 	359 258 m
 	352 251 l
 	341 261 l
-	f
+	fk
 	341 261 m
 	332 258 l
 	325 266 l
 	317 272 l
 	311 272 l
-	f
+	fk
 	311 272 m
 	307 265 l
 	303 266 l
@@ -2316,25 +2326,25 @@
 	297 253 l
 	301 245 l
 	307 237 l
-	f
+	fk
 	307 237 m
 	300 231 l
 	291 227 l
 	278 226 l
 	273 233 l
 	266 225 l
-	f
+	fk
 	426 225 m
 	434 224 l
 	440 215 l
-	f
+	fk
 	440 215 m
 	439 205 l
 	445 198 l
 	447 190 l
 	456 187 l
 	464 182 l
-	f
+	fk
 	453 172 m
 	443 166 l
 	439 162 l
@@ -2345,67 +2355,67 @@
 	396 164 l
 	393 170 l
 	386 165 l
-	f
+	fk
 	386 165 m
 	383 171 l
-	f
+	fk
 	386 165 m
 	387 158 l
 	392 154 l
 	387 148 l
 	394 129 l
-	f
+	fk
 	271 212 m
 	281 215 l
-	f
+	fk
 	281 215 m
 	289 218 l
 	289 208 l
 	300 209 l
-	f
+	fk
 	300 209 m
 	303 201 l
 	297 194 l
-	f
+	fk
 	237 211 m
 	235 198 l
 	228 195 l
 	229 189 l
 	235 184 l
 	234 172 l
-	f
+	fk
 	243 228 m
 	243 241 l
 	253 245 l
 	253 251 l
-	f
+	fk
 	253 251 m
 	238 257 l
-	f
+	fk
 	238 256 m
 	244 264 l
 	240 269 l
 	241 283 l
 	241 290 l
-	f
+	fk
 	241 290 m
 	248 294 l
-	f
+	fk
 	248 294 m
 	256 295 l
 	252 307 l
 	258 310 l
 	258 314 l
 	256 318 l
-	f
+	fk
 	241 290 m
 	224 299 l
-	f
+	fk
 	238 258 m
 	232 257 l
 	234 263 l
 	227 264 l
-	f
+	fk
 	227 264 m
 	228 273 l
 	224 277 l
@@ -2414,24 +2424,24 @@
 	213 280 l
 	211 286 l
 	205 290 l
-	f
+	fk
 	359 258 m
 	354 267 l
 	349 270 l
 	349 279 l
 	344 285 l
 	344 291 l
-	f
+	fk
 	344 291 m
 	352 298 l
 	368 302 l
 	378 308 l
 	388 310 l
-	f
+	fk
 	388 310 m
 	382 322 l
 	376 331 l
-	f
+	fk
 	302 394 m
 	308 398 l
 	316 417 l
@@ -2452,7 +2462,7 @@
 	369 524 l
 	372 526 l
 	371 532 l
-	f
+	fk
 	371 532 m
 	372 540 l
 	379 545 l
@@ -2467,18 +2477,18 @@
 	421 546 l
 	421 536 l
 	424 530 l
-	f
+	fk
 	424 530 m
 	429 536 l
 	428 550 l
-	f
+	fk
 	371 532 m
 	376 531 l
 	383 525 l
 	388 522 l
 	390 509 l
 	390 488 l
-	f
+	fk
 	57 202 m
 	64 203 l
 	65 198 l
@@ -2494,21 +2504,21 @@
 	58 162 l
 	57 148 l
 	44 131 l
-	f
+	fk
 	183 169 m
 	177 168 l
 	172 171 l
 	167 171 l
 	167 178 l
-	f
+	fk
 	167 178 m
 	161 183 l
 	154 179 l
 	137 195 l
-	f
+	fk
 	272 333 m
 	280 331 l
-	f
+	fk
 } bd
 /OutlineStandardGrey {
 	271 212 m
@@ -2528,7 +2538,7 @@
 	266 225 l
 	267 217 l
 	271 212 l
-	f
+	fk
 } bd
 /OutlineStandardBlue {
 	448 412 m
@@ -2542,7 +2552,7 @@
 	444 423 l
 	446 417 l
 	448 412 l
-	f
+	fk
 	477 431 m
 	481 432 l
 	480 438 l
@@ -2552,7 +2562,7 @@
 	468 439 l
 	475 436 l
 	477 431 l
-	f
+	fk
 	650 260 m
 	647 258 l
 	638 259 l
@@ -2563,7 +2573,7 @@
 	649 213 l
 	650 205 l
 	650 260 l
-	f
+	fk
 } bd
 {
 	currentdict end 3 1 roll [ exch /setgray load ] cvx def begin
@@ -2572,16 +2582,17 @@
 }{
 	currentdict end 6 1 roll [ 5 1 roll /setcmykcolor load ] cvx def begin
 } bind VisitColors
-gsave
-MapUnitLetterFont setfont
+s
+MapUnitLetterFont z
 {
 	4 1 roll exch load exch load
-	2 index [ exch newpath 0 0 moveto true charpath pathbbox 3 2 roll add -2 div 3 1 roll add -2 div exch ] 3 1 roll 5 4 roll
-	5 dict begin /DefiniteName xd /Contrast xd /PieceColour xd /Offset xd /Letter xd currentdict end
-	[ /Power 3 2 roll /def load ] cvx
+	2 index [ exch n 0 0 m true charpath pathbbox 3 2 roll add -2 div 3 1 roll add -2 div exch ] 3 1 roll 5 4 roll
+	5 dict begin /DefiniteName xd /Contrast xd /Paint xd /Offset xd /Letter xd currentdict end
+	[ /Power 3 2 roll { dup /Controlled ChangeController put ChangeController { dup /Outer Power /Paint get put /ChangeController false def } if } /exec load /def load ] cvx
 	currentdict end 3 1 roll def begin
 } VisitPowers
-grestore
+r
+/ChangeController false def
 { currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind VisitSupplies
 /AUTRICHECENTER /AUTRICHE ld
 /ANGLETERRECENTER /ANGLETERRE ld
