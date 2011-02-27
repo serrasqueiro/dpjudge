@@ -6,7 +6,7 @@ class Power:
 		address = wait = password = abbrev = balance = vote = None
 		held = adjusted = goner = home = omniscient = 0
 		player, msg, centers, units, adjust, ceo = [], [], [], [], [], []
-		retreats, funds = {}, {}
+		retreats, funds, sees = {}, {}, []
 		vars(self).update(locals())
 	#	----------------------------------------------------------------------
 	def __repr__(self):
@@ -24,6 +24,7 @@ class Power:
 		for line in self.msg: text += '\nMSG ' + line
 		if self.home != 0: text += '\nHOME ' + ' '.join(self.home)
 		if self.centers: text += '\nOWNS ' + ' '.join(self.centers)
+		if self.sees: text += '\nSEES ' + ' '.join(self.sees)
 		if self.balance != None: self.funds['$'] = self.balance
 		if self.funds:
 			text += '\nFUNDS'

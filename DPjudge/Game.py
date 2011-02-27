@@ -293,7 +293,7 @@ class Game:
 			#	-------------------------------------------
 			src, orderType, visit = unitLoc, 'C-'[len(word) == 2], []
 			if (word[-1] == unitLoc
-			and (orderType != 'C' or 'NO_RETURN' in rules)):
+			and (orderType < 'C' or 'NO_RETURN' in self.rules)):
 				return error.append('MOVING UNIT MAY NOT RETURN: %s ' %
 					unit + order)
 			if orderType == 'C':
@@ -758,8 +758,7 @@ class Game:
 							if sc in ('SC!','SC?','SC*'): power.centers += [sc]
 							elif [1 for x in self.powers if sc in x.centers]:
 								error += [sc + ' ALREADY OWNED']
-							elif self.map.areatype(sc) and sc in self.map.scs:
-								power.centers += [sc]
+							elif sc in self.map.scs: power.centers += [sc]
 							else: error += ['BAD OWNED CENTER: ' + sc]
 					else: error += ['OWNS BEFORE POWER']
 				elif upword == 'VOTE':
@@ -779,6 +778,12 @@ class Game:
 				elif upword == 'HOME':
 					if not power: error += ['HOME BEFORE POWER']
 					else: power.home = self.map.home[power.name] = word[1:]
+				elif upword == 'SEES':
+					if power:
+						for sc in [x.upper() for x in word[:1]]:
+							if sc in self.map.scs: power.sees += [sc]
+							else: error += ['BAD SEEN CENTER: ' + sc]
+					else: error += ['SEES BEFORE POWER']
 				#	-----------------------
 				#	Powers and other player
 				#	types (observers, etc.)
@@ -1013,7 +1018,8 @@ class Game:
 	def openMail(self, subject, copyFile = 0, mailTo = 0, mailAs = 0):
 		#	----------------------------------------------------
 		#	If copyFile is None, the mail to be sent will not be
-		#	recorded in any local disk file.
+		#	recorded in any local disk file. If mailTo defaults,
+		#	the mail will be sent to host.dpjudge.
 		#	If mailAs is 0, the mail will be sent as if from
 		#	the game's Master (and a Master SIGNON is provided).
 		#	----------------------------------------------------
@@ -1021,7 +1027,7 @@ class Game:
 		if (self.name and self.name not in words
 		and '(%s)' % self.name not in words): subject += ' (%s)' % self.name
 		copyFile = copyFile or host.copyFile
-		self.mail = Mail(mailTo, subject,
+		self.mail = Mail(mailTo or host.dpjudge, subject,
 			copy = copyFile and self.file(copyFile),
 			mailAs = mailAs or self.master[1], header = 'Errors-To: ' +
 				(self.master and self.master[1] or host.judgekeeper))
@@ -1574,38 +1580,43 @@ class Game:
 				for x in self.powers if x.ceo]
 			lines += [self.anglify(x.name) + ' is independent.'
 				for x in self.powers if x.isDummy() and not x.ceo]
-		if 'BLIND' in rules and not playing:
+		blind = 'BLIND' in rules and 'HYPEROPIC' not in rules and not playing
+		if blind:
 			lines += ['SHOW MASTER ' + ' '.join([x.name for x in self.powers
 				if x.units or x.centers or x.omniscient])]
 		lines += ['\nOwnership of supply centers:\n']
+		for power in self.powers: power.saw, power.sees = power.sees, []
 		for power in self.powers + ['UNOWNED']:
-			if playing and playing.name != 'MASTER' and power is not playing:
+			if playing and playing.name not in ('MASTER', power.name):
 				continue
-			if power == 'UNOWNED': powerName, centers = power, unowned
-			else: powerName, centers = power.name, power.centers
-			if centers.count('SC?') == len(centers): continue
-			if centers is not unowned:
+			if power != 'UNOWNED':
+				powerName, centers = power.name, power.centers
 				[unowned.remove(x) for x in centers if x in unowned]
+			else: powerName, centers = power, unowned
 			powerName = self.anglify(powerName) + ':'
-			for other in self.powers:
-				if other is power:
-					centers = [(x, 'Undetermined Home SC')[x == 'SC!']
-						for x in sorted(centers) if x[-1] not in '?*']
-				elif 'PERSIAN' in self.rules: centers = [x for x in sorted(centers)
-					if x[-1] not in '?*!' and [1 for y in other.units +
-						(self.map.home[other.name], other.centers)['VENETIAN' in rules]
-						if self.visible(other, '? ' + y.split()[-1])[other.name] & 2]]
-				else: continue
-				if not centers: continue
-				if not playing:
-					if other is not power: lines += ['SHOW ' + other.name]
-					elif 'BLIND' in rules: lines += ['SHOW MASTER ' + ' '.join([x.name
-						for x in self.powers if x is power or x.omniscient])]
+			for who in self.powers:
+				seen = 0
+				if who is power:
+					seen = [(x, 'Undetermined Home SC')[x == 'SC!']
+						for x in centers if x[-1] not in '?*']
+				elif (blind and not who.omniscient
+				and [who.name] != power.ceo[:1]):
+					seen = [x for x in centers
+						if self.visible(power, x)[who.name] & 2]
+					who.sees += seen
+					seen += sees + [x for x in who.saw if x not in seen]
+				if not seen: continue
+				if blind:
+					if who is power: lines += ['SHOW MASTER ' +
+						' '.join([x.name for x in self.powers
+						if x is power or x.omniscient
+						or [x.name] == power.ceo[:1]])]
+					else: lines += ['SHOW ' + who.name]
 				lines += [y.replace('\0377', '-') for y in textwrap.wrap(
 					('%-11s %s.' % (powerName,
-					', '.join(map(self.anglify, centers)))).replace('-', '\0377'),
-					75, subsequent_indent = ' ' * 12)]
-		if 'BLIND' in rules and not playing: lines += ['SHOW']
+					', '.join(map(self.anglify, sorted(seen)))))
+					.replace('-', '\0377'), 75, subsequent_indent = ' ' * 12)]
+		if blind: lines += ['SHOW']
 		return lines + ['']
 	#	----------------------------------------------------------------------
 	def mailResults(self, body, subject):
@@ -2508,10 +2519,10 @@ class Game:
 			or pawn.name in self.latePowers()):
 				pawn.ceo = pawn.ceo[1:] + pawn.ceo[:1]
 	#	----------------------------------------------------------------------
-	def advancePhase(self):
-		self.phase = self.findNextPhase()
+	def advancePhase(self, last = 0):
+		last, self.phase = last or self.phaseType, self.findNextPhase()
 		self.phaseType = self.phase.split()[-1][0]
-		return self.checkPhase()
+		return self.checkPhase(last)
 	#	----------------------------------------------------------------------
 	def morphMap(self, lastPhase = 0):
 		text, map = [], self.map
@@ -2570,10 +2581,11 @@ class Game:
 			which %= len(self.map.seq)
 		return ' '.join([new[0], `year`, new[1]])
 	#	----------------------------------------------------------------------
-	def checkPhase(self):
+	def checkPhase(self, last = 0):
 		if self.phase in (None, 'FORMING', 'COMPLETED'): return []
-		if self.phaseType == 'M':
-			return 'PERSIAN' in self.rules and self.ownership() or []
+		if self.phaseType == 'M': return (last in 'MR'
+			and ('BLIND' in self.rules) > ('PERSIAN' in self.rules)
+			and self.ownership() or [])
 		if self.phaseType == 'R':
 			if [1 for x in self.powers if x.retreats]: return []
 			for power in self.powers: power.retreats, power.adjust = {}, []
@@ -2596,7 +2608,7 @@ class Game:
 			for power in self.powers:
 				while 'SC?' in power.centers: power.centers.remove('SC?')
 				while 'SC*' in power.centers: power.centers.remove('SC*')
-			return text + self.advancePhase()
+			return text + self.advancePhase(last)
 		#	--------------------------------------
 		#	Other phases.  For now take no action.
 		#	--------------------------------------
@@ -2808,16 +2820,19 @@ class Game:
 		#	bitvalue 4 is set, the power could "see" (BEFORE the move) the
 		#	location where the unit in question ended the turn, and if the
 		#	bitvalue 8 is set, the power could "see" (AFTER the move) the
-		#	location where the unit in question ended the turn.
+		#	location where the unit in question ended the turn.  If "unit"
+		#	is simply a center location, determines center visibility.
 		#	--------------------------------------------------------------
 		if 'command' not in vars(self): self.command = {}
 		shows, order = {'MASTER': 15}, order or self.command.get(unit, 'H')
-		oldLoc = newLoc = unit[2:5]
+		oldLoc = newLoc = unit.split()[-1][:3]
 		if order[0] == '-' and (self.phaseType != 'M'
 		or not self.result.get(unit)): newLoc = order.split()[-1][:3]
 		for seer in self.powers:
-			shows[seer.name] = 15 * bool(power is seer or seer.omniscient)
-			if shows[seer.name] or 'MYOPIC' in self.rules: continue
+			shows[seer.name] = 15 * bool(power is seer or seer.omniscient
+				or [seer.name] == power.ceo[:1])
+			if (shows[seer.name]
+			or ('PERSIAN', 'VENETIAN')[' ' in unit] in self.rules): continue
 			before = after = [x[2:] for x in seer.units + seer.retreats.keys()]
 			if self.phaseType == 'M':
 				after = []
@@ -2825,8 +2840,8 @@ class Game:
 					if (self.command.get(his, 'H')[0] != '-'
 					or self.result.get(his)): after += [his[2:]]
 					else: after += [self.command[his].split()[-1]]
-			if (self.map.homeYears and not [x for x in self.powers if x.home]
-			or 'VENETIAN' in self.rules):
+			if ('ROMAN' in self.rules
+			or self.map.homeYears and not [x for x in self.powers if x.home]):
 				scs = seer.centers[:]
 				if 'SC!' in scs:
 					scs = [x[8:11] for x in seer.adjust if x[:5] == 'BUILD']

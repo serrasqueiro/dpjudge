@@ -1,8 +1,7 @@
-#import random
-
 from DPjudge import Game
 
 from StandardPower import StandardPower
+
 class StandardGame(Game):
 	#	----------------------------------------------------------------------
 	def __init__(self, gameName):

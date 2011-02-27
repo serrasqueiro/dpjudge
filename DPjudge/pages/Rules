@@ -151,6 +151,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=HIDE_PROPOSER>HIDE_PROPOSER
 <option value=HOLD_WIN>HOLD_WIN
 <option value=HOME_BUILDS>HOME_BUILDS
+<option value=HYPEROPIC>HYPEROPIC (BLIND)
 <option value=IMMOBILE_DUMMIES>IMMOBILE_DUMMIES
 <option value=LATE_CHANGES>LATE_CHANGES
 <option value=LATE_SEND>LATE_SEND
@@ -159,7 +160,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=MOBILIZE>MOBILIZE
 <option value=MUST_ORDER>MUST_ORDER
 <option value=MUTE_OBSERVERS>MUTE_OBSERVERS
-<option value=MYOPIC>MYOPIC
+<option value=MYOPIC>MYOPIC (BLIND)
 <option value=NO_ABSENCES>NO_ABSENCES
 <option value=NO_DIAS>NO_DIAS
 <option value=NO_DRAW>NO_DRAW
@@ -179,7 +180,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=NO_RETURN>NO_RETURN
 <option value=NO_REVEAL>NO_REVEAL
 <option value=ORDER_ANY>ORDER_ANY
-<option value=PERSIAN>PERSIAN
+<option value=PERSIAN>PERSIAN (BLIND)
 <option value=PLAYER_DEADLINES>PLAYER_DEADLINES
 <option value=PORTAGE_CONVOY>PORTAGE_CONVOY
 <option value=POWER_CHOICE>POWER_CHOICE
@@ -191,6 +192,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=REAL_TIME>REAL_TIME
 <option value=REMOTE_BUILDS>REMOTE_BUILDS
 <option value=REMOTE_PRESS>REMOTE_PRESS
+<option value=ROMAN>ROMAN (BLIND)
 <option value=SAFE_CONVOYS>SAFE_CONVOYS
 <option value=SILENT_ABSENCES>SILENT_ABSENCES
 <option value=SHOW_PHANTOM>SHOW_PHANTOM
@@ -198,7 +200,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=TOUCH_PRESS>TOUCH_PRESS
 <option value=UNITS_ADAPT>UNITS_ADAPT
 <option value=VASSAL_DUMMIES>VASSAL_DUMMIES
-<option value=VENETIAN>VENETIAN
+<option value=VENETIAN>VENETIAN (BLIND)
 <option value=WEAK_BOUNCES>WEAK_BOUNCES
 <option value=WEAK_CONVOYS>WEAK_CONVOYS
 <option value=WHITE_GREY>WHITE_GREY
@@ -770,6 +772,9 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 		even if the center has never been owned by the player).
 		<i>See <tt>VENETIAN</tt>, below, for an alternative.</i>
 	<li>his own list of owned supply centers,
+	<li>the ownership of any foreign-owned supply centers within his
+		"viewing range" as described above; all other centers will appear
+		(on the graphical map) to be unowned,
 	<li>his own unit-count, center-count, and adjustment phase status
 		(number of builds or removes he is eligible or required to submit).
 	</ul>
@@ -812,37 +817,46 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	Note also that the <tt>BLIND</tt> rule may have some further effects if used
 	in different rule variants (such as Payola&nbsp;&#8212;
 	<a href=#TINCUP>see below</a>).
-	Further, note also that any game that is <tt>BLIND</tt> and that uses a
-	non-standard build rule (<tt>BUILD_ANY</tt>, <tt>REMOTE_BUILDS</tt>, or
-	<tt>HOME_BUILDS</tt>) will also automatically be a <tt>VENETIAN</tt>
-	(or, if specified, <tt>MYOPIC</tt>) game (see below).
+	The visibility rules in a <tt>BLIND</tt> game can be modified by the
+	use of additional rules, listed below.
 <!-- RULE END -->
 
-<a name=VENETIAN></a><p><dt><b><tt>VENETIAN</tt></b><dd>
-<!-- RULE VENETIAN !MYOPIC +BLIND -->
-	A <tt>VENETIAN</tt> game is a <tt>BLIND</tt> game (as described above)
-	except that players see activity in and around all their currently-owned
+<a name=ROMAN></a><p><dt><b><tt>ROMAN</tt></b> (<tt>BLIND</tt> modifier)<dd>
+<!-- RULE ROMAN !HYPEROPIC +BLIND -->
+	A <tt>ROMAN</tt> game is a <tt>BLIND</tt> game (as described above)
+	except that players see data in and around all their currently-owned
 	supply centers (rather than only in and around their home supply centers,
 	regardless of the ownership of those centers, as is the case in a
-	standard <tt>BLIND</tt> game).  If <tt>VENETIAN</tt> and <tt>BLIND</tt>
-	are <i>both</i> specified, the game will be <tt>VENETIAN</tt>.
-	Note also that any game that is <tt>BLIND</tt> and that uses a non-standard
-	build rule (<tt>BUILD_ANY</tt>, <tt>REMOTE_BUILDS</tt>, or
-	<tt>HOME_BUILDS</tt>) will also automatically be a <tt>VENETIAN</tt>
-	(or, if specified, a <tt>MYOPIC</tt>) game.
+	standard <tt>BLIND</tt> game).
 <!-- RULE END -->
 
-<a name=PERSIAN></a><p><dt><b><tt>PERSIAN</tt></b><dd>
-<!-- RULE PERSIAN !MYOPIC +BLIND -->
+<a name=PERSIAN></a><p><dt><b><tt>PERSIAN</tt></b> (<tt>BLIND</tt> modifier)<dd>
+<!-- RULE PERSIAN +BLIND -->
 	A <tt>PERSIAN</tt> game is a <tt>BLIND</tt> game (as described above)
-	with the addition that players are informed of the ownership of any
-	and all supply centers that are within their "field of vision".
+	with the addition that players are not informed of the ownership of any
+	supply centers other than their own.
 <!-- RULE END -->
 
-<a name=MYOPIC></a><p><dt><b><tt>MYOPIC</tt></b><dd>
-<!-- RULE MYOPIC !VENETIAN !PERSIAN +BLIND -->
+<a name=VENETIAN></a><p><dt><b><tt>VENETIAN</tt></b> (<tt>BLIND</tt> modifier)<dd>
+<!-- RULE VENETIAN +BLIND -->
+	A <tt>VENETIAN</tt> game is a <tt>BLIND</tt> game (as described above)
+	with the addition that players <i>never</i> see any units other than
+	their own.
+<!-- RULE END -->
+
+<a name=MYOPIC></a><p><dt><b><tt>MYOPIC</tt></b (<tt>BLIND</tt> modifier)<dd>
+<!-- RULE MYOPIC !ROMAN +PERSIAN +VENETIAN +BLIND -->
 	A <tt>MYOPIC</tt> game is a <tt>BLIND</tt> game (as described above)
-	except that players <i>never</i> see any units other than their own.
+	that is both <tt>PERSIAN</tt> and <tt>VENETIAN</tt>, meaning that players
+	<i>never</i> see any units other than their own and are never
+	informed of the ownership of any supply center not their own.
+<!-- RULE END -->
+
+<a name=HYPEROPIC></a><p><dt><b><tt>HYPEROPIC</tt></b> (<tt>BLIND</tt> modifier)<dd>
+<!-- RULE HYPEROPIC !PERSIAN +BLIND -->
+	A <tt>HYPEROPIC</tt> game is a <tt>BLIND</tt> game (as described above)
+	except that center ownership (for the entire board) is revealed
+	to all players.
 <!-- RULE END -->
 
 <a name=HIDE_EXTENDERS></a><p><dt><b><tt>HIDE_EXTENDERS</tt></b><dd>

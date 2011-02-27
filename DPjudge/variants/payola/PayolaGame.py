@@ -151,11 +151,11 @@ class PayolaGame(Game):
 		#	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		#	Need to make a list of who won (what are the rules?)
 		#	and act on it, and return it instead of just doing this:
-		#
 		#	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		return []
 	#	----------------------------------------------------------------------
 	def processExchangeDividendsPhase(self):
+		distributed = 0
 		for power in self.powers:
 			div, shareholders = power.funds.get('/share'), []
 			if div is None: continue
@@ -173,13 +173,10 @@ class PayolaGame(Game):
 					(power.name.title(), self.year),
 					subject = 'Dividends withheld by ' + power.name.title())
 				continue
-			mailTo = host.dpjudge
-			self.openMail('Payola dividend distribution', 'ledgers', mailTo)
-			if mailTo:
-				self.mail.write('OFFICIAL Payola dividend distribution\n', 0)
-				template = ('PRESS TO %s' +
-					' QUIET' * ('EAVESDROP' not in self.rules))
-			else: template = 'PRESS TO %.1s'
+			self.openMail('Payola dividend distribution', 'ledgers')
+			self.mail.write('OFFICIAL Payola dividend distribution\n', 0)
+			template = ('PRESS TO %s' +
+				' QUIET' * ('EAVESDROP' not in self.rules))
 			self.mail.write(template % power.name +
 				'\nACCOUNT ACTIVITY FOR %s\n%s\n'
 				'BALANCE FORWARD            %4d AgP\n'
@@ -190,8 +187,8 @@ class PayolaGame(Game):
 				prevBal, prevBal - power.balance, power.balance))
 			self.mail.write('SIGNOFF\n', 0)
 			self.mail.close()
-			self.mail = None
-		return ['Corporate dividends have been disbursed.\n']
+			self.mail, distributed = None, 1
+		return ['Corporate dividends have been disbursed.\n'] * distributed
 	#	----------------------------------------------------------------------
 	def processIncomePhase(self):
 		if self.findNextPhase().endswith('ADJUSTMENTS'):
@@ -208,18 +205,14 @@ class PayolaGame(Game):
 		if self.phaseType == 'Y': return self.processExchangeReportsPhase()
 		return Game.resolvePhase(self)
 	#	----------------------------------------------------------------------
-	def checkPhase(self):
-		if self.phase in ('FORMING', 'COMPLETED'): return []
-		if self.phaseType == 'I':
-			return self.processIncomePhase() + self.advancePhase()
-		if self.phaseType == 'D':
-			for power in self.powers:
-				if not (power.funds.get('/share') or power.dividendLimit()):
-					return []
-			return self.processExchangeDividendsPhase() + self.advancePhase()
-		if self.phaseType == 'Y':
-			return self.processExchangeReportsPhase() + self.advancePhase()
-		return Game.checkPhase(self)
+	def checkPhase(self, last = 0):
+		if self.phaseType == 'I': text = self.processIncomePhase()
+		elif self.phaseType == 'D':
+			text = self.processExchangeDividendsPhase()
+		elif self.phaseType == 'Y':
+			text = self.processExchangeReportsPhase()
+		else: return Game.checkPhase(self, last)
+		return text + self.advancePhase(last)
 	#	----------------------------------------------------------------------
 	def checkAccept(self, power, accept = 0):
 		accept = accept and accept.upper() or power.accept
@@ -634,20 +627,15 @@ class PayolaGame(Game):
 		except: pass
 	#	----------------------------------------------------------------------
 	def sendLedgers(self):
-		mailTo = host.dpjudge
-		self.openMail('Payola orders', 'ledgers', mailTo = mailTo)
-		if mailTo: self.mail.write(
-			'OFFICIAL Payola bribe results %s %.1s%s%.1s\n' %
+		self.openMail('Payola orders', 'ledgers')
+		self.mail.write('OFFICIAL Payola bribe results %s %.1s%s%.1s\n' %
 			tuple([self.name] + self.phase.split()), 0)
 		blind = 'BLIND' in self.rules
 		for power in self.powers:
 			if not power.offers and (not power.balance
 			or power.isDummy() and not power.ceo): continue
-			if mailTo: self.mail.write('PRESS TO %s %s\n' %
+			self.mail.write('PRESS TO %s %s\n' %
 				(power.name, 'EAVESDROP' not in self.rules and 'QUIET' or ''))
-			elif power.name not in self.map.powers: self.mail.write(
-				'PRESS TO M\nACCOUNT ACTIVITY FOR %s\n' % power.name)
-			else: self.mail.write('PRESS TO %s\n' % power.abbrev)
 			self.mail.write(
 				'%s ACCOUNT STATEMENT FOR %s\n%s\n' %
 				(self.phase.upper(), power.name,
@@ -801,14 +789,12 @@ class PayolaGame(Game):
 							 - sum([x[1] for x in power.lost]))
 		if 'NO_LEDGERS' in self.rules: return
 		if not (bal or power.gained or power.lost): return
-		mailTo = host.dpjudge
 		subject = 'Payola income report ' + self.phase.split()[1]
 		desc = ('TAX INCOME', 'BRIBE PROFITS')['ZEROSUM' in self.rules]
-		self.openMail(subject, 'ledgers', mailTo = mailTo)
-		if mailTo: self.mail.write('OFFICIAL %s\n' % subject, 0)
-		if mailTo: self.mail.write('PRESS TO %s %s\n' %
+		self.openMail(subject, 'ledgers')
+		self.mail.write('OFFICIAL %s\n' % subject, 0)
+		self.mail.write('PRESS TO %s %s\n' %
 			(power.name, 'EAVESDROP' not in self.rules and 'QUIET' or ''))
-		else: self.mail.write('PRESS TO %.1s\n' % power.name)
 		self.mail.write(
 			'INCOME FOR %s FOR YEAR END %s\n%s\n'
 			'BALANCE FORWARD%9d AgP\n'
@@ -842,14 +828,10 @@ class PayolaGame(Game):
 			#	Start the mail.  The master signon is put in automatically
 			#	----------------------------------------------------------
 			if send:
-				mailTo = host.dpjudge
-				self.openMail('Payola transfer', 'ledgers', mailTo)
-				if mailTo:
-					self.mail.write('OFFICIAL Payola funds transfer\n', 0)
-					template = ('PRESS TO %%s%s\n' %
-						('EAVESDROP' not in self.rules and ' QUIET' or ''))
-				elif who.name in self.map.powers: template = 'PRESS TO %.1s\n'
-				else: template = 'PRESS TO M\nACCOUNT ACTIVITY FOR %s\n'
+				self.openMail('Payola transfer', 'ledgers')
+				self.mail.write('OFFICIAL Payola funds transfer\n', 0)
+				template = ('PRESS TO %%s%s\n' %
+					('EAVESDROP' not in self.rules and ' QUIET' or ''))
 				self.mail.write(template % who.name)
 				#	------------------------------
 				#	Format and compose the message

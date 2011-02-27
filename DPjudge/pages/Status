@@ -631,6 +631,15 @@ page.include('functions')
 		FUNDS $34 12E 22c</tt><br>
 	Obviously, the <tt>FUNDS</tt> line is variant-specific, and it is
 	not used in the standard game.
+	
+<a name=SEES></a>
+<p><dt><b><tt>OWNS <i>center...</i></tt></b><dd>
+	(This is only seen in <a href=?page=Rules#BLIND><tt>BLIND</tt></a> games
+	that do not use the <a href=?page=Rules#PERSIAN><tt>PERSIAN</tt></a> or
+	<a href=?page=Rules#HYPEROPIC><tt>HYPEROPIC</tt></a> .)
+	Specifies all supply centers that can be "seen" by a power.  This data is
+	automatically generated and is necessary to assist in the generation of
+	results.
 </dl>
 </dl>
 		<!--BODYCOPY ENDS HERE-->

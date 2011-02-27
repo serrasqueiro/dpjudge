@@ -131,10 +131,9 @@ class XtalballGame(Game):
 	#	----------------------------------------------------------------------
 	def preMoveUpdate(self):
 		if not self.skip:
-			mailTo = host.dpjudge
-			self.openMail('Xtalball orders', 'lists', mailTo = mailTo)
+			self.openMail('Xtalball orders', 'lists')
 			if 'PUBLIC_LISTS' in self.rules:
-				if mailTo: self.mail.write(
+				self.mail.write(
 					'OFFICIAL Crystal Ball orders %s %.1s%s%.1s\n' %
 					tuple([self.name] + self.phase.split()), 0)
 				self.mail.write('BROADCAST\n', 0)
@@ -242,12 +241,11 @@ class XtalballGame(Game):
 		if not [x for x in self.powers
 				if not x.list['SOONER'] and (not x.isDummy()
 				or 'CD_DUMMIES' not in self.rules)]:
-			mailTo = host.dpjudge
 			self.setDeadline()
 			deadline = ('\nThe deadline for orders will be %s.\n' %
 				self.timeFormat())
-			self.openMail('Xtalball lock notice', mailTo = mailTo)
-			if mailTo: self.mail.write('OFFICIAL Order lists locked\n', 0)
+			self.openMail('Xtalball lock notice')
+			self.mail.write('OFFICIAL Order lists locked\n', 0)
 			self.mail.write('BROADCAST\n'
 				'All players have now entered an order list for the '
 				'first turn\nof the game, and should now enter their '
