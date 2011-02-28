@@ -511,7 +511,7 @@ class Game:
 	def setTimeZone(self, zone = 'GMT'):
 		if not self.zones:
 			self.zones = ['GMT']
-			zoneFile = open(host.packageDir + '/tools/zone.tab')
+			zoneFile = open(host.toolsDir + '/zone.tab')
 			for line in zoneFile:
 				word = line.strip().split()
 				if word and word[0][0] != '#': self.zones.append(word[2])
@@ -1119,27 +1119,27 @@ class Game:
 		else:
 			inp = ('%sppm' % file, '', '', '')
 			outp = ('|', '|', '|')
-		toolDir = host.packageDir + '/tools'
+		toolsDir = host.toolsDir
 		chop = ('%s/psselect -p_%%d %sps %s %s'
 				'%s/gs -q -r%d -dSAFER -sDEVICE=ppmraw -sOutputFile=%sppm %s;' %
-				(toolDir, file, inp[1] * (os.name != 'nt'), outp[0],
-				toolDir, host.imageResolution, file, (inp[1], '-')[os.name != 'nt']))
+				(toolsDir, file, inp[1] * (os.name != 'nt'), outp[0],
+				toolsDir, host.imageResolution, file, (inp[1], '-')[os.name != 'nt']))
 		#	----------------------------------------------------------
 		#	All landscape maps must be rotated 270 degrees by pnmflip.
 		#	----------------------------------------------------------
 		make, idx = '', 0
 		if self.map.rotation:
-			make += '%s/pnmflip -r%d %s %s' % (toolDir, self.map.rotation * 90, inp[idx], outp[idx])
+			make += '%s/pnmflip -r%d %s %s' % (toolsDir, self.map.rotation * 90, inp[idx], outp[idx])
 			idx += 1
 		if origin:
-			make += '%s/pnmcut %d %d %d %d %s %s' % (toolDir, origin[0], origin[1], size[0], size[1], inp[idx], outp[idx])
+			make += '%s/pnmcut %d %d %d %d %s %s' % (toolsDir, origin[0], origin[1], size[0], size[1], inp[idx], outp[idx])
 			idx += 1
-			make += '%s/pnmcrop -white %s %s' % (toolDir, inp[idx], outp[idx])
+			make += '%s/pnmcrop -white %s %s' % (toolsDir, inp[idx], outp[idx])
 			idx += 1
 		else:
-			make += '%s/pnmcrop -white %s %s' % (toolDir, inp[idx], outp[idx])
+			make += '%s/pnmcrop -white %s %s' % (toolsDir, inp[idx], outp[idx])
 			idx += 1
-		make +=	'%s/ppmtogif -interlace %s > %%s' %	(toolDir, inp[idx])
+		make +=	'%s/ppmtogif -interlace %s > %%s' %	(toolsDir, inp[idx])
 		for page in (1, 2):
 			if page == 2 and self.phase == self.map.phase: break
 			gif = root + '_'[page & 1:] + '.gif'
@@ -1170,7 +1170,7 @@ class Game:
 		#	(We could run psselect -_2-_1 xx.ps 2>/dev/null > tmp.ps and then
 		#	run the ps2pdf on the tmp.ps file, but we now pdf the full game.)
 		#	-----------------------------------------------------------------
-		os.system(host.packageDir + '/tools/ps2pdf ' + params)
+		os.system(host.toolsDir + '/ps2pdf ' + params)
 		os.chmod(infileName, 0666)
 		#	-------------------------------------------------
 		#	But now we have to rotate it 90 degrees clockwise

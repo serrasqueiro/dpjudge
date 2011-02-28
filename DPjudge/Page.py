@@ -6,6 +6,13 @@ from Map import Map
 class Page:
 	#	----------------------------------------------------------------------
 	def __init__(self, form = {}):
+		#	Add banner message if one is provided.
+		#	NOTE: if testing a new DPPD, though, you don't want this text to
+		#	show, at least for the "page=whois" poor-man's Web Service
+		#	invocations because this header will be included in that response,
+		#	and bin/mail.py will be confused about a JOIN (etc.)'ing player's
+		#	DPPD status.
+		print host.bannerHtml
 		#	The pwdFlag is 0 or None if bad password, 1 if good (incl. GM),
 		#	and 2 if good enough to provide read-only access (omniscient).
 		self.pwdFlag = None

@@ -13,6 +13,11 @@ try: host.dpjudgeDir
 except: host.dpjudgeDir = host.hostDir + '/web'
 try: host.gameDir
 except: host.gameDir = host.hostDir + '/games'
+try: host.toolsDir
+except: host.toolsDir = host.packageDir + '/tools'
+
+try: host.bannerHtml
+except: host.bannerHtml = ''
 
 if __name__ != '__main__': from Page import Page
 
