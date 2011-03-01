@@ -1580,7 +1580,8 @@ class Game:
 				for x in self.powers if x.ceo]
 			lines += [self.anglify(x.name) + ' is independent.'
 				for x in self.powers if x.isDummy() and not x.ceo]
-		blind = 'BLIND' in rules and 'HYPEROPIC' not in rules and not playing
+		blind = ('BLIND' in rules and not playing
+				 and 'CARTHAGINIAN' not in rules) 
 		if blind:
 			lines += ['SHOW MASTER ' + ' '.join([x.name for x in self.powers
 				if x.units or x.centers or x.omniscient])]
@@ -2825,45 +2826,66 @@ class Game:
 		#	--------------------------------------------------------------
 		if 'command' not in vars(self): self.command = {}
 		shows, order = {'MASTER': 15}, order or self.command.get(unit, 'H')
-		oldLoc = newLoc = unit.split()[-1][:3]
+		old = new = unit.split()[-1][:3]
 		if order[0] == '-' and (self.phaseType != 'M'
-		or not self.result.get(unit)): newLoc = order.split()[-1][:3]
+		or not self.result.get(unit)): new = order.split()[-1][:3]
+		rules = self.rules
 		for seer in self.powers:
 			shows[seer.name] = 15 * bool(power is seer or seer.omniscient
 				or [seer.name] == power.ceo[:1])
 			if (shows[seer.name]
-			or ('PERSIAN', 'VENETIAN')[' ' in unit] in self.rules): continue
-			before = after = [x[2:] for x in seer.units + seer.retreats.keys()]
-			if self.phaseType == 'M':
-				after = []
-				for his in seer.units:
-					if (self.command.get(his, 'H')[0] != '-'
-					or self.result.get(his)): after += [his[2:]]
-					else: after += [self.command[his].split()[-1]]
-			if ('ROMAN' in self.rules
+			or ('PERSIAN', 'VENETIAN')[' ' in unit] in rules): continue
+			#	--------------------------------------------------
+			#	Get the list of the "seer"s sighted units (if any)
+			#	with their positions before and after any movement
+			#	--------------------------------------------------
+			if 'EGYPTIAN' in rules: before = after = []
+			else:
+				before = after = [x[2:]
+					for x in seer.units + seer.retreats.keys()
+					if ' ' not in unit or unit[0] != x[0] and 'TROJAN' in rules
+					or unit[0] == x[0] and 'GREEK' in rules]
+				if self.phaseType == 'M':
+					after = []
+					for his in seer.units:
+						if (' ' in unit
+						and ('GREEK' in rules and his[0] != unit[0]
+						or	'TROJAN' in rules and his[0] == unit[0])): continue
+						if (self.command.get(his, 'H')[0] != '-'
+						or self.result.get(his)): after += [his[2:]]
+						else: after += [self.command[his].split()[-1]]
+			#	------------------------------------------------
+			#	Get the list of the "seer"s sighted scs (if any)
+			#	------------------------------------------------
+			if 'BYZANTINE' in rules: scs = []
+			elif ('ROMAN' in rules
 			or self.map.homeYears and not [x for x in self.powers if x.home]):
+				#	------------------------------------
+				#	The seer's owned centers are sighted
+				#	------------------------------------
 				scs = seer.centers[:]
 				if 'SC!' in scs:
 					scs = [x[8:11] for x in seer.adjust if x[:5] == 'BUILD']
 			else:
+				#	-----------------------------------
+				#	The seer's home centers are sighted
+				#	-----------------------------------
 				scs = self.map.home.get(seer.name, [])[:]
 				#	------------------------------------------------------------
 				#	Also add locations where the power had units at game start
 				#	(assisting void variant games, where units start on non-SCs)
 				#	------------------------------------------------------------
-				if ('BLANK_BOARD' not in self.rules
-				and 'MOBILIZE' not in self.rules):
+				if 'BLANK_BOARD' not in rules and 'MOBILIZE' not in rules:
 					scs += [x[2:] for x in self.map.units.get(seer.name, [])]
-			for his in [x[:3] for x in before + scs]:
-				if oldLoc == his or self.abuts('?', oldLoc, 'S', his):
-					shows[seer.name] |= 1
-				if newLoc == his or self.abuts('?', newLoc, 'S', his):
-					shows[seer.name] |= 4
-			for his in [x[:3] for x in after + scs]:
-				if oldLoc == his or self.abuts('?', oldLoc, 'S', his):
-					shows[seer.name] |= 2
-				if newLoc == his or self.abuts('?', newLoc, 'S', his):
-					shows[seer.name] |= 8
+			#	-------------------------------------------------------
+			#	Set the bitmap for this "seer" if any unit or sc in the
+			#	lists (before, after, scs) can see the site in question
+			#	-------------------------------------------------------
+			for his, place in [(x[:3], y) for x in before + after + scs
+				for y in (old, new) if x == y or self.abuts('?', y, 'S', x)]:
+				bit = (his in before and 1) | (his in after and 2) or 3
+				if place == new: bit = bit * (place == old) | bit << 2
+				shows[seer.name] |= bit
 		return shows
 	#	----------------------------------------------------------------------
 	def showLines(self, power, unit, notes):
@@ -2877,7 +2899,7 @@ class Game:
 		elif len(word) > 4 and word[2] not in notes:
 			cmd, there = ' '.join(word[3:]), unit[:2] + word[-1]
 			power.units += [unit]
-			for who in (self.powers, [])['MYOPIC' in self.rules]:
+			for who in (self.powers, [])['VENETIAN' in self.rules]:
 				if who is power: continue
 				for what in who.units + who.adjust:
 					if what in who.adjust:
