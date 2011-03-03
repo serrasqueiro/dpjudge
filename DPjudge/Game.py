@@ -1581,7 +1581,7 @@ class Game:
 			lines += [self.anglify(x.name) + ' is independent.'
 				for x in self.powers if x.isDummy() and not x.ceo]
 		blind = ('BLIND' in rules and not playing
-				 and 'CARTHAGINIAN' not in rules) 
+				 and 'SEE_ALL_SCS' not in rules) 
 		if blind:
 			lines += ['SHOW MASTER ' + ' '.join([x.name for x in self.powers
 				if x.units or x.centers or x.omniscient])]
@@ -2585,7 +2585,8 @@ class Game:
 	def checkPhase(self, last = 0):
 		if self.phase in (None, 'FORMING', 'COMPLETED'): return []
 		if self.phaseType == 'M': return (last in 'MR'
-			and ('BLIND' in self.rules) > ('PERSIAN' in self.rules)
+			and ('BLIND' in self.rules) > ('NO_UNITS_SEE' in self.rules)
+				+ ('SEE_NO_SCS' in self.rules) + ('SEE_ALL_SCS' in self.rules)
 			and self.ownership() or [])
 		if self.phaseType == 'R':
 			if [1 for x in self.powers if x.retreats]: return []
@@ -2834,31 +2835,33 @@ class Game:
 			shows[seer.name] = 15 * bool(power is seer or seer.omniscient
 				or [seer.name] == power.ceo[:1])
 			if (shows[seer.name]
-			or ('PERSIAN', 'VENETIAN')[' ' in unit] in rules): continue
+			or ('SEE_NO_SCS', 'SEE_NO_UNITS')[' ' in unit] in rules): continue
 			#	--------------------------------------------------
 			#	Get the list of the "seer"s sighted units (if any)
 			#	with their positions before and after any movement
 			#	--------------------------------------------------
-			if 'EGYPTIAN' in rules: before = after = []
+			if 'NO_UNITS_SEE' in rules: before = after = []
 			else:
 				before = after = [x[2:]
 					for x in seer.units + seer.retreats.keys()
-					if ' ' not in unit or unit[0] != x[0] and 'TROJAN' in rules
-					or unit[0] == x[0] and 'GREEK' in rules]
+					if ' ' not in unit
+					or unit[0] != x[0] and 'UNITS_SEE_OTHER' in rules
+					or unit[0] == x[0] and 'UNITS_SEE_SAME' in rules]
 				if self.phaseType == 'M':
 					after = []
 					for his in seer.units:
 						if (' ' in unit
-						and ('GREEK' in rules and his[0] != unit[0]
-						or	'TROJAN' in rules and his[0] == unit[0])): continue
+						and ('UNITS_SEE_SAME' in rules and his[0] != unit[0]
+						or	'UNITS_SEE_OTHER' in rules and his[0] == unit[0])):
+							continue
 						if (self.command.get(his, 'H')[0] != '-'
 						or self.result.get(his)): after += [his[2:]]
 						else: after += [self.command[his].split()[-1]]
 			#	------------------------------------------------
 			#	Get the list of the "seer"s sighted scs (if any)
 			#	------------------------------------------------
-			if 'BYZANTINE' in rules: scs = []
-			elif ('ROMAN' in rules
+			if 'NO_SCS_SEE' in rules: scs = []
+			elif ('OWN_SCS_SEE' in rules
 			or self.map.homeYears and not [x for x in self.powers if x.home]):
 				#	------------------------------------
 				#	The seer's owned centers are sighted
@@ -2899,7 +2902,7 @@ class Game:
 		elif len(word) > 4 and word[2] not in notes:
 			cmd, there = ' '.join(word[3:]), unit[:2] + word[-1]
 			power.units += [unit]
-			for who in (self.powers, [])['VENETIAN' in self.rules]:
+			for who in (self.powers, [])['NO_UNITS_SEE' in self.rules]:
 				if who is power: continue
 				for what in who.units + who.adjust:
 					if what in who.adjust:

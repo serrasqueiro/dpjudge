@@ -126,8 +126,6 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=FLEX_SETUP>BLANK_BOARD
 <option value=BLIND>BLIND
 <option value=BUILD_ANY>BUILD_ANY
-<option value=BYZANTINE>BYZANTINE (BLIND)
-<option value=CARTHAGINIAN>CARTHAGINIAN (BLIND)
 <option value=CD_BUILDS>CD_BUILDS
 <option value=CD_DUMMIES>CD_DUMMIES
 <option value=CD_RETREATS>CD_RETREATS
@@ -138,7 +136,6 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=DEFAULT_UNORDERED>DEFAULT_UNORDERED
 <option value=DUMMY_FIRE>DUMMY_FIRE
 <option value=EAVESDROP>EAVESDROP
-<option value=EGYPTIAN>EGYPTIAN (BLIND)
 <option value=FAKE_PRESS>FAKE_PRESS
 <option value=FICTIONAL_OK>FICTIONAL_OK
 <option value=FLEX_SETUP>FLEX_SETUP
@@ -182,8 +179,10 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=NO_RETREAT>NO_RETREAT
 <option value=NO_RETURN>NO_RETURN
 <option value=NO_REVEAL>NO_REVEAL
+<option value=NO_SCS_SEE>NO_SCS_SEE (BLIND)
+<option value=NO_UNITS_SEE>NO_UNITS_SEE (BLIND)
 <option value=ORDER_ANY>ORDER_ANY
-<option value=PERSIAN>PERSIAN (BLIND)
+<option value=OWN_SCS_SEE>OWN_SCS_SEE (BLIND)
 <option value=PLAYER_DEADLINES>PLAYER_DEADLINES
 <option value=PORTAGE_CONVOY>PORTAGE_CONVOY
 <option value=POWER_CHOICE>POWER_CHOICE
@@ -195,23 +194,29 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=REAL_TIME>REAL_TIME
 <option value=REMOTE_BUILDS>REMOTE_BUILDS
 <option value=REMOTE_PRESS>REMOTE_PRESS
-<option value=ROMAN>ROMAN (BLIND)
 <option value=SAFE_CONVOYS>SAFE_CONVOYS
+<option value=SEE_ALL_SCS>SEE_ALL_SCS (BLIND)
+<option value=SEE_NO_SCS>SEE_NO_SCS (BLIND)
+<option value=SEE_NO_UNITS>SEE_NO_UNITS (BLIND)
 <option value=SILENT_ABSENCES>SILENT_ABSENCES
 <option value=SHOW_PHANTOM>SHOW_PHANTOM
 <option value=SMART_CD>SMART_CD
 <option value=TOUCH_PRESS>TOUCH_PRESS
 <option value=TROJAN>TROJAN (BLIND)
 <option value=UNITS_ADAPT>UNITS_ADAPT
+<option value=UNITS_SEE_OTHER>UNITS_SEE_OTHER (BLIND)
+<option value=UNITS_SEE_SAME>UNITS_SEE_SAME (BLIND)
 <option value=VASSAL_DUMMIES>VASSAL_DUMMIES
 <option value=VENETIAN>VENETIAN (BLIND)
 <option value=WEAK_BOUNCES>WEAK_BOUNCES
 <option value=WEAK_CONVOYS>WEAK_CONVOYS
 <option value=WHITE_GREY>WHITE_GREY
 <option value=YELLOW_PRESS>YELLOW_PRESS
+
 <optgroup label="Rules for the Standard Variant">
 <option value=CD_SUPPORTS>CD_SUPPORTS
 <option value=NO_CHECK>NO_CHECK
+
 <optgroup label="Rules for the Payola Variant">
 <option value=ANON_TRANSFER>ANON_TRANSFER
 <option value=TINCUP>BLIND
@@ -237,6 +242,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=VASSAL_TRANSFERS>VASSAL_DUMMIES
 <option value=ZEROSUM>ZEROSUM
 <option value=ZERO_FOREIGN>ZERO_FOREIGN
+
 <optgroup label="Rules for the Crystal Ball Variant">
 <option value=LIMIT_LISTS>LIMIT_LISTS
 <option value=PUBLIC_LISTS>PUBLIC_LISTS
@@ -774,7 +780,6 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 		of whether or not that center is currently owned by the player, and
 		&mdash; as in the case of games using the <tt>MOBILIZE</tt> rule &mdash;
 		even if the center has never been owned by the player).
-		<i>See <tt>VENETIAN</tt>, below, for an alternative.</i>
 	<li>his own list of owned supply centers,
 	<li>the ownership of any foreign-owned supply centers within his
 		"viewing range" as described above; all other centers will appear
@@ -825,73 +830,91 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	use of additional rules, listed below.
 <!-- RULE END -->
 
-<a name=ROMAN></a><p><dt><b><tt>ROMAN</tt></b> (<tt>BLIND</tt> modifier)<dd>
-<!-- RULE ROMAN !BYZANTINE +BLIND -->
-	A <tt>ROMAN</tt> game is a <tt>BLIND</tt> game (as described above)
+<a name=OWN_SCS_SEE></a><p><dt><b><tt>OWNED_SCS_SEE</tt></b> (<tt>BLIND</tt> modifier)<dd>
+<!-- RULE OWN_SCS_SEE !NO_SCS_SEE +BLIND -->
+	A <tt>OWN_SCS_SEE</tt> game is a <tt>BLIND</tt> game (as described above)
 	except that players see data in and around all their currently-owned
 	supply centers (rather than only in and around their home supply centers,
 	regardless of the ownership of those centers, as is the case in a
 	standard <tt>BLIND</tt> game).
 <!-- RULE END -->
 
-<a name=BYZANTINE></a><p><dt><b><tt>BYZANTINE</tt></b> (<tt>BLIND</tt> modifier)<dd>
-<!-- RULE BYZANTINE !ROMAN +BLIND -->
-	A <tt>BYZANTINE</tt> game is a <tt>BLIND</tt> game (as described above)
+<a name=NO_SCS_SEE></a><p><dt><b><tt>NO_SCS_SEE</tt></b> (<tt>BLIND</tt> modifier)<dd>
+<!-- RULE NO_SCS_SEE !OWNED_SCS_SEE +BLIND -->
+	A <tt>NO_SCS_SEE</tt> game is a <tt>BLIND</tt> game (as described above)
 	except that supply centers do not provide information (information only is
 	provided by units).
 <!-- RULE END -->
 
-<a name=EGYPTIAN></a><p><dt><b><tt>EGYPTIAN</tt></b> (<tt>BLIND</tt> modifier)<dd>
-<!-- RULE EGYPTIAN +BLIND -->
-	A <tt>TROJAN</tt> game is a <tt>BLIND</tt> game (as described above)
+<a name=NO_UNITS_SEE></a><p><dt><b><tt>NO_UNITS_SEE</tt></b> (<tt>BLIND</tt> modifier)<dd>
+<!-- RULE NO_UNITS_SEE +BLIND -->
+	A <tt>NO_UNITS_SEE</tt> game is a <tt>BLIND</tt> game (as described above)
 	except that units do not provide information (information is only provided
 	by supply centers)
 <!-- RULE END -->
 
-<a name=PERSIAN></a><p><dt><b><tt>PERSIAN</tt></b> (<tt>BLIND</tt> modifier)<dd>
-<!-- RULE PERSIAN +BLIND -->
-	A <tt>PERSIAN</tt> game is a <tt>BLIND</tt> game (as described above)
+<a name=SEE_NO_SCS></a><p><dt><b><tt>SEE_NO_SCS</tt></b> (<tt>BLIND</tt> modifier)<dd>
+<!-- RULE SEE_NO_SCS +BLIND -->
+	A <tt>SEE_NO_SCS</tt> game is a <tt>BLIND</tt> game (as described above)
 	with the addition that players are not informed of the ownership of any
 	supply centers other than their own.
 <!-- RULE END -->
 
-<a name=VENETIAN></a><p><dt><b><tt>VENETIAN</tt></b> (<tt>BLIND</tt> modifier)<dd>
-<!-- RULE VENETIAN !TROJAN !GREEK +BLIND -->
-	A <tt>VENETIAN</tt> game is a <tt>BLIND</tt> game (as described above)
-	with the addition that players <i>never</i> see any units other than
-	their own.
-<!-- RULE END -->
-
-<a name=CARTHAGINIAN></a><p><dt><b><tt>CARTHAGINIAN</tt></b> (<tt>BLIND</tt> modifier)<dd>
-<!-- RULE CARTHAGINIAN !PERSIAN +BLIND -->
-	A <tt>CARTHAGINIAN</tt> game is a <tt>BLIND</tt> game (as described above)
+<a name=SEE_ALL_SCS></a><p><dt><b><tt>SEE_ALL_SCS</tt></b> (<tt>BLIND</tt> modifier)<dd>
+<!-- RULE SEE_ALL_SCS !SEE_NO_SCS +BLIND -->
+	A <tt>SEE_ALL_SCS</tt> game is a <tt>BLIND</tt> game (as described above)
 	except that center ownership (for the entire board) is revealed
 	to all players.
 <!-- RULE END -->
 
-<a name=TROJAN></a><p><dt><b><tt>TROJAN</tt></b> (<tt>BLIND</tt> modifier)<dd>
-<!-- RULE TROJAN +BYZANTINE !ROMAN !GREEK !VENETIAN +BLIND -->
-	A <tt>TROJAN</tt> game is a <tt>BLIND</tt> game (as described above)
+<a name=SEE_NO_UNITS></a><p><dt><b><tt>SEE_NO_UNITS</tt></b> (<tt>BLIND</tt> modifier)<dd>
+<!-- RULE SEE_NO_UNITS !UNITS_SEE_OTHER !UNITS_SEE_SAME +BLIND -->
+	A <tt>SEE_NO_UNITS</tt> game is a <tt>BLIND</tt> game (as described above)
+	with the addition that players <i>never</i> see any units other than
+	their own.
+<!-- RULE END -->
+
+<a name=UNITS_SEE_OTHER></a><p><dt><b><tt>UNITS_SEE_OTHER</tt></b> (<tt>BLIND</tt> modifier)<dd>
+<!-- RULE UNITS_SEE_OTHER !UNITS_SEE_SAME !SEE_NO_UNITS +BLIND -->
+	A <tt>UNITS_SEE_OTHER</tt> game is a <tt>BLIND</tt> game (as described above)
 	except that armies and fleets can only see those neighboring units that
     are of the opposite type (armies see only fleets, fleets see only armies),
 	and supply centers do not provide information on adjacent foreign units.
 <!-- RULE END -->
 
-<a name=GREEK></a><p><dt><b><tt>GREEK</tt></b> (<tt>BLIND</tt> modifier)<dd>
-<!-- RULE GREEK +BYZANTINE !ROMAN !TROJAN !VENETIAN +BLIND -->
-	A <tt>GREEK</tt> game is a <tt>BLIND</tt> game (as described above)
+<a name=UNITS_SEE_SAME></a><p><dt><b><tt>UNITS_SEE_SAME</tt></b> (<tt>BLIND</tt> modifier)<dd>
+<!-- RULE UNITS_SEE_SAME !UNITS_SEE_OTHER !SEE_NO_UNITS +BLIND -->
+	A <tt>UNITS_SEE_SAME</tt> game is a <tt>BLIND</tt> game (as described above)
 	except that armies and fleets can only see those neighboring units that
     are of the same type (armies see only armies, fleets see only fleets)
 	and supply centers do not provide information on adjacent foreign units.
 <!-- RULE END -->
 
 <a name=MYOPIC></a><p><dt><b><tt>MYOPIC</tt></b (<tt>BLIND</tt> modifier)<dd>
-<!-- RULE MYOPIC !ROMAN +PERSIAN +VENETIAN +EGYPTIAN +BYZANTINE +BLIND -->
+<!-- RULE MYOPIC !OWNED_SCS_SEE +SEE_NO_SCS +SEE_NO_UNITS +NO_UNITS_SEE +NO_SCS_SEE +BLIND -->
 	A <tt>MYOPIC</tt> game is a <tt>BLIND</tt> game in which players
 	<i>never</i> see any units other than their own and are never
 	informed of the ownership of any supply center not their own.
-	(This is a shorthand for both <tt>PERSIAN</tt> and <tt>VENETIAN</tt>,
-	or for both <tt>EGYPTIAN</tt> and <tt>BYZANTINE</tt>.)
+	(This is a shorthand for both <tt>SEE_NO_SCS</tt> and <tt>SEE_NO_UNITS</tt>,
+	or for both <tt>NO_UNITS_SEE</tt> and <tt>NO_SCS_SEE</tt>.)
+<!-- RULE END -->
+
+<a name=VENETIAN></a><p><dt><b><tt>VENETIAN</tt></b (<tt>BLIND</tt> modifier)<dd>
+<!-- RULE VENETIAN +OWNED_SCS_SEE +SEE_NO_SCS +BLIND -->
+	A <tt>VENETIAN</tt> game is a <tt>BLIND</tt> mixture, in which owned (as opposed
+	to home) units have "visibility" and foreign supply center ownership is not revealed.
+<!-- RULE END -->
+
+<a name=GREEK></a><p><dt><b><tt>GREEK</tt></b (<tt>BLIND</tt> modifier)<dd>
+<!-- RULE GREEK +UNITS_SEE_SAME +NO_SCS_SEE !OWNED_UNITS_SEE +BLIND -->
+	A <tt>GREEK</tt> game is a <tt>BLIND</tt> mixture in which units only "see" units of
+	the same type (army or fleet) and supply centers do not report information.
+<!-- RULE END -->
+
+<a name=TROJAN></a><p><dt><b><tt>GREEK</tt></b (<tt>BLIND</tt> modifier)<dd>
+<!-- RULE TROJAN +UNITS_SEE_OTHER +NO_SCS_SEE !OWNED_UNITS_SEE +BLIND -->
+	A <tt>TROJAN</tt> game is a <tt>BLIND</tt> mixture in which units only "see" units of
+	the opposite type (army or fleet) and supply centers do not report information.
 <!-- RULE END -->
 
 <a name=HIDE_EXTENDERS></a><p><dt><b><tt>HIDE_EXTENDERS</tt></b><dd>
