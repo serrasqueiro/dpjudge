@@ -633,10 +633,11 @@ page.include('functions')
 	not used in the standard game.
 	
 <a name=SEES></a>
-<p><dt><b><tt>OWNS <i>center...</i></tt></b><dd>
+<p><dt><b><tt>SEES <i>center...</i></tt></b><dd>
 	(This is only seen in <a href=?page=Rules#BLIND><tt>BLIND</tt></a> games
-	that do not use the <a href=?page=Rules#PERSIAN><tt>PERSIAN</tt></a> or
-	<a href=?page=Rules#HYPEROPIC><tt>HYPEROPIC</tt></a> .)
+	that do not use the <a href=?page=Rules#NO_UNITS_SEE><tt>NO_UNITS_SEE</tt></a>,
+	<a href=?page=Rules#SEE_NO_SCS><tt>SEE_NO_SCS</tt></a>, or
+	<a href=?page=Rules#SEE_ALL_SCS><tt>SEE_ALL_SCS</tt></a> rules.)
 	Specifies all supply centers that can be "seen" by a power.  This data is
 	automatically generated and is necessary to assist in the generation of
 	results.
