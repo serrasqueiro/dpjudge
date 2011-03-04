@@ -1595,23 +1595,24 @@ class Game:
 				[unowned.remove(x) for x in centers if x in unowned]
 			else: powerName, centers = power, unowned
 			powerName = self.anglify(powerName) + ':'
-			for who in self.powers:
+			for who in self.powers + ['UNOWNED']:
 				seen = 0
 				if who is power:
 					seen = [(x, 'Undetermined Home SC')[x == 'SC!']
 						for x in centers if x[-1] not in '?*']
-				elif (blind and not who.omniscient
-				and [who.name] != power.ceo[:1]):
+				elif blind and who != 'UNOWNED' and (power == 'UNOWNED'
+				or	not who.omniscient and [who.name] != power.ceo[:1]):
 					seen = [x for x in centers
 						if self.visible(power, x)[who.name] & 2]
 					who.sees += seen
-					seen += sees + [x for x in who.saw if x not in seen]
+					seen += [x for x in who.saw
+						if x in centers and x not in seen]
 				if not seen: continue
 				if blind:
 					if who is power: lines += ['SHOW MASTER ' +
 						' '.join([x.name for x in self.powers
 						if x is power or x.omniscient
-						or [x.name] == power.ceo[:1]])]
+						or who != 'UNOWNED' and [x.name] == who.ceo[:1]])]
 					else: lines += ['SHOW ' + who.name]
 				lines += [y.replace('\0377', '-') for y in textwrap.wrap(
 					('%-11s %s.' % (powerName,
