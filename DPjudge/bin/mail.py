@@ -457,12 +457,6 @@ class Procmail:
 		else: self.message, self.pressSent = [], 1
 		self.respond()
 	#	----------------------------------------------------------------------
-	def removeBlindMaps(self, pwd):
-		for suffix in ('.ps', '.pdf', '.gif', '_.gif'):
-			try: os.unlink(host.dpjudgeDir + '/maps/' +
-				self.game.name + pwd + suffix)
-			except: pass
-	#	----------------------------------------------------------------------
 	def powerID(self, abbrev, asName = True):
 		"""
 		Procmail.powerID(abbrev, asName = True):
@@ -906,7 +900,7 @@ class Procmail:
 						power.address[0] = word[2]
 					else:
 						if 'BLIND' in game.rules:
-							self.removeBlindMaps(power.password)
+							Power.removeBlindMaps(power)
 						power.password = word[2]
 						if 'BLIND' in game.rules: game.makeMaps()
 				game.save()

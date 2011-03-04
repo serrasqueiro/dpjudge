@@ -1134,9 +1134,10 @@ def loadGame():
 def mapName():
 	file = page.game.name
 	if 'BLIND' in page.game.rules and page.power:
-		if page.power.name != 'MASTER': file += page.power.password or ''
-		elif page.game.phase != 'COMPLETED': file += page.game.password
-		file = filter(lambda x: x not in '?/&$', file)
+		if page.power.name != 'MASTER': file += `hash(page.power.password
+			or page.game.password + page.power.name)`
+		elif page.game.phase != 'COMPLETED':
+			file += `hash(page.game.password)`
 	return file	
 #	----------------------------------------------------------------------
 def checkProposal():

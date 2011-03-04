@@ -79,7 +79,7 @@ class Power:
 				self.player[:0] = [when]
 			else: del self.player[0]
 			if self.player: self.player[:0] = ['RESIGNED']
-			if 'BLIND' in self.game.rules: self.removeBlindMaps(self.password)
+			if 'BLIND' in self.game.rules: self.removeBlindMaps()
 			self.password = None
 			if not self.isDummy() and self.address:
 				self.message, self.pressSent = [], 1
@@ -106,10 +106,11 @@ class Power:
 				subject = 'Diplomacy resignation notice')
 		self.game.save()
 	#	----------------------------------------------------------------------
-	def removeBlindMaps(self, pwd):
+	def removeBlindMaps(self):
 		for suffix in ('.ps', '.pdf', '.gif', '_.gif'):
-			try: os.unlink(host.dpjudgeDir + '/maps/' +
-				self.game.name + pwd + suffix)
+			try: os.unlink(host.dpjudgeDir + '/maps/' + self.game.name + '.' +
+				`hash(self.password or self.game.password + self.name)` +
+				suffix)
 			except: pass
 	#	----------------------------------------------------------------------
 	def dummy(self):

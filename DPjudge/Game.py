@@ -1026,7 +1026,6 @@ class Game:
 		words = subject.split()
 		if (self.name and self.name not in words
 		and '(%s)' % self.name not in words): subject += ' (%s)' % self.name
-		copyFile = copyFile or host.copyFile
 		self.mail = Mail(mailTo or host.dpjudge, subject,
 			copy = copyFile and self.file(copyFile),
 			mailAs = mailAs or self.master[1], header = 'Errors-To: ' +
@@ -1277,16 +1276,14 @@ class Game:
 		#	If the map is marked as text only, make no graphical map
 		#	--------------------------------------------------------
 		if self.map.textOnly: return
-		#	----------------------------------------
-		#	Get a list of all the different powers
-		#	for whom we need to make maps.  In a
-		#	BLIND game, the powers see separate maps
-		#	----------------------------------------
-		if 'BLIND' in self.rules:
-			maps = [(x, filter(lambda z: z not in '($&;/?)', y))
-				for x,y in [('MASTER', self.password)] +
-				[(x.name, x.password) for x in self.powers
-				if (x.omniscient or not x.type) and x.password]]
+		#	----------------------------------------------------------
+		#	Get a list of all the different powers for whom we need to
+		#	make maps.  In a BLIND game, the powers see separate maps.
+		#	----------------------------------------------------------
+		if 'BLIND' in self.rules: maps = [(x, '.' + `hash(y)`)
+			for x, y in [('MASTER', self.password)] +
+			[(x.name, x.password or self.password + x.name)
+			for x in self.powers if (not x.type or x.omniscient)]]
 		else: maps = [(None, '')]
 		for viewer, pwd in maps:
 			#	-------------------------------------------------
@@ -1595,13 +1592,14 @@ class Game:
 				[unowned.remove(x) for x in centers if x in unowned]
 			else: powerName, centers = power, unowned
 			powerName = self.anglify(powerName) + ':'
+			ceo = getattr(power, 'ceo', [])[:1]
 			for who in self.powers + ['UNOWNED']:
 				seen = 0
 				if who is power:
 					seen = [(x, 'Undetermined Home SC')[x == 'SC!']
 						for x in centers if x[-1] not in '?*']
-				elif blind and who != 'UNOWNED' and (power == 'UNOWNED'
-				or	not who.omniscient and [who.name] != power.ceo[:1]):
+				elif (blind and who != 'UNOWNED'
+				and not who.omniscient and [who.name] != ceo):
 					seen = [x for x in centers
 						if self.visible(power, x)[who.name] & 2]
 					who.sees += seen
@@ -1611,8 +1609,7 @@ class Game:
 				if blind:
 					if who is power: lines += ['SHOW MASTER ' +
 						' '.join([x.name for x in self.powers
-						if x is power or x.omniscient
-						or who != 'UNOWNED' and [x.name] == who.ceo[:1]])]
+						if x is power or x.omniscient or [x.name] == ceo])]
 					else: lines += ['SHOW ' + who.name]
 				lines += [y.replace('\0377', '-') for y in textwrap.wrap(
 					('%-11s %s.' % (powerName,
@@ -2834,7 +2831,7 @@ class Game:
 		rules = self.rules
 		for seer in self.powers:
 			shows[seer.name] = 15 * bool(power is seer or seer.omniscient
-				or [seer.name] == power.ceo[:1])
+				or [seer.name] == getattr(power, 'ceo', [])[:1])
 			if (shows[seer.name]
 			or ('SEE_NO_SCS', 'SEE_NO_UNITS')[' ' in unit] in rules): continue
 			#	--------------------------------------------------

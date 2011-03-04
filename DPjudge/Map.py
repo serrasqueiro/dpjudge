@@ -190,9 +190,8 @@ class Map:
 		#	Order: bbox papersize rotation blind
 		#	------------------------------------
 		self.bbox, self.papersize, self.rotation = None, '', 3
-		defVals = [ '' ] * 3
+		defVals = [''] * 3
 		curVals = defVals[:]
-		
 		#	-----------------------------------------------------------
 		#	Parse the file, searching for the map name
 		#	and determining its parameter values
@@ -209,17 +208,12 @@ class Map:
 			for idx in range(len(defVals)):
 				if len(word) <= idx or word[idx] == '_':
 					curVals[idx] = defVals[idx]
-				elif word[idx] == '-':
-					pass
-				elif word[idx] == '=':
-					break
-				else:
-					curVals[idx] = word[idx]
-			if curName == self.rootMap:
-				break
-		
-		if curName != self.rootMap:
-			return error.append('MAP NOT DEFINED IN PSINFO FILE: ' + self.rootMap)	
+				elif word[idx] == '-': pass
+				elif word[idx] == '=': break
+				else: curVals[idx] = word[idx]
+			if curName == self.rootMap: break
+		if curName != self.rootMap: return error.append(
+			'MAP NOT DEFINED IN PSINFO FILE: ' + self.rootMap)	
 		#	------------------------------------------------------
 		#	Determine bbox and pixel size of graphic map at 72 dpi
 		#	after rotation (for .gif file creation and display)
@@ -227,17 +221,16 @@ class Map:
 		if curVals[0] != '':
 			try: 
 				bbox = [eval(x) for x in curVals[0].split(',')]
-				if bbox and len(bbox) != 4:
-					error.append('BBOX NOT CORRECT IN PSINFO FOR MAP: ' + self.rootMap)
-				else: 
+				if len(bbox) == 4:
 					self.bbox = bbox
-			except: 
-				error.append('BBOX NOT CORRECT IN PSINFO FOR MAP: ' + self.rootMap)
+					self.size = [bbox[2] - bbox[0], bbox[3] - bbox[1]]
+				else: raise 
+			except: error.append('BBOX NOT CORRECT IN PSINFO FOR MAP: ' +
+				self.rootMap)
 		#	-------------------
 		#	Determine papersize
 		#	-------------------
-		if curVals[1] != '':
-				self.papersize = curVals[1]
+		if curVals[1] != '': self.papersize = curVals[1]
 		#	-----------------------------------------
 		#	Determine rotation from page orientation: 
 		#		Portrait:	0 (No rotation)
@@ -247,21 +240,17 @@ class Map:
 		if curVals[2] != '':
 			try: 
 				rotation = eval(curVals[2])
-				if rotation not in range(4):
-					error.append('ROTATION VALUE NOT IN 0 TO 3 IN PSINFO FOR MAP: ' + self.rootMap)
-				else: 
-					self.rotation = rotation
-			except: 
-				error.append('ROTATION VALUE NOT IN 0 TO 3 IN PSINFO FOR MAP: ' + self.rootMap)
-
+				if rotation in range(4): self.rotation = rotation
+				else: raise
+			except: error.append('ROTATION NOT 0 TO 3 IN PSINFO FOR MAP: ' +
+				self.rootMap)
 	#	----------------------------------------------------------------------
 	def load(self, fileName = 0):
 		error = self.error
 		if type(fileName) is not list:
-			fileName = fileName or (self.name + '.map')
-			power = 0
+			fileName, power = fileName or (self.name + '.map'), 0
 			try: file = open(host.packageDir + '/maps/' + fileName,
-							encoding = 'latin-1')
+				encoding = 'latin-1')
 			except: return error.append('MAP FILE NOT FOUND: ' + fileName)
 			self.files += [fileName]
 		else: file = fileName
