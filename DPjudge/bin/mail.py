@@ -899,8 +899,7 @@ class Procmail:
 						power.address = power.address or ['']
 						power.address[0] = word[2]
 					else:
-						if 'BLIND' in game.rules:
-							Power.removeBlindMaps(power)
+						if 'BLIND' in game.rules: power.removeBlindMaps()
 						power.password = word[2]
 						if 'BLIND' in game.rules: game.makeMaps()
 				game.save()

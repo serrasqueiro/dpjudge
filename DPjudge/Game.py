@@ -73,14 +73,14 @@ class Game:
 		for owner in self.powers:
 			if unit in owner.units or (not (coastRequired or '/' in unit)
 			and [1 for x in owner.units if not x.find(unit)]): return owner
-	#	---------------------------------------------------------------------
+	#	----------------------------------------------------------------------
 	def convoyer(self, army, thru):
 		areaType = self.map.areatype(thru[1])
 		return (((areaType == 'WATER') == army or areaType == 'PORT'
 			or areaType == 'COAST' and 'COASTAL_CONVOY' in self.rules)
 			and (self.unitOwner('AF'[army] + ' ' + thru[army], not army)
 			or 'FICTIONAL_OK' in self.rules))
-	#	---------------------------------------------------------------------
+	#	----------------------------------------------------------------------
 	def canConvoy(self, unit, start, end, via = 0, helper = 0):
 		army, pools, check = unit != 'F', [helper], self.map.abutList(start)
 		if via in check: check = [via]
@@ -110,7 +110,7 @@ class Game:
 			pools += pool
 		return (unit == '?' and 'PORTAGE_CONVOY' in self.rules
 			and self.canConvoy('F', start, end, via, helper))
-	#	---------------------------------------------------------------------
+	#	----------------------------------------------------------------------
 	def validOrder(self, power, unit, order, report = 1):
 		"""
 		This function has three return values:
@@ -1111,27 +1111,31 @@ class Game:
 		origin = size = None
 		if self.map.bbox: 
 			origin = [self.map.bbox[0] * upscale, self.map.bbox[1] * upscale]
-			size = [(self.map.bbox[2] - self.map.bbox[0]) * upscale, (self.map.bbox[3] - self.map.bbox[1]) * upscale]
+			size = [(self.map.bbox[2] - self.map.bbox[0]) * upscale,
+					(self.map.bbox[3] - self.map.bbox[1]) * upscale]
 		if os.name == 'nt':
-			inp = ('%sppm' % file, '< %sdat' % file, '< %sdta' % file, '< %sdat' % file)
-			outp = ('>%s;' % inp[1][1:], '>%s;' % inp[2][1:], '>%s;' % inp[1][1:])
-		else:
-			inp = ('%sppm' % file, '', '', '')
-			outp = ('|', '|', '|')
+			inp = ('%sppm' % file, '< %sdat' % file,
+				   '< %sdta' % file, '< %sdat' % file)
+			outp = ('>%s;' % inp[1][1:], '>%s;' % inp[2][1:],
+					'>%s;' % inp[1][1:])
+		else: inp, outp = ('%sppm' % file, '', '', ''), ('|', '|', '|')
 		toolsDir = host.toolsDir
 		chop = ('%s/psselect -p_%%d %sps %s %s'
 				'%s/gs -q -r%d -dSAFER -sDEVICE=ppmraw -sOutputFile=%sppm %s;' %
 				(toolsDir, file, inp[1] * (os.name != 'nt'), outp[0],
-				toolsDir, host.imageResolution, file, (inp[1], '-')[os.name != 'nt']))
+				toolsDir, host.imageResolution, file,
+				(inp[1], '-')[os.name != 'nt']))
 		#	----------------------------------------------------------
 		#	All landscape maps must be rotated 270 degrees by pnmflip.
 		#	----------------------------------------------------------
 		make, idx = '', 0
 		if self.map.rotation:
-			make += '%s/pnmflip -r%d %s %s' % (toolsDir, self.map.rotation * 90, inp[idx], outp[idx])
+			make += '%s/pnmflip -r%d %s %s' % (toolsDir,
+				self.map.rotation * 90, inp[idx], outp[idx])
 			idx += 1
 		if origin:
-			make += '%s/pnmcut %d %d %d %d %s %s' % (toolsDir, origin[0], origin[1], size[0], size[1], inp[idx], outp[idx])
+			make += '%s/pnmcut %d %d %d %d %s %s' % (toolsDir,
+				origin[0], origin[1], size[0], size[1], inp[idx], outp[idx])
 			idx += 1
 			make += '%s/pnmcrop -white %s %s' % (toolsDir, inp[idx], outp[idx])
 			idx += 1
@@ -1302,7 +1306,7 @@ class Game:
 			self.makePdfMaps(pwd)
 	#	----------------------------------------------------------------------
 	def addCoasts(self):
-		#	-----------------------------------------------------------------
+		#	-------------------------------------------------------------
 		#	This method adds the matching coast to orders supporting or
 		#	(portage) convoying a fleet to a multi-coast province.  The
 		#	original reason for this code was because when the DPjudge
@@ -1318,12 +1322,13 @@ class Game:
 		#	of support (or portage convoy).  This initial bit of code
 		#	loads the orders into a local dictionary, because the entries
 		#	in the self.orders dictionary may be in one of two forms.
-		#	In the first of these forms, each dictionary entry is simply the
-		#	order text, and in the second, the order text is in an "orders"
-		#	attribute of the dictionary entry.  The local dictionary is
-		#	populated with a copy of the orders, and if an order is changed,
-		#	the correct data in the self.orders structure will be updated.
-		#	-----------------------------------------------------------------
+		#	In the first of these forms, each dictionary entry is simply
+		#	the order text, and in the second, the order text is in an
+		#	"orders" attribute of the dictionary entry.  The local
+		#	dictionary is populated with a copy of the orders, and if an
+		#	order is changed, the correct data in the self.orders
+		#	structure will be updated.
+		#	-------------------------------------------------------------
 		orders = {}
 		for unit, order in self.orders.items():
 			orders[unit] = hasattr(order, 'order') and order.order or order
@@ -2181,11 +2186,11 @@ class Game:
 			#	--------------------------------
 	#	----------------------------------------------------------------------
 	def cutSupport(self, unit, direct = 0):
-		#	-----------------------------------------------------------------
-		#	See if the order made by the unit cuts a support.  If so, cut it.
-		#	If "direct" is set, the order must not only be a move, but a non-
-		#	convoyed move as well.
-		#	-----------------------------------------------------------------
+		#	--------------------------------------------------
+		#	See if the order made by the unit cuts a support
+		#	If so, cut it.  If "direct" is set, the order must
+		#	not only be a move, but also a non-convoyed move.
+		#	--------------------------------------------------
 		order = self.command[unit]
 		word = order.split()
 		if word[0] != '-' or (direct and len(word) > 2): return
@@ -2445,15 +2450,15 @@ class Game:
 		most = max(self.combat[site])
 		if len(self.combat[site][most]) > 1: return
 		unbouncer = self.combat[site][most][0][0]
-		if 'bounce' not in self.result[unbouncer]: return
-		self.result[unbouncer].remove('bounce')
-		try:
-			del self.dislodged[unbouncer]
-			return self.result[unbouncer].remove('dislodged')
-		except:
-			nextSite = unbouncer[2:5]
-			self.noEffect([unbouncer, []], nextSite)
-			if nextSite in self.combat: self.unbounce(nextSite)
+		if 'bounce' in self.result[unbouncer]:
+			self.result[unbouncer].remove('bounce')
+			try:
+				del self.dislodged[unbouncer]
+				return self.result[unbouncer].remove('dislodged')
+			except:
+				nextSite = unbouncer[2:5]
+				self.noEffect([unbouncer, []], nextSite)
+				if nextSite in self.combat: self.unbounce(nextSite)
 	#	----------------------------------------------------------------------
 	def anglify(self, words, power = None, retreating = 0):
 		text, tokens, word = [], words.split(), ''
@@ -2553,10 +2558,9 @@ class Game:
 			elif terrain == 'COAST': unit = 'F ' + [x for x in map.locs
 					if x.startswith(unit[2:5])][-1]
 			else: text += ['The %s is destroyed.' % desc]
-		if text: text = ([
+		return text and ([
 			'The following units were affected by geographic changes:\n'] +
 			text + [''])
-		return text
 	#	----------------------------------------------------------------------
 	def findNextPhase(self, phaseType = None, skip = 0):
 		now = self.phase.split()
@@ -2646,12 +2650,9 @@ class Game:
 						break
 		#	-----------------------------------
 		#	Determine any vassal state statuses
+		#	and the list of who owns what.
 		#	-----------------------------------
-		list = self.vassalship()
-		#	----------------------------------
-		#	Generate the list of who owns what
-		#	----------------------------------
-		list += self.ownership(unowned)
+		list = self.vassalship() + self.ownership(unowned)
 		#	----------------------------------------------------------------
 		#	See if we have a win.  Criteria are the ARMADA Regatta victory
 		#	criteria (adapted from David Norman's "variable length" system).
@@ -2776,7 +2777,7 @@ class Game:
 						for x in self.powers if x is power or x.omniscient])]
 				list += [text]
 			if func and self.phaseType != 'A': func(power, text.upper().split())
-		return list + ['SHOW', '']['BLIND' not in self.rules:]
+		return list + ['SHOW' * ('BLIND' in self.rules)]
 	#	----------------------------------------------------------------------
 	def phaseAbbr(self, phase = None):
 		#	------------------------------------------
@@ -2872,10 +2873,10 @@ class Game:
 				#	The seer's home centers are sighted
 				#	-----------------------------------
 				scs = self.map.home.get(seer.name, [])[:]
-				#	------------------------------------------------------------
+				#	----------------------------------------------------------
 				#	Also add locations where the power had units at game start
-				#	(assisting void variant games, where units start on non-SCs)
-				#	------------------------------------------------------------
+				#	(helping void variant games, where units start on non-SCs)
+				#	----------------------------------------------------------
 				if 'BLANK_BOARD' not in rules and 'MOBILIZE' not in rules:
 					scs += [x[2:] for x in self.map.units.get(seer.name, [])]
 			#	-------------------------------------------------------
@@ -3304,9 +3305,11 @@ class Game:
 		self.changeStatus('completed')
 		self.save()
 		if 'BLIND' in self.rules:
+			for power in self.powers: power.removeBlindMaps()
 			file = host.dpjudgeDir + '/maps/' + self.name
 			for suffix in ('.ps', '.pdf', '.gif', '_.gif'):
-				try: os.rename(file + self.password + suffix, file + suffix)
+				try: os.rename(file + `hash(self.password)` + suffix,
+					file + suffix)
 				except: pass
 	#	----------------------------------------------------------------------
 	def abuts(self, unitType, unitLoc, orderType, otherLoc, power = None):
@@ -3332,7 +3335,8 @@ class Game:
 		return 1
 	#	----------------------------------------------------------------------
 	def timeFormat(self, shortForm = None):
-		when, format = self.deadline, shortForm and ('a', 'b', '%Z') or ('A', 'B', '%Z')
+		when = self.deadline
+		format = shortForm and ('a', 'b', '%Z') or ('A', 'B', '%Z')
 		if hasattr(host, 'timeZone') and host.timeZone: 
 			format = (format[0], format[1], host.timeZone)
 		try: when = time.strftime('%%%s %%d %%%s %%Y %%H:%%M %s' % format,
