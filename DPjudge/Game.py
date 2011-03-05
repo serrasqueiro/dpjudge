@@ -1282,7 +1282,7 @@ class Game:
 		#	----------------------------------------------------------
 		if 'BLIND' in self.rules: maps = [(x, '.' + `hash(y)`)
 			for x, y in [('MASTER', self.password)] +
-			[(x.name, x.password or self.password + x.name)
+			[(x.name, (x.password or self.password) + x.name)
 			for x in self.powers if (not x.type or x.omniscient)]]
 		else: maps = [(None, '')]
 		for viewer, pwd in maps:

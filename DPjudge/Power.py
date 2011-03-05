@@ -109,7 +109,7 @@ class Power:
 	def removeBlindMaps(self):
 		for suffix in ('.ps', '.pdf', '.gif', '_.gif'):
 			try: os.unlink(host.dpjudgeDir + '/maps/' + self.game.name + '.' +
-				`hash(self.password or self.game.password + self.name)` +
+				`hash((self.password or self.game.password) + self.name)` +
 				suffix)
 			except: pass
 	#	----------------------------------------------------------------------

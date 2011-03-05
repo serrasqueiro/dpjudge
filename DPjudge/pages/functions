@@ -1134,8 +1134,8 @@ def loadGame():
 def mapName():
 	file = page.game.name
 	if 'BLIND' in page.game.rules and page.power:
-		if page.power.name != 'MASTER': file += `hash(page.power.password
-			or page.game.password + page.power.name)`
+		if page.power.name != 'MASTER': file += `hash((page.power.password
+			or page.game.password) + page.power.name)`
 		elif page.game.phase != 'COMPLETED':
 			file += `hash(page.game.password)`
 	return file	
