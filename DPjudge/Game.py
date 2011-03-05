@@ -1284,9 +1284,9 @@ class Game:
 		#	Get a list of all the different powers for whom we need to
 		#	make maps.  In a BLIND game, the powers see separate maps.
 		#	----------------------------------------------------------
-		if 'BLIND' in self.rules: maps = [(x, '.' + `hash(y)`)
-			for x, y in [('MASTER', self.password)] +
-			[(x.name, (x.password or self.password) + x.name)
+		if 'BLIND' in self.rules: maps = [(x, '.' + y + `hash(z)`)
+			for x, y, z in [('MASTER', 'M', self.password)] +
+			[(x.name, x.abbrev or 'O', (x.password or self.password) + x.name)
 			for x in self.powers if (not x.type or x.omniscient)]]
 		else: maps = [(None, '')]
 		for viewer, pwd in maps:

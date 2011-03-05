@@ -1133,11 +1133,12 @@ def loadGame():
 #	----------------------------------------------------------------------
 def mapName():
 	file = page.game.name
-	if 'BLIND' in page.game.rules and page.power:
-		if page.power.name != 'MASTER': file += `hash((page.power.password
-			or page.game.password) + page.power.name)`
-		elif page.game.phase != 'COMPLETED':
-			file += `hash(page.game.password)`
+	if ('BLIND' in page.game.rules and page.power
+	and page.game.phase != 'COMPLETED'):
+		if page.power.name != 'MASTER': file += ('.' +
+			(page.power.abbrev or 'O') + `hash((page.power.password
+			or page.game.password) + page.power.name)`)
+		else: file += '.M' + `hash(page.game.password)`
 	return file	
 #	----------------------------------------------------------------------
 def checkProposal():
