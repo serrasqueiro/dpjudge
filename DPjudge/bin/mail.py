@@ -701,6 +701,7 @@ class Procmail:
 				if power.name != 'MASTER':
 					self.respond('Only the Master can ROLLBACK the game')
 				try:
+					phase = word[-1].upper() * (len(word) == 2)
 					game = game.rollback(phase)
 					if game: 
 						self.game = game

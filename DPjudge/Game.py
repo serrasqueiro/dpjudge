@@ -780,7 +780,7 @@ class Game:
 					else: power.home = self.map.home[power.name] = word[1:]
 				elif upword == 'SEES':
 					if power:
-						for sc in [x.upper() for x in word[:1]]:
+						for sc in [x.upper() for x in word[1:]]:
 							if sc in self.map.scs: power.sees += [sc]
 							else: error += ['BAD SEEN CENTER: ' + sc]
 					else: error += ['SEES BEFORE POWER']
@@ -1137,12 +1137,9 @@ class Game:
 			make += '%s/pnmcut %d %d %d %d %s %s' % (toolsDir,
 				origin[0], origin[1], size[0], size[1], inp[idx], outp[idx])
 			idx += 1
-			make += '%s/pnmcrop -white %s %s' % (toolsDir, inp[idx], outp[idx])
-			idx += 1
-		else:
-			make += '%s/pnmcrop -white %s %s' % (toolsDir, inp[idx], outp[idx])
-			idx += 1
-		make +=	'%s/ppmtogif -interlace %s > %%s' %	(toolsDir, inp[idx])
+		make += '%s/pnmcrop -white %s %s' % (toolsDir, inp[idx], outp[idx])
+		idx += 1
+		make +=	'%s/ppmtogif -interlace %s > %%s' % (toolsDir, inp[idx])
 		for page in (1, 2):
 			if page == 2 and self.phase == self.map.phase: break
 			gif = root + '_'[page & 1:] + '.gif'
@@ -2011,14 +2008,14 @@ class Game:
 		#	---------------------------
 		if not self.preview: self.save()
 	#	----------------------------------------------------------------------
-	#	Note that we generate a new game object inside this rollback function, 
+	#	Note that we generate a new game object inside the rollback function, 
 	#	so if calling this directly (inspect, etc.), you will need to assign 
 	#	this to a variable and operate on that from thereonafter.
 	#	----------------------------------------------------------------------
 	def rollback(self, phase):
 		if self.status[1] != 'active':
 			raise RollbackGameInactive
-		phase, lines = word[-1].upper() * (len(word) == 2), []
+		lines = []
 		if os.path.isfile(self.file('status.' + phase)):
 			file = open(self.file('results'), 'r', 'latin-1')
 			lines, start = file.readlines(), 0

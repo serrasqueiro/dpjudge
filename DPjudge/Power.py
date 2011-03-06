@@ -41,11 +41,14 @@ class Power:
 	def initialize(self, game):
 		self.game = game
 		if self.type: return
-		self.centers, self.units = game.map.centers.get(self.name, []), []
 		if 'MOBILIZE' in game.rules: self.centers = ['SC!']
-		else: self.units = game.map.units.get(self.name, [])
-		if 'BLANK_BOARD' in game.rules:
-			self.units = [x for x in self.units if x[2:5] not in self.centers]
+		elif 'BLANK_BOARD' in game.rules:
+			if not self.centers:
+				self.centers = game.map.centers.get(self.name, [])
+				self.units = self.units or [x for x in game.map.units.get(self.name, []) if x[2:5] not in self.centers]
+		else: 
+			self.centers = self.centers or game.map.centers.get(self.name, [])
+			self.units = self.units or game.map.units.get(self.name, [])
 	#	----------------------------------------------------------------------
 	def resign(self, gm_resign = 0):
 		for num, power in enumerate(self.game.powers):
