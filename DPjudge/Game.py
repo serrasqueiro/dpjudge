@@ -1162,44 +1162,20 @@ class Game:
 		#	Make a .pdf file with the final page(s) from the .ps file
 		#	---------------------------------------------------------
 		fileName, params = host.dpjudgeDir + '/maps/' + self.name + password, []
-		infileName, outfileName = fileName + '_.pdf', fileName + '.pdf'
+		outfileName = fileName + '.pdf'
 		if self.map.papersize: params = ['-sPAPERSIZE=' + self.map.papersize]
 		#	----------------------------------------
 		#	Add more parameters before this comment.
 		#	----------------------------------------
 		if os.name == 'nt': params = ['"%s"' % x for x in params]
-		params = ' '.join(params) + ' %s.ps ' % fileName + infileName
+		params = ' '.join(params) + ' %s.ps ' % fileName + outfileName
 		#	-----------------------------------------------------------------
 		#	(We could run psselect -_2-_1 xx.ps 2>/dev/null > tmp.ps and then
 		#	run the ps2pdf on the tmp.ps file, but we now pdf the full game.)
 		#	-----------------------------------------------------------------
 		os.system(host.toolsDir + '/ps2pdf ' + params)
-		os.chmod(infileName, 0666)
-		#	-------------------------------------------------
-		#	But now we have to rotate it 90 degrees clockwise
-		#	-------------------------------------------------
-		infile, outfile = open(infileName, 'rb'), open(outfileName, 'wb')
-		bytes = startXref = inXref = xrefref = 0
-		obj, objNum = {}, -1
-		for line in infile:
-			word = line.split()
-			if word:
-				if word[-1] == 'obj': obj[int(word[0])] = bytes
-				elif word[0] == '/MediaBox': line += '/Rotate 270\n'
-				elif xrefref: line, xrefref = xrefref, 0
-				elif word[0] == 'startxref': xrefref = `startXref` + '\n'
-				elif word[0] == 'trailer': inXref = 0
-				elif word[0] == 'xref': inXref, startXref = 1, bytes
-				elif inXref:
-					if objNum in obj: line = '%010d 00000 n \n' % obj[objNum]
-					objNum += 1
-			outfile.write(line)
-			bytes += len(line)
-		infile.close()
-		outfile.close()
 		try:
 			os.chmod(outfileName, 0666)
-			os.unlink(infileName)
 		except: pass
 	#	----------------------------------------------------------------------
 	def submitOrders(self, power, orders):
@@ -2034,6 +2010,48 @@ class Game:
 		#	Update the game status file
 		#	---------------------------
 		if not self.preview: self.save()
+	#	----------------------------------------------------------------------
+	#	Note that we generate a new game object inside this rollback function, 
+	#	so if calling this directly (inspect, etc.), you will need to assign 
+	#	this to a variable and operate on that from thereonafter.
+	#	----------------------------------------------------------------------
+	def rollback(self, phase):
+		if self.status[1] != 'active':
+			raise RollbackGameInactive
+		phase, lines = word[-1].upper() * (len(word) == 2), []
+		if os.path.isfile(self.file('status.' + phase)):
+			file = open(self.file('results'), 'r', 'latin-1')
+			lines, start = file.readlines(), 0
+			file.close()
+			for num, text in enumerate(lines):
+				if '%s ' % self.name + phase in text: break
+				start |= 'Diplomacy results' in text
+		else: raise RollbackPhaseInvalid
+		file = open(self.file('results'), 'w')
+		temp = lines[:num - 1]
+		file.write(''.join(temp).encode('latin-1'))
+		file.close()
+		if start:
+			[os.unlink(host.dpjudgeDir + '/maps/' + x)
+				for x in os.listdir(host.dpjudgeDir + '/maps')
+				if x.startswith(self.name.encode('latin-1'))
+				and x.endswith('_.gif')]
+			self.phase = self.map.phase
+		self.makeMaps()
+		game = Game(self.name, 'status.' + phase)
+		game.changeStatus('active')
+		try: os.unlink(game.file('summary'))
+		except: pass
+		game.setDeadline()
+		os.rename(game.file('status'), game.file('status.rollback'))
+		game.save()
+		game.mailPress(None, ['All!'],
+			"Diplomacy game '%s' has been rolled back to %s\n"
+			'and all orders have been cleared.\n\n'
+			'The new deadline is %s.\n' %
+			(game.name, game.phaseName(form = 2), game.timeFormat()),
+			subject = 'Diplomacy rollback notice')
+		return game
 	#	----------------------------------------------------------------------
 	def occupant(self, site, anyCoast = 0):
 		#	-------------------------------------

@@ -700,42 +700,16 @@ class Procmail:
 			elif command == 'ROLLBACK':
 				if power.name != 'MASTER':
 					self.respond('Only the Master can ROLLBACK the game')
-				if game.status[1] != 'active':
+				try:
+					game = game.rollback(phase)
+					if game: 
+						self.game = game
+						self.response += ['Game rolled back to ' + phase]
+					else: game = self.game
+				except RollbackGameInactive:
 					self.respond('ROLLBACK can only occur on an active game')
-				phase, lines = word[-1].upper() * (len(word) == 2), []
-				if os.path.isfile(game.file('status.' + phase)):
-					file = open(game.file('results'), 'r', 'latin-1')
-					lines, start = file.readlines(), 0
-					file.close()
-					for num, text in enumerate(lines):
-						if '%s ' % game.name + phase in text: break
-						start |= 'Diplomacy results' in text
-				else: self.respond('Invalid ROLLBACK phase')
-				file = open(game.file('results'), 'w')
-				temp = lines[:num - 1]
-				file.write(''.join(temp).encode('latin-1'))
-				file.close()
-				if start:
-					[os.unlink(host.dpjudgeDir + '/maps/' + x)
-						for x in os.listdir(host.dpjudgeDir + '/maps')
-						if x.startswith(game.name.encode('latin-1'))
-						and x.endswith('_.gif')]
-					game.phase = game.map.phase
-				game.makeMaps()
-				game = self.game = Game(game.name, 'status.' + phase)
-				game.changeStatus('active')
-				try: os.unlink(game.file('summary'))
-				except: pass
-				game.setDeadline()
-				self.response += ['Game rolled back to ' + phase]
-				os.rename(game.file('status'), game.file('status.rollback'))
-				game.save()
-				game.mailPress(None, ['All!'],
-					"Diplomacy game '%s' has been rolled back to %s\n"
-					'and all orders have been cleared.\n\n'
-					'The new deadline is %s.\n' %
-					(game.name, game.phaseName(form = 2), game.timeFormat()),
-					subject = 'Diplomacy rollback notice')
+				except RollbackPhaseInvalid:
+					self.respond('Invalid ROLLBACK phase')
 			#	------------------------------
 			#	See if we are RESIGNing or DUMMYing a player
 			#	------------------------------
