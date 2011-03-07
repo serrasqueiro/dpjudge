@@ -479,10 +479,6 @@ class Game:
 		self.load(self.map.directives.get('ALL', []) +
 				self.map.directives.get(self.status[0].upper(), []))
 		if self.phase == 'FORMING': return
-		for power in self.powers:
-			for sc in self.map.home.get(power.name, []):
-				if not [1 for x in self.powers if sc in x.centers]:
-					self.map.home['UNOWNED'] += [sc]
 		#	------------------------------------------------------
 		#	Create a list of possible entries in self.map.dynamic
 		#	(map directives to be run in or after specific phases)
@@ -1333,8 +1329,8 @@ class Game:
 		if 'SC?' in power.centers or 'SC!' in power.centers: return homes
 		if ('BUILD_ANY' in self.rules or 'REMOTE_BUILDS' in self.rules
 		or '&SC' in homes): homes = power.centers
-		if 'HOME_BUILDS' in self.rules: homes = [
-			z for x,y in self.map.home.items() for z in y if x != 'UNOWNED']
+		if 'HOME_BUILDS' in self.rules:
+			homes = [x for y,z in self.map.home.items() for x in z]
 		if 'REMOTE_BUILDS' in self.rules:
 			if not [1 for x in orig if x in power.centers]: return []
 		revert = [y for x in self.powers for y in self.map.home.get(x.name, [])
@@ -1530,7 +1526,9 @@ class Game:
 	#	----------------------------------------------------------------------
 	def ownership(self, unowned = None, playing = None):
 		rules = self.rules
-		if unowned is None: unowned = self.map.home.get('UNOWNED', [])[:]
+		if unowned is None:
+			homes = [x for y in self.map.home.values() for x in y]
+			unowned = [x for x in self.map.scs if x not in homes]
 		if self.phase != self.map.phase:
 			for power in self.powers:
 				if power.type: continue
@@ -1871,23 +1869,17 @@ class Game:
 	#	----------------------------------------------------------------------
 	def findGoners(self, phase = 1):
 		if self.phaseType == '-': return
-		retreats, spots, done, skip = {}, [], 0, 0
+		retreats, done, skip = {}, 0, 0
 		while not skip or nextPhaseType not in 'MAR':
 			nextPhaseType = self.findNextPhase(skip = skip).split()[-1][0]
 			skip += 1
 		if phase and (self.phaseType != 'R' or nextPhaseType != 'A'): return
-		#	-------------------------
-		#	Get a list of all centers
-		#	-------------------------
-		map(spots.extend, self.map.home.values())
 		#	-------------------------------
 		#	Create a dictionary listing all
 		#	powers' potential retreat spots
 		#	-------------------------------
-		for power in self.powers:
-			retreats[power] = []
-			for options in power.retreats.values():
-				for spot in options: retreats[power] += [spot[:3]]
+		for power in self.powers: retreats[power] = [y[:3]
+			for x in power.retreats.values() for y in x]
 		#	----------------------------------------------------
 		#	Set the goner flag if the player will own no centers
 		#	----------------------------------------------------
@@ -1896,9 +1888,9 @@ class Game:
 			for other in self.powers:
 				for unit in other.units:
 					place = unit[2:5]
-					if power is other: kept += place in spots
+					if power is other: kept += place in self.map.scs
 					else: kept -= place in power.centers
-			if not [1 for x in retreats[power] if x in spots]:
+			if not [1 for x in retreats[power] if x in self.map.scs]:
 				power.goner = not kept
 		#	--------------------------------------------
 		#	Now see if a goner's retreat can affect that

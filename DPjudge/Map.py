@@ -67,7 +67,6 @@ class Map:
 						else: error += ['HOME MULTIPLY OWNED: ' + site]
 		for scs in self.centers.values():
 			self.scs.extend([x for x in scs if x not in self.scs])
-		centers = len([1 for y in self.home.values() for x in y])
 		#	-----------------------------------------------------------
 		#	Validate factory and partisan sites (non-SC build locations)
 		#	-----------------------------------------------------------
@@ -131,6 +130,7 @@ class Map:
 			self.centers[power] = self.centers.get(power, self.home[power])
 			[error.append('BAD INITIAL UNIT FOR %s: ' % power + x)
 				for x in self.units.get(power, []) if not self.isValidUnit(x)]
+		if 'UNOWNED' in self.home: del self.home['UNOWNED']
 		#	----------------
 		#	Ensure a default
 		#	game-year FLOW
@@ -169,12 +169,11 @@ class Map:
 			if len(phase) != 3: raise
 			self.firstYear = int(phase[1])
 		except: error += ['BAD PHASE IN MAP FILE: ' + self.phase]
-		self.victory = self.victory or [centers // 2 + 1]
+		self.victory = self.victory or [len(self.scs) // 2 + 1]
 		#	----------------------
 		#	Load map specific info
 		#	----------------------
 		return self.loadInfo()
-		
 	#	----------------------------------------------------------------------
 	def loadInfo(self):
 		error = self.error
