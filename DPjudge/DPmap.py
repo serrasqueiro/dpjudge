@@ -144,8 +144,8 @@ class PostScriptMap:
 			#	----------------
 			if section == 'O':
 				if 'SUPPLY' in word:
-					# Reset order and change section 
-					self.ownerOrder = []
+					# Reset order and change section - Not good, as in blind games not all visible powers are listed.
+					#self.ownerOrder = []
 					section = 'U'
 				else:
 					if power not in self.ownerOrder: self.ownerOrder.append(power)
@@ -375,14 +375,14 @@ class PostScriptMap:
 			#	-----
 			elif order[0] == 'F':
 				order, graph, submsg = '', 'FindUnit', 'FOUND'
-				if section == 'R': self.retreats += ['%-10s %s %.3s !' %
+				if section == 'R': self.retreats += ['%-10s %s %.3s FOUND' %
 					(power, unit, si['nick'])]
 			#	----
 			#	Lost
 			#	----
 			elif order[0] == 'L':
 				order, graph, submsg = '', 'LoseUnit', 'LOST'
-				if section == 'R': self.retreats += ['%-10s %s %.3s ?' %
+				if section == 'R': self.retreats += ['%-10s %s %.3s LOST' %
 					(power, unit, si['nick'])]
 			#	---------------------
 			#	Simple order position
