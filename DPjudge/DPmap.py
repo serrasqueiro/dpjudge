@@ -57,7 +57,7 @@ class PostScriptMap:
 				lastSection = section
 			elif word[0] == 'OWNERSHIP':
 				section, self.sc, where = 'OWN', '', 0
-				self.ownerOrder, self.owner = [], {}
+				self.owner = {}
 			elif ' '.join(word[:2]) == 'THE FOLLOWING': where, section = 0, 'D'
 			elif section: where = 0
 			else: continue
@@ -145,10 +145,9 @@ class PostScriptMap:
 			if section == 'O':
 				if 'SUPPLY' in word:
 					# Reset order and change section - Not good, as in blind games not all visible powers are listed.
-					#self.ownerOrder = []
 					section = 'U'
 				else:
-					if power not in self.ownerOrder: self.ownerOrder.append(power)
+					if power not in self.ownerOrder: raise PowerNotInPS
 					scList += ' ' + ' '.join(word[line[0] != ' ':])
 					if scList[-1] == '.':
 						self.owner[power], scList = [], scList[:-1]
@@ -165,7 +164,7 @@ class PostScriptMap:
 			#	Unit allotment
 			#	----------------
 			if section == 'U':
-				if power not in self.ownerOrder: self.ownerOrder.append(power)
+				if power not in self.ownerOrder: raise PowerNotInPS
 				continue
 
 			#	--------------------------------------------------------
@@ -492,6 +491,10 @@ class PostScriptMap:
 	#	at the end, otherwise they will be parsed as mere strings.
 	#	For a different stub behavior, write out the stub at the end of this 
 	#	method.
+	#	Furthermore extracts the territory coordinates from the INFO section
+	#	and the language terms from the LANG section at the start of the file.
+	#	In addition tries to find all powers to get an idea of the power order
+	#	to use.
 	#	----------------------------------------------------------------------
 	def startDoc(self, mapFile):
 		try: file = open(mapFile + '.ps', 'rU', encoding = 'latin-1')
@@ -547,7 +550,7 @@ class PostScriptMap:
 
 		procsNeeded = dict.fromkeys([p[0] for p in self.procs])
 
-		info, endSetup = 0, None
+		info, visit, endSetup, self.ownerOrder = 0, 0, None, []
 		for line in file.readlines():
 			word = line.split()
 			upWord = [x.upper() for x in word]
@@ -563,6 +566,12 @@ class PostScriptMap:
 				word = map(lambda x: x.strip(), ' '.join(word[1:]).split('='))
 				try: self.lang[word[0]], self.LANG[word[0].upper()] = word[1], word[1].upper()
 				except: raise BadLangLine
+			elif visit == 1:
+				if word[0][0] == '/': 
+					power = word[0][1:]
+					if power == power.upper(): self.ownerOrder.append(power)
+				elif word[0][0] == '}': visit == 0
+				self.outFile.write(line.encode('latin-1'))
 			elif not word:
 				if endSetup: endSetup += '\n'
 				else: self.outFile.write('\n')
@@ -578,10 +587,19 @@ class PostScriptMap:
 					self.outFile.write(endSetup.encode('latin-1'))
 					endSetup = None
 				if word[0][0] == '/':
-					try: del procsNeeded[word[0][1:]]
-					except: pass
+					proc = word[0][1:]
+					if proc == 'VisitPowers' or proc == 'Powers': visit = 1
+					elif proc == proc.upper() and (word[-1] == 'AddCountry' 
+						or 'set_country' in word or 'set_country}' in word): 
+						self.ownerOrder.append(proc)
+					else:
+						try: del procsNeeded[proc]
+						except: pass
 				self.outFile.write(line.encode('latin-1'))
 		file.close()
+		
+		if not self.ownerOrder: raise NoPowersFoundInPS
+		self.ownerOrder.remove('UNOWNED'); self.ownerOrder.append('UNOWNED')
 
 		if procsNeeded.keys():
 			self.outFile.write('% Stubs\n')
@@ -650,8 +668,6 @@ class PostScriptMap:
 		#	-----------------
 		if self.adj:
 			self.outFile.write('AdjustReport\n')
-			for power in [x for x in sorted(self.adj)
-				if x not in self.ownerOrder]: self.ownerOrder.append(power)
 			for power in [x for x in self.ownerOrder if x in self.adj]:
 				temp = ('(%-10s %s %s) WriteAdjust\n' %
 					(power, self.adj[power][0], ', '.join(self.adj[power][1:])))
@@ -695,8 +711,6 @@ class PostScriptMap:
 		complete = not self.started
 		if complete: self.startPage('%s, After %s %d' % (name, season, year))
 		temp = ''
-		[self.ownerOrder.append(x) for x in sorted(self.units)
-			if x not in self.ownerOrder]
 		for time in ('', 'OrderReport\n'):
 			temp += time
 			for power in [x for x in self.ownerOrder
