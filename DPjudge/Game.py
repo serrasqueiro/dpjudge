@@ -2027,7 +2027,11 @@ class Game:
 				and x.endswith('_.gif')]
 			self.phase = self.map.phase
 		self.makeMaps()
+		# By creating an instance of the parent class Game and not one
+		# of its child variants, no orders get parsed other than
+		# adjustment and retreat orders, which we strip afterwards.
 		game = Game(self.name, 'status.' + phase)
+		for x in game.powers: x.adjust = []
 		game.changeStatus('active')
 		try: os.unlink(game.file('summary'))
 		except: pass
