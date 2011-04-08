@@ -416,7 +416,7 @@ class PostScriptMap:
 			#	---------------------------------------------------------------
 			#	If the last page was movement, add final page showing positions
 			#	---------------------------------------------------------------
-			if lastSection != 'S' and self.units:
+			if lastSection != 'S':
 				self.positions(name, season, year)
 			#	-------------------
 			#	Finish the document

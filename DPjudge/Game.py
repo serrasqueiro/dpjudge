@@ -1557,9 +1557,6 @@ class Game:
 				for x in self.powers if x.isDummy() and not x.ceo]
 		blind = ('BLIND' in rules and not playing
 				 and 'SEE_ALL_SCS' not in rules) 
-		if blind:
-			lines += ['SHOW MASTER ' + ' '.join([x.name for x in self.powers
-				if x.units or x.centers or x.omniscient])]
 		lines += ['\nOwnership of supply centers:\n']
 		for power in self.powers + ['UNOWNED']:
 			if playing and playing.name not in ('MASTER', power.name):
