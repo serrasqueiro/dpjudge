@@ -9,7 +9,6 @@ page.include('standard')
 loadGame()
 checkPassword()
 showGameHeader()
-
 :>
 
 <body bgcolor="#ffffff">

@@ -711,40 +711,31 @@ class Procmail:
 					self.respond('ROLLBACK can only occur on an active game')
 				except RollbackPhaseInvalid:
 					self.respond('Invalid ROLLBACK phase')
-			#	------------------------------
+			#	--------------------------------------------
 			#	See if we are RESIGNing or DUMMYing a player
-			#	------------------------------
+			#	--------------------------------------------
 			elif command in ('RESIGN', 'DUMMY'):
-				target = ''
 				#Only the master can do these things
 				if power.name != 'MASTER':
-					self.respond('Only the Master can ' + command + ' a player')
+					self.respond('Only the Master can %s a player' % command)
 				#Must have a power to work with
 				if len(word) == 1:
-					self.respond('No power specified')
-				target = ''
-				target = word[1]
-				#Cannot RESIGN or DUMMY the MASTER
-				if target == 'MASTER':
-					self.respond('Cannot ' + command + ' the MASTER')
+					self.respond('No power specified to ' + command)
 				#Power must exist
-				goner = []
-				for num, power_check in enumerate(game.powers):
-					if target == power_check.name:
-						goner = game.powers[num]
-						break
+				goner = [x for x in game.powers if x.name == word[1]]
+				if goner: goner = goner[0]
+				#Cannot RESIGN or DUMMY the MASTER
+				elif target == 'MASTER':
+					self.respond('Cannot %s the MASTER' % command)
 				else: self.respond('Could not find power to ' + command)
 				#Power must not be already resigned or dummied
-				currentstatus = 'A'
-				if goner.player[0] in ('RESIGNED', 'DUMMY'):
-					currentstatus = goner.player[0][0]
-				if command[0] == currentstatus:
+				if goner.player[0].startswith(command):
 					self.respond('Cannot %s a %s player' %
 						(command, goner.player[0]))
 				#copied from RESIGN signon format
 				if command == 'RESIGN': goner.resign(1)
 				#modified TAKEOVER format
-				if command == 'DUMMY': goner.dummy()
+				else: goner.dummy()
 			#	--------------------------
 			#	SET ADDRESS, SET PASSWORD,
 			#	and SET DEADLINE handling.

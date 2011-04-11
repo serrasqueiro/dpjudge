@@ -1995,14 +1995,13 @@ class Game:
 		#	Update the game status file
 		#	---------------------------
 		if not self.preview: self.save()
-	#	----------------------------------------------------------------------
+	#	---------------------------------------------------------------------
 	#	Note that we generate a new game object inside the rollback function, 
 	#	so if calling this directly (inspect, etc.), you will need to assign 
-	#	this to a variable and operate on that from thereonafter.
-	#	----------------------------------------------------------------------
+	#	the returned game to a variable and operate on that thereafter.
+	#	---------------------------------------------------------------------
 	def rollback(self, phase):
-		if self.status[1] != 'active':
-			raise RollbackGameInactive
+		if self.status[1] != 'active': raise RollbackGameInactive
 		lines = []
 		if os.path.isfile(self.file('status.' + phase)):
 			file = open(self.file('results'), 'r', 'latin-1')
@@ -2027,7 +2026,7 @@ class Game:
 		# of its child variants, no orders get parsed other than
 		# adjustment and retreat orders, which we strip afterwards.
 		game = Game(self.name, 'status.' + phase)
-		for x in game.powers: x.adjust = []
+		for power in game.powers: power.adjust = []
 		game.changeStatus('active')
 		try: os.unlink(game.file('summary'))
 		except: pass
@@ -4017,3 +4016,4 @@ class Game:
 		file.close()
 		return data, forced, denied
 	#	----------------------------------------------------------------------
+

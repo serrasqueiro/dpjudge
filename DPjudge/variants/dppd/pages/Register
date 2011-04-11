@@ -60,7 +60,7 @@ and page.dppd.lookup(None, page.name) is not None):
 		"""
 		select address from Email where userID in (%s) and status = "PRIMARY"
 		""" % ','.join([`x`.replace('L', '') for x in id]))
-	primary '\\n or '.join([x['address'] for x in page.dppd.db.fetchall()])
+	primary = '\\n or '.join([x['address'] for x in page.dppd.db.fetchall()])
 	page.write(
 		"""
 		<form name=form method=post>
