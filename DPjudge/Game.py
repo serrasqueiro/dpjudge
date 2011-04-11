@@ -24,6 +24,7 @@ class Game:
 		groups = password = start = end = phase = skip = ''
 		map = mode = mail = proposal = season = year = phaseType = None
 		preview = deadline = delay = win = private = zone = await = None
+		includeOwnership = None
 		timing, terrain, status = {}, {}, Status().dict.get(name, [])
 		if 'powerType' not in vars(self): powerType = Power
 		if 'variant' not in vars(self): variant = ''
@@ -1114,7 +1115,7 @@ class Game:
 				   '< %sdta' % file, '< %sdat' % file)
 			outp = ('>%s;' % inp[1][1:], '>%s;' % inp[2][1:],
 					'>%s;' % inp[1][1:])
-		else: inp, outp = ('%sppm' % file, '', '', ''), ('|', '|', '|')
+		else: inp, outp = ('%sppm' % file, '2>/dev/null', '2>/dev/null', '2>/dev/null'), ('|', '|', '|')
 		toolsDir = host.toolsDir
 		chop = ('%s/psselect -p_%%d %sps %s %s'
 				'%s/gs -q -r%d -dSAFER -sDEVICE=ppmraw -sOutputFile=%sppm %s;' %
@@ -1525,6 +1526,7 @@ class Game:
 		self.mail.close()
 	#	----------------------------------------------------------------------
 	def ownership(self, unowned = None, playing = None):
+		self.includeOwnership = None
 		rules = self.rules
 		if unowned is None:
 			homes = [x for y in self.map.home.values() for x in y]
@@ -1555,11 +1557,7 @@ class Game:
 				for x in self.powers if x.isDummy() and not x.ceo]
 		blind = ('BLIND' in rules and not playing
 				 and 'SEE_ALL_SCS' not in rules) 
-		if blind:
-			lines += ['SHOW MASTER ' + ' '.join([x.name for x in self.powers
-				if x.units or x.centers or x.omniscient])]
 		lines += ['\nOwnership of supply centers:\n']
-		for power in self.powers: power.saw, power.sees = power.sees, []
 		for power in self.powers + ['UNOWNED']:
 			if playing and playing.name not in ('MASTER', power.name):
 				continue
@@ -1576,11 +1574,9 @@ class Game:
 						for x in centers if x[-1] not in '?*']
 				elif (blind and who != 'UNOWNED'
 				and not who.omniscient and [who.name] != ceo):
-					seen = [x for x in centers
-						if self.visible(power, x)[who.name] & 2]
-					who.sees += seen
-					seen += [x for x in who.saw
-						if x in centers and x not in seen]
+					who.sees += [x for x in centers
+						if x not in who.sees and self.visible(power, x)[who.name] & 2]
+					seen = [x for x in centers if x in who.sees]
 				if not seen: continue
 				if blind:
 					if who is power: lines += ['SHOW MASTER ' +
@@ -1999,14 +1995,13 @@ class Game:
 		#	Update the game status file
 		#	---------------------------
 		if not self.preview: self.save()
-	#	----------------------------------------------------------------------
+	#	---------------------------------------------------------------------
 	#	Note that we generate a new game object inside the rollback function, 
 	#	so if calling this directly (inspect, etc.), you will need to assign 
-	#	this to a variable and operate on that from thereonafter.
-	#	----------------------------------------------------------------------
+	#	the returned game to a variable and operate on that thereafter.
+	#	---------------------------------------------------------------------
 	def rollback(self, phase):
-		if self.status[1] != 'active':
-			raise RollbackGameInactive
+		if self.status[1] != 'active': raise RollbackGameInactive
 		lines = []
 		if os.path.isfile(self.file('status.' + phase)):
 			file = open(self.file('results'), 'r', 'latin-1')
@@ -2027,7 +2022,11 @@ class Game:
 				and x.endswith('_.gif')]
 			self.phase = self.map.phase
 		self.makeMaps()
+		# By creating an instance of the parent class Game and not one
+		# of its child variants, no orders get parsed other than
+		# adjustment and retreat orders, which we strip afterwards.
 		game = Game(self.name, 'status.' + phase)
+		for power in game.powers: power.adjust = []
 		game.changeStatus('active')
 		try: os.unlink(game.file('summary'))
 		except: pass
@@ -2530,10 +2529,10 @@ class Game:
 			or pawn.name in self.latePowers()):
 				pawn.ceo = pawn.ceo[1:] + pawn.ceo[:1]
 	#	----------------------------------------------------------------------
-	def advancePhase(self, last = 0):
-		last, self.phase = last or self.phaseType, self.findNextPhase()
+	def advancePhase(self):
+		self.phase = self.findNextPhase()
 		self.phaseType = self.phase.split()[-1][0]
-		return self.checkPhase(last)
+		return self.checkPhase()
 	#	----------------------------------------------------------------------
 	def morphMap(self, lastPhase = 0):
 		text, map = [], self.map
@@ -2591,11 +2590,11 @@ class Game:
 			which %= len(self.map.seq)
 		return ' '.join([new[0], `year`, new[1]])
 	#	----------------------------------------------------------------------
-	def checkPhase(self, last = 0):
+	def checkPhase(self):
 		if self.phase in (None, 'FORMING', 'COMPLETED'): return []
-		if self.phaseType == 'M': return (last in 'MR'
-			and ('BLIND' in self.rules) > ('NO_UNITS_SEE' in self.rules)
-				+ ('SEE_NO_SCS' in self.rules) + ('SEE_ALL_SCS' in self.rules)
+		if self.phaseType == 'M': return ((self.includeOwnership or
+				('BLIND' in self.rules) > ('NO_UNITS_SEE' in self.rules)
+				+ ('SEE_NO_SCS' in self.rules) + ('SEE_ALL_SCS' in self.rules))
 			and self.ownership() or [])
 		if self.phaseType == 'R':
 			if [1 for x in self.powers if x.retreats]: return []
@@ -2619,7 +2618,7 @@ class Game:
 			for power in self.powers:
 				while 'SC?' in power.centers: power.centers.remove('SC?')
 				while 'SC*' in power.centers: power.centers.remove('SC*')
-			return text + self.advancePhase(last)
+			return text + self.advancePhase()
 		#	--------------------------------------
 		#	Other phases.  For now take no action.
 		#	--------------------------------------
@@ -2638,6 +2637,7 @@ class Game:
 		#	Remember the current center count for the various
 		#	powers, for use in the victory condition check, then
 		#	go through and see if any centers have been taken over.
+		#	Reset the centers seen by each power.
 		#	-------------------------------------------------------
 		lastYear, unowned = {}, self.map.scs
 		for power in self.powers:
@@ -2645,6 +2645,7 @@ class Game:
 				if 'VASSAL_DUMMIES' in self.rules and x.ceo == [power.name]]),
 				len(power.centers))
 			[unowned.remove(x) for x in power.centers if x in unowned]
+			power.sees = []
 		for power in self.powers + [None]:
 			if power: centers = power.centers
 			else: centers = unowned
@@ -2911,6 +2912,9 @@ class Game:
 			for who in (self.powers, [])['NO_UNITS_SEE' in self.rules]:
 				if who is power: continue
 				for what in who.units + who.adjust:
+					if ('UNITS_SEE_OTHER' in self.rules and what[0] == unit[0]
+					or	'UNITS_SEE_SAME' in self.rules and what[0] != unit[0]):
+						continue
 					if what in who.adjust:
 						parse = what.split()
 						if parse[2] in notes or parse[3] != '-': continue
@@ -3174,7 +3178,7 @@ class Game:
 						power.centers.remove('SC!')
 						if sc not in power.centers:
 							power.centers += [sc]
-							owner = 1
+							self.includeOwnership = 1
 					if ('&SC' in self.map.home[power.name]
 					and sc not in self.map.home[power.name]):
 						self.map.home[power.name].remove('&SC')
@@ -3202,7 +3206,7 @@ class Game:
 				while 'SC*' in power.centers: power.centers.remove('SC*')
 			power.adjust, power.retreats = [], {}
 		if 'BLIND' in self.rules: list += ['SHOW']
-		return list + (owner and self.ownership() or [''])
+		return list + ['']
 	#	----------------------------------------------------------------------
 	def mapperHeader(self):
 		#	----------------------------------------------------------
@@ -4012,3 +4016,4 @@ class Game:
 		file.close()
 		return data, forced, denied
 	#	----------------------------------------------------------------------
+

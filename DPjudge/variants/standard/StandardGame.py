@@ -235,21 +235,45 @@ class StandardGame(Game):
 		#	Empty the order list and then stick each
 		#	order (if any) into it, if it is valid.
 		#	----------------------------------------
-		hadOrders, power.orders = power.orders, {}
+		curPower, hadOrders = power, power.orders
+		#	-------------------------------------------------
+		#	Empty orders for vassal and partial vassal powers
+		#	-------------------------------------------------
+		partial = [x[1:] for x in power.centers if x[0] == '/']
+		for who in self.powers:
+			if who is power or who.ceo[:1] == [power.name]: who.orders = {}
+			for order in who.orders:
+				if order.startswith(power.name) or order[2:5] in partial:
+					del who.orders[order]
 		for line in orders:
 			word = line.split()
+			who = [x for x in self.powers
+				if word[0] in (x.name, '_' + x.abbrev)]
+			if who:
+				if who[0] != power and who[0].ceo[:1] != [power.name]:
+					for sc in who.home or self.map.home[who.name]:
+						if sc in partial: break
+					else:
+						return self.error.append('NO CONTROL OVER ' + word[0])
+				newPower, word = who, word[1:]
+			else: newPower = curPower
 			if word:
 				if 'NO_CHECK' in self.rules:
 					data = self.expandOrder(word)
 					if len(data) < 3 and (len(data) == 1 or data[1] != 'H'):
 						return self.error.append('BAD ORDER: ' + line.upper())
-					power.orders['ORDER %d' % len(power.orders)] = line
-				else: self.addOrder(power, word)
+					newPower.orders['%s %d' %
+						(power.name, len(newPower.orders))] = line
+				else: self.addOrder(newPower, word)
+			else: curPower = newPower
 		if self.canChangeOrders(hadOrders, power.orders):
 			if not power.orders: return self.save()
 			if 'DEFAULT_UNORDERED' not in self.rules:
 				[self.error.append('UNIT LEFT UNORDERED: ' + x)
 					for x in power.units if x not in power.orders]
+				[self.error.append('UNIT LEFT UNORDERED: %s ' % y.name + x)
+					for y in self.powers for x in y.units
+					if x[2:5] in partial and x not in y.orders]
 			if not self.error: self.process()
 	#	----------------------------------------------------------------------
 	def getOrders(self, power):
