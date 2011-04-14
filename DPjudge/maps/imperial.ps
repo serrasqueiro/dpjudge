@@ -443,10 +443,13 @@
 %
 % * ArrowArrive  used in blind games
 % * ArrowDepart
-% * ArrowRetreatArrive
-% * ArrowRetreatDepart
+% * ArrowArriveRetreat
+% * ArrowDepartRetreat
 % * FindUnit
 % * LoseUnit
+%
+% * Controls    used for vassals; adds an extra outline to every unit and 
+%               sc in the controller's color
 %
 % Improved layout code and wraparound by Mario Huys (mario_huys@hotmail.com).
 %
@@ -551,13 +554,18 @@
 
 /Countries 20 dict def
 
+/ChangeController false def
+/Controls {
+	/ChangeController true def
+} bd
+
 /AddCountry { % name letter piececolour contrast => -
   8 dict dup begin 4 1 roll
   load /Contrast xd
   load /PieceColour xd
   /Letter xd
   end 
-  [ /Country 2 index /def load ] cvx bind
+  [ /Country 2 index { dup /Controlled ChangeController put ChangeController { dup /ControllerColour Country /PieceColour get put /ChangeController false def } if } /exec load /def load ] cvx bind
   2 index xd
   Countries 3 1 roll put
 } bd
@@ -1954,7 +1962,7 @@ Countries {
 } bd
 
 % draw an arrow indicating an arrival order to a destination point during retreat
-/SingleArrowRetreatArrive {
+/SingleArrowArriveRetreat {
 
 % positon origin at base of arrow with arrow point along x axis
   gsave
@@ -1993,17 +2001,17 @@ Countries {
   grestore
 } bind def
 
-/ArrowRetreatArrive { % x y => -
+/ArrowArriveRetreat { % x y => -
   SwitchToMapMode
 
   DoublePoint {
-    SingleArrowRetreatArrive
+    SingleArrowArriveRetreat
   } if
-  SingleArrowRetreatArrive
+  SingleArrowArriveRetreat
 } bd
 
 % draw an arrow indicating a departure order from a source point during retreat
-/ArrowRetreatDepart {
+/ArrowDepartRetreat {
   gsave Red ArrowDepart grestore
 } bind def
 
@@ -2043,9 +2051,12 @@ Countries {
    0 4 rlineto      % barrel
    4 2 moveto 20 -10 rlineto 2 0 rlineto -8 0 rlineto
   -20  10 rlineto       % carriage
+  closepath
+  Controlled { gsave ControllerColour currentlinewidth 3 mul setlinewidth stroke grestore } if
   Contrast stroke
   0 0 9 0 360 arc   % wheel
   closepath
+  Controlled { gsave ControllerColour currentlinewidth 3 mul setlinewidth stroke grestore } if
   Contrast stroke
   newpath
   -20 7 moveto 30 0 rlineto 0 -4 rlineto 4 0 rlineto
@@ -2053,6 +2064,7 @@ Countries {
    0 4 rlineto      % barrel
    4 2 moveto 20 -10 rlineto 2 0 rlineto -8 0 rlineto
   -20  10 rlineto       % carriage
+  closepath
   PieceColour fill
   0 0 9 0 360 arc   % wheel
   closepath
@@ -2098,6 +2110,7 @@ Countries {
   6 0 rlineto 0 -1 rlineto 2 0 rlineto 0 -2 rlineto     % stern
   -1 0 rlineto 0 -2 rlineto
   closepath
+  Controlled { gsave ControllerColour currentlinewidth 3 mul setlinewidth stroke grestore } if
   gsave Contrast stroke grestore
   PieceColour fill
 
@@ -2963,11 +2976,31 @@ end
 } bd
 
 [ 
-  currentdict 4 1 /roll load { newpath 0 0 3 0 360 arc fill } bind 3 1 /roll load
+  currentdict 4 1 /roll load { 
+    Controlled {
+      gsave
+      ControllerColour
+      newpath 0 0 6 0 360 arc fill
+      Contrast
+      newpath 0 0 4.5 0 360 arc fill
+      grestore
+    } if
+    newpath 0 0 3 0 360 arc fill 
+  } bind 3 1 /roll load
   3 /array load /astore load /cvx load /put load
 ] cvx bind
 [
-  currentdict 4 1 /roll load { -2 -2 4 4 rectfill } bind 3 1 /roll load 
+  currentdict 4 1 /roll load { 
+    Controlled {
+      gsave
+      ControllerColour
+      -4 -4 8 8 rectfill
+      Contrast
+      -3 -3 6 6 rectfill
+      grestore
+    } if
+    -2 -2 4 4 rectfill 
+  } bind 3 1 /roll load 
   3 /array load /astore load /cvx load /put load
 ] cvx bind
 VisitCenters
