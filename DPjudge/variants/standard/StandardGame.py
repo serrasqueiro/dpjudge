@@ -247,10 +247,12 @@ class StandardGame(Game):
 					del who.orders[order]
 		for line in orders:
 			word = line.split()
+			if not word: continue
 			who = [x for x in self.powers
 				if word[0] in (x.name, '_' + x.abbrev)]
 			if who:
-				if who[0] != power and who[0].ceo[:1] != [power.name]:
+				who = who[0]
+				if who != power and who.ceo[:1] != [power.name]:
 					for sc in who.home or self.map.home[who.name]:
 						if sc in partial: break
 					else:

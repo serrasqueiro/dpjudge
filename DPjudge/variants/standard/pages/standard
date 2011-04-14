@@ -14,18 +14,18 @@ def showOrderList():
 	rows = max(len(page.power.orders), 19) + 1
 	page.write(
 		'<textarea rows=%s cols=40 name=orders wrap=off class=inputBox>' % rows)
-	partial = [x[1:] for x in power.centers if x[0] == '/']
+	partial = [x[1:] for x in page.power.centers if x[0] == '/']
 	if 'orders' in vars(page): page.write(page.orders)
 	elif page.power.orders:
 		[page.write(((x + ' ') * ('NO_CHECK' not in page.game.rules)) + y)
 			for x,y in page.power.orders.items()]
-		[page.write(z + ' ' + ((x + ' ') * ('NO_CHECK' not in page.game.rules)) + y)
+		[page.write(z.name + ' ' + ((x + ' ') * ('NO_CHECK' not in page.game.rules)) + y)
 			for z in page.game.powers for x,y in z.orders.items()
 			if z.ceo[:1] == [page.power.name] or x[2:5] in partial
 			or x.startswith(page.power.name)]
 	elif 'NO_CHECK' not in page.game.rules:
 		[page.write(x + ' ') for x in page.power.units]
-		[page.write(y + ' %s ' % x) for y in page.game.powers
+		[page.write(y.name + ' %s ' % x) for y in page.game.powers
 			for x in y.units if y.ceo[:1] == [page.power.name]
 			or x[2:5] in partial]
 	page.write('</textarea></td></tr>')
