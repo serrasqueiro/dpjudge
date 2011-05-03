@@ -740,10 +740,10 @@ class Game:
 					if remorph: error += ['MORPH AFTER GAME DATA']
 					else: self.morphs.append(' '.join(word[1:]))
 					continue
-				if self.morphs:
+				if self.morphs and not remorph:
 					self.map.load(self.morphs)
-					self.map.validated, remorph = 0, 1
-					self.map.validate()
+					remorph = 1
+					self.map.validate(force = 1)
 				#	----------------------------------------------------
 				#	Validate RULE consistency and disallow further RULEs
 				#	----------------------------------------------------
@@ -753,6 +753,7 @@ class Game:
 						for center in word[1:]:
 							sc = center.upper()
 							if sc in ('SC!','SC?','SC*'): power.centers += [sc]
+							elif sc in power.centers: pass
 							elif [1 for x in self.powers if sc in x.centers]:
 								error += [sc + ' ALREADY OWNED']
 							elif sc in self.map.scs: power.centers += [sc]
@@ -819,6 +820,19 @@ class Game:
 				else:
 					try: self.parseData(power, line.upper().split())
 					except: error += ['UNRECOGNIZED GAME DATA: ' + line]
+		#	-----------------------------
+		#	In case there's no map yet --
+		#	default to standard if needed
+		#	-----------------------------
+		if not self.map: self.loadMap()
+		if self.morphs and not remorph:
+			self.map.load(self.morphs)
+			remorph = 1
+			self.map.validate(force = 1)
+		#	----------------------------------------------------
+		#	Validate RULE consistency and disallow further RULEs
+		#	----------------------------------------------------
+		if rulesOkay: rulesOkay = self.validateRules()
 		if type(fileName) is list: return
 		self.validateStatus()
 		self.setState()
@@ -1369,6 +1383,10 @@ class Game:
 		for starter in [x for x in self.powers if x.type == 'POWER']:
 			starter.name, starter.type = random.choice(avail), None
 			avail.remove(starter.name)
+		if avail:
+			self.morphs.append('UNPLAYED ' + ' '.join(avail))
+			self.map.load(self.morphs[-1:])
+			self.map.validate(force = 1)
 		for starter in [x for x in self.map.dummies
 			if x not in [y.name for y in self.powers]]:
 			self.powers.append(self.powerType(self, starter))
@@ -1386,7 +1404,6 @@ class Game:
 		self.sortPowers()
 		self.start = time.strftime('%d %B %Y', time.localtime())
 		if self.start[0] == '0': self.start = self.start[1:]
-		self.save()
 		self.changeStatus('active')
 		#	---------------------------------------------
 		#	Generate and broadcast initial unit positions
@@ -1397,6 +1414,10 @@ class Game:
 			'\nThe deadline for the first orders is %s.\n' % self.timeFormat()]
 		self.mailResults([line + '\n' for line in lines],
 			'Diplomacy game %s starting' % self.name)
+		#	-------------------------------------------------------
+		#	Save after sending, as self.list() will add power.sees.
+		#	-------------------------------------------------------
+		self.save()
 		self.makeMaps()
 	#	----------------------------------------------------------------------
 	def parameters(self):
@@ -2627,9 +2648,9 @@ class Game:
 			self.phase.title()]
 	#	----------------------------------------------------------------------
 	def captureCenters(self, func = None):
-		#	----------------------------------------
-		#	If no power owns centers, intialize them
-		#	----------------------------------------
+		#	-----------------------------------------
+		#	If no power owns centers, initialize them
+		#	-----------------------------------------
 		if not [1 for x in self.powers if x.centers]:
 			for power in self.powers:
 				power.centers = self.map.home.get(power.name, [])

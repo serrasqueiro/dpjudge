@@ -35,7 +35,7 @@ showReadyNotice()
 <tr valign=top bgcolor="#CCCCCC">
 <td align=center class="grey"><b>Status</b></td>
 <:
-if not page.game.error:
+if not page.game.error and not page.game.map.error:
 	page.write('<td align=center class="grey"><b>Communications</b></td>')
 if (page.power.name != 'MASTER' and page.power.balance is not None
 and page.game.phase not in ('FORMING', 'COMPLETED')):

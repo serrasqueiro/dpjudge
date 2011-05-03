@@ -55,6 +55,9 @@ class Procmail:
 				msg.extend(line.split(eol)[1:])
 			else: msg += [line]
 		self.message = msg[:]
+		#file = open(host.gameDir + '/message', 'w')
+		#file.write('\n'.join(self.message).encode('latin-1'))
+		#file.close()
 		for line in msg:
 			word = line.split()
 			lineNo += 1
@@ -113,7 +116,7 @@ class Procmail:
 					if word in ('GAME', 'PHASE', 'MASTER'): pass
 					elif word == 'FORM': mode = 'forming'
 					# elif word == 'UNLISTED': unlisted = 1
-					else: file.write(info)
+					else: file.write((info + '\n').encode('latin-1'))
 				file.close()
 				os.chmod(file.name, 0666)
 				games.dict[game] = [variant, mode]

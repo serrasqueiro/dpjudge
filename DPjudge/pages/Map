@@ -589,6 +589,20 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	be used, to indicate an ability to build in any <i>unoccupied</i> home
 	center and <i>not</i> take ownership of the center.
 
+<p><dt><b><tt>CENTERS [<i>center...</i>]</tt></b><dd>
+	Same as OWNS, but forgets about any previous OWNS lines.
+	If no center is given, the power will start with no centers at all
+	(if not followed by any new OWNS lines that is).
+
+<p><dt><b><tt>HOME <i>center...</i></tt></b><dd>
+	Sets the home centers for this power, overwriting any that are given
+	on the power declaration line, including partisan and factory sites.
+
+<p><dt><b><tt>HOMES [<i>center...</i>]</tt></b><dd>
+	Same as HOME, but forgets about any previous HOME lines.
+	If no center is given, the power will start with no build sites at all
+	(if not followed by any new HOME lines that is).
+
 <p><dt><b><tt>RESERVES [<i>count</i>]</tt></b><dd>
 	A <tt>RESERVES</tt> line given for the "current power" indicates that the
 	power is eligible to maintain <tt><i>count</i></tt> extra unit(s) (default

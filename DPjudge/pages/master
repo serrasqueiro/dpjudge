@@ -615,6 +615,7 @@ def updateMaster():
 	extract('MILITIA', 'defense', 1)
 	page.game.timing = None	# it will be in page.extra if given....
 	page.game.terrain = {}	# ditto this guy as well
+	page.game.morphs = []	# and this guy
 	if 'corrupt' in page.game.status: return finished()
 	#--------------
 	# Write the file
@@ -696,26 +697,46 @@ def extract(key, var = 0, isList = 0):
 #
 #	----------------------------------------------------------------------
 def checkErrors():
-	if not page.game.error: return
+	if not page.game.error and not page.game.map.error: return
 	if page.power and page.power.name != 'MASTER':
+		if page.game.error:
+			page.write(
+				"""
+				<script>
+				alert(" Problems Found in Game Status File!" +
+					"\\nPlease Report This To The GameMaster!");
+				window.history.back();
+				</script>
+				""")
+		else:
+			page.write(
+				"""
+				<script>
+				alert(" Problems Found in Game Map File!" +
+					"\\nPlease Report This To The GameMaster!");
+				window.history.back();
+				</script>
+				""")
+		raise SystemExit
+	if page.game.error:
 		page.write(
 			"""
-			<script>
-			alert(" Problems Found in Game Status File!\\n" +
-					"Please Report This To The GameMaster!");
-			window.history.back();
-			</script>
+			<tr valign=top bgcolor="#CCCCCC">
+			<th bgcolor=yellow class=bodycopy>
+			<font color=red size=3>Problems Found in Game Status File</th></tr>
+			<tr valign=top><th bgcolor=red class=bodycopy>
+			<font color=yellow size=3><pre>
 			""")
-		raise SystemExit
-	page.write(
-		"""
-		<tr valign=top bgcolor="#CCCCCC">
-		<th bgcolor=yellow class=bodycopy>
-		<font color=red size=3>Problems Found in Game Status File</th></tr>
-		<tr valign=top><th bgcolor=red class=bodycopy>
-		<font color=yellow size=3><pre>
-		""")
-	map(page.write, page.game.error)
+	if page.game.map.error:
+		page.write(
+			"""
+			<tr valign=top bgcolor="#CCCCCC">
+			<th bgcolor=yellow class=bodycopy>
+			<font color=red size=3>Problems Found in Game Map File</th></tr>
+			<tr valign=top><th bgcolor=red class=bodycopy>
+			<font color=yellow size=3><pre>
+			""")
+	map(page.write, page.game.map.error)
 	page.write('</pre></td></tr>')
 #	----------------------------------------------------------------------
 :>

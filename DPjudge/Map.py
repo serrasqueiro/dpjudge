@@ -9,10 +9,10 @@ class Map:
 		victory = phase = rootMap = flagDir = validated = textOnly = None
 		home, locName, locType, locAbut, abutRules = {}, {}, {}, {}, {}
 		ownWord, abbrev, centers, units, powName, flag = {}, {}, {}, {}, {}, {}
-		rules, files, powers, scs, error, notify = [], [], [], [], [], []
+		rules, files, powers, scs, owns, inhabits = [], [], [], [], [], []
 		flow, unclear, size, homeYears, dummies, locs = [], [], [], [], [], []
 		reserves, militia, dynamic, factory, partisan = [], [], {}, {}, {}
-		leagues, directives = {}, {}
+		leagues, directives, error, notify = {}, {}, [], []
 		aliases = {			'-': '-',		'H': 'H',		'P': 'P',
 			'A': 'A',		'F': 'F',		'S': 'S',		'C': 'C',
 			'B': 'BUILD',	'R': 'REMOVE',	'D': 'DISBAND',
@@ -25,8 +25,8 @@ class Map:
 		self.load()
 		self.validate()
 	#	----------------------------------------------------------------------
-	def validate(self, phases = ''):
-		if not phases and self.validated: return
+	def validate(self, phases = '', force = 0):
+		if not force and not phases and self.validated: return
 		for phase in phases:
 			for when, what in self.dynamic.items():
 				if ((when.isupper() and phase.startswith(when))
@@ -127,7 +127,7 @@ class Map:
 			'BAD INITIAL OWNED CENTER FOR %s: ' % power + x) for x in places
 			if x not in ('SC!', 'SC?') and not self.areatype(x)]
 		for power in self.powers:
-			self.centers[power] = self.centers.get(power, self.home[power])
+			if power not in self.owns: self.centers[power] = self.home[power]
 			[error.append('BAD INITIAL UNIT FOR %s: ' % power + x)
 				for x in self.units.get(power, []) if not self.isValidUnit(x)]
 		if 'UNOWNED' in self.home: del self.home['UNOWNED']
@@ -382,9 +382,34 @@ class Map:
 			#	Center ownership
 			#	----------------
 			elif upword == 'OWNS':
-				if power: self.centers.setdefault(power, []).extend(
-					line.upper().split()[1:])
-				else: error += ['OWNS BEFORE POWER: ' + ' '.join(word)]
+				if not power:
+					error += ['OWNS BEFORE POWER: ' + ' '.join(word)]
+				else:
+					if not power in self.owns: self.owns.append(power)
+					self.centers.setdefault(power, []).extend(
+						line.upper().split()[1:])
+			elif upword == 'CENTERS':
+				if not power:
+					error += ['CENTERS BEFORE POWER: ' + ' '.join(word)]
+				else:
+					if not power in self.owns: self.owns.append(power)
+					self.centers[power] = line.upper().split()[1:]
+			#	--------------------------------------------------------------
+			#	Home centers, overriding those from the power declaration line
+			#	--------------------------------------------------------------
+			elif upword == 'HOME':
+				if not power:
+					error += ['HOME BEFORE POWER: ' + ' '.join(word)]
+				else:
+					reinit = power not in self.inhabits
+					if reinit: self.inhabits.append(power)
+					self.addHomes(power, word[1:], reinit)
+			elif upword == 'HOMES':
+				if not power:
+					error += ['HOMES BEFORE POWER: ' + ' '.join(word)]
+				else:
+					if power not in self.inhabits: self.inhabits.append(power)
+					self.addHomes(power, word[1:], 1)
 			#	-----------------------------
 			#	Clear known units for a power
 			#	-----------------------------
@@ -426,7 +451,7 @@ class Map:
 			#	Unit designation
 			#	----------------
 			elif upword in ('A', 'F'):
-				unit = ' '.join(word)
+				unit = ' '.join(word).upper()
 				if not power: error += ['UNIT BEFORE POWER: ' + unit]
 				elif len(word) == 2:
 					for units in self.units.values(): map(units.remove,
@@ -534,12 +559,14 @@ class Map:
 						del self.powName[goner]
 						del self.ownWord[goner]
 						del self.home[goner]
+						self.inhabits = [x for x in self.inhabits if x != goner]
 						if goner in self.centers: del self.centers[goner]
+						self.owns = [x for x in self.owns if x != goner]
 						if goner in self.abbrev: del self.abbrev[goner]
 						if goner in self.factory: del self.factory[goner]
 						if goner in self.partisan: del self.partisan[goner]
 						if goner in self.units: del self.units[goner]
-						if goner in self.powers: del self.powers[goner]
+						self.powers = [x for x in self.powers if x != goner]
 						self.reserves = [x for x in self.reserves if x != goner]
 						self.militia = [x for x in self.militia if x != goner]
 					except: error += ['NO SUCH POWER TO REMOVE: ' + goner]
@@ -556,7 +583,8 @@ class Map:
 					word = word[2:]
 					power = word[0].upper() 
 					if power in ('NEUTRAL', 'CENTERS', 'UNOWNED'): power = 0
-					if not oldPower or not power: error += ['RENAMING UNOWNED DIRECTIVE NOT ALLOWED']
+					if not oldPower or not power:
+						error += ['RENAMING UNOWNED DIRECTIVE NOT ALLOWED']
 					else: self.renamePower(oldPower, power)						
 				upword = power or 'UNOWNED'
 				if power and upword not in self.powName.values():
@@ -571,24 +599,34 @@ class Map:
 							error += ['ILLEGAL POWER ABBREVIATION']
 					del word[1]
 				else: self.ownWord.setdefault(upword, upword)
-				self.home.setdefault(upword, [])
-				for home in word[1:]:
-					if home[0] == '-':
-						if home[1:] in self.factory.get(upword, []):
-							self.factory[upword].remove(home[1:])
-							continue
-						if home[1:] in self.partisan.get(upword, []):
-							self.partisan[upword].remove(home[1:])
-							continue
-						try:
-							self.home[upword].remove(home[1:])
-							if upword != 'UNOWNED':
-								self.home['UNOWNED'].append(home[1:])
-						except: pass
-					elif home[0] == '*':
-						self.partisan.setdefault(upword, []).append(home[1:])
-					elif home[0] != '+': self.home[upword].append(home)
-					else: self.factory.setdefault(upword, []).append(home[1:])
+				reinit = upword in self.inhabits
+				if reinit: self.inhabits.remove(upword)
+				self.addHomes(upword, word[1:], reinit)
+	#	----------------------------------------------------------------------
+	def addHomes(self, power, homes, reinit):
+		if reinit:
+			self.home[power] = []
+			if power in self.partisan: del self.partisan[power]
+			if power in self.factory: del self.factory[power]
+		else:
+			self.home.setdefault(power, [])
+		for home in ' '.join(homes).upper().split():
+			if home[0] == '-':
+				if home[1:] in self.factory.get(power, []):
+					self.factory[power].remove(home[1:])
+					continue
+				if home[1:] in self.partisan.get(power, []):
+					self.partisan[power].remove(home[1:])
+					continue
+				try:
+					self.home[power].remove(home[1:])
+					if power != 'UNOWNED':
+						self.home['UNOWNED'].append(home[1:])
+				except: pass
+			elif home[0] == '*':
+				self.partisan.setdefault(power, []).append(home[1:])
+			elif home[0] != '+': self.home[power].append(home)
+			else: self.factory.setdefault(power, []).append(home[1:])
 	#	----------------------------------------------------------------------
 	def rename(self, old, new):
 		old = old.upper()
