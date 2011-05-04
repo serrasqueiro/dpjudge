@@ -3884,7 +3884,7 @@ class Game:
 		return ', '.join(press) + '.'
 	#	----------------------------------------------------------------------
 	def logAccess(self, power, pwd, origin = 0):
-		if type(power) not in (str, unicode): power = power.name
+		if type(power) not in (str, unicode, int): power = power.name
 		if not origin:
 			try: origin = socket.gethostbyaddr(os.environ['REMOTE_ADDR'])[0]
 			except: pass

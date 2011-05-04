@@ -727,6 +727,8 @@ def checkErrors():
 			<tr valign=top><th bgcolor=red class=bodycopy>
 			<font color=yellow size=3><pre>
 			""")
+		map(page.write, page.game.error)
+		page.write('</pre></td></tr>')
 	if page.game.map.error:
 		page.write(
 			"""
@@ -736,7 +738,7 @@ def checkErrors():
 			<tr valign=top><th bgcolor=red class=bodycopy>
 			<font color=yellow size=3><pre>
 			""")
-	map(page.write, page.game.map.error)
-	page.write('</pre></td></tr>')
+		map(page.write, page.game.map.error)
+		page.write('</pre></td></tr>')
 #	----------------------------------------------------------------------
 :>

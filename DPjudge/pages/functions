@@ -1129,7 +1129,6 @@ def loadGame():
 	try: page.power = [x for x in page.game.powers if page.power == x.name][0]
 	except: 
 		if page.power == 'MASTER': page.power = Power(page.game, 'MASTER')
-		else: page.power = 0
 #	----------------------------------------------------------------------
 def mapName():
 	file = page.game.name
