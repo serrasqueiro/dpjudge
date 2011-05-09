@@ -4,11 +4,21 @@ from XtalballPower import XtalballPower
 
 class XtalballGame(Game):
 	#	----------------------------------------------------------------------
-	def __init__(self, gameName):
-		self.variant, self.rules = 'xtalball', ['FICTIONAL_OK', 'PROXY_OK']
+	def __init__(self, gameName, fileName = 'status'):
+		self.variant, self.powerType = 'xtalball', XtalballPower
+		Game.__init__(self, gameName, fileName)
+	#	----------------------------------------------------------------------
+	def reinit(self, includePersistent = 1):
+		#	------------------------------------
+		#	Initialize the persistent parameters
+		#	------------------------------------
+		if includePersistent:
+			self.rules = ['FICTIONAL_OK', 'PROXY_OK']
+		#	-----------------------------------
+		#	Initialize the transient parameters
+		#	-----------------------------------
 		self.largest = self.smallest = None
-		self.powerType = XtalballPower
-		Game.__init__(self, gameName)
+		Game.reinit(self, includePersistent)
 	#	----------------------------------------------------------------------
 	def unitOwner(self, unit, power = None):
 		owner = Game.unitOwner(self, unit)
@@ -26,14 +36,21 @@ class XtalballGame(Game):
 				if word[1] + ' ' + word[-1] == unit: return power
 		return owner
 	#	----------------------------------------------------------------------
-	def parseData(self, power, word):
-		if not word: return
+	def parsePowerData(self, power, word, includePersistent, includeOrders):
+		parsed = Game.parsePowerData(self, power, word, includePersistent, includeOrders)
+		if parsed: return parsed
+		word = word.upper()
+		upline = ' '.join(word)
 		#	-----------------------------------------
 		#	Power-specific data (SOONER and/or LATER)
 		#	-----------------------------------------
-		upline = ' '.join(word)
-		if not power: return self.error.append('DATA BEFORE POWER: ' + upline)
-		if word[0] in ('SOONER', 'LATER'): self.mode = word[0]
+		#	Note that SOONER are orders entered during a previous turn and
+		#	thus should be included even if includeOrders is 0, because the
+		#	latter is only concerned with LATER orders.
+		if word[0] in ('SOONER', 'LATER') and len(word) == 1: 
+			self.mode, self.modeRequiresEnd = word[0], None
+		elif self.mode == 'LATER' and not includeOrders:
+			return -1
 		elif self.mode and word[0] in ('A', 'F'):
 			word = self.expandOrder(word)
 			if len(word) < 3: return self.error.append('BAD ORDER: ' + upline)
@@ -41,7 +58,8 @@ class XtalballGame(Game):
 			if self.validOrder(power, unit, order) != None:
 				power.list[self.mode] += [upline]
 			if self.mode == 'LATER': power.held = 1
-		else: self.error += ['BAD UNIT DESCRIPTION: ' + upline]
+		else: return 0
+		return 1
 	#	----------------------------------------------------------------------
 	def validateStatus(self):
 		sizes = [len(x.centers) for x in self.powers if x.centers]

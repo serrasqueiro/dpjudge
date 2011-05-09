@@ -397,16 +397,16 @@ class Map:
 			#	--------------------------------------------------------------
 			#	Home centers, overriding those from the power declaration line
 			#	--------------------------------------------------------------
-			elif upword == 'HOME':
+			elif upword == 'INHABITS':
 				if not power:
-					error += ['HOME BEFORE POWER: ' + ' '.join(word)]
+					error += ['INHABITS BEFORE POWER: ' + ' '.join(word)]
 				else:
 					reinit = power not in self.inhabits
 					if reinit: self.inhabits.append(power)
 					self.addHomes(power, word[1:], reinit)
-			elif upword == 'HOMES':
+			elif upword in ('HOME', 'HOMES'):
 				if not power:
-					error += ['HOMES BEFORE POWER: ' + ' '.join(word)]
+					error += [upword + ' BEFORE POWER: ' + ' '.join(word)]
 				else:
 					if power not in self.inhabits: self.inhabits.append(power)
 					self.addHomes(power, word[1:], 1)

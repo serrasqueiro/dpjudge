@@ -4,13 +4,19 @@ class XtalballPower(Power):
 	#	----------------------------------------------------------------------
 	def __init__(self, game, name, type = None):
 		Power.__init__(self, game, name, type)
-		self.list, self.notes = {'SOONER': [], 'LATER': []}, {}
 	#	----------------------------------------------------------------------
 	def __repr__(self):
 		text = Power.__repr__(self).decode('latin-1')
 		for listName, orders in self.list.items():
 			if orders: text += '%s\n%s\n' % (listName, '\n'.join(orders))
 		return text.encode('latin-1')
+	#	----------------------------------------------------------------------
+	def reinit(self, includePersistent = 1):
+		Power.reinit(self, includePersistent)
+		#	-----------------------------------
+		#	Initialize the transient parameters
+		#	-----------------------------------
+		self.list, self.notes = {'SOONER': [], 'LATER': []}, {}
 	#	----------------------------------------------------------------------
 	def movesSubmitted(self):
 		if self.name not in self.game.map.powers: return 1

@@ -594,14 +594,14 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	If no center is given, the power will start with no centers at all
 	(if not followed by any new OWNS lines that is).
 
-<p><dt><b><tt>HOME <i>center...</i></tt></b><dd>
+<p><dt><b><tt>INHABITS <i>center...</i></tt></b><dd>
 	Sets the home centers for this power, overwriting any that are given
 	on the power declaration line, including partisan and factory sites.
 
-<p><dt><b><tt>HOMES [<i>center...</i>]</tt></b><dd>
-	Same as HOME, but forgets about any previous HOME lines.
+<p><dt><b><tt>HOME(S) [<i>center...</i>]</tt></b><dd>
+	Same as INHABITS, but forgets about any previous INHABITS lines.
 	If no center is given, the power will start with no build sites at all
-	(if not followed by any new HOME lines that is).
+	(if not followed by any new INHABITS lines that is).
 
 <p><dt><b><tt>RESERVES [<i>count</i>]</tt></b><dd>
 	A <tt>RESERVES</tt> line given for the "current power" indicates that the

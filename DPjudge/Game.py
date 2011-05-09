@@ -16,32 +16,22 @@ class Game:
 		#	------------------------------------------------------------------
 	#	----------------------------------------------------------------------
 	def __init__(self, name = '', fileName = 'status'):
-		playerTypes, desc, master, powers, norules = [], [], [], [], []
-		rotate, powers, outcome, directives, origin = [], [], [], [], []
-		avail, error, zones, morphs, state = [], [], [], [], {}
-		try: metaRules = self.rules[:]
-		except: metaRules, rules = [], []
-		groups = password = start = end = phase = skip = ''
-		map = mode = mail = proposal = season = year = phaseType = None
-		preview = deadline = delay = win = private = zone = await = None
-		includeOwnership = None
-		timing, terrain, status = {}, {}, Status().dict.get(name, [])
-		if 'powerType' not in vars(self): powerType = Power
 		if 'variant' not in vars(self): variant = ''
-		#	------------------------------------------------------
-		#	When we run out of directory slots, the line below can
-		#	be changed to '/'.join(host.gameDir, name[0], name)
-		#	------------------------------------------------------
-		gameDir = host.gameDir + '/' + name
-		os.putenv('TZ', 'GMT')
+		if 'powerType' not in vars(self): powerType = Power
 		vars(self).update(locals())
 		if name: self.load(fileName)
+		else: self.reinit()
 	#	----------------------------------------------------------------------
 	def __repr__(self):
 		text = ('GAME ' + self.name + (self.await and '\nAWAIT '
 				or self.skip and '\nSKIP ' or '\nPHASE ') + self.phase)
 		if self.map: text += '\nMAP ' + self.map.name
-		for morph in self.morphs: text += '\nMORPH ' + morph
+		if len(self.morphs) > 3 or [1 for x in self.morphs if not x.strip()]:
+			text += '\nMORPH'
+			for morph in self.morphs: text += '\n' + morph
+			text += '\nEND MORPH'
+		else:
+			for morph in self.morphs: text += '\nMORPH ' + morph
 		if self.master: text += '\nMASTER ' + '|'.join(self.master)
 		text += '\nPASSWORD ' + self.password
 		if self.groups: text += '\nGROUPS ' + ('|').join(self.groups)
@@ -50,14 +40,24 @@ class Game:
 		if self.outcome: text += '\nRESULT ' + ' '.join(self.outcome)
 		if self.avail and self.phase != 'FORMING':
 			text += '\nNEED ' + ' '.join(self.avail)
-		for each in self.desc: text += '\nDESC ' + each
+		if len(self.desc) > 3 or [1 for x in self.desc if not x.strip()]:
+			text += '\nDESC'
+			for each in self.desc: text += '\n' + each
+			text += '\nEND DESC'
+		else:
+			for each in self.desc: text += '\nDESC ' + each
+		if len(self.origin) > 3 or [1 for x in self.origin if not x.strip()]:
+			text += '\nNAME'
+			for each in self.origin: text += '\n' + each
+			text += '\nEND NAME'
+		else:
+			for each in self.origin: text += '\nNAME ' + each
 		if self.private: text += '\nPRIVATE ' + self.private
 		if self.rotate: text += '\nROTATE ' + ' '.join(self.rotate)
 		for each in self.rules:
 			if each not in self.metaRules: text += '\nRULE ' + each
 		for each in self.norules: text += '\nRULE !' + each
 		for each in self.playerTypes: text += '\nALLOW ' + each
-		for each in self.origin: text += '\nNAME ' + each
 		if self.proposal: text += '\nPROPOSAL ' + ' '.join(self.proposal)
 		if self.deadline: text += '\nDEADLINE ' + self.deadline
 		if self.zone: text += '\nZONE ' + self.zone
@@ -69,6 +69,36 @@ class Game:
 				text += '\n%s %s ' % (terrain, site) + ' '.join(abuts)
 		return '\n'.join([x for x in text.split('\n')
 					if x not in self.directives]).encode('latin-1') + '\n'
+	#	----------------------------------------------------------------------
+	def reinit(self, includePersistent = 1):
+		#	------------------------------------
+		#	Initialize the persistent parameters
+		#	------------------------------------
+		if includePersistent:
+			playerTypes, desc, master, powers, norules = [], [], [], [], []
+			rotate, directives, origin = [], [], []
+			avail, zones, morphs = [], [], []
+			try: metaRules = self.rules[:]
+			except: metaRules, rules = [], []
+			groups = password = start = ''
+			map = private = zone = None
+			timing, terrain, status = {}, {}, Status().dict.get(name, [])
+			#	------------------------------------------------------
+			#	When we run out of directory slots, the line below can
+			#	be changed to '/'.join(host.gameDir, name[0], name)
+			#	------------------------------------------------------
+			gameDir = host.gameDir + '/' + name
+			os.putenv('TZ', 'GMT')
+		#	-----------------------------------
+		#	Initialize the transient parameters
+		#	-----------------------------------
+		outcome, error, state = [], [], {}
+		end = phase = skip = ''
+		mail = proposal = season = year = phaseType = None
+		mode = preview = deadline = delay = win = await = None
+		modeRequiresEnd = includeOwnership = None
+		for power in self.powers: power.reinit(includePersistent)
+		vars(self).update(locals())
 	#	----------------------------------------------------------------------
 	def unitOwner(self, unit, coastRequired = 1):
 		for owner in self.powers:
@@ -518,324 +548,378 @@ class Game:
 			os.putenv('TZ', zone)
 		else: self.error += ['BAD TIME ZONE: ' + zone]
 	#	----------------------------------------------------------------------
-	def load(self, fileName = 'status'):
-		error, power, zones, remorph, rulesOkay = self.error, None, [], 0, 1
+	def load(self, fileName = 'status', includePersistent = 1, includeOrders = 1):
+		self.reinit(includePersistent)
+		error, power = self.error, None
 		if type(fileName) is not list:
 			try: file = open(self.file(fileName), encoding='latin-1')
 			except: return setattr(self, 'name', 0)
 		else: file = fileName
+		blockMode = 0
 		for line in file:
 			word = line.split()
 			if not word:
-				#	-------------------------------------------
-				#	Run the variant specific parseData() on all
-				#	blank lines because they may have an effect
-				#	but if there is no parseData() method (game
-				#	not yet completely set up), take no action.
-				#	-------------------------------------------
-				try: self.parseData(power, word)
-				except: self.parseData = lambda x,y,z: None
+				if not self.mode or not self.modeRequiresEnd:
+					# Mark end of block, but skip consecutive empty lines. 
+					if blockMode == 1:
+						self.finishGameData() 
+						blockMode = 2
+					elif blockMode == 3:
+						self.finishPowerData(power)
+						blockMode = 2
 				continue
 			if type(file) is list: self.directives += [' '.join(word)]
 			upword = word[0].upper()
-			#	-------------------------
-			#	Game-specific information
-			#	-------------------------
-			if upword == 'GAME':
-				if word[1:] != [self.name]: error += ['GAME NAME MISMATCH']
-			elif upword == 'MASTER':
-				if self.master: error += ['TWO MASTER STATEMENTS']
-				elif len(word) == 1: error += ['NO MASTER SPECIFIED']
-				else: self.master = word[1].split('|')
-			elif upword == 'NAME':
-				if len(word) > 1: self.origin += [' '.join(word[1:])]
-			elif upword == 'RESULT':
-				if len(word) > 1: self.outcome += word[1:]
-			elif upword == 'DESC':
-				if len(word) > 1: self.desc += [' '.join(word[1:])]
-			elif upword == 'NEED':
-				if len(word) > 1: self.avail += word[1:]
-			elif upword == 'GROUPS':
-				self.groups = word[1].upper().split('|')
-			elif upword == 'PRIVATE':
-				if len(word) == 2: self.private = word[1].upper()
-				else: error += ['INVALID PRIVATE STATEMENT']
-			elif upword in ('AWAIT', 'PHASE', 'SKIP'):
-				if self.phase: error += ['TWO AWAIT/PHASE/SKIP STATEMENTS']
-				elif len(word) > 1:
-					self.phase = ' '.join(word[1:]).upper()
-					if fileName == 'status':
-						self.await = upword == 'AWAIT'
-						self.skip = upword == 'SKIP'
-				else: error += ['NO PHASE GIVEN']
-			elif upword == 'RULE':
-				for rule in word[1:]:
-					rule = rule.upper()
-					item = rule.replace('!','')
-					item =	{	'NO_PARTIAL': 'PUBLIC_PRESS',
-								'FLEX_SETUP': 'BLANK_BOARD',
-							}.get(item, item)
-					if rule[0] == '!':
-						self.norules += [item]
-						continue
-					self.addRule(item)
-					if type(fileName) is list:
-						if item not in self.map.rules: self.map.rules += [item]
-						if item not in self.metaRules: self.metaRules += [item]
-				if not rulesOkay: error += ['RULES IN GAME DATA']
-			elif upword == 'MAP':
-				if self.map: error += ['TWO MAP STATEMENTS']
-				elif len(word) == 2: self.loadMap(word[1])
-				else: error += ['BAD MAP STATEMENT']
-			elif upword == 'ROTATE':
-				if self.rotate: error += ['TWO ROTATE STATEMENTS']
-				else: self.rotate = [x.upper() for x in word[1:]] or ['CONTROL']
-			elif upword == 'START':
-				if self.start: error += ['TWO START STATEMENTS']
-				elif len(word) > 1: self.start = ' '.join(word[1:])
-			elif upword == 'FINISH':
-				if self.end: error += ['TWO FINISH STATEMENTS']
-				elif len(word) > 1: self.end = ' '.join(word[1:])
-			elif upword == 'GROUPS': pass
-			elif upword == 'ALLOW':
-				for allow in [x.upper() for x in word[1:]]:
-					if allow not in (self.playerTypes +
-						['POWER', 'OBSERVER', 'MONITOR']):
-						self.playerTypes += [allow]
-			elif upword == 'PROPOSAL':
-				if self.proposal: error += ['TWO PROPOSALS']
-				elif len(word) != 3: error += ['BAD PROPOSAL']
-				else: self.proposal = word[1:]
-			elif upword == 'ZONE':
-				if len(word) < 2: error += ['ZONE UNSPECIFIED']
-				elif self.zone: error += ['TWO TIME ZONES']
-				elif host.zoneFile: self.setTimeZone(word[1])
-				else: error += ['ZONE CHANGE UNSUPPORTED']
-			elif upword == 'DEADLINE':
-				if self.deadline: error += ['TWO DEADLINES']
-				elif (len(word) == 2 and word[1].isdigit()
-				and len(word[1]) == 12): self.deadline = word[1]
-				else: error += ['BAD DEADLINE: ' + ' '.join(word[1:])]
-			elif upword == 'DELAY':
-				if self.delay: error += ['TWO DELAYS']
-				elif len(word) != 2: error += ['BAD DELAY']
+			if blockMode == 0:
+				# Start of first block, the game data
+				if upword != 'GAME':
+					error += ['OTHER DATA PRECEDING GAME DECLARATION: ' + ' '.join(word)]
+				else: 
+					if word[1:] != [self.name]: error += ['GAME NAME MISMATCH']
+					blockMode = 1
+					self.mode = self.modeRequiresEnd = None
+			elif blockMode == 1:
+				# Game data
+				if self.mode and upword == 'END' and len(word) == 2 and word[1].upper == self.mode:
+					self.mode = self.modeRequiresEnd = None
+				elif not self.parseGameData(self, word, includePersistent) and includePersistent:
+					error += ['UNRECOGNIZED GAME DATA: ' + ' '.join(word)]
+			elif blockMode == 2:
+				# Power (or observer, etc.)
+				power = self.determinePower(word)
+				if not power:
+					error += ['NOT A POWER DECLARATION: ' + ' '.join(word)]
 				else:
-					try:
-						self.delay = int(word[1])
-						if not (0 < self.delay < 73): raise
-					except: error += ['BAD DELAY COUNT: ' + word[1]]
-			elif upword == 'TIMING':
-				try:
-					for num in range(1, len(word), 2):
-						key = word[num].upper()
-						if key == 'NOT' and self.timing.get(key):
-							self.timing[key] += ',' + word[num + 1].upper()
-						elif key in self.timing:
-							error += ['TWO %s SPECS IN TIMING' % key]
-						elif key == 'DAYS': self.timing[key] = word[num + 1]
-						else: self.timing[key] = word[num + 1].upper()
-				except: error += ['BAD TIMING']
-			#	---------------------------------------------
-			#	Power-specific data (and the Master password)
-			#	---------------------------------------------
-			elif upword == 'PASSWORD':
-				if len(word) != 2 or '<' in word[1] or '>' in word[1]:
-					error += ['BAD PASSWORD: ' + ' '.join(word[1:]).
-						replace('<', '&lt;').replace('>', '&gt;')]
-				elif not power:
-					if self.password: error += ['TWO MASTER PASSWORDS']
-					else: self.password = word[1]
-				elif power.password or power.ceo:
-					error += ['TWO PASSWORDS FOR ' + power.name]
-				elif len(word) != 2: error += ['NO PASSWORD FOR ' + power.name]
-				else: power.password = word[1]
-			elif upword == 'CONTROL':
-				if not power: error += ['CONTROL BEFORE POWER']
-				elif len(word) == 1:
-					error += ['INVALID CONTROL FOR ' + power.name]
-				elif power.password or power.ceo:
-					error += ["TWO CONTROLS FOR " + power.name]
-				else: power.ceo = [x.upper() for x in word[1:]]
-			elif upword == 'PLAYER':
-				if not power: error += ['PLAYER BEFORE POWER']
-				elif len(word) == 1: error += ['NO PLAYER DATA']
-				elif power.player: error += ['TWO PLAYERS FOR ' + power.name]
-				else:
-					power.player = word[1:]
-					if power.player[0].upper() in ('RESIGNED', 'DUMMY'):
-						power.player[0] = power.player[0].upper()
-					for num, item in enumerate(power.player):
-						part = item.split('|')
-						if not num and item in ('RESIGNED', 'DUMMY'): continue
-						if num & 1:
-							if (len(item) > 2 and (item[0] + item[-1]).isupper()
-							and item[1:-1].isdigit()): continue
-						elif item == 'DUMMY': continue
-						elif len(part) == 3:
-							for address in part[1].split(','):
-								addr = address.split('@')
-								if not (len(addr) == 2 and addr[0]
-								and (not part[0] or (part[0][0] == '#'
-									and part[0][1:].isdigit()))
-								and '.' not in (addr[1][0], addr[1][-1])
-								and addr[1][1:-1].count('.')): break
-							else: continue
-						error += ['BAD PLAYER DATA FOR ' + power.name]
-						break
-			elif upword == 'ADDRESS':
-				if not power: error += ['ADDRESS BEFORE POWER']
-				elif len(word) == 1: error += ['NO ADDRESS DATA']
-				elif power.address: error += ['TWO ADDRESSES FOR ' + power.name]
-				elif [1 for x in word[1].split(',')
-					if x.count('@') != 1 or '@' not in x[1:-3]
-					or not x.split('.')[-1].isalpha()
-					or '.' not in x.split('@')[1]
-					or '.' in (x.split('@')[1][0], x[-1])]:
-						error += ['BAD ADDRESS FOR ' + power.name]
-				else: power.address = word[1:]
-			elif upword in ('OMNISCIENT', 'OMNISCIENT!'):
-				if not power: error += ['OMNISCIENT BEFORE POWER']
-				elif power.omniscient: error += ['DOUBLE OMNISCIENT?']
-				else: power.omniscient = 1 + (upword[-1] == '!')
-			elif upword == 'FUNDS':
-				if not power: error += ['FUNDS BEFORE POWER']
-				elif len(word) == 1: error += ['NO FUNDS DATA']
-				else:
-					try:
-						for money in line.split()[1:]:
-							if money[0] == '$': money = money[1:] + '$'
-							for ch in range(len(money)):
-								if money[ch].isdigit(): continue
-								if power.funds.get(money[ch:]): error += [
-									'DUPLICATE FUND TYPE: ' + money[ch:]]
-								else: power.funds[money[ch:]] = int(money[:ch])
-								break
-							else: raise
-						power.balance = power.funds.get('$')
-					except:	error += ['BAD FUNDS: ' + money]
-			elif upword in ('BUILD', 'REMOVE', 'RETREAT'):
-				if power: power.adjust += [' '.join(word).upper()]
-				else: error += [upword + ' BEFORE POWER']
-			elif upword == 'WAIT':
-				if power: power.wait = 1
-				else: error += ['WAIT BEFORE POWER']
-			elif upword == 'MSG':
-				if power: power.msg += [' '.join(word[1:])]
-				else: error += ['MSG BEFORE POWER']
-			elif upword in ('A', 'F') and ((len(word) > 3 and word[2] == '-->')
-			or (len(word) == 2 and '-' not in word[1])):
-				#	-----
-				#	Units
-				#	-----
-				if power:
-					self.parseUnit(power, ' '.join(word[:2]).upper(), word[3:])
-				else: error += ['UNIT BEFORE POWER']
+					blockMode = 3
+					self.mode = self.modeRequiresEnd = None
 			else:
-				#	-----------------------------
-				#	Other lines require a map --
-				#	default to standard if needed
-				#	-----------------------------
-				if not self.map: self.loadMap()
-				if upword == 'MORPH':
-					if remorph: error += ['MORPH AFTER GAME DATA']
-					else: self.morphs.append(' '.join(word[1:]))
-					continue
-				if self.morphs and not remorph:
-					self.map.load(self.morphs)
-					remorph = 1
-					self.map.validate(force = 1)
-				#	----------------------------------------------------
-				#	Validate RULE consistency and disallow further RULEs
-				#	----------------------------------------------------
-				if rulesOkay: rulesOkay = self.validateRules()
-				if upword == 'OWNS':
-					if power:
-						for center in word[1:]:
-							sc = center.upper()
-							if sc in ('SC!','SC?','SC*'): power.centers += [sc]
-							elif sc in power.centers: pass
-							elif [1 for x in self.powers if sc in x.centers]:
-								error += [sc + ' ALREADY OWNED']
-							elif sc in self.map.scs: power.centers += [sc]
-							else: error += ['BAD OWNED CENTER: ' + sc]
-					else: error += ['OWNS BEFORE POWER']
-				elif upword == 'VOTE':
-					if not power: error += ['VOTE BEFORE POWER']
-					elif power.vote: error += ['TWO VOTES FOR ' + power.name]
-					else:
-						try:
-							if len(word) != 2: raise
-							power.vote = word[1].upper()
-							if power.vote[-3:] == 'WAY':
-								power.vote = power.vote[:-3]
-								if not (0 <= int(power.vote)
-										  <= len(self.map.powers)): raise
-							else: power.vote = {'LOSS': '0', 'SOLO': '1',
-												'YES': 'YES'}[power.vote]
-						except: error += ['BAD VOTE FOR ' + power.name]
-				elif upword == 'HOME':
-					if not power: error += ['HOME BEFORE POWER']
-					else: power.home = self.map.home[power.name] = word[1:]
-				elif upword == 'SEES':
-					if power:
-						for sc in [x.upper() for x in word[1:]]:
-							if sc in self.map.scs: power.sees += [sc]
-							else: error += ['BAD SEEN CENTER: ' + sc]
-					else: error += ['SEES BEFORE POWER']
-				#	-----------------------
-				#	Powers and other player
-				#	types (observers, etc.)
-				#	-----------------------
-				elif ((len(word) == 1 and upword in self.map.powers)
-				or (len(word) == 2 and upword in (self.playerTypes +
-						['POWER', 'OBSERVER', 'MONITOR'])
-				and (upword == 'POWER'
-				or word[1].upper() not in self.map.powers))):
-					word.reverse()
-					for power in self.powers:
-						if word[0] == power.name: break
-					else:
-						if self.phase == 'FORMING':
-							if len(word) == 1: word += ['POWER']
-						elif word[-1] == 'POWER': del word[-1]
-						word = [self] + [x.upper() for x in word]
-						try: power = self.powerType(*word)
-						except:
-							error += ['BAD PARTICIPANT ' + line]
-							power = None
-							continue
-						if power.name in self.map.powers: power.abbrev = (
-							self.map.abbrev.get(power.name, power.name[0]))
-						else: power.abbrev = None
-						self.powers += [power]
-				#	------------------------------------------
-				#	Every other line (orders, offers, etc.) is
-				#	handled by a variant-specific parseData(),
-				#	which returns nothing.  (NOTE: password,
-				#	ceo, centers, units, player, msg, and
-				#	adjust [build, remove, and retreat] are
-				#	also power-data, but are handled above;
-				#	they are common to all games.)
-				#	------------------------------------------
-				else:
-					try: self.parseData(power, line.upper().split())
-					except: error += ['UNRECOGNIZED GAME DATA: ' + line]
-		#	-----------------------------
-		#	In case there's no map yet --
-		#	default to standard if needed
-		#	-----------------------------
-		if not self.map: self.loadMap()
-		if self.morphs and not remorph:
-			self.map.load(self.morphs)
-			remorph = 1
-			self.map.validate(force = 1)
-		#	----------------------------------------------------
-		#	Validate RULE consistency and disallow further RULEs
-		#	----------------------------------------------------
-		if rulesOkay: rulesOkay = self.validateRules()
+				# Power data
+				if self.mode and upword == 'END' and len(word) == 2 and word[1].upper == self.mode:
+					self.mode = self.modeRequiresEnd = None
+				elif (not self.parsePowerData(self, power, word, includePersistent, includeOrders)
+				and includePersistent and includeOrders):
+					error += ['UNRECOGNIZED POWER DATA: ' + ' '.join(word)]
+		if blockMode == 1:
+			self.finishGameData() 
+		elif blockMode == 3:
+			self.finishPowerData(power)
 		if type(fileName) is list: return
 		self.validateStatus()
 		self.setState()
+	#	----------------------------------------------------------------------
+	def parseGameData(self, word, includePersistent):
+		error, upword = self.error, word[0].upper()
+		#	-----
+		#	Modes
+		#	-----
+		if self.mode:
+			if not includePersistent: return 0
+			#	--------------------------------------
+			#	Game-specific information (persistent)
+			#	--------------------------------------
+			if self.mode == 'DESC':
+				self.desc += [' '.join(word)]
+			elif self.mode == 'NAME':
+				self.origin += [' '.join(word)]
+			elif self.mode == 'MORPH':
+				self.morphs += [' '.join(word)]
+			else: return 0
+			return 1
+		#	-------------------------------------
+		#	Game-specific information (transient)
+		#	-------------------------------------
+		if upword in ('AWAIT', 'PHASE', 'SKIP'):
+			if self.phase: error += ['TWO AWAIT/PHASE/SKIP STATEMENTS']
+			elif len(word) > 1:
+				self.phase = ' '.join(word[1:]).upper()
+				if fileName == 'status':
+					self.await = upword == 'AWAIT'
+					self.skip = upword == 'SKIP'
+				else: error += ['NO PHASE GIVEN']
+		elif upword == 'RESULT':
+			if len(word) > 1: self.outcome += word[1:]
+		elif upword == 'FINISH':
+			if self.end: error += ['TWO FINISH STATEMENTS']
+			elif len(word) > 1: self.end = ' '.join(word[1:])
+		elif upword == 'PROPOSAL':
+			if self.proposal: error += ['TWO PROPOSALS']
+			elif len(word) != 3: error += ['BAD PROPOSAL']
+			else: self.proposal = word[1:]
+		#	--------------------------------------
+		#	Game-specific information (persistent)
+		#	--------------------------------------
+		elif not includePersistent:
+			return 0
+		elif upword == 'MASTER':
+			if self.master: error += ['TWO MASTER STATEMENTS']
+			elif len(word) == 1: error += ['NO MASTER SPECIFIED']
+			else: self.master = word[1].split('|')
+		if upword == 'PASSWORD':
+			if len(word) != 2 or '<' in word[1] or '>' in word[1]:
+				error += ['BAD PASSWORD: ' + ' '.join(word[1:]).
+				replace('<', '&lt;').replace('>', '&gt;')]
+			elif self.password: error += ['TWO MASTER PASSWORDS']
+			else: self.password = word[1]
+		elif upword == 'DESC':
+			if len(word) > 1: self.desc += [' '.join(word[1:])]
+			else: self.mode, self.modeRequiresEnd = upword, 1
+		elif upword == 'NAME':
+			if len(word) > 1: self.origin += [' '.join(word[1:])]
+			else: self.mode, self.modeRequiresEnd = upword, 1
+		elif upword == 'NEED':
+			if len(word) > 1: self.avail += word[1:]
+		elif upword == 'GROUPS':
+			self.groups = word[1].upper().split('|')
+		elif upword == 'PRIVATE':
+			if len(word) == 2: self.private = word[1].upper()
+			else: error += ['INVALID PRIVATE STATEMENT']
+		elif upword == 'RULE':
+			for rule in word[1:]:
+				rule = rule.upper()
+				item = rule.replace('!','')
+				item =	{	'NO_PARTIAL': 'PUBLIC_PRESS',
+							'FLEX_SETUP': 'BLANK_BOARD',
+						}.get(item, item)
+				if rule[0] == '!':
+					self.norules += [item]
+					continue
+				self.addRule(item)
+				if type(fileName) is list:
+					if item not in self.map.rules: self.map.rules += [item]
+					if item not in self.metaRules: self.metaRules += [item]
+		elif upword == 'MAP':
+			if self.map: error += ['TWO MAP STATEMENTS']
+			elif len(word) == 2: self.loadMap(word[1])
+			else: error += ['BAD MAP STATEMENT']
+		elif upword == 'ROTATE':
+			if self.rotate: error += ['TWO ROTATE STATEMENTS']
+			else: self.rotate = [x.upper() for x in word[1:]] or ['CONTROL']
+		elif upword == 'START':
+			if self.start: error += ['TWO START STATEMENTS']
+			elif len(word) > 1: self.start = ' '.join(word[1:])
+		elif upword == 'ALLOW':
+			for allow in [x.upper() for x in word[1:]]:
+				if allow not in (self.playerTypes +
+					['POWER', 'OBSERVER', 'MONITOR']):
+					self.playerTypes += [allow]
+		elif upword == 'ZONE':
+			if len(word) < 2: error += ['ZONE UNSPECIFIED']
+			elif self.zone: error += ['TWO TIME ZONES']
+			elif host.zoneFile: self.setTimeZone(word[1])
+			else: error += ['ZONE CHANGE UNSUPPORTED']
+		elif upword == 'DEADLINE':
+			if self.deadline: error += ['TWO DEADLINES']
+			elif (len(word) == 2 and word[1].isdigit()
+			and len(word[1]) == 12): self.deadline = word[1]
+			else: error += ['BAD DEADLINE: ' + ' '.join(word[1:])]
+		elif upword == 'DELAY':
+			if self.delay: error += ['TWO DELAYS']
+			elif len(word) != 2: error += ['BAD DELAY']
+			else:
+				try:
+					self.delay = int(word[1])
+					if not (0 < self.delay < 73): raise
+				except: error += ['BAD DELAY COUNT: ' + word[1]]
+		elif upword == 'TIMING':
+			try:
+				for num in range(1, len(word), 2):
+					key = word[num].upper()
+					if key == 'NOT' and self.timing.get(key):
+						self.timing[key] += ',' + word[num + 1].upper()
+					elif key in self.timing:
+						error += ['TWO %s SPECS IN TIMING' % key]
+					elif key == 'DAYS': self.timing[key] = word[num + 1]
+					else: self.timing[key] = word[num + 1].upper()
+			except: error += ['BAD TIMING']
+		elif upword == 'MORPH':
+			if len(word) > 1: self.morphs += [' '.join(word[1:])]
+			else: self.mode, self.modeRequiresEnd = upword, 1
+		else: return 0
+		return 1
+	#	----------------------------------------------------------------------
+	def finishGameData(self):
+		self.mode = self.modeRequiresEnd = None
+		#	-----------------------------
+		#	Other lines require a map --
+		#	default to standard if needed
+		#	-----------------------------
+		if not self.map: self.loadMap()
+		if self.morphs:
+			self.map.load(self.morphs)
+			self.map.validate(force = 1)
+		#	-------------------------
+		#	Validate RULE consistency
+		#	-------------------------
+		self.validateRules()
+	#	----------------------------------------------------------------------
+	def determinePower(self, word):
+		error, upword = self.error, word[0].upper()
+		#	-----------------------
+		#	Powers and other player
+		#	types (observers, etc.)
+		#	-----------------------
+		if ((len(word) == 1 and upword in self.map.powers)
+		or (len(word) == 2 and upword in (self.playerTypes +
+				['POWER', 'OBSERVER', 'MONITOR'])
+		and (upword == 'POWER'
+		or word[1].upper() not in self.map.powers))):
+			word.reverse()
+			for power in self.powers:
+				if word[0] == power.name: break
+			else:
+				if self.phase == 'FORMING':
+					if len(word) == 1: word += ['POWER']
+					elif word[-1] == 'POWER': del word[-1]
+				word = [self] + [x.upper() for x in word]
+				try: power = self.powerType(*word)
+				except:
+					error += ['BAD PARTICIPANT ' + line]
+					return None
+				if power.name in self.map.powers: power.abbrev = (
+					self.map.abbrev.get(power.name, power.name[0]))
+				else: power.abbrev = None
+				self.powers += [power]
+			return power
+		return None
+	#	----------------------------------------------------------------------
+	def parsePowerData(self, power, word, includePersistent, includeOrders):
+		error, upword = self.error, word[0].upper()
+		#	-----
+		#	Modes
+		#	-----
+		if self.mode:
+			return 0
+		#	-------------------------------
+		#	Power-specific data (transient)
+		#	-------------------------------
+		if upword == 'CONTROL':
+			if len(word) == 1:
+				error += ['INVALID CONTROL FOR ' + power.name]
+			elif power.password or power.ceo:
+				error += ["TWO CONTROLS FOR " + power.name]
+			else: power.ceo = [x.upper() for x in word[1:]]
+		elif upword == 'FUNDS':
+			if len(word) == 1: error += ['NO FUNDS DATA']
+			else:
+				try:
+					for money in line.split()[1:]:
+						if money[0] == '$': money = money[1:] + '$'
+						for ch in range(len(money)):
+							if money[ch].isdigit(): continue
+							if power.funds.get(money[ch:]): error += [
+							'DUPLICATE FUND TYPE: ' + money[ch:]]
+						else: power.funds[money[ch:]] = int(money[:ch])
+						break
+					else: raise
+					power.balance = power.funds.get('$')
+				except:	error += ['BAD FUNDS: ' + money]
+		elif upword in ('BUILD', 'REMOVE', 'RETREAT'):
+			if not includeOrders: return -1
+			power.adjust += [' '.join(word).upper()]
+		elif upword in ('A', 'F') and ((len(word) > 3 and word[2] == '-->')
+			or (len(word) == 2 and '-' not in word[1])):
+			#	-----
+			#	Units
+			#	-----
+			self.parseUnit(power, ' '.join(word[:2]).upper(), word[3:])
+		elif upword == 'OWNS':
+			for center in word[1:]:
+				sc = center.upper()
+				if sc in ('SC!','SC?','SC*'): power.centers += [sc]
+				elif sc in power.centers: pass
+				elif [1 for x in self.powers if sc in x.centers]:
+					error += [sc + ' ALREADY OWNED']
+				elif sc in self.map.scs: power.centers += [sc]
+				else: error += ['BAD OWNED CENTER: ' + sc]
+		elif upword == 'VOTE':
+			if power.vote: error += ['TWO VOTES FOR ' + power.name]
+			else:
+				try:
+					if len(word) != 2: raise
+					power.vote = word[1].upper()
+					if power.vote[-3:] == 'WAY':
+						power.vote = power.vote[:-3]
+						if not (0 <= int(power.vote)
+							<= len(self.map.powers)): raise
+					else: power.vote = {'LOSS': '0', 'SOLO': '1',
+						'YES': 'YES'}[power.vote]
+				except: error += ['BAD VOTE FOR ' + power.name]
+		elif upword in ('INHABITS', 'HOME'):
+			power.home = self.map.home[power.name] = [x.upper() for x in word[1:]]
+		elif upword == 'SEES':
+			for sc in [x.upper() for x in word[1:]]:
+				if sc in self.map.scs: power.sees += [sc]
+				else: error += ['BAD SEEN CENTER: ' + sc]
+		#	--------------------------------
+		#	Power-specific data (persistent)
+		#	--------------------------------
+		elif not includePersistent:
+			return 0
+		elif upword == 'PASSWORD':
+			if len(word) != 2 or '<' in word[1] or '>' in word[1]:
+				error += ['BAD PASSWORD: ' + ' '.join(word[1:]).
+					replace('<', '&lt;').replace('>', '&gt;')]
+			elif power.password or power.ceo:
+				error += ['TWO PASSWORDS FOR ' + power.name]
+			elif len(word) != 2: error += ['NO PASSWORD FOR ' + power.name]
+			else: power.password = word[1]
+		elif upword == 'PLAYER':
+			if len(word) == 1: error += ['NO PLAYER DATA']
+			elif power.player: error += ['TWO PLAYERS FOR ' + power.name]
+			else:
+				power.player = word[1:]
+				if power.player[0].upper() in ('RESIGNED', 'DUMMY'):
+					power.player[0] = power.player[0].upper()
+				for num, item in enumerate(power.player):
+					part = item.split('|')
+					if not num and item in ('RESIGNED', 'DUMMY'): continue
+					if num & 1:
+						if (len(item) > 2 and (item[0] + item[-1]).isupper()
+						and item[1:-1].isdigit()): continue
+					elif item == 'DUMMY': continue
+					elif len(part) == 3:
+						for address in part[1].split(','):
+							addr = address.split('@')
+							if not (len(addr) == 2 and addr[0]
+							and (not part[0] or (part[0][0] == '#'
+								and part[0][1:].isdigit()))
+							and '.' not in (addr[1][0], addr[1][-1])
+							and addr[1][1:-1].count('.')): break
+						else: continue
+					error += ['BAD PLAYER DATA FOR ' + power.name]
+					break
+		elif upword == 'ADDRESS':
+			if len(word) == 1: error += ['NO ADDRESS DATA']
+			elif power.address: error += ['TWO ADDRESSES FOR ' + power.name]
+			elif [1 for x in word[1].split(',')
+				if x.count('@') != 1 or '@' not in x[1:-3]
+				or not x.split('.')[-1].isalpha()
+				or '.' not in x.split('@')[1]
+				or '.' in (x.split('@')[1][0], x[-1])]:
+					error += ['BAD ADDRESS FOR ' + power.name]
+			else: power.address = word[1:]
+		elif upword in ('OMNISCIENT', 'OMNISCIENT!'):
+			if power.omniscient: error += ['DOUBLE OMNISCIENT?']
+			else: power.omniscient = 1 + (upword[-1] == '!')
+		elif upword == 'WAIT':
+			power.wait = 1
+		elif upword == 'MSG':
+			power.msg += [' '.join(word[1:])]
+		#	------------------------------------------
+		#	Every other line (orders, offers, etc.) is
+		#	handled by the variant-specific parsePowerData(),
+		#	upon seeing this return value, telling it to
+		#   handle the line by herself.  (NOTE: password,
+		#	ceo, centers, units, player, msg, and
+		#	adjust [build, remove, and retreat] are
+		#	also power-data, but are handled above;
+		#	they are common to all games.)
+		#	------------------------------------------
+		else: return 0
+		return 1
+	#	----------------------------------------------------------------------
+	def finishPowerData(self, power):
+		self.mode = self.modeRequiresEnd = None
 	#	----------------------------------------------------------------------
 	def validateStatus(self):
 		#	----------------------------
@@ -2017,11 +2101,7 @@ class Game:
 		#	---------------------------
 		if not self.preview: self.save()
 	#	---------------------------------------------------------------------
-	#	Note that we generate a new game object inside the rollback function, 
-	#	so if calling this directly (inspect, etc.), you will need to assign 
-	#	the returned game to a variable and operate on that thereafter.
-	#	---------------------------------------------------------------------
-	def rollback(self, phase):
+	def rollback(self, phase, includePersistent = 0, includeOrders = 0):
 		if self.status[1] != 'active': raise RollbackGameInactive
 		lines = []
 		if os.path.isfile(self.file('status.' + phase)):
@@ -2043,24 +2123,20 @@ class Game:
 				and x.endswith('_.gif')]
 			self.phase = self.map.phase
 		self.makeMaps()
-		# By creating an instance of the parent class Game and not one
-		# of its child variants, no orders get parsed other than
-		# adjustment and retreat orders, which we strip afterwards.
-		game = Game(self.name, 'status.' + phase)
-		for power in game.powers: power.adjust = []
-		game.changeStatus('active')
-		try: os.unlink(game.file('summary'))
+		# Load the phase.
+		self.load('status.' + phase, includePersistent, includeOrders)
+		self.changeStatus('active')
+		try: os.unlink(self.file('summary'))
 		except: pass
-		game.setDeadline()
-		os.rename(game.file('status'), game.file('status.rollback'))
-		game.save()
-		game.mailPress(None, ['All!'],
+		self.setDeadline()
+		os.rename(self.file('status'), self.file('status.rollback'))
+		self.save()
+		self.mailPress(None, ['All!'],
 			"Diplomacy game '%s' has been rolled back to %s\n"
 			'and all orders have been cleared.\n\n'
 			'The new deadline is %s.\n' %
-			(game.name, game.phaseName(form = 2), game.timeFormat()),
+			(self.name, self.phaseName(form = 2), self.timeFormat()),
 			subject = 'Diplomacy rollback notice')
-		return game
 	#	----------------------------------------------------------------------
 	def occupant(self, site, anyCoast = 0):
 		#	-------------------------------------

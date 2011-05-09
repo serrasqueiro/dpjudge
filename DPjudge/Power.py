@@ -3,11 +3,8 @@ import host
 class Power:
 	#	----------------------------------------------------------------------
 	def __init__(self, game, name, type = None):
-		address = wait = password = abbrev = balance = vote = None
-		held = adjusted = goner = home = omniscient = 0
-		player, msg, centers, units, adjust, ceo = [], [], [], [], [], []
-		retreats, funds, sees = {}, {}, []
 		vars(self).update(locals())
+		self.reinit()
 	#	----------------------------------------------------------------------
 	def __repr__(self):
 		text = '\n' + (self.type and self.type + ' ' or '') + self.name
@@ -22,7 +19,7 @@ class Power:
 			{'0': 'LOSS', '1': 'SOLO', 'YES': 'YES'}.get(self.vote,
 			self.vote + 'WAY'))
 		for line in self.msg: text += '\nMSG ' + line
-		if self.home != 0: text += '\nHOME ' + ' '.join(self.home)
+		if self.home != 0: text += '\nINHABITS ' + ' '.join(self.home)
 		if self.centers: text += '\nOWNS ' + ' '.join(self.centers)
 		if self.sees: text += '\nSEES ' + ' '.join(self.sees)
 		if self.balance != None: self.funds['$'] = self.balance
@@ -34,6 +31,23 @@ class Power:
 			text += '\n' + ' '.join([unit, '-->'] + places)
 		text = '\n'.join([text] + self.units + self.adjust) + '\n'
 		return text.encode('latin-1')
+	#	----------------------------------------------------------------------
+	def reinit(self, includePersistent = 1):
+		#	------------------------------------
+		#	Initialize the persistent parameters
+		#	------------------------------------
+		if includePersistent:
+			address = password = abbrev = vote = None
+			omniscient = 0
+			player, msg = [], []
+		#	-----------------------------------
+		#	Initialize the transient parameters
+		#	-----------------------------------
+		wait = balance = None
+		held = adjusted = goner = home = 0
+		centers, units, adjust, ceo = [], [], [], []
+		retreats, funds, sees = {}, {}, []
+		vars(self).update(locals())
 	#	----------------------------------------------------------------------
 	def compare(self, other):
 		return cmp(self.type, other.type) or cmp(self.name, other.name)

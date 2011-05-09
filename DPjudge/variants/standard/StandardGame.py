@@ -4,46 +4,59 @@ from StandardPower import StandardPower
 
 class StandardGame(Game):
 	#	----------------------------------------------------------------------
-	def __init__(self, gameName):
+	def __init__(self, gameName, fileName = 'status'):
 		self.powerType = StandardPower
-		Game.__init__(self, gameName)
+		Game.__init__(self, gameName, fileName)
 	#	----------------------------------------------------------------------
-	def parseData(self, power, word):
-		#	----------------------------
-		#	Power-specific data (orders)
-		#	----------------------------
+	def parsePowerData(self, power, word, includePersistent, includeOrders):
+		parsed = Game.parsePowerData(self, power, word, includePersistent, includeOrders)
+		if parsed: return parsed
+		word = word.upper()
 		upline = ' '.join(word)
-		if not word: self.mode = 0
-		elif not power: return self.error.append('DATA BEFORE POWER: ' + upline)
-		elif self.mode:
-			#	------------------------------------------------------
-			#	Even NO_CHECK games check that the order contains only
-			#	recognized tokens, and announce this error immediately
-			#	------------------------------------------------------
-			word = self.expandOrder(word)
-			if len(word) < 3 and (len(word) == 1 or word[1] != 'H'):
-				return self.error.append('BAD ORDER: ' + upline)
-			#	--------------------------------
-			#	Now parse and validate the order
-			#	--------------------------------
-			unit, order = ' '.join(word[:2]), ' '.join(word[2:])
-			if unit in power.orders:
-				return self.error.append('UNIT REORDERED: ' + upline)
-			#	----------------------------------------------------
-			#	NO_CHECK games take the raw order text and keep it
-			#	internally under the name "ORDER 1", "ORDER 2", etc.
-			#	In validateStatus(), each may change from "ORDER" to
-			#	"INVALID".  The addOrder() method can also change it
-			#	from "ORDER" to "REORDER" (if to a twice-ordered
-			#	unit).  The Game.moveResults() method knows to take
-			#	any orders thus marked "INVALID" or "REORDER" and
-			#	include them in the results file with annotation.
-			#	----------------------------------------------------
-			if 'NO_CHECK' in self.rules:
-				unit, order = 'ORDER ' + `len(power.orders) + 1`, upline
-			power.orders[unit], power.held = order, 1
-		elif word[0] == 'ORDERS': self.mode = 1
-		else: self.error += ['BAD UNIT DESCRIPTION: ' + upline]
+		#	-----
+		#	Modes
+		#	-----
+		if self.mode:
+			#	----------------------------
+			#	Power-specific data (orders)
+			#	----------------------------
+			if self.mode == 'ORDERS':
+				if not includeOrders: return -1
+				#	------------------------------------------------------
+				#	Even NO_CHECK games check that the order contains only
+				#	recognized tokens, and announce this error immediately
+				#	------------------------------------------------------
+				word = self.expandOrder(word)
+				if len(word) < 3 and (len(word) == 1 or word[1] != 'H'):
+					return self.error.append('BAD ORDER: ' + upline)
+				#	--------------------------------
+				#	Now parse and validate the order
+				#	--------------------------------
+				unit, order = ' '.join(word[:2]), ' '.join(word[2:])
+				if unit in power.orders:
+					return self.error.append('UNIT REORDERED: ' + upline)
+				#	----------------------------------------------------
+				#	NO_CHECK games take the raw order text and keep it
+				#	internally under the name "ORDER 1", "ORDER 2", etc.
+				#	In validateStatus(), each may change from "ORDER" to
+				#	"INVALID".  The addOrder() method can also change it
+				#	from "ORDER" to "REORDER" (if to a twice-ordered
+				#	unit).  The Game.moveResults() method knows to take
+				#	any orders thus marked "INVALID" or "REORDER" and
+				#	include them in the results file with annotation.
+				#	----------------------------------------------------
+				if 'NO_CHECK' in self.rules:
+					unit, order = 'ORDER ' + `len(power.orders) + 1`, upline
+				power.orders[unit], power.held = order, 1
+			else: return 0
+			return 1
+		#	--------------------------------------
+		#	Power-specific information (transient)
+		#	--------------------------------------
+		elif word[0] == 'ORDERS' and len(word) == 1: 
+			self.mode, self.modeRequiresEnd = word[0], None
+		else: return 0
+		return 1
 	#	----------------------------------------------------------------------
 	def validateStatus(self):
 		for power in [x for x in self.powers if x.orders]:

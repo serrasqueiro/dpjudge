@@ -705,11 +705,8 @@ class Procmail:
 					self.respond('Only the Master can ROLLBACK the game')
 				try:
 					phase = word[-1].upper() * (len(word) == 2)
-					game = game.rollback(phase)
-					if game: 
-						self.game = game
-						self.response += ['Game rolled back to ' + phase]
-					else: game = self.game
+					game.rollback(phase)
+					self.response += ['Game rolled back to ' + phase]
 				except RollbackGameInactive:
 					self.respond('ROLLBACK can only occur on an active game')
 				except RollbackPhaseInvalid:

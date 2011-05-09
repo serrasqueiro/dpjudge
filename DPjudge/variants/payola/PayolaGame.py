@@ -58,11 +58,9 @@ class PayolaGame(Game):
 				blind and ('%s(%s)' % ((' ' * 9)[len(self.unit):],
 				self.power.game.map.ownWord[self.power.name])) or self.order)
 	#	----------------------------------------------------------------------
-	def __init__(self, gameName):
-		variant, rules, powerType = 'payola', ['ORDER_ANY'], PayolaPower
-		offers, orders, taxes, tax, cap = {}, {}, {}, 0, 0
-		vars(self).update(locals())
-		Game.__init__(self, gameName)
+	def __init__(self, gameName, fileName = 'status'):
+		self.variant, self.powerType = 'payola', PayolaPower
+		Game.__init__(self, gameName, fileName)
 	#	----------------------------------------------------------------------
 	def __repr__(self):
 		text = Game.__repr__(self).decode('latin-1')
@@ -74,20 +72,38 @@ class PayolaGame(Game):
 		return '\n'.join([x for x in text.split('\n')
 						if x not in self.directives]).encode('latin-1')
 	#	----------------------------------------------------------------------
-	def load(self, fileName = 'status'):
-		Game.load(self, fileName)
-		for power in self.powers:
-			power.liquid = power.balance
-			for offer in power.sheet: self.parseOffer(power, offer)
-			self.validateOffers(power)
+	def reinit(self, includePersistent = 1):
+		#	------------------------------------
+		#	Initialize the persistent parameters
+		#	------------------------------------
+		if includePersistent:
+			self.rules = ['ORDER_ANY']
+			self.taxes, self.tax, self.cap = {}, 0, 0
+		#	-----------------------------------
+		#	Initialize the transient parameters
+		#	-----------------------------------
+		self.offers, self.orders = {}, {} 
+		Game.reinit(self, includePersistent)
 	#	----------------------------------------------------------------------
-	def parseData(self, power, word):
-		if not word: return
+	def parseGameData(self, power, word, includePersistent):
+		parsed = Game.parseGameData(self, power, word, includePersistent)
+		if parsed: return parsed
+		word = word.upper()
 		upline = ' '.join(word)
+		#	-----
+		#	Modes
+		#	-----
+		if self.mode:
+			return 0
+		#	--------------------------------------
+		#	Game-specific information (persistent)
+		#	--------------------------------------
+		if not includePersistent:
+			return 0
 		#	----------------------------------------------
 		#	Center tax income values (completely optional)
 		#	----------------------------------------------
-		if word[0] == 'TAX':
+		elif word[0] == 'TAX':
 			self.tax = -1
 			if len(word) == 3 and self.map.areatype(word[1]) or len(word) < 3:
 				try: self.tax = int(word[-1])
@@ -99,16 +115,23 @@ class PayolaGame(Game):
 				self.cap = int('$'.join(word[1:]))
 				if self.cap < 1: raise
 			except: self.error += ['BAD CAP: ' + upline]
-		#	----------
-		#	Power data
-		#	----------
-		elif not power: self.error += ['DATA BEFORE POWER: ' + upline]
-		elif word[0] == 'ACCEPT':
-			if power.accept: self.error += ['TWO ACCEPTS FOR ' + power.name]
-			elif len(word) != 2:
-				self.error += ['BAD ACCEPT FOR ' + power.name]
-			else: power.accept = word[1]
-		elif word[0] == 'SENT':		# (one_transfer)
+		else: return 0
+		return 1
+	#	----------------------------------------------------------------------
+	def parsePowerData(self, power, word, includePersistent, includeOrders):
+		parsed = Game.parsePowerData(self, power, word, includePersistent, includeOrders)
+		if parsed: return parsed
+		word = word.upper()
+		upline = ' '.join(word)
+		#	-----
+		#	Modes
+		#	-----
+		if self.mode:
+			return 0
+		#	-------------------------------
+		#	Power-specific data (transient)
+		#	-------------------------------
+		if word[0] == 'SENT':		# (one_transfer)
 			try: power.sent += [word[1]]
 			except: self.error += ['BAD SENT FOR ' + power.name]
 		elif word[0] == 'ELECT':	# (exchange)
@@ -122,9 +145,27 @@ class PayolaGame(Game):
 		#	Offers and comments
 		#	-------------------
 		elif word[0][0] in '0123456789%':
+			if not includeOrders: return -1
 			power.sheet += [upline]
 			if word[0][0] != '%': power.held = 1
-		else: self.error += ['UNRECOGNIZED PAYOLA DATA: ' + upline]
+		#	--------------------------------
+		#	Power-specific data (persistent)
+		#	--------------------------------
+		elif not includePersistent:
+			return 0
+		elif word[0] == 'ACCEPT':
+			if power.accept: self.error += ['TWO ACCEPTS FOR ' + power.name]
+			elif len(word) != 2:
+				self.error += ['BAD ACCEPT FOR ' + power.name]
+			else: power.accept = word[1]
+		else: return 0
+		return 1
+	#	----------------------------------------------------------------------
+	def finishPowerData(self, power):
+		Game.finishPowerData(self, power)
+		power.liquid = power.balance
+		for offer in power.sheet: self.parseOffer(power, offer)
+		self.validateOffers(power)
 	#	----------------------------------------------------------------------
 	def processExchangeReportsPhase(self):
 		for power in self.powers:

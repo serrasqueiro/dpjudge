@@ -11,16 +11,6 @@ class PayolaPower(Power):
 	#	----------------------------------------------------------------------
 	def __init__(self, game, name, type = None):
 		Power.__init__(self, game, name, type)
-		self.overpaid, self.offers, self.sheet, self.sent = 0, [], [], []
-		self.accept = self.liquid = self.left = None
-		#	-----------------------------------------------
-		#	The three attributes below are ZeroSum-specific
-		#	-----------------------------------------------
-		self.gained, self.lost = [], []
-		#	-------------------------------------------
-		#	And here are two that are Exchange-specific
-		#	-------------------------------------------
-		self.elect, self.state = {}, ''
 	#	----------------------------------------------------------------------
 	def __repr__(self):
 		text = Power.__repr__(self).decode('latin-1')
@@ -32,6 +22,22 @@ class PayolaPower(Power):
 		if self.state: text += 'STATE %s\n' % self.state
 		for offer in self.sheet: text += '%s\n' % offer
 		return text.encode('latin-1')
+	#	----------------------------------------------------------------------
+	def reinit(self, includePersistent = 1):
+		Power.reinit(self, includePersistent)
+		#	-----------------------------------
+		#	Initialize the transient parameters
+		#	-----------------------------------
+		self.overpaid, self.offers, self.sheet, self.sent = 0, [], [], []
+		self.accept = self.liquid = self.left = None
+		#	-----------------------------------------------
+		#	The three attributes below are ZeroSum-specific
+		#	-----------------------------------------------
+		self.gained, self.lost = [], []
+		#	-------------------------------------------
+		#	And here are two that are Exchange-specific
+		#	-------------------------------------------
+		self.elect, self.state = {}, ''
 	#	----------------------------------------------------------------------
 	def initAccept(self):
 		self.accept = (self.abbrev + '?')[self.isDummy():]

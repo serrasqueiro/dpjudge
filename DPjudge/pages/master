@@ -224,13 +224,19 @@ def outStatusFile():
 	hidden = ('GAME', 'START', 'DELAY', 'FINISH', 'RESULT',
 				'PHASE', 'AWAIT', 'NEED')
 	implemented = ('DESC', 'GAME', 'DEADLINE', 'ZONE', 'NAME',
-				'MASTER', 'RULE', 'PRIVATE', 'MAP', 'PASSWORD')
-	noshow = hidden + implemented
+				'MASTER', 'RULE', 'PRIVATE', 'MAP', 'PASSWORD', 'MORPH')
+	modal = ('DESC', 'NAME', 'MORPH')
+	noshow, mode = hidden + implemented, None
 	file, outfile = open(page.game.file('status'), encoding='latin-1'), ''
 	for line in file:
-		word = line.split()
-		if not word: break
-		if ''.join(line.split()[:1]) not in noshow: outfile += line
+		word = line.upper().split()
+		if mode:
+			if mode not in noshow: outfile += line
+			if word == ['END', mode]: mode = None
+		else:
+			if not word: break
+			if len(word) == 1 and word[0] in modal: mode = word[0]
+			if word[0] not in noshow: outfile += line
 	file.close()
 	return outfile
 #	----------------------------------------------------------------------
@@ -392,6 +398,14 @@ def showStatusFile():
 		""" % ', '.join(page.game.avail))
 	powerData()
 	ruleBoxes()
+	page.write("""
+		<tr><td colspan=3><hr></td></tr>
+		<tr valign=top>
+		<td class="bodycopy"><b>Map morphings:</b></td>
+		<td colspan=2 class=bodycopy align="center">
+		<textarea class=bodycopy name=morphs rows=%d cols=80
+		wrap=off>%s</textarea></td></tr>
+		""" % (len(page.game.morphs) + 1, '\n'.join(page.game.morphs)))
 	extra = outStatusFile()
 	page.write("""
 		<tr><td colspan=3><hr></td></tr>
@@ -576,7 +590,7 @@ def updateMaster():
 		except: gameMode += ['unlisted']
 	games = Status()
 	games.update(page.game.name, gameMode, page.curVariant)
-	for guy in ('desc', 'origin', 'zone', 'status'):
+	for guy in ('desc', 'origin', 'zone', 'status', 'morphs'):
 		if guy not in vars(page): vars(page)[guy] = ''
 	#	------------------
 	#	Update status file
@@ -591,6 +605,8 @@ def updateMaster():
 	if page.origin: page.game.origin = page.origin.split('\n')
 	else: page.game.origin = []
 	page.game.zone = page.zone != 'GMT' and page.zone or ''
+	if page.morphs: page.game.morphs = page.morphs.split('\n')
+	else: page.game.morphs = []
 	page.extra = page.status.split('\n')
 	extract('JUDGE', isList = 1)
 	extract('BEGIN', 'firstPhase')
@@ -699,24 +715,13 @@ def extract(key, var = 0, isList = 0):
 def checkErrors():
 	if not page.game.error and not page.game.map.error: return
 	if page.power and page.power.name != 'MASTER':
-		if page.game.error:
-			page.write(
-				"""
-				<script>
-				alert(" Problems Found in Game Status File!" +
-					"\\nPlease Report This To The GameMaster!");
-				window.history.back();
-				</script>
-				""")
-		else:
-			page.write(
-				"""
-				<script>
-				alert(" Problems Found in Game Map File!" +
-					"\\nPlease Report This To The GameMaster!");
-				window.history.back();
-				</script>
-				""")
+		page.write("""
+			<script>
+			alert(" Problems Found in Game %s File!" +
+				"\\nPlease Report This To The GameMaster!");
+			window.history.back();
+			</script>
+			""" % (page.game.error and 'Status' or 'Map'))
 		raise SystemExit
 	if page.game.error:
 		page.write(

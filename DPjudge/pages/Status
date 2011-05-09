@@ -282,14 +282,18 @@ page.include('functions')
 	viewable on the <a href=<URL>?page=MapFiles>map files list</a>.
 
 <A name=MORPH></a>
-<p><dt><b><tt>MORPH <i>mapFileLine</i></tt></b><dd>
+<p><dt><b><tt>MORPH <i>mapFileLine</i></tt> -or-<br>
+	<tt>MORPH<br><i>mapFileLines</i><br>END MORPH</tt></b><dd>
 	This line is used to <u>add</u> a new <tt><i>mapFileLine</i></tt> to
 	the map being used for the game.  The <i>mapFileLine</i></tt> should
 	be a properly formatted line that could appear in a map file, according
 	to rhe <a href=<URL>?page=Map>map file syntax description</a>.  In this
 	way, existing maps may be altered in various ways (providing that the
 	underlying graphical support map is compatible with the additional lines
-	and need not be updated).
+	and need not be updated). To add more than one line, either use multiple
+	<tt>MORPH</tt> lines or start with a single <tt>MORPH</tt> stanza on one
+	line, followed by the map file lines, and finished by <tt>END MORPH</tt> 
+	on a separate line.  Any blank lines are ignored.  
 
 <A name=MASTER></a>
 <p><dt><b><tt>MASTER <i>dppdData</i></tt></b><dd>
@@ -325,15 +329,20 @@ page.include('functions')
 	automatically when the game is completed.
 
 <A name=DESC></a>
-<p><dt><b><tt>DESC <i>gameDescription</i></tt></b><dd>
+<p><dt><b><tt>DESC <i>gameDescription</i></tt> -or-<br>
+	<tt>DESC<br><i>gameDescription</i><br>END DESC</tt></b><dd>
 	Description of the game.  Multiple <tt>DESC</tt> lines may be used if
-	needed.  Completely ignored, but will show up on the Web page in the
-	information table for the game.
+	needed.  Alternatively, start with a single <tt>DESC</tt> stanza on one line,
+	followed by the game description across multiple lines, and finished 
+	by <tt>END DESC</tt> on a separate line.  Any blank lines are ignored.  
+	Use html tags to format the text.  Completely ignored, but will show up 
+	on the Web page in the information table for the game.
 
 <A name=NAME></a>
-<p><dt><b><tt>NAME <i>gameNameOrigin</i></tt></b><dd>
-	Origin of the game's name.  Completely ignored, but will show up on the
-	Web page in the information table for the game.
+<p><dt><b><tt>NAME <i>gameNameOrigin</i></tt> -or-<br>
+	<tt>NAME<br><i>gameNameOrigin</i><br>END NAME</tt></b><dd>
+	Origin of the game's name.  Syntax identical to <a href="#DESC"><tt>DESC</tt></a>.
+	Completely ignored, but will show up on the Web page in the information table for the game.
 
 <A name=ALLOW></a>
 <p><dt><b><tt>ALLOW <i>nonMapPowerType...</i></tt></b><dd>
