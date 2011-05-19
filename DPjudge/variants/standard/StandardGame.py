@@ -11,7 +11,7 @@ class StandardGame(Game):
 	def parsePowerData(self, power, word, includePersistent, includeOrders):
 		parsed = Game.parsePowerData(self, power, word, includePersistent, includeOrders)
 		if parsed: return parsed
-		word = word.upper()
+		word = [x.upper() for x in word]
 		upline = ' '.join(word)
 		#	-----
 		#	Modes

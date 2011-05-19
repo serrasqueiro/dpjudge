@@ -85,10 +85,10 @@ class PayolaGame(Game):
 		self.offers, self.orders = {}, {} 
 		Game.reinit(self, includePersistent)
 	#	----------------------------------------------------------------------
-	def parseGameData(self, power, word, includePersistent):
-		parsed = Game.parseGameData(self, power, word, includePersistent)
+	def parseGameData(self, word, includePersistent):
+		parsed = Game.parseGameData(self, word, includePersistent)
 		if parsed: return parsed
-		word = word.upper()
+		word = [x.upper() for x in word]
 		upline = ' '.join(word)
 		#	-----
 		#	Modes
@@ -121,7 +121,7 @@ class PayolaGame(Game):
 	def parsePowerData(self, power, word, includePersistent, includeOrders):
 		parsed = Game.parsePowerData(self, power, word, includePersistent, includeOrders)
 		if parsed: return parsed
-		word = word.upper()
+		word = [x.upper() for x in word]
 		upline = ' '.join(word)
 		#	-----
 		#	Modes

@@ -82,12 +82,12 @@ class Game:
 			except: metaRules, rules = [], []
 			groups = password = start = ''
 			map = private = zone = None
-			timing, terrain, status = {}, {}, Status().dict.get(name, [])
+			timing, terrain, status = {}, {}, Status().dict.get(self.name, [])
 			#	------------------------------------------------------
 			#	When we run out of directory slots, the line below can
 			#	be changed to '/'.join(host.gameDir, name[0], name)
 			#	------------------------------------------------------
-			gameDir = host.gameDir + '/' + name
+			gameDir = host.gameDir + '/' + self.name
 			os.putenv('TZ', 'GMT')
 		#	-----------------------------------
 		#	Initialize the transient parameters
@@ -97,8 +97,9 @@ class Game:
 		mail = proposal = season = year = phaseType = None
 		mode = preview = deadline = delay = win = await = None
 		modeRequiresEnd = includeOwnership = None
-		for power in self.powers: power.reinit(includePersistent)
+
 		vars(self).update(locals())
+		for power in self.powers: power.reinit(includePersistent)
 	#	----------------------------------------------------------------------
 	def unitOwner(self, unit, coastRequired = 1):
 		for owner in self.powers:
@@ -507,7 +508,7 @@ class Game:
 		#	directives given without a variant and for
 		#	those specified for this Game's variant.
 		#	-------------------------------------------
-		self.load(self.map.directives.get('ALL', []) +
+		self.loadDirectives(self.map.directives.get('ALL', []) +
 				self.map.directives.get(self.status[0].upper(), []))
 		if self.phase == 'FORMING': return
 		#	------------------------------------------------------
@@ -551,10 +552,8 @@ class Game:
 	def load(self, fileName = 'status', includePersistent = 1, includeOrders = 1):
 		self.reinit(includePersistent)
 		error, power = self.error, None
-		if type(fileName) is not list:
-			try: file = open(self.file(fileName), encoding='latin-1')
-			except: return setattr(self, 'name', 0)
-		else: file = fileName
+		try: file = open(self.file(fileName), encoding='latin-1')
+		except: return setattr(self, 'name', 0)
 		blockMode = 0
 		for line in file:
 			word = line.split()
@@ -582,7 +581,7 @@ class Game:
 				# Game data
 				if self.mode and upword == 'END' and len(word) == 2 and word[1].upper == self.mode:
 					self.mode = self.modeRequiresEnd = None
-				elif not self.parseGameData(self, word, includePersistent) and includePersistent:
+				elif not self.parseGameData(word, includePersistent) and includePersistent:
 					error += ['UNRECOGNIZED GAME DATA: ' + ' '.join(word)]
 			elif blockMode == 2:
 				# Power (or observer, etc.)
@@ -596,16 +595,28 @@ class Game:
 				# Power data
 				if self.mode and upword == 'END' and len(word) == 2 and word[1].upper == self.mode:
 					self.mode = self.modeRequiresEnd = None
-				elif (not self.parsePowerData(self, power, word, includePersistent, includeOrders)
+				elif (not self.parsePowerData(power, word, includePersistent, includeOrders)
 				and includePersistent and includeOrders):
 					error += ['UNRECOGNIZED POWER DATA: ' + ' '.join(word)]
 		if blockMode == 1:
 			self.finishGameData() 
 		elif blockMode == 3:
 			self.finishPowerData(power)
-		if type(fileName) is list: return
 		self.validateStatus()
 		self.setState()
+	#	----------------------------------------------------------------------
+	def loadDirectives(self, directives):
+		error, power = self.error, None
+		self.mode = self.modeRequiresEnd = None
+		for line in directives:
+			word = line.split()
+			if not word: continue
+			self.directives += [' '.join(word)]
+			# Game data
+			if self.mode and upword == 'END' and len(word) == 2 and word[1].upper == self.mode:
+				self.mode = self.modeRequiresEnd = None
+			elif not self.parseGameData(word, 2):
+				error += ['UNRECOGNIZED GAME DIRECTIVE: ' + ' '.join(word)]
 	#	----------------------------------------------------------------------
 	def parseGameData(self, word, includePersistent):
 		error, upword = self.error, word[0].upper()
@@ -632,10 +643,8 @@ class Game:
 			if self.phase: error += ['TWO AWAIT/PHASE/SKIP STATEMENTS']
 			elif len(word) > 1:
 				self.phase = ' '.join(word[1:]).upper()
-				if fileName == 'status':
-					self.await = upword == 'AWAIT'
-					self.skip = upword == 'SKIP'
-				else: error += ['NO PHASE GIVEN']
+				self.await = upword == 'AWAIT'
+				self.skip = upword == 'SKIP'
 		elif upword == 'RESULT':
 			if len(word) > 1: self.outcome += word[1:]
 		elif upword == 'FINISH':
@@ -654,7 +663,7 @@ class Game:
 			if self.master: error += ['TWO MASTER STATEMENTS']
 			elif len(word) == 1: error += ['NO MASTER SPECIFIED']
 			else: self.master = word[1].split('|')
-		if upword == 'PASSWORD':
+		elif upword == 'PASSWORD':
 			if len(word) != 2 or '<' in word[1] or '>' in word[1]:
 				error += ['BAD PASSWORD: ' + ' '.join(word[1:]).
 				replace('<', '&lt;').replace('>', '&gt;')]
@@ -684,7 +693,7 @@ class Game:
 					self.norules += [item]
 					continue
 				self.addRule(item)
-				if type(fileName) is list:
+				if includePersistent == 2:
 					if item not in self.map.rules: self.map.rules += [item]
 					if item not in self.metaRules: self.metaRules += [item]
 		elif upword == 'MAP':
@@ -802,7 +811,7 @@ class Game:
 			if len(word) == 1: error += ['NO FUNDS DATA']
 			else:
 				try:
-					for money in line.split()[1:]:
+					for money in word[1:]:
 						if money[0] == '$': money = money[1:] + '$'
 						for ch in range(len(money)):
 							if money[ch].isdigit(): continue
@@ -2133,9 +2142,9 @@ class Game:
 		self.save()
 		self.mailPress(None, ['All!'],
 			"Diplomacy game '%s' has been rolled back to %s\n"
-			'and all orders have been cleared.\n\n'
+			'and all orders have been %s.\n\n'
 			'The new deadline is %s.\n' %
-			(self.name, self.phaseName(form = 2), self.timeFormat()),
+			(self.name, self.phaseName(form = 2), includeOrders and 'restored' or 'cleared', self.timeFormat()),
 			subject = 'Diplomacy rollback notice')
 	#	----------------------------------------------------------------------
 	def occupant(self, site, anyCoast = 0):

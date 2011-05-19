@@ -34,7 +34,7 @@ gameHeader()
 <:
 #	----------------------------------------------------------------------
 def showPrices():
-	if 'phase' not in dir(page): page.phase = page.game.phase
+	if 'phase' not in vars(page): page.phase = page.game.phase
 	show = done = page.phase == 'COMPLETED'
 	page.write(
 		"""

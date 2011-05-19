@@ -39,7 +39,7 @@ class XtalballGame(Game):
 	def parsePowerData(self, power, word, includePersistent, includeOrders):
 		parsed = Game.parsePowerData(self, power, word, includePersistent, includeOrders)
 		if parsed: return parsed
-		word = word.upper()
+		word = [x.upper() for x in word]
 		upline = ' '.join(word)
 		#	-----------------------------------------
 		#	Power-specific data (SOONER and/or LATER)
