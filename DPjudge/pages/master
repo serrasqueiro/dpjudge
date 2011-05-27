@@ -631,7 +631,6 @@ def updateMaster():
 	extract('MILITIA', 'defense', 1)
 	page.game.timing = None	# it will be in page.extra if given....
 	page.game.terrain = {}	# ditto this guy as well
-	page.game.morphs = []	# and this guy
 	if 'corrupt' in page.game.status: return finished()
 	#--------------
 	# Write the file

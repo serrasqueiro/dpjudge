@@ -93,9 +93,9 @@ class Game:
 		#	Initialize the transient parameters
 		#	-----------------------------------
 		outcome, error, state = [], [], {}
-		end = phase = skip = ''
+		end = phase = ''
 		mail = proposal = season = year = phaseType = None
-		mode = preview = deadline = delay = win = await = None
+		mode = preview = deadline = delay = win = await = skip = None
 		modeRequiresEnd = includeOwnership = None
 
 		vars(self).update(locals())
@@ -579,7 +579,7 @@ class Game:
 					self.mode = self.modeRequiresEnd = None
 			elif blockMode == 1:
 				# Game data
-				if self.mode and upword == 'END' and len(word) == 2 and word[1].upper == self.mode:
+				if self.mode and upword == 'END' and len(word) == 2 and word[1].upper() == self.mode:
 					self.mode = self.modeRequiresEnd = None
 				elif not self.parseGameData(word, includePersistent) and includePersistent:
 					error += ['UNRECOGNIZED GAME DATA: ' + ' '.join(word)]
@@ -593,7 +593,7 @@ class Game:
 					self.mode = self.modeRequiresEnd = None
 			else:
 				# Power data
-				if self.mode and upword == 'END' and len(word) == 2 and word[1].upper == self.mode:
+				if self.mode and upword == 'END' and len(word) == 2 and word[1].upper() == self.mode:
 					self.mode = self.modeRequiresEnd = None
 				elif (not self.parsePowerData(power, word, includePersistent, includeOrders)
 				and includePersistent and includeOrders):
@@ -613,7 +613,7 @@ class Game:
 			if not word: continue
 			self.directives += [' '.join(word)]
 			# Game data
-			if self.mode and upword == 'END' and len(word) == 2 and word[1].upper == self.mode:
+			if self.mode and upword == 'END' and len(word) == 2 and word[1].upper() == self.mode:
 				self.mode = self.modeRequiresEnd = None
 			elif not self.parseGameData(word, 2):
 				error += ['UNRECOGNIZED GAME DIRECTIVE: ' + ' '.join(word)]
@@ -645,6 +645,19 @@ class Game:
 				self.phase = ' '.join(word[1:]).upper()
 				self.await = upword == 'AWAIT'
 				self.skip = upword == 'SKIP'
+		elif upword == 'DEADLINE':
+			if self.deadline: error += ['TWO DEADLINES']
+			elif (len(word) == 2 and word[1].isdigit()
+			and len(word[1]) == 12): self.deadline = word[1]
+			else: error += ['BAD DEADLINE: ' + ' '.join(word[1:])]
+		elif upword == 'DELAY':
+			if self.delay: error += ['TWO DELAYS']
+			elif len(word) != 2: error += ['BAD DELAY']
+			else:
+				try:
+					self.delay = int(word[1])
+					if not (0 < self.delay < 73): raise
+				except: error += ['BAD DELAY COUNT: ' + word[1]]
 		elif upword == 'RESULT':
 			if len(word) > 1: self.outcome += word[1:]
 		elif upword == 'FINISH':
@@ -716,19 +729,6 @@ class Game:
 			elif self.zone: error += ['TWO TIME ZONES']
 			elif host.zoneFile: self.setTimeZone(word[1])
 			else: error += ['ZONE CHANGE UNSUPPORTED']
-		elif upword == 'DEADLINE':
-			if self.deadline: error += ['TWO DEADLINES']
-			elif (len(word) == 2 and word[1].isdigit()
-			and len(word[1]) == 12): self.deadline = word[1]
-			else: error += ['BAD DEADLINE: ' + ' '.join(word[1:])]
-		elif upword == 'DELAY':
-			if self.delay: error += ['TWO DELAYS']
-			elif len(word) != 2: error += ['BAD DELAY']
-			else:
-				try:
-					self.delay = int(word[1])
-					if not (0 < self.delay < 73): raise
-				except: error += ['BAD DELAY COUNT: ' + word[1]]
 		elif upword == 'TIMING':
 			try:
 				for num in range(1, len(word), 2):
@@ -840,19 +840,6 @@ class Game:
 					error += [sc + ' ALREADY OWNED']
 				elif sc in self.map.scs: power.centers += [sc]
 				else: error += ['BAD OWNED CENTER: ' + sc]
-		elif upword == 'VOTE':
-			if power.vote: error += ['TWO VOTES FOR ' + power.name]
-			else:
-				try:
-					if len(word) != 2: raise
-					power.vote = word[1].upper()
-					if power.vote[-3:] == 'WAY':
-						power.vote = power.vote[:-3]
-						if not (0 <= int(power.vote)
-							<= len(self.map.powers)): raise
-					else: power.vote = {'LOSS': '0', 'SOLO': '1',
-						'YES': 'YES'}[power.vote]
-				except: error += ['BAD VOTE FOR ' + power.name]
 		elif upword in ('INHABITS', 'HOME'):
 			power.home = self.map.home[power.name] = [x.upper() for x in word[1:]]
 		elif upword == 'SEES':
@@ -914,6 +901,19 @@ class Game:
 			power.wait = 1
 		elif upword == 'MSG':
 			power.msg += [' '.join(word[1:])]
+		elif upword == 'VOTE':
+			if power.vote: error += ['TWO VOTES FOR ' + power.name]
+			else:
+				try:
+					if len(word) != 2: raise
+					power.vote = word[1].upper()
+					if power.vote[-3:] == 'WAY':
+						power.vote = power.vote[:-3]
+						if not (0 <= int(power.vote)
+							<= len(self.map.powers)): raise
+					else: power.vote = {'LOSS': '0', 'SOLO': '1',
+						'YES': 'YES'}[power.vote]
+				except: error += ['BAD VOTE FOR ' + power.name]
 		#	------------------------------------------
 		#	Every other line (orders, offers, etc.) is
 		#	handled by the variant-specific parsePowerData(),
@@ -931,9 +931,10 @@ class Game:
 		self.mode = self.modeRequiresEnd = None
 	#	----------------------------------------------------------------------
 	def validateStatus(self):
-		#	----------------------------
-		#	Make sure the game has a map
-		#	----------------------------
+		#	-----------------------------------------
+		#	Make sure the game has a map and a master
+		#	-----------------------------------------
+		if not self.master: raise GameHasNoMaster
 		if not self.map: self.loadMap()
 		if self.phase == 'FORMING': self.avail = [`len(self.map.powers) -
 			len([1 for x in self.powers if x.type == 'POWER']) -
@@ -2134,10 +2135,12 @@ class Game:
 		self.makeMaps()
 		# Load the phase.
 		self.load('status.' + phase, includePersistent, includeOrders)
+		self.await = self.skip = None
 		self.changeStatus('active')
 		try: os.unlink(self.file('summary'))
 		except: pass
 		self.setDeadline()
+		self.delay = None
 		os.rename(self.file('status'), self.file('status.rollback'))
 		self.save()
 		self.mailPress(None, ['All!'],
@@ -2801,8 +2804,9 @@ class Game:
 			for power in [x for x in self.powers if x.isDummy()]:
 				was[power], run[power] = power.ceo[:], []
 				for home in self.map.home.get(power.name, []):
-					owner = [y for y in self.powers if home in y.centers][0]
-					run[power] += (owner.ceo + [owner.name])[:1]
+					owners = [y for y in self.powers if home in y.centers]
+					if owners:
+						run[power] += (owners[0].ceo + [owners[0].name])[:1]
 			for power, runners in run.items():
 				if (runners and runners[0] != power.name
 				and runners == runners[:1] * len(runners)):
@@ -2840,8 +2844,9 @@ class Game:
 			#	Give the DUMMY powers back their centers
 			#	----------------------------------------
 			for home in self.map.home.get(power.name, []):
-				owner = [y for y in self.powers if home in y.centers][0]
-				self.transferCenter(owner, power, home)
+				owners = [y for y in self.powers if home in y.centers]
+				if owners:
+					self.transferCenter(owners[0], power, home)
 			#	-----------------------------------------------------------
 			#	Give the great powers back their centers from their vassals
 			#	-----------------------------------------------------------

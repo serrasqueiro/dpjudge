@@ -8,6 +8,14 @@ class StandardGame(Game):
 		self.powerType = StandardPower
 		Game.__init__(self, gameName, fileName)
 	#	----------------------------------------------------------------------
+	def reinit(self, includePersistent = 1):
+		#	------------------------------------
+		#	Initialize the persistent parameters
+		#	------------------------------------
+		if includePersistent:
+			self.rules = []
+		Game.reinit(self, includePersistent)
+	#	----------------------------------------------------------------------
 	def parsePowerData(self, power, word, includePersistent, includeOrders):
 		parsed = Game.parsePowerData(self, power, word, includePersistent, includeOrders)
 		if parsed: return parsed
@@ -74,10 +82,8 @@ class StandardGame(Game):
 					word = self.expandOrder(order.split())
 					word = self.addUnitTypes(word)
 					word = self.map.defaultCoast(word)
-					self.validOrder(power,
-						' '.join(word[:2]), ' '.join(word[2:]))
-					if self.error:
-						self.error = []
+					if not self.validOrder(power,
+						' '.join(word[:2]), ' '.join(word[2:]), report=0):
 						power.orders['INVALID ' + unit[6:]] = order
 						del power.orders[unit]
 				#	-------------------------------------------------------
@@ -262,7 +268,7 @@ class StandardGame(Game):
 			word = line.split()
 			if not word: continue
 			who = [x for x in self.powers
-				if word[0] in (x.name, '_' + x.abbrev)]
+				if word[0] in (x.name, x.abbrev + '_')]
 			if who:
 				who = who[0]
 				if who != power and who.ceo[:1] != [power.name]:
@@ -277,8 +283,8 @@ class StandardGame(Game):
 					data = self.expandOrder(word)
 					if len(data) < 3 and (len(data) == 1 or data[1] != 'H'):
 						return self.error.append('BAD ORDER: ' + line.upper())
-					newPower.orders['%s %d' %
-						(power.name, len(newPower.orders))] = line
+					newPower.orders['ORDER %d' %
+						(len(newPower.orders) + 1)] = ' '.join(word)
 				else: self.addOrder(newPower, word)
 			else: curPower = newPower
 		if self.canChangeOrders(hadOrders, power.orders):
