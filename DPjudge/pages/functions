@@ -772,11 +772,11 @@ def showAdjustList():
 	game, power = page.game, page.power
 	if len(power.centers) == 0: return
 	count = len(power.centers) - len(power.units)
-	if [x for x in power.centers if x in game.map.home[power.name]]:
+	if [x for x in power.centers if x in power.homes]:
 		count += (game.map.reserves.count(power.name) +
 			min(game.map.militia.count(power.name),
 			len([0 for x in power.units
-				if x[2:5] in game.map.home[power.name]])))
+				if x[2:5] in power.homes])))
 	if count > 0:
 		#	-------------------------------------------
 		#	Determine list of all available build sites

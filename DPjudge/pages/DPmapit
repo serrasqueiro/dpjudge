@@ -84,7 +84,7 @@ class GameMap(Game):
 					(self.anglify(power), self.anglify(unit)))
 			results += '\n\015Ownership of supply centers:\n\015\n\015'
 			self.powers = [MapPower(x) for x in self.map.powers]
-			for power, centers in self.map.home.items():
+			for power, centers in self.map.homes.items():
 				if centers: results += ('%s: %s.\n\015' % (self.anglify(power),
 					', '.join([self.anglify(x) for x in centers])))
 		for line in results.split('\015'): file.write(line.encode('latin-1'))

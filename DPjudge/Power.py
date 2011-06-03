@@ -19,7 +19,7 @@ class Power:
 			{'0': 'LOSS', '1': 'SOLO', 'YES': 'YES'}.get(self.vote,
 			self.vote + 'WAY'))
 		for line in self.msg: text += '\nMSG ' + line
-		if self.home != 0: text += '\nINHABITS ' + ' '.join(self.home)
+		if self.homes is not None: text += '\nINHABITS ' + ' '.join(self.homes)
 		if self.centers: text += '\nOWNS ' + ' '.join(self.centers)
 		if self.sees: text += '\nSEES ' + ' '.join(self.sees)
 		if self.balance != None: self.funds['$'] = self.balance
@@ -43,8 +43,8 @@ class Power:
 		#	-----------------------------------
 		#	Initialize the transient parameters
 		#	-----------------------------------
-		wait = balance = None
-		held = adjusted = goner = home = 0
+		wait = balance = homes = None
+		held = adjusted = goner = 0
 		centers, units, adjust, ceo = [], [], [], []
 		retreats, funds, sees = {}, {}, []
 		vars(self).update(locals())
@@ -54,6 +54,8 @@ class Power:
 	#	----------------------------------------------------------------------
 	def initialize(self, game):
 		self.game = game
+		if self.homes is None:
+			self.homes = game.map.homes.get(self.name, [])
 		if self.type: return
 		if 'MOBILIZE' in game.rules: self.centers = ['SC!']
 		elif 'BLANK_BOARD' in game.rules:

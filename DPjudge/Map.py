@@ -7,7 +7,7 @@ class Map:
 	#	----------------------------------------------------------------------
 	def __init__(self, name = 'standard'):
 		victory = phase = rootMap = flagDir = validated = textOnly = None
-		home, locName, locType, locAbut, abutRules = {}, {}, {}, {}, {}
+		homes, locName, locType, locAbut, abutRules = {}, {}, {}, {}, {}
 		ownWord, abbrev, centers, units, powName, flag = {}, {}, {}, {}, {}, {}
 		rules, files, powers, scs, owns, inhabits = [], [], [], [], [], []
 		flow, unclear, size, homeYears, dummies, locs = [], [], [], [], [], []
@@ -32,7 +32,7 @@ class Map:
 				if ((when.isupper() and phase.startswith(when))
 				or	(when.islower() and when.upper() == phase)): self.load(what)
 		error, self.rootMap = self.error, self.rootMap or self.name
-		self.powers, self.validated = self.home.keys(), 1
+		self.powers, self.validated = self.homes.keys(), 1
 		try: self.powers.remove('UNOWNED')
 		except: pass
 		self.powers.sort()
@@ -54,16 +54,16 @@ class Map:
 				for x in abuts if 'SHUT' not in map(self.areatype, (place, x))
 				and not self.abuts('A', x, '-', place)
 				and not self.abuts('F', x, '-', place)]
-		for power, places in self.home.items():
+		for power, places in self.homes.items():
 			for site in places:
 				if site != '&SC':
 					if site not in self.scs: self.scs += [site]
 					if not self.areatype(site):
 						error += ['BAD HOME FOR %s: ' % power + site]
 				if power == 'UNOWNED' or site == '&SC': continue
-				for other, locs in self.home.items():
+				for other, locs in self.homes.items():
 					if locs.count(site) != (other == power):
-						if other == 'UNOWNED': self.home['UNOWNED'].remove(site)
+						if other == 'UNOWNED': self.homes['UNOWNED'].remove(site)
 						else: error += ['HOME MULTIPLY OWNED: ' + site]
 		for scs in self.centers.values():
 			self.scs.extend([x for x in scs if x not in self.scs])
@@ -127,10 +127,10 @@ class Map:
 			'BAD INITIAL OWNED CENTER FOR %s: ' % power + x) for x in places
 			if x not in ('SC!', 'SC?') and not self.areatype(x)]
 		for power in self.powers:
-			if power not in self.owns: self.centers[power] = self.home[power]
+			if power not in self.owns: self.centers[power] = self.homes[power]
 			[error.append('BAD INITIAL UNIT FOR %s: ' % power + x)
 				for x in self.units.get(power, []) if not self.isValidUnit(x)]
-		if 'UNOWNED' in self.home: del self.home['UNOWNED']
+		if 'UNOWNED' in self.homes: del self.homes['UNOWNED']
 		#	----------------
 		#	Ensure a default
 		#	game-year FLOW
@@ -345,7 +345,7 @@ class Map:
 			#	---------------------------------------------------
 			#	Year(s), if any, in which new home SC's are decided
 			#	---------------------------------------------------
-			elif upword == 'NEWHOMES': self.homeYears = word[1:]
+			elif upword == 'NEWHOMES': self.homes = word[1:]
 			#	----------------------
 			#	Placenames and aliases
 			#	----------------------
@@ -558,7 +558,7 @@ class Map:
 					try:
 						del self.powName[goner]
 						del self.ownWord[goner]
-						del self.home[goner]
+						del self.homes[goner]
 						self.inhabits = [x for x in self.inhabits if x != goner]
 						if goner in self.centers: del self.centers[goner]
 						self.owns = [x for x in self.owns if x != goner]
@@ -605,11 +605,11 @@ class Map:
 	#	----------------------------------------------------------------------
 	def addHomes(self, power, homes, reinit):
 		if reinit:
-			self.home[power] = []
+			self.homes[power] = []
 			if power in self.partisan: del self.partisan[power]
 			if power in self.factory: del self.factory[power]
 		else:
-			self.home.setdefault(power, [])
+			self.homes.setdefault(power, [])
 		for home in ' '.join(homes).upper().split():
 			if home[0] == '-':
 				if home[1:] in self.factory.get(power, []):
@@ -619,13 +619,13 @@ class Map:
 					self.partisan[power].remove(home[1:])
 					continue
 				try:
-					self.home[power].remove(home[1:])
+					self.homes[power].remove(home[1:])
 					if power != 'UNOWNED':
-						self.home['UNOWNED'].append(home[1:])
+						self.homes['UNOWNED'].append(home[1:])
 				except: pass
 			elif home[0] == '*':
 				self.partisan.setdefault(power, []).append(home[1:])
-			elif home[0] != '+': self.home[power].append(home)
+			elif home[0] != '+': self.homes[power].append(home)
 			else: self.factory.setdefault(power, []).append(home[1:])
 	#	----------------------------------------------------------------------
 	def rename(self, old, new):
@@ -638,7 +638,7 @@ class Map:
 		for site in [x for x in self.locs if x.upper() == old]:
 			self.locs.remove(site)
 			self.locs.append((new.lower(), new)[site == old])
-		for homes in [x for x in self.home.values() if old in x]:
+		for homes in [x for x in self.homes.values() if old in x]:
 			homes.remove(old)
 			homes.append(new)
 		for units in self.units.values():
@@ -670,7 +670,7 @@ class Map:
 			return error.append('RENAMING UNDEFINED POWER ' + old)
 		[x.pop(old, None) for x in (self.powName, self.ownWord, self.abbrev)]
 		if old == new: return
-		for data in (self.home, self.units, self.centers, self.powers, self.factory, self.partisan):
+		for data in (self.homes, self.units, self.centers, self.powers, self.factory, self.partisan):
 			try:
 				data[new] = data[old]
 				del data[old]
@@ -685,7 +685,7 @@ class Map:
 		[self.locs.remove(x) for x in self.locs if x.upper().startswith(place)]
 		[x.pop(y) for x in (self.locName, self.aliases)
 			for y,z in x.items() if z.startswith(place)]
-		[x.remove(place) for x in self.home.values() if place in x]
+		[x.remove(place) for x in self.homes.values() if place in x]
 		[y.remove(x) for y in self.units.values()
 					 for x in y if x[2:5] == place[:3]]
 		for sites in self.locAbut.values():

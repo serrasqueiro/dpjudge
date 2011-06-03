@@ -841,7 +841,7 @@ class Game:
 				elif sc in self.map.scs: power.centers += [sc]
 				else: error += ['BAD OWNED CENTER: ' + sc]
 		elif upword in ('INHABITS', 'HOME'):
-			power.home = self.map.home[power.name] = [x.upper() for x in word[1:]]
+			power.homes = [x.upper() for x in word[1:]]
 		elif upword == 'SEES':
 			for sc in [x.upper() for x in word[1:]]:
 				if sc in self.map.scs: power.sees += [sc]
@@ -929,6 +929,9 @@ class Game:
 	#	----------------------------------------------------------------------
 	def finishPowerData(self, power):
 		self.mode = self.modeRequiresEnd = None
+		for power in self.powers:
+			if power.homes is None:
+				power.homes = self.map.homes.get(power.name, [])
 	#	----------------------------------------------------------------------
 	def validateStatus(self):
 		#	-----------------------------------------
@@ -1010,6 +1013,11 @@ class Game:
 		#	Validate power data
 		#	-------------------
 		for power in self.powers:
+			#	--------------------------
+			#	Initialize homes if needed
+			#	--------------------------
+			if power.homes is None:
+				power.homes = self.map.homes.get(power.name, [])
 			#	------------------------------------------
 			#	Set default player vote (solo for himself)
 			#	------------------------------------------
@@ -1430,7 +1438,7 @@ class Game:
 			else: self.orders[unit] = orders[unit]
 	#	----------------------------------------------------------------------
 	def buildSites(self, power):
-		try: homes = orig = self.map.home[power.name]
+		try: homes = orig = power.homes
 		except:
 			error = 'DATA FOR NON-POWER: %s' % power.name
 			if error not in self.error: self.error += [error]
@@ -1439,10 +1447,10 @@ class Game:
 		if ('BUILD_ANY' in self.rules or 'REMOTE_BUILDS' in self.rules
 		or '&SC' in homes): homes = power.centers
 		if 'HOME_BUILDS' in self.rules:
-			homes = [x for y,z in self.map.home.items() for x in z]
+			homes = [x for y in self.powers for x in y.homes]
 		if 'REMOTE_BUILDS' in self.rules:
 			if not [1 for x in orig if x in power.centers]: return []
-		revert = [y for x in self.powers for y in self.map.home.get(x.name, [])
+		revert = [y for x in self.powers for y in x.homes
 			if 'SC?' in x.centers or 'SC!' in x.centers]
 		return ([x for x in homes if x in power.centers and x not in
 			[y[2:5] for z in self.powers for y in z.units] + revert] +
@@ -1644,14 +1652,14 @@ class Game:
 		self.includeOwnership = None
 		rules = self.rules
 		if unowned is None:
-			homes = [x for y in self.map.home.values() for x in y]
+			homes = [x for y in self.powers for x in y.homes]
 			unowned = [x for x in self.map.scs if x not in homes]
 		if self.phase != self.map.phase:
 			for power in self.powers:
 				if power.type: continue
 				power.centers = [x for x in power.centers
 								if x not in ('SC?', 'SC*')]
-				homes = self.map.home[power.name]
+				homes = power.homes
 				if ('GARRISON' in rules and not power.centers
 				and not power.type and (power.ceo
 				or power.player and not power.isResigned())
@@ -2028,11 +2036,11 @@ class Game:
 			if self.phaseType == 'A':
 				if power.adjust: continue
 				units, centers = len(power.units), len(power.centers)
-				if [x for x in power.centers if x in self.map.home[power.name]]:
+				if [x for x in power.centers if x in power.homes]:
 					centers += (self.map.reserves.count(power.name) +
 						min(self.map.militia.count(power.name),
 						len([0 for x in power.units
-							if x[2:5] in self.map.home[power.name]])))
+							if x[2:5] in power.homes])))
 				if (cd or centers == 0 or units == centers
 				or (units < centers and not self.buildSites(power))): continue
 			elif self.phaseType == 'R':
@@ -2714,14 +2722,14 @@ class Game:
 			if self.phase == 'COMPLETED': return text
 			if self.phase.split()[1] in self.map.homeYears:
 				for power in [x for x in self.powers if not x.type]:
-					self.map.home[power.name] = power.home = power.centers
+					power.homes = power.centers
 			for power in self.powers:
 				units, centers = len(power.units), len(power.centers)
-				if [x for x in power.centers if x in self.map.home[power.name]]:
+				if [x for x in power.centers if x in power.homes]:
 					centers += (self.map.reserves.count(power.name) +
 						min(self.map.militia.count(power.name),
 						len([0 for x in power.units
-							if x[2:5] in self.map.home[power.name]])))
+							if x[2:5] in power.homes])))
 				if (units > centers
 				or (units < centers and self.buildSites(power))): return text
 			for power in self.powers:
@@ -2741,7 +2749,7 @@ class Game:
 		#	-----------------------------------------
 		if not [1 for x in self.powers if x.centers]:
 			for power in self.powers:
-				power.centers = self.map.home.get(power.name, [])
+				power.centers = power.homes
 		#	-------------------------------------------------------
 		#	Remember the current center count for the various
 		#	powers, for use in the victory condition check, then
@@ -2803,7 +2811,7 @@ class Game:
 			was, run, repeat = {}, {}, 0
 			for power in [x for x in self.powers if x.isDummy()]:
 				was[power], run[power] = power.ceo[:], []
-				for home in self.map.home.get(power.name, []):
+				for home in power.homes:
 					owners = [y for y in self.powers if home in y.centers]
 					if owners:
 						run[power] += (owners[0].ceo + [owners[0].name])[:1]
@@ -2843,7 +2851,7 @@ class Game:
 			#	----------------------------------------
 			#	Give the DUMMY powers back their centers
 			#	----------------------------------------
-			for home in self.map.home.get(power.name, []):
+			for home in power.homes:
 				owners = [y for y in self.powers if home in y.centers]
 				if owners:
 					self.transferCenter(owners[0], power, home)
@@ -2853,7 +2861,7 @@ class Game:
 			if power.ceo:
 				ceo = [y for y in self.powers if y.name == power.ceo[0]][0]
 				[self.transferCenter(power, ceo, y)
-					for y in power.centers if y in self.map.home[ceo.name]]
+					for y in power.centers if y in ceo.homes]
 		if more: list += self.vassalship()
 		return list
 	#	----------------------------------------------------------------------
@@ -2872,11 +2880,11 @@ class Game:
 			needs = centers = len(power.centers)
 			if needs == units == 0: continue
 			owned = len([x for x in power.centers if x not in ('SC?', 'SC*')])
-			if [x for x in power.centers if x in self.map.home[power.name]]:
+			if [x for x in power.centers if x in power.homes]:
 				needs += (self.map.reserves.count(power.name) +
 					min(self.map.militia.count(power.name),
 					len([0 for x in power.units
-						if x[2:5] in self.map.home[power.name]])))
+						if x[2:5] in power.homes])))
 			text = ('%-11s %2d Supply center%.2s %2d Unit%.2s  %s %2d unit%s.' %
 				(self.anglify(power.name) + ':', owned, 's, '[owned == 1:],
 				units, 's: '[units == 1:],
@@ -2980,7 +2988,7 @@ class Game:
 			#	------------------------------------------------
 			if 'NO_SCS_SEE' in rules: scs = []
 			elif ('OWN_SCS_SEE' in rules
-			or self.map.homeYears and not [x for x in self.powers if x.home]):
+			or self.map.homeYears and not [x for x in self.powers if x.homes]):
 				#	------------------------------------
 				#	The seer's owned centers are sighted
 				#	------------------------------------
@@ -2991,7 +2999,7 @@ class Game:
 				#	-----------------------------------
 				#	The seer's home centers are sighted
 				#	-----------------------------------
-				scs = self.map.home.get(seer.name, [])[:]
+				scs = seer.homes[:]
 				#	----------------------------------------------------------
 				#	Also add locations where the power had units at game start
 				#	(helping void variant games, where units start on non-SCs)
@@ -3195,11 +3203,11 @@ class Game:
 				if self.phaseType == 'A':
 					diff = len(power.units) - len(power.centers)
 					if [x for x in power.centers
-						if x in self.map.home[power.name]]:
+						if x in power.homes]:
 						diff -= (self.map.reserves.count(power.name) +
 							min(self.map.militia.count(power.name),
 							len([0 for x in power.units
-								if x[2:5] in self.map.home[power.name]])))
+								if x[2:5] in power.homes])))
 					if diff > 0:
 						pref = []
 						for own, sc, home in (
@@ -3237,7 +3245,7 @@ class Game:
 						for own, his in ((0,1), (0,0), (1,1), (1,0)):
 							options = [x for x in sites
 								if x[:3] in self.map.scs
-								and (x[:3] in self.map.home[power.name]) == his
+								and (x[:3] in power.homes) == his
 								and (x[:3] in power.centers) == own]
 							if options: break
 						else: options = sites
@@ -3290,22 +3298,21 @@ class Game:
 						if sc not in power.centers:
 							power.centers += [sc]
 							self.includeOwnership = 1
-					if ('&SC' in self.map.home[power.name]
-					and sc not in self.map.home[power.name]):
-						self.map.home[power.name].remove('&SC')
-						self.map.home[power.name] += [sc]
-						power.home = self.map.home[power.name]
+					if ('&SC' in power.homes
+					and sc not in power.homes):
+						power.homes.remove('&SC')
+						power.homes += [sc]
 				elif word[0] == 'REMOVE': power.units.remove(' '.join(word[1:]))
 				elif len(word) == 5:
 					if word[2] in popped: list[-1] += '  (*bounce, destroyed*)'
 					else: power.units += [word[1] + ' ' + word[-1]]
 			if self.phaseType == 'A':
 				count = len(power.centers) - len(power.units)
-				if [x for x in power.centers if x in self.map.home[power.name]]:
+				if [x for x in power.centers if x in power.homes]:
 					count += (self.map.reserves.count(power.name) +
 						min(self.map.militia.count(power.name),
 						len([0 for x in power.units
-							if x[2:5] in self.map.home[power.name]])))
+							if x[2:5] in power.homes])))
 				if count:
 					if 'BLIND' in self.rules: list += ['SHOW MASTER ' +
 						' '.join([x.name for x in self.powers
@@ -3765,11 +3772,11 @@ class Game:
 		power.adjust, places = [], []
 		if not orders: return
 		need = len(power.centers) - len(power.units)
-		if [x for x in power.centers if x in self.map.home[power.name]]:
+		if [x for x in power.centers if x in power.homes]:
 			need += (self.map.reserves.count(power.name) +
 				min(self.map.militia.count(power.name),
 				len([0 for x in power.units
-					if x[3:5] in self.map.home[power.name]])))
+					if x[3:5] in power.homes])))
 		orderType, claim = ('BUILD', 'REMOVE')[need < 0], []
 		if need > 0: needed = min(need, len(self.buildSites(power)))
 		for order in orders:
@@ -3786,8 +3793,8 @@ class Game:
 				if len(power.adjust) < need: power.adjust += ['BUILD WAIVED']
 			elif len(word) == 3:
 				site = word[2][:3]
-				if ('&SC' in self.map.home[power.name]
-				and site not in self.map.home[power.name]): claim += [site]
+				if ('&SC' in power.homes
+				and site not in power.homes): claim += [site]
 				if site not in self.buildSites(power):
 					self.error += ['INVALID BUILD SITE: ' + order]
 				elif site in places:
@@ -3797,7 +3804,7 @@ class Game:
 					places += [site]
 				else: self.error += ['INVALID BUILD ORDER: ' + order]
 			else: self.error += ['BAD ADJUSTMENT ORDER: ' + order]
-		if len(claim) > self.map.home[power.name].count('&SC'):
+		if len(claim) > power.homes.count('&SC'):
 			self.error += ['EXCESS HOME CENTER CLAIM']
 		if self.error: return
 		while 0 < need < len(power.adjust):

@@ -272,7 +272,7 @@ class StandardGame(Game):
 			if who:
 				who = who[0]
 				if who != power and who.ceo[:1] != [power.name]:
-					for sc in who.home or self.map.home[who.name]:
+					for sc in who.homes:
 						if sc in partial: break
 					else:
 						return self.error.append('NO CONTROL OVER ' + word[0])

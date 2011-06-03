@@ -14,6 +14,11 @@ class Inspect:
 			named "denarius" and "self" set to the Game object for the
 			game named denarius.  If the game name starts with a digit,
 			the variable will have a capital G prepended to it.
+			Furthermore there are local variables for each power in the
+			game, with names in lower case and all punctuation, including
+			spaces and '+'s, replaced by underscores. If the power name 
+			starts with a digit, the variable will have a capital P 
+			prepended to it.
 		inspect "denarius.makeMaps()"
 			will make maps for the game "denarius" and will NOT leave
 			you in the Python interpreter
@@ -29,8 +34,14 @@ class Inspect:
 		arg1 = sys.argv[1]
 		game = arg1.split('.')[0]
 		interp = interp * ('.' not in arg1 and len(sys.argv) == 2)
-		command.extend(['%s%s = self = Status().load(%s)' %
+		command.extend(['import re',
+						'%s%s = self = Status().load(%s)' %
 						('G'*game[0].isdigit(), game, `game`),
+						"locals().update(dict([['%s%s' %"
+						"('P'*_x_.name[0].isdigit(),"
+						"re.sub(r'\W', '_', _x_.name.lower())),"
+						"_x_] for _x_ in self.powers]));"
+						"del locals()['_x_']",
 						"print 'Loaded', ('game %s%s','no game')[not self]" %
 						('G'*game[0].isdigit(), game),
 						'print ' + ' '.join(sys.argv[('.' not in arg1) + 1:])])
