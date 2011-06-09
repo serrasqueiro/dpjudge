@@ -2119,17 +2119,33 @@ class Game:
 		#	---------------------------
 		if not self.preview: self.save()
 	#	---------------------------------------------------------------------
-	def rollback(self, phase, includePersistent = 0, includeOrders = 0):
+	def rollback(self, phase = None, includePersistent = 0, includeOrders = 0):
 		if self.status[1] != 'active': raise RollbackGameInactive
 		lines = []
-		if os.path.isfile(self.file('status.' + phase)):
+		if phase:
+			if not os.path.isfile(self.file('status.' + phase)):
+				raise RollbackPhaseInvalid
 			file = open(self.file('results'), 'r', 'latin-1')
 			lines, start = file.readlines(), 0
 			file.close()
 			for num, text in enumerate(lines):
 				if '%s ' % self.name + phase in text: break
 				start |= 'Diplomacy results' in text
-		else: raise RollbackPhaseInvalid
+			else:
+				raise RollbackPhaseInvalid
+		else:
+			file = open(self.file('results'), 'r', 'latin-1')
+			lines, start, num = file.readlines(), 0, -1
+			file.close()
+			for nr, text in enumerate(lines):
+				if 'Diplomacy results' not in text: continue
+				word = text.split()
+				try: phase = word[word.index(self.name, word.index('results') + 1) + 1]
+				except: raise RollbackResultInvalid
+				start |= num != -1
+				num = nr 
+			if not phase or not os.path.isfile(self.file('status.' + phase)):
+				raise RollbackPhaseInvalid
 		file = open(self.file('results'), 'w')
 		temp = lines[:num - 1]
 		file.write(''.join(temp).encode('latin-1'))
