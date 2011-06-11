@@ -1,4 +1,4 @@
-import os, time, random, socket, textwrap, urllib
+import os, time, random, socket, textwrap, urllib, glob
 from codecs import open
 
 import host
@@ -70,11 +70,17 @@ class Game:
 		return '\n'.join([x for x in text.split('\n')
 					if x not in self.directives]).encode('latin-1') + '\n'
 	#	----------------------------------------------------------------------
-	def reinit(self, includePersistent = 1):
+	def reinit(self, includeFlags = 2):
+		#	---------------------------------------------
+		#	Reinitializes the game data.
+		#   Relevant bit values for includeFlags:
+		#		2: include persistent game and power data
+		#	---------------------------------------------
+
 		#	------------------------------------
 		#	Initialize the persistent parameters
 		#	------------------------------------
-		if includePersistent:
+		if includeFlags & 2:
 			playerTypes, desc, master, powers, norules = [], [], [], [], []
 			rotate, directives, origin = [], [], []
 			avail, zones, morphs = [], [], []
@@ -99,7 +105,7 @@ class Game:
 		modeRequiresEnd = includeOwnership = None
 
 		vars(self).update(locals())
-		for power in self.powers: power.reinit(includePersistent)
+		for power in self.powers: power.reinit(includeFlags)
 	#	----------------------------------------------------------------------
 	def unitOwner(self, unit, coastRequired = 1):
 		for owner in self.powers:
@@ -549,8 +555,14 @@ class Game:
 			os.putenv('TZ', zone)
 		else: self.error += ['BAD TIME ZONE: ' + zone]
 	#	----------------------------------------------------------------------
-	def load(self, fileName = 'status', includePersistent = 1, includeOrders = 1):
-		self.reinit(includePersistent)
+	def load(self, fileName = 'status', includeFlags = 3):
+		#	---------------------------------------------
+		#	Loads the status file data.
+		#   Relevant bit values for includeFlags:
+		#		1: include orders for each power
+		#		2: include persistent game and power data
+		#	---------------------------------------------
+		self.reinit(includeFlags)
 		error, power = self.error, None
 		try: file = open(self.file(fileName), encoding='latin-1')
 		except: return setattr(self, 'name', 0)
@@ -567,7 +579,6 @@ class Game:
 						self.finishPowerData(power)
 						blockMode = 2
 				continue
-			if type(file) is list: self.directives += [' '.join(word)]
 			upword = word[0].upper()
 			if blockMode == 0:
 				# Start of first block, the game data
@@ -581,7 +592,7 @@ class Game:
 				# Game data
 				if self.mode and upword == 'END' and len(word) == 2 and word[1].upper() == self.mode:
 					self.mode = self.modeRequiresEnd = None
-				elif not self.parseGameData(word, includePersistent) and includePersistent:
+				elif not self.parseGameData(word, includeFlags) and includeFlags & 2:
 					error += ['UNRECOGNIZED GAME DATA: ' + ' '.join(word)]
 			elif blockMode == 2:
 				# Power (or observer, etc.)
@@ -595,8 +606,8 @@ class Game:
 				# Power data
 				if self.mode and upword == 'END' and len(word) == 2 and word[1].upper() == self.mode:
 					self.mode = self.modeRequiresEnd = None
-				elif (not self.parsePowerData(power, word, includePersistent, includeOrders)
-				and includePersistent and includeOrders):
+				elif (not self.parsePowerData(power, word, includeFlags)
+				and includeFlags & 3):
 					error += ['UNRECOGNIZED POWER DATA: ' + ' '.join(word)]
 		if blockMode == 1:
 			self.finishGameData() 
@@ -606,6 +617,12 @@ class Game:
 		self.setState()
 	#	----------------------------------------------------------------------
 	def loadDirectives(self, directives):
+		#	---------------------------------------------
+		#	Loads map directives.
+		#   Note that bit value 4 is set for includeFlags
+		#	when calling parseGameData, to mark the rules
+		#	as directives.
+		#	---------------------------------------------
 		error, power = self.error, None
 		self.mode = self.modeRequiresEnd = None
 		for line in directives:
@@ -615,16 +632,22 @@ class Game:
 			# Game data
 			if self.mode and upword == 'END' and len(word) == 2 and word[1].upper() == self.mode:
 				self.mode = self.modeRequiresEnd = None
-			elif not self.parseGameData(word, 2):
+			elif not self.parseGameData(word, 6):
 				error += ['UNRECOGNIZED GAME DIRECTIVE: ' + ' '.join(word)]
 	#	----------------------------------------------------------------------
-	def parseGameData(self, word, includePersistent):
+	def parseGameData(self, word, includeFlags):
+		#	---------------------------------------------
+		#	Parses the game specific data.
+		#   Relevant bit values for includeFlags:
+		#		2: include persistent game and power data
+		#		4: mark rules as directives
+		#	---------------------------------------------
 		error, upword = self.error, word[0].upper()
 		#	-----
 		#	Modes
 		#	-----
 		if self.mode:
-			if not includePersistent: return 0
+			if not includeFlags & 2: return 0
 			#	--------------------------------------
 			#	Game-specific information (persistent)
 			#	--------------------------------------
@@ -670,7 +693,7 @@ class Game:
 		#	--------------------------------------
 		#	Game-specific information (persistent)
 		#	--------------------------------------
-		elif not includePersistent:
+		elif not includeFlags & 2:
 			return 0
 		elif upword == 'MASTER':
 			if self.master: error += ['TWO MASTER STATEMENTS']
@@ -706,7 +729,7 @@ class Game:
 					self.norules += [item]
 					continue
 				self.addRule(item)
-				if includePersistent == 2:
+				if includeFlags & 4:
 					if item not in self.map.rules: self.map.rules += [item]
 					if item not in self.metaRules: self.metaRules += [item]
 		elif upword == 'MAP':
@@ -791,7 +814,13 @@ class Game:
 			return power
 		return None
 	#	----------------------------------------------------------------------
-	def parsePowerData(self, power, word, includePersistent, includeOrders):
+	def parsePowerData(self, power, word, includeFlags):
+		#	---------------------------------------------
+		#	Parses the power specific data.
+		#   Relevant bit values for includeFlags:
+		#		1: include orders for each power
+		#		2: include persistent game and power data
+		#	---------------------------------------------
 		error, upword = self.error, word[0].upper()
 		#	-----
 		#	Modes
@@ -805,7 +834,7 @@ class Game:
 			if len(word) == 1:
 				error += ['INVALID CONTROL FOR ' + power.name]
 			elif power.password or power.ceo:
-				error += ["TWO CONTROLS FOR " + power.name]
+				error += ['TWO CONTROLS FOR ' + power.name]
 			else: power.ceo = [x.upper() for x in word[1:]]
 		elif upword == 'FUNDS':
 			if len(word) == 1: error += ['NO FUNDS DATA']
@@ -823,7 +852,7 @@ class Game:
 					power.balance = power.funds.get('$')
 				except:	error += ['BAD FUNDS: ' + money]
 		elif upword in ('BUILD', 'REMOVE', 'RETREAT'):
-			if not includeOrders: return -1
+			if not includeFlags & 1: return -1
 			power.adjust += [' '.join(word).upper()]
 		elif upword in ('A', 'F') and ((len(word) > 3 and word[2] == '-->')
 			or (len(word) == 2 and '-' not in word[1])):
@@ -849,7 +878,7 @@ class Game:
 		#	--------------------------------
 		#	Power-specific data (persistent)
 		#	--------------------------------
-		elif not includePersistent:
+		elif not includeFlags & 2:
 			return 0
 		elif upword == 'PASSWORD':
 			if len(word) != 2 or '<' in word[1] or '>' in word[1]:
@@ -1464,17 +1493,14 @@ class Game:
 	#	----------------------------------------------------------------------
 	def begin(self, move1st = 0):
 		self.phase = self.map.phase
-		count = self.phase.endswith(' ADJUSTMENTS')
-		if (('MOBILIZE' in self.rules or 'BLANK_BOARD' in self.rules)
-		and (move1st or not count)):
-			now, seq = self.phase.split(), self.map.seq[:]
-			yr, when = int(now[1]), now[0] + ' ' + now[2]
-			if not [x for x in seq if x[:7] == 'NEWYEAR']: seq += ['NEWYEAR']
-			for item in reversed(seq + seq[:seq.index(when)]):
-				count += item.endswith(' ADJUSTMENTS')
-				if count and (not move1st or item.endswith(' MOVEMENT')): break
-				if item[:7] == 'NEWYEAR': yr -= int(item[8:] or '0') or 1
-			self.phase = item.replace(' ', ' %d ' % yr)
+		self.phaseType = self.phase.split()[-1][0]
+		if 'MOBILIZE' in self.rules or 'BLANK_BOARD' in self.rules:
+			if move1st and self.phaseType != 'M': 
+				self.phase = self.findPreviousPhase('M')
+				self.phaseType = 'M'
+			if self.phaseType != 'A':
+				self.phase = self.findPreviousPhase('A')
+				self.phaseType = 'A'
 		self.avail, avail = [], self.map.powers[:]
 		map(avail.remove, self.map.dummies)
 		self.win = self.map.victory[0]
@@ -2109,6 +2135,16 @@ class Game:
 				if not self.preview and not self.preMoveUpdate(): return
 			for power in self.powers: power.wait = None
 			self.resolve(email = email)
+			#	---------------------------------------------
+			#	Move aside any rolled back status file backup
+			#	---------------------------------------------
+			if not self.preview and now != 3:
+				statusList = glob.glob(self.file('status.*.0'))
+				if statusList:
+					idx = max([int(y) for y in [x.split('.')[-1] for x in 
+						glob.glob(self.file('status.*.*'))] if y.isdigit()]) + 1
+					for x in statusList:
+						os.rename(x, x[:-1] + `idx`)
 		#	-------------------------------------------------
 		#	Game not ready.  If we received a PROCESS command
 		#	let the caller know we won't be honoring it.
@@ -2119,20 +2155,44 @@ class Game:
 		#	---------------------------
 		if not self.preview: self.save()
 	#	---------------------------------------------------------------------
-	def rollback(self, phase = None, includePersistent = 0, includeOrders = 0):
+	def rollback(self, phase = None, includeFlags = 0):
+		#	--------------------------------------------------------------
+		#	Rolls back to the specified phase, or to the previous phase if
+		#	none is specified.
+		#   Relevant bit values for includeFlags:
+		#		1: include orders for each power
+		#		2: include persistent game and power data
+		#	---------------------------------------------------------------
 		if self.status[1] != 'active': raise RollbackGameInactive
-		lines = []
+		lines, outphase = [], self.phaseAbbr()
 		if phase:
-			if not os.path.isfile(self.file('status.' + phase)):
-				raise RollbackPhaseInvalid
-			file = open(self.file('results'), 'r', 'latin-1')
-			lines, start = file.readlines(), 0
-			file.close()
-			for num, text in enumerate(lines):
-				if '%s ' % self.name + phase in text: break
-				start |= 'Diplomacy results' in text
+			phase = phase.upper()
+			if len(phase.split()) > 1: phase = self.phaseAbbr(phase)
+			if phase == outphase:
+				file = open(self.file('results'), 'r', 'latin-1')
+				lines, start, num = file.readlines(), 1, -1
+				file.close()
+				for num, text in enumerate(lines):
+					if 'Diplomacy results' in text: break
+				else: start = 0	
 			else:
-				raise RollbackPhaseInvalid
+				if not os.path.isfile(self.file('status.' + phase)):
+					raise RollbackPhaseInvalid
+				file = open(self.file('results'), 'r', 'latin-1')
+				lines, start = file.readlines(), 0
+				file.close()
+				for num, text in enumerate(lines):
+					if '%s ' % self.name + phase in text: break
+					start |= 'Diplomacy results' in text
+				else:
+					raise RollbackPhaseInvalid
+				for text in lines[num + 1:]:
+					if 'Diplomacy results' not in text: continue
+					word = text.split()
+					try: 
+						unphase = word[word.index(self.name, word.index('results') + 1) + 1]
+						os.rename(self.file('status.' + unphase), self.file('status.' + unphase + '.0'))
+					except: pass
 		else:
 			file = open(self.file('results'), 'r', 'latin-1')
 			lines, start, num = file.readlines(), 0, -1
@@ -2146,10 +2206,16 @@ class Game:
 				num = nr 
 			if not phase or not os.path.isfile(self.file('status.' + phase)):
 				raise RollbackPhaseInvalid
-		file = open(self.file('results'), 'w')
-		temp = lines[:num - 1]
-		file.write(''.join(temp).encode('latin-1'))
-		file.close()
+		if os.path.isfile(self.file('status.' + outphase + '.0')):
+			os.rename(self.file('status'), self.file('status.rollback'))
+		else:
+			os.rename(self.file('status'), self.file('status.' + outphase + '.0'))
+		if phase != outphase:
+			os.rename(self.file('status.' + phase), self.file('status.' + phase + '.0'))
+			file = open(self.file('results'), 'w')
+			temp = lines[:num - 1]
+			file.write(''.join(temp).encode('latin-1'))
+			file.close()
 		if start:
 			[os.unlink(host.dpjudgeDir + '/maps/' + x)
 				for x in os.listdir(host.dpjudgeDir + '/maps')
@@ -2158,20 +2224,80 @@ class Game:
 			self.phase = self.map.phase
 		self.makeMaps()
 		# Load the phase.
-		self.load('status.' + phase, includePersistent, includeOrders)
+		self.load('status.' + phase + '.0', includeFlags)
 		self.await = self.skip = None
 		self.changeStatus('active')
 		try: os.unlink(self.file('summary'))
 		except: pass
 		self.setDeadline()
 		self.delay = None
-		os.rename(self.file('status'), self.file('status.rollback'))
 		self.save()
 		self.mailPress(None, ['All!'],
 			"Diplomacy game '%s' has been rolled back to %s\n"
 			'and all orders have been %s.\n\n'
 			'The new deadline is %s.\n' %
-			(self.name, self.phaseName(form = 2), includeOrders and 'restored' or 'cleared', self.timeFormat()),
+			(self.name, self.phaseName(form = 2), includeFlags & 1 and 'restored' or 'cleared', self.timeFormat()),
+			subject = 'Diplomacy rollback notice')
+	#	---------------------------------------------------------------------
+	def rollforward(self, phase = None, includeFlags = 0):
+		#	--------------------------------------------------------------
+		#	Rolls forward to the specified phase, or to the next phase if
+		#	none is specified.
+		#   Relevant bit values for includeFlags:
+		#		1: include orders for each power
+		#		2: include persistent game and power data
+		#	---------------------------------------------------------------
+		if self.status[1] != 'active': raise RollforwardGameInactive
+		unphase = outphase = self.phaseAbbr()
+		if not os.path.isfile(self.file('status.' + outphase + '.0')):
+			raise RollforwardPhaseInvalid
+		if phase:
+			phase = phase.upper()
+			if len(phase.split()) > 1: phase = self.phaseAbbr(phase)
+			if phase != outphase:
+				if not os.path.isfile(self.file('status.' + phase + '.0')):
+					raise RollforwardPhaseInvalid
+				unphase = outphase
+				while unphase != phase:
+					# Load the phase, including orders.
+					self.load('status.' + unphase + '.0', flags | 1)
+					# Process the phase, suppressing any mail
+					self.process(now=3)
+					try: os.unlink(self.file('status.' + unphase + '.0'))
+					except: pass
+					unphase = self.phaseAbbr()
+					if not os.path.isfile(self.file('status.' + unphase + '.0')):
+						raise RollforwardPhaseInvalid
+		else:
+			# It's hard to tell what the next phase is, as some phases may
+			# be skipped after processing the turn. But there should be at
+			# least one other saved rolled back status file, and that's
+			# what gets checked here. 
+			if len(glob.glob(self.file('status.*.0'))) < 2:
+				raise RollforwardPhaseInvalid
+			# Load the phase, including orders.
+			self.load('status.' + outphase + '.0', flags | 1)
+			# Process the phase, suppressing any mail
+			self.process(now=3,email=0)
+			try: os.unlink(self.file('status.' + outphase + '.0'))
+			except: pass
+			unphase = self.phaseAbbr()
+			if not os.path.isfile(self.file('status.' + unphase + '.0')):
+				raise RollforwardPhaseInvalid
+		# Load the last phase
+		self.load('status.' + unphase + '.0', flags)
+		self.await = self.skip = None
+		self.changeStatus('active')
+		try: os.unlink(self.file('summary'))
+		except: pass
+		self.setDeadline()
+		self.delay = None
+		self.save()
+		self.mailPress(None, ['All!'],
+			"Diplomacy game '%s' has been rolled forward to %s\n"
+			'and all orders have been %s.\n\n'
+			'The new deadline is %s.\n' %
+			(self.name, self.phaseName(form = 2), includeFlags & 1 and 'restored' or 'cleared', self.timeFormat()),
 			subject = 'Diplomacy rollback notice')
 	#	----------------------------------------------------------------------
 	def occupant(self, site, anyCoast = 0):
@@ -2702,26 +2828,10 @@ class Game:
 			text + [''])
 	#	----------------------------------------------------------------------
 	def findNextPhase(self, phaseType = None, skip = 0):
-		now = self.phase.split()
-		if len(now) < 3: return self.phase
-		year = int(now[1])
-		which = ((self.map.seq.index(now[0] + ' ' + now[2]) + 1) %
-			len(self.map.seq))
-		while 1:
-			year += (which == 0
-				and 'NEWYEAR' not in [x.split()[0] for x in self.map.seq])
-			new = self.map.seq[which].split()
-			if new[0] == 'IFYEARDIV':
-				if '=' in new[1]: div, mod = map(int, new[1].split('='))
-				else: div, mod = int(new[1]), 0
-				if year % div != mod: which = -1
-			elif new[0] == 'NEWYEAR': year += len(new) == 1 or int(new[1])
-			elif phaseType in (None, new[1][0]):
-				if skip == 0: break
-				skip -= 1
-			which += 1
-			which %= len(self.map.seq)
-		return ' '.join([new[0], `year`, new[1]])
+		return self.map.findNextPhase(self.phase, phaseType, skip)
+	#	----------------------------------------------------------------------
+	def findPreviousPhase(self, phaseType = None, skip = 0):
+		return self.map.findPreviousPhase(self.phase, phaseType, skip)
 	#	----------------------------------------------------------------------
 	def checkPhase(self):
 		if self.phase in (None, 'FORMING', 'COMPLETED'): return []
@@ -2926,9 +3036,13 @@ class Game:
 		#	------------------------------------------
 		#	Returns S1901M from "SPRING 1901 MOVEMENT"
 		#	------------------------------------------
-		phase = phase or self.phase
-		try: return '%.1s%s%.1s' % tuple(phase.split()[:3])
-		except: return '?????'
+		return self.map.phaseAbbr(phase or self.phase)
+	#	----------------------------------------------------------------------
+	def phaseLong(self, phaseAbbr):
+		#	------------------------------------------
+		#	Returns "SPRING 1901 MOVEMENT" from S1901M
+		#	------------------------------------------
+		return self.map.phaseLong(phaseAbbr)
 	#	----------------------------------------------------------------------
 	def phaseName(self, form = 0, phase = None):
 		#	---------------------------------------------------------------
@@ -3411,10 +3525,12 @@ class Game:
 		else: broadcast += ['The game is over.  Thank you for playing.']
 		self.await, text = 0, [x + '\n' for x in broadcast + ['']]
 		if self.preview:
-			if email: self.master[1] = email
-			return self.mailPress(None, ['MASTER'],
+			if email: masterEmail = self.master[1]; self.master[1] = email
+			self.mailPress(None, ['MASTER'],
 				''.join(text), subject = 'PREVIEW ' + subject)
-		self.mailResults(text, subject)
+			if email: self.master[1] = masterEmail
+			return
+		if email != 0: self.mailResults(text, subject)
 		self.finishPhase()
 		self.makeMaps()
 		self.save()

@@ -86,7 +86,7 @@ page.include('functions')
 		<a href=mailto:<MAIL>><tt><MAIL></tt></a>
 
 		<P><b>If I send an e-mail to the DPjudge, what commands may I include in that e-mail?</b><br>
-		The DPjudge recognizes only the following thirty commands:
+		The DPjudge recognizes only the following thirty-one commands:
 	
 			<P><table border=0 cellpadding=0 align=center>
 			<tr valign=top>
@@ -110,9 +110,9 @@ page.include('functions')
 			</tr>
 			</table>
 
-		<P><b>Hey, you said there were <i>thirty</i> recognized commands!
+		<P><b>Hey, you said there were <i>thirty-one</i> recognized commands!
 		That's only twenty-one!</b><br>
-		Okay, you're right.  I left out the nine "Master commands"
+		Okay, you're right.  I left out the ten "Master commands"
 		(those that may be used only by a game's Master). These are:
 	
 			<P><table border=0 cellpadding=0 align=center>
@@ -127,11 +127,11 @@ page.include('functions')
 				<td width=20></td>
 			<td class="bodycopy">&middot;<a href=#official>OFFICIAL</a><br>&middot;<a href=#reveal>REVEAL</a></td>
 				<td width=20></td>
-			<td class="bodycopy" valign=top>&middot;<a href=#rollback>ROLLBACK</a><br>&middot;<a href=#deadline>SET DEADLINE</a></td>
+			<td class="bodycopy" valign=top>&middot;<a href=#rollback>ROLLBACK</a><br>&middot;<a href=#rollforward>ROLLFORWARD</a><br>&middot;<a href=#deadline>SET DEADLINE</a></td>
 			</tr>
 			</table>
 	
-		<p>There; that makes thirty.  That's it. If you are familiar with the Ken Lowe Internet judge, you know that it supports a few more commands.  The DPjudge does <i>not</i> support these. Limit your messages to the commands listed above or the DPjudge will simply tell you it does not understand you.
+		<p>There; that makes thirty-one.  That's it. If you are familiar with the Ken Lowe Internet judge, you know that it supports a few more commands.  The DPjudge does <i>not</i> support these. Limit your messages to the commands listed above or the DPjudge will simply tell you it does not understand you.
 	
 		<P><i>Note that if a specific <a href=<URL>?page=Rules><tt>RULE</tt></a>
 		(<tt>PLAYER_DEADLINES</tt>) is used in a game, the
@@ -1133,17 +1133,45 @@ does, but tell me anyway.</b><br>
 <a name=rollback></a>
 <P><b>How would I put a game back at a previous phase?</b><br>
 	You would do this using the <tt>ROLLBACK</tt> command.  This command
-	needs only the phase abbreviation after it -- for example, you might
-	say<br>
+	on its own will roll back one processed phase, ignoring any skipped
+	phases in between. You can also put a phase abbreviation after it -- 
+	for example, you might say<br>
 	<tt>&nbsp;&nbsp;&nbsp;&nbsp;ROLLBACK&nbsp;F1901M</tt><br>
 	When you use the <tt>ROLLBACK</tt> command, the game will be put
 	back on that particular phase, all player orders will be cleared,
-	and a new deadline will be set.
-	Note that a this command may only
+	and a new deadline will be set.<br>
+	Additional options are RESTORE, to restore the orders instead of 
+	resetting them (meaning the game is ready to be processed), and
+	FULL, which will undo any persistent settings, like game rules or
+	the game description or even whether a player is a dummy, to what 
+	they were in the previous phase. 
+	For example
+	<tt>&nbsp;&nbsp;&nbsp;&nbsp;ROLLBACK&nbsp;FULL&nbsp;RESTORE&nbsp;W1904A</tt><br>
+	will roll back to the Winter 1904 Adjustments, with all build orders
+	restored and any rule and other persistent changes made after that 
+	phase undone. <br> Note that a this command may only
 	be used on an active game.  That is, once a game is completed,
 	<tt>ROLLBACK</tt> is no longer possible.  One reason for this is
 	the fact that once a game has completed, the game summary, indicating
-	player identities, has been published.
+	player identities, has been published. Be very careful with the FULL 
+	option, because it might undo power replacements and other changes 
+	that may cause you some headaches. In case of doubts or trouble, 
+	contact the judgekeeper.
+
+<a name=rollforward></a>
+<P><b>And can I undo a rollback?</b><br>
+	Yes, you can, thanks to the aptly called <tt>ROLLFORWARD</tt> command. 
+	This command takes the same options as <a href="#rollback"><tt>ROLLBACK</tt></a>
+	but instead of going back to an earlier phase, it jumps to a later phase,
+	provided that the game has never been processed since the last rollback.
+	Multiple rollbacks can be undone by a single rollforward and vice versa.
+	Note that if you changed a rule that affects the game results before 
+	rolling forward, the results and even the game maps may look different
+	than before the rollback. For example if you chose a different blind rule, 
+	the new player maps will reflect that change. Players may or may not have
+	kept copies of the older maps, and take this as an issue. It's therefore
+	advisable to make sure you have the players' full consent before carrying 
+	it out.
 
 <a name=official></a>
 <P><b>What is the <tt>OFFICIAL</tt> command?</b><br>

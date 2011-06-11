@@ -144,21 +144,63 @@ class Map:
 		#	------------------
 		abbrev = {	'M': 'MOVEMENT', 'R': 'RETREATS', 'A': 'ADJUSTMENTS' }
 		try:
-			self.seq = []
+			self.seq, hasNewYear = [], 0
 			for item in self.flow:
-				if item == 'NEWYEAR':
-					self.seq += [item]
+				if ':' not in item:
+					if item == 'NEWYEAR':
+						self.seq += [item]
+					else:
+						error += ['FLOW %s REQUIRES COLON (:)' % item]
 					continue
-				season, phases = item.split(':')
-				for phase in phases.split(','):
-					if abbrev.get(phase[0]) not in (None, phase):
-						error += ['BAD PHASE TYPE IN FLOW (%s IS ALREADY %s)' %
-							(`phase[0]`, `abbrev[phase[0]]`)]
-					newPhase = season + ' ' + phase
-					if newPhase in self.seq and season != 'NEWYEAR':
-						error += ['PHASE IN FLOW TWICE: ' + newPhase]
-					self.seq += [newPhase]
-					abbrev[phase[0]] = phase
+				try: season, phases = item.split(':')
+				except:
+					error += ['MORE THAN ONE COLON (:) IN FLOW ' + item]
+					continue
+				if season == 'NEWYEAR':
+					try: years = int(phases)
+					except: 
+						error += ['THE %s FLOW DIRECTIVE CAN ONLY HAVE A NUMBER AS PARAMETER' % season]
+						continue
+					if years <= 0:
+						error += ['THE %s FLOW DIRECTIVE REQUIRES A NUMBER GREATER THAN 0' + 
+							' INSTEAD OF %d' % (season, years)]
+						continue
+					self.seq += [season + ' ' + phases]
+					hasNewYear = 1
+				elif season == 'IFYEARDIV':
+					try:
+						if '=' in phases:
+							div, mod = map(int, phases.split('='))
+						else:
+							div, mod = int(phases), 0
+					except: 
+						error += ['THE %s FLOW DIRECTIVE SHOULD EITHER HAVE A SINGLE NUMBER,' + 
+							' OR 2 NUMBERS SEPARATED BY AN EQUAL SIGN (=)' + 
+							' INSTEAD OF %s' % (season, phases)]
+						continue
+					if div <= 0:
+						error += ['THE %s FLOW DIRECTIVE REQUIRES A DIVISOR GREATER THAN 0' + 
+						' INSTEAD OF %s' % (season, div)]
+						continue
+					if mod < 0 or mod >= div:
+						error += ['THE %s FLOW DIRECTIVE REQUIRES A POSITIVE MODULO SMALLER THAN THE DIVISOR %d' + 
+						' INSTEAD OF %d' % (season, div, mod)]
+						continue
+					self.seq += [season + ' ' + phases]
+					if not hasNewYear: self.seq[:0], hasNewYear = 'NEWYEAR', 1
+				else:
+					for phase in phases.split(','):
+						if abbrev.get(phase[0]) not in (None, phase):
+							error += ['BAD PHASE TYPE IN FLOW (%s IS ALREADY %s)' %
+								(`phase[0]`, `abbrev[phase[0]]`)]
+							continue
+						newPhase = season + ' ' + phase
+						if newPhase in self.seq and season != 'NEWYEAR':
+							error += ['PHASE IN FLOW TWICE: ' + newPhase]
+							continue
+						self.seq += [newPhase]
+						abbrev[phase[0]] = phase
+			if not hasNewYear: self.seq[:0] = 'NEWYEAR'
 		except: error += ['BAD FLOW SPECIFICATION']
 		#	---------------------------
 		#	Validate initial game phase
@@ -804,4 +846,82 @@ class Map:
 	#	----------------------------------------------------------------------
 	def abutList(self, site):
 		return self.locAbut.get(site, self.locAbut.get(site.lower(), []))
+	#	----------------------------------------------------------------------
+	def findNextPhase(self, phase, phaseType = None, skip = 0):
+		now = phase.split()
+		if len(now) < 3: return phase
+		year = int(now[1])
+		which = ((self.seq.index(now[0] + ' ' + now[2]) + 1) %
+			len(self.seq))
+		while 1:
+			new = self.seq[which].split()
+			if new[0] == 'IFYEARDIV':
+				if '=' in new[1]: div, mod = map(int, new[1].split('='))
+				else: div, mod = int(new[1]), 0
+				if year % div != mod: which = -1
+			elif new[0] == 'NEWYEAR': year += len(new) == 1 or int(new[1])
+			elif phaseType in (None, new[1][0]):
+				if skip == 0: break
+				skip -= 1
+			which += 1
+			which %= len(self.seq)
+		return ' '.join([new[0], `year`, new[1]])
+	#	----------------------------------------------------------------------
+	def findPreviousPhase(self, phase, phaseType = None, skip = 0):
+		now = phase.split()
+		if len(now) < 3: return phase
+		year = int(now[1])
+		which = self.seq.index(now[0] + ' ' + now[2])
+		while 1:
+			which -= 1
+			if which == -1:
+				for new in [x.split() for x in self.seq]:
+					if new[0] == 'IFYEARDIV':
+						if '=' in new[1]: div, mod = map(int, new[1].split('='))
+						else: div, mod = int(new[1]), 0
+						if year % div != mod: break
+					which += 1
+			new = self.seq[which].split()
+			if new[0] == 'IFYEARDIV': pass
+			elif new[0] == 'NEWYEAR': year -= len(new) == 1 or int(new[1])
+			elif phaseType in (None, new[1][0]):
+				if skip == 0: break
+				skip -= 1
+		return ' '.join([new[0], `year`, new[1]])
+	#	----------------------------------------------------------------------
+	def comparePhases(self, phase1, phase2):
+		if phase1 == phase2: return 0
+		now1, now2 = phase1.split(), phase2.split()
+		if len(now1) < 3 or len(now2) < 3: 
+			return len(now1) < 3 and (len(now2) < 3 and 0 or -1) or 1
+		year1, year2 = int(now[1]), int(now[2])
+		if year1 != year2: return year1 > year2 and 1 or -1
+		which1, which2 = (self.seq.index(now1[0] + ' ' + now1[2]), 
+			self.seq.index(now2[0] + ' ' + now2[2]))
+		if which1 > which2:
+			return ('NEWYEAR' in [x.split()[0] 
+				for x in self.seq[which2 + 1:which1]]) and -1 or 1
+		elif which1 < which2:
+			return ('NEWYEAR' in [x.split()[0] 
+				for x in self.seq[which1 + 1:which2]]) and 1 or -1
+		else: return 0
+	#	----------------------------------------------------------------------
+	def phaseAbbr(self, phase):
+		#	------------------------------------------
+		#	Returns S1901M from "SPRING 1901 MOVEMENT"
+		#	------------------------------------------
+		try: return '%.1s%s%.1s' % tuple(phase.split()[:3])
+		except: return '?????'
+	#	----------------------------------------------------------------------
+	def phaseLong(self, phaseAbbr):
+		#	------------------------------------------
+		#	Returns "SPRING 1901 MOVEMENT" from S1901M
+		#	------------------------------------------
+		try: 
+			year = int(phaseAbbr[1:-1])
+			return [' '.join([new[0], `year`, new[1]]) for new in 
+				[x.split() for x in self.seq] 
+				if new[0] not in ('NEWYEAR', 'IFYEARDIV') 
+				and new[0][0] == phase[0] and new[1][0] == phase[1]][0]
+		except: return '?????'
 	#	----------------------------------------------------------------------

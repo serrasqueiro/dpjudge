@@ -17,8 +17,8 @@ class StandardPower(Power):
 			text += order + '\n'
 		return text.encode('latin-1')
 	#	----------------------------------------------------------------------
-	def reinit(self, includePersistent = 1):
-		Power.reinit(self, includePersistent)
+	def reinit(self, includeFlags = 2):
+		Power.reinit(self, includeFlags)
 		#	-----------------------------------
 		#	Initialize the transient parameters
 		#	-----------------------------------

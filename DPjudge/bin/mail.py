@@ -704,13 +704,35 @@ class Procmail:
 				if power.name != 'MASTER':
 					self.respond('Only the Master can ROLLBACK the game')
 				try:
-					phase = word[-1].upper() * (len(word) == 2)
-					game.rollback(phase)
-					self.response += ['Game rolled back to ' + phase]
+					phase, flags = '', 0
+					for param in [x.upper() for x in word[1:]]:
+						if param in ('RESTORE', 'RECOVER'): flags |= 1
+						elif param == 'FULL': flags |= 2
+						else: phase = param
+					game.rollback(phase, flags)
+					self.response += ['Game rolled back to ' + game.phase]
 				except RollbackGameInactive:
 					self.respond('ROLLBACK can only occur on an active game')
 				except RollbackPhaseInvalid:
 					self.respond('Invalid ROLLBACK phase')
+			#	---------------------------------
+			#	See if we are to do a ROLLFORWARD
+			#	---------------------------------
+			elif command == 'ROLLFORWARD':
+				if power.name != 'MASTER':
+					self.respond('Only the Master can ROLLFORWARD the game')
+				try:
+					phase, flags = '', 0
+					for param in [x.upper() for x in word[1:]]:
+						if param in ('RESTORE', 'RECOVER'): flags |= 1
+						elif param == 'FULL': flags |= 2
+						else: phase = param
+					game.rollforward(phase, flags)
+					self.response += ['Game rolled forward to ' + game.phase]
+				except RollforwardGameInactive:
+					self.respond('ROLLFORWARD can only occur on an active game')
+				except RollforwardPhaseInvalid:
+					self.respond('Invalid ROLLFORWARD phase')
 			#	--------------------------------------------
 			#	See if we are RESIGNing or DUMMYing a player
 			#	--------------------------------------------

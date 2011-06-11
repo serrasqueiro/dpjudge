@@ -32,11 +32,17 @@ class Power:
 		text = '\n'.join([text] + self.units + self.adjust) + '\n'
 		return text.encode('latin-1')
 	#	----------------------------------------------------------------------
-	def reinit(self, includePersistent = 1):
+	def reinit(self, includeFlags = 2):
+		#	---------------------------------------------
+		#	Reinitializes the power specific data.
+		#   Relevant bit values for includeFlags:
+		#		2: include persistent game and power data
+		#	---------------------------------------------
+
 		#	------------------------------------
 		#	Initialize the persistent parameters
 		#	------------------------------------
-		if includePersistent:
+		if includeFlags & 2:
 			address = password = abbrev = vote = None
 			omniscient = 0
 			player, msg = [], []

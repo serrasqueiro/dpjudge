@@ -11,8 +11,8 @@ class XtalballPower(Power):
 			if orders: text += '%s\n%s\n' % (listName, '\n'.join(orders))
 		return text.encode('latin-1')
 	#	----------------------------------------------------------------------
-	def reinit(self, includePersistent = 1):
-		Power.reinit(self, includePersistent)
+	def reinit(self, includeFlags = 2):
+		Power.reinit(self, includeFlags)
 		#	-----------------------------------
 		#	Initialize the transient parameters
 		#	-----------------------------------

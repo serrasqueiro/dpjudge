@@ -72,21 +72,21 @@ class PayolaGame(Game):
 		return '\n'.join([x for x in text.split('\n')
 						if x not in self.directives]).encode('latin-1')
 	#	----------------------------------------------------------------------
-	def reinit(self, includePersistent = 1):
+	def reinit(self, includeFlags = 2):
 		#	------------------------------------
 		#	Initialize the persistent parameters
 		#	------------------------------------
-		if includePersistent:
+		if includeFlags & 2:
 			self.rules = ['ORDER_ANY']
 			self.taxes, self.tax, self.cap = {}, 0, 0
 		#	-----------------------------------
 		#	Initialize the transient parameters
 		#	-----------------------------------
 		self.offers, self.orders = {}, {} 
-		Game.reinit(self, includePersistent)
+		Game.reinit(self, includeFlags)
 	#	----------------------------------------------------------------------
-	def parseGameData(self, word, includePersistent):
-		parsed = Game.parseGameData(self, word, includePersistent)
+	def parseGameData(self, word, includeFlags):
+		parsed = Game.parseGameData(self, word, includeFlags)
 		if parsed: return parsed
 		word = [x.upper() for x in word]
 		upline = ' '.join(word)
@@ -98,7 +98,7 @@ class PayolaGame(Game):
 		#	--------------------------------------
 		#	Game-specific information (persistent)
 		#	--------------------------------------
-		if not includePersistent:
+		if not includeFlags & 2:
 			return 0
 		#	----------------------------------------------
 		#	Center tax income values (completely optional)
@@ -118,8 +118,8 @@ class PayolaGame(Game):
 		else: return 0
 		return 1
 	#	----------------------------------------------------------------------
-	def parsePowerData(self, power, word, includePersistent, includeOrders):
-		parsed = Game.parsePowerData(self, power, word, includePersistent, includeOrders)
+	def parsePowerData(self, power, word, includeFlags):
+		parsed = Game.parsePowerData(self, power, word, includeFlags)
 		if parsed: return parsed
 		word = [x.upper() for x in word]
 		upline = ' '.join(word)
@@ -145,13 +145,13 @@ class PayolaGame(Game):
 		#	Offers and comments
 		#	-------------------
 		elif word[0][0] in '0123456789%':
-			if not includeOrders: return -1
+			if not includeFlags & 1: return -1
 			power.sheet += [upline]
 			if word[0][0] != '%': power.held = 1
 		#	--------------------------------
 		#	Power-specific data (persistent)
 		#	--------------------------------
-		elif not includePersistent:
+		elif not includeFlags & 2:
 			return 0
 		elif word[0] == 'ACCEPT':
 			if power.accept: self.error += ['TWO ACCEPTS FOR ' + power.name]

@@ -8,17 +8,17 @@ class XtalballGame(Game):
 		self.variant, self.powerType = 'xtalball', XtalballPower
 		Game.__init__(self, gameName, fileName)
 	#	----------------------------------------------------------------------
-	def reinit(self, includePersistent = 1):
+	def reinit(self, includeFlags = 2):
 		#	------------------------------------
 		#	Initialize the persistent parameters
 		#	------------------------------------
-		if includePersistent:
+		if includeFlags & 2:
 			self.rules = ['FICTIONAL_OK', 'PROXY_OK']
 		#	-----------------------------------
 		#	Initialize the transient parameters
 		#	-----------------------------------
 		self.largest = self.smallest = None
-		Game.reinit(self, includePersistent)
+		Game.reinit(self, includeFlags)
 	#	----------------------------------------------------------------------
 	def unitOwner(self, unit, power = None):
 		owner = Game.unitOwner(self, unit)
@@ -36,8 +36,8 @@ class XtalballGame(Game):
 				if word[1] + ' ' + word[-1] == unit: return power
 		return owner
 	#	----------------------------------------------------------------------
-	def parsePowerData(self, power, word, includePersistent, includeOrders):
-		parsed = Game.parsePowerData(self, power, word, includePersistent, includeOrders)
+	def parsePowerData(self, power, word, includeFlags):
+		parsed = Game.parsePowerData(self, power, word, includeFlags)
 		if parsed: return parsed
 		word = [x.upper() for x in word]
 		upline = ' '.join(word)
@@ -45,11 +45,11 @@ class XtalballGame(Game):
 		#	Power-specific data (SOONER and/or LATER)
 		#	-----------------------------------------
 		#	Note that SOONER are orders entered during a previous turn and
-		#	thus should be included even if includeOrders is 0, because the
+		#	thus should be included even if includeFlags & 1 is 0, because the
 		#	latter is only concerned with LATER orders.
 		if word[0] in ('SOONER', 'LATER') and len(word) == 1: 
 			self.mode, self.modeRequiresEnd = word[0], None
-		elif self.mode == 'LATER' and not includeOrders:
+		elif self.mode == 'LATER' and not includeFlags & 1:
 			return -1
 		elif self.mode and word[0] in ('A', 'F'):
 			word = self.expandOrder(word)

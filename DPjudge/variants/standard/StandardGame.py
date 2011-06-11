@@ -8,16 +8,16 @@ class StandardGame(Game):
 		self.powerType = StandardPower
 		Game.__init__(self, gameName, fileName)
 	#	----------------------------------------------------------------------
-	def reinit(self, includePersistent = 1):
+	def reinit(self, includeFlags = 2):
 		#	------------------------------------
 		#	Initialize the persistent parameters
 		#	------------------------------------
-		if includePersistent:
+		if includeFlags & 2:
 			self.rules = []
-		Game.reinit(self, includePersistent)
+		Game.reinit(self, includeFlags)
 	#	----------------------------------------------------------------------
-	def parsePowerData(self, power, word, includePersistent, includeOrders):
-		parsed = Game.parsePowerData(self, power, word, includePersistent, includeOrders)
+	def parsePowerData(self, power, word, includeFlags):
+		parsed = Game.parsePowerData(self, power, word, includeFlags)
 		if parsed: return parsed
 		word = [x.upper() for x in word]
 		upline = ' '.join(word)
@@ -29,7 +29,7 @@ class StandardGame(Game):
 			#	Power-specific data (orders)
 			#	----------------------------
 			if self.mode == 'ORDERS':
-				if not includeOrders: return -1
+				if not includeFlags & 1: return -1
 				#	------------------------------------------------------
 				#	Even NO_CHECK games check that the order contains only
 				#	recognized tokens, and announce this error immediately

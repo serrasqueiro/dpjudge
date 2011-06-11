@@ -735,12 +735,12 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 <p><dt><b><tt>RULE <i>rule...</i></tt></b><dd>
 	Specifies a DPjudge <a href=<URL>?page=Rules><tt>RULE</tt></a> that will be
 	in effect for all games using this map.  For example,
-	<tt>RULE&nbsp;BUILD_ANY</tt> would appear in a map file for the the
+	<tt>RULE&nbsp;BUILD_ANY</tt> would appear in a map file for the
 	<a href=<URL>?page=about:chaos>Chaos variant</a>, since that variant
 	allows players to build new units in
 	any unoccupied, owned supply center.  If this line occurs outside
 	of a <tt>DIRECTIVE</tt> stanza, it will be in effect for all games
-	using this map, regardless of any rules-variant (<tt>payoa</tt>, etc.)
+	using this map, regardless of any rules-variant (<tt>payola</tt>, etc.)
 	that the game may use.  Note that if any
 	<tt><i>rule</i></tt> name is prepended by exclamation point (<tt>!</tt>),
 	that rule will be <u>turned off</u> if possible, and this will be done
