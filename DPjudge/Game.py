@@ -607,7 +607,7 @@ class Game:
 				if self.mode and upword == 'END' and len(word) == 2 and word[1].upper() == self.mode:
 					self.mode = self.modeRequiresEnd = None
 				elif (not self.parsePowerData(power, word, includeFlags)
-				and includeFlags & 3):
+				and includeFlags & 2):
 					error += ['UNRECOGNIZED POWER DATA: ' + ' '.join(word)]
 		if blockMode == 1:
 			self.finishGameData() 
@@ -1189,7 +1189,13 @@ class Game:
 			self.save()
 		else: self.updateState()
 	#	----------------------------------------------------------------------
-	def fileResults(self, lines):
+	def fileResults(self, lines, subject = None):
+		if subject:
+			#	----------------------
+			#	Add a mail-like header
+			#	----------------------
+			lines[:0] = ['From %s %s\nSubject: %s\n\n' %
+				(host.dpjudge, time.ctime(), subject)]
 		file = open(self.file('results'), 'a')
 		temp = ''.join(lines)
 		file.write(temp.encode('latin-1'))
@@ -1755,12 +1761,10 @@ class Game:
 						text += [line]
 				self.mailPress(None, [power], ''.join(text), subject = subject)
 		else: self.mailPress(None, ['All!'], ''.join(body), subject = subject)
-		#	--------------------------------------------------
-		#	Add a mail-like header then file into results file
-		#	--------------------------------------------------
-		body[:0] = ['From %s %s\nSubject: %s\n\n' %
-			(host.dpjudge, time.ctime(), subject)]
-		self.fileResults(body)
+		#	----------------------
+		#	File into results file
+		#	----------------------
+		self.fileResults(body, subject)
 	#	----------------------------------------------------------------------
 	#							PRESS-HANDLING METHODS
 	#	----------------------------------------------------------------------
@@ -2134,7 +2138,7 @@ class Game:
 				self.addCoasts()
 				if not self.preview and not self.preMoveUpdate(): return
 			for power in self.powers: power.wait = None
-			self.resolve(email = email)
+			self.resolve(email = email, roll = (now == 3))
 			#	---------------------------------------------
 			#	Move aside any rolled back status file backup
 			#	---------------------------------------------
@@ -2168,14 +2172,7 @@ class Game:
 		if phase:
 			phase = phase.upper()
 			if len(phase.split()) > 1: phase = self.phaseAbbr(phase)
-			if phase == outphase:
-				file = open(self.file('results'), 'r', 'latin-1')
-				lines, start, num = file.readlines(), 1, -1
-				file.close()
-				for num, text in enumerate(lines):
-					if 'Diplomacy results' in text: break
-				else: start = 0	
-			else:
+			if phase != outphase:
 				if not os.path.isfile(self.file('status.' + phase)):
 					raise RollbackPhaseInvalid
 				file = open(self.file('results'), 'r', 'latin-1')
@@ -2216,13 +2213,13 @@ class Game:
 			temp = lines[:num - 1]
 			file.write(''.join(temp).encode('latin-1'))
 			file.close()
-		if start:
-			[os.unlink(host.dpjudgeDir + '/maps/' + x)
-				for x in os.listdir(host.dpjudgeDir + '/maps')
-				if x.startswith(self.name.encode('latin-1'))
-				and x.endswith('_.gif')]
-			self.phase = self.map.phase
-		self.makeMaps()
+			if not start:
+				[os.unlink(host.dpjudgeDir + '/maps/' + x)
+					for x in os.listdir(host.dpjudgeDir + '/maps')
+					if x.startswith(self.name.encode('latin-1'))
+					and x.endswith('_.gif')]
+				self.phase = self.map.phase
+			self.makeMaps()
 		# Load the phase.
 		self.load('status.' + phase + '.0', includeFlags)
 		self.await = self.skip = None
@@ -2238,6 +2235,7 @@ class Game:
 			'The new deadline is %s.\n' %
 			(self.name, self.phaseName(form = 2), includeFlags & 1 and 'restored' or 'cleared', self.timeFormat()),
 			subject = 'Diplomacy rollback notice')
+		if self.error: return self.error
 	#	---------------------------------------------------------------------
 	def rollforward(self, phase = None, includeFlags = 0):
 		#	--------------------------------------------------------------
@@ -2251,6 +2249,7 @@ class Game:
 		unphase = outphase = self.phaseAbbr()
 		if not os.path.isfile(self.file('status.' + outphase + '.0')):
 			raise RollforwardPhaseInvalid
+		preview = self.preview; self.preview = 0
 		if phase:
 			phase = phase.upper()
 			if len(phase.split()) > 1: phase = self.phaseAbbr(phase)
@@ -2260,14 +2259,15 @@ class Game:
 				unphase = outphase
 				while unphase != phase:
 					# Load the phase, including orders.
-					self.load('status.' + unphase + '.0', flags | 1)
+					self.load('status.' + unphase + '.0', includeFlags | 1)
 					# Process the phase, suppressing any mail
-					self.process(now=3)
+					self.process(now = 3)
 					try: os.unlink(self.file('status.' + unphase + '.0'))
 					except: pass
 					unphase = self.phaseAbbr()
 					if not os.path.isfile(self.file('status.' + unphase + '.0')):
 						raise RollforwardPhaseInvalid
+				self.makeMaps()
 		else:
 			# It's hard to tell what the next phase is, as some phases may
 			# be skipped after processing the turn. But there should be at
@@ -2276,20 +2276,20 @@ class Game:
 			if len(glob.glob(self.file('status.*.0'))) < 2:
 				raise RollforwardPhaseInvalid
 			# Load the phase, including orders.
-			self.load('status.' + outphase + '.0', flags | 1)
+			self.load('status.' + outphase + '.0', includeFlags | 1)
 			# Process the phase, suppressing any mail
-			self.process(now=3,email=0)
+			self.process(now = 3)
+			self.makeMaps()
 			try: os.unlink(self.file('status.' + outphase + '.0'))
 			except: pass
 			unphase = self.phaseAbbr()
 			if not os.path.isfile(self.file('status.' + unphase + '.0')):
 				raise RollforwardPhaseInvalid
+		self.preview = preview
 		# Load the last phase
-		self.load('status.' + unphase + '.0', flags)
+		self.load('status.' + unphase + '.0', includeFlags)
 		self.await = self.skip = None
 		self.changeStatus('active')
-		try: os.unlink(self.file('summary'))
-		except: pass
 		self.setDeadline()
 		self.delay = None
 		self.save()
@@ -2298,7 +2298,8 @@ class Game:
 			'and all orders have been %s.\n\n'
 			'The new deadline is %s.\n' %
 			(self.name, self.phaseName(form = 2), includeFlags & 1 and 'restored' or 'cleared', self.timeFormat()),
-			subject = 'Diplomacy rollback notice')
+			subject = 'Diplomacy rollforward notice')
+		if self.error: return self.error
 	#	----------------------------------------------------------------------
 	def occupant(self, site, anyCoast = 0):
 		#	-------------------------------------
@@ -2882,7 +2883,7 @@ class Game:
 		#	go through and see if any centers have been taken over.
 		#	Reset the centers seen by each power.
 		#	-------------------------------------------------------
-		lastYear, unowned = {}, self.map.scs
+		lastYear, unowned = {}, self.map.scs[:]
 		for power in self.powers:
 			lastYear[power] = sum(map(len, [x.centers for x in self.powers
 				if 'VASSAL_DUMMIES' in self.rules and x.ceo == [power.name]]),
@@ -3476,7 +3477,7 @@ class Game:
 		return ["The %s phase of '%s' has been completed." %
 				(self.phase.title(), self.name), '']
 	#	----------------------------------------------------------------------
-	def resolve(self, email = None):
+	def resolve(self, email = None, roll = None):
 		thisPhase, lastPhase = self.phaseType, self.phaseAbbr()
 		subject = 'Diplomacy results %s ' % self.name + lastPhase
 		broadcast = self.mapperHeader()
@@ -3530,9 +3531,10 @@ class Game:
 				''.join(text), subject = 'PREVIEW ' + subject)
 			if email: self.master[1] = masterEmail
 			return
-		if email != 0: self.mailResults(text, subject)
+		if roll: self.fileResults(text, subject)
+		else: self.mailResults(text, subject)
 		self.finishPhase()
-		self.makeMaps()
+		if not roll: self.makeMaps()
 		self.save()
 		if self.phase == 'COMPLETED': self.fileSummary()
 	#	----------------------------------------------------------------------

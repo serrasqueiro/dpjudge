@@ -187,7 +187,7 @@ class Map:
 						' INSTEAD OF %d' % (season, div, mod)]
 						continue
 					self.seq += [season + ' ' + phases]
-					if not hasNewYear: self.seq[:0], hasNewYear = 'NEWYEAR', 1
+					if not hasNewYear: self.seq[:0], hasNewYear = ['NEWYEAR'], 1
 				else:
 					for phase in phases.split(','):
 						if abbrev.get(phase[0]) not in (None, phase):
@@ -200,7 +200,7 @@ class Map:
 							continue
 						self.seq += [newPhase]
 						abbrev[phase[0]] = phase
-			if not hasNewYear: self.seq[:0] = 'NEWYEAR'
+			if not hasNewYear: self.seq[:0] = ['NEWYEAR']
 		except: error += ['BAD FLOW SPECIFICATION']
 		#	---------------------------
 		#	Validate initial game phase
