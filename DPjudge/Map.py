@@ -890,6 +890,8 @@ class Map:
 		return ' '.join([new[0], `year`, new[1]])
 	#	----------------------------------------------------------------------
 	def comparePhases(self, phase1, phase2):
+		if len(phase1.split()) == 1: phase1 = phaseLong(phase1, phase1)
+		if len(phase2.split()) == 1: phase2 = phaseLong(phase2, phase2)
 		if phase1 == phase2: return 0
 		now1, now2 = phase1.split(), phase2.split()
 		if len(now1) < 3 or len(now2) < 3: 
@@ -906,14 +908,14 @@ class Map:
 				for x in self.seq[which1 + 1:which2]]) and 1 or -1
 		else: return 0
 	#	----------------------------------------------------------------------
-	def phaseAbbr(self, phase):
+	def phaseAbbr(self, phase, default = '?????'):
 		#	------------------------------------------
 		#	Returns S1901M from "SPRING 1901 MOVEMENT"
 		#	------------------------------------------
 		try: return '%.1s%s%.1s' % tuple(phase.split()[:3])
-		except: return '?????'
+		except: return default
 	#	----------------------------------------------------------------------
-	def phaseLong(self, phaseAbbr):
+	def phaseLong(self, phaseAbbr, default = '?????'):
 		#	------------------------------------------
 		#	Returns "SPRING 1901 MOVEMENT" from S1901M
 		#	------------------------------------------
@@ -923,5 +925,5 @@ class Map:
 				[x.split() for x in self.seq] 
 				if new[0] not in ('NEWYEAR', 'IFYEARDIV') 
 				and new[0][0] == phase[0] and new[1][0] == phase[1]][0]
-		except: return '?????'
+		except: return default
 	#	----------------------------------------------------------------------

@@ -246,14 +246,14 @@ class PayolaGame(Game):
 		if self.phaseType == 'Y': return self.processExchangeReportsPhase()
 		return Game.resolvePhase(self)
 	#	----------------------------------------------------------------------
-	def checkPhase(self, last = 0):
-		if self.phaseType == 'I': text = self.processIncomePhase()
+	def checkPhase(self, text):
+		if self.phaseType == 'I': text += self.processIncomePhase()
 		elif self.phaseType == 'D':
-			text = self.processExchangeDividendsPhase()
+			text += self.processExchangeDividendsPhase()
 		elif self.phaseType == 'Y':
-			text = self.processExchangeReportsPhase()
-		else: return Game.checkPhase(self, last)
-		return text + self.advancePhase(last)
+			text += self.processExchangeReportsPhase()
+		else: return Game.checkPhase(self, text)
+		return 1
 	#	----------------------------------------------------------------------
 	def checkAccept(self, power, accept = 0):
 		accept = accept and accept.upper() or power.accept

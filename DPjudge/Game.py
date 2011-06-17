@@ -2142,13 +2142,7 @@ class Game:
 			#	---------------------------------------------
 			#	Move aside any rolled back status file backup
 			#	---------------------------------------------
-			if not self.preview and now != 3:
-				statusList = glob.glob(self.file('status.*.0'))
-				if statusList:
-					idx = max([int(y) for y in [x.split('.')[-1] for x in 
-						glob.glob(self.file('status.*.*'))] if y.isdigit()]) + 1
-					for x in statusList:
-						os.rename(x, x[:-1] + `idx`)
+			if not self.preview and now != 3: self.rollin()
 		#	-------------------------------------------------
 		#	Game not ready.  If we received a PROCESS command
 		#	let the caller know we won't be honoring it.
@@ -2173,7 +2167,8 @@ class Game:
 			phase = phase.upper()
 			if len(phase.split()) > 1: phase = self.phaseAbbr(phase)
 			if phase != outphase:
-				if not os.path.isfile(self.file('status.' + phase)):
+				if (self.map.comparePhases(phase, outphase) >= 0 or 
+					not os.path.isfile(self.file('status.' + phase))):
 					raise RollbackPhaseInvalid
 				file = open(self.file('results'), 'r', 'latin-1')
 				lines, start = file.readlines(), 0
@@ -2254,7 +2249,8 @@ class Game:
 			phase = phase.upper()
 			if len(phase.split()) > 1: phase = self.phaseAbbr(phase)
 			if phase != outphase:
-				if not os.path.isfile(self.file('status.' + phase + '.0')):
+				if (self.map.comparePhases(phase, outphase) <= 0 or 
+					not os.path.isfile(self.file('status.' + phase + '.0'))):
 					raise RollforwardPhaseInvalid
 				unphase = outphase
 				while unphase != phase:
@@ -2300,6 +2296,28 @@ class Game:
 			(self.name, self.phaseName(form = 2), includeFlags & 1 and 'restored' or 'cleared', self.timeFormat()),
 			subject = 'Diplomacy rollforward notice')
 		if self.error: return self.error
+	#	----------------------------------------------------------------------
+	def rollin(self, branch = None):
+		#	-----------------------------------------------------------------
+		#	Rolls out all currently rolled back phases.
+		#   Optionally rolls in a previously rolled out branch, starting from 
+		#	the current phase.
+		#	Returns the branch number of the rolled out branch if any.
+		#	-----------------------------------------------------------------
+		if branch and not os.path.isfile(self.file('status.' + self.phaseAbbr() + '.' + `branch`)):
+			raise RollinPhaseInvalid
+		statusList, idx = glob.glob(self.file('status.*.0')), None
+		if statusList:
+			idx = 1
+			while glob.glob(self.file('status.*.' + `idx`)): idx += 1
+			for x in statusList:
+				os.rename(x, x[:-1] + `idx`)
+		if branch:
+			for x in glob.glob(self.file('status.*.' + `branch`)):
+				phase = x.split('.')[1]
+				if self.map.comparePhases(phase, self.phase) >= 0:
+					os.rename(x, 'status.' + phase + '.0')
+		return idx
 	#	----------------------------------------------------------------------
 	def occupant(self, site, anyCoast = 0):
 		#	-------------------------------------
@@ -2789,11 +2807,6 @@ class Game:
 			or pawn.name in self.latePowers()):
 				pawn.ceo = pawn.ceo[1:] + pawn.ceo[:1]
 	#	----------------------------------------------------------------------
-	def advancePhase(self):
-		self.phase = self.findNextPhase()
-		self.phaseType = self.phase.split()[-1][0]
-		return self.checkPhase()
-	#	----------------------------------------------------------------------
 	def morphMap(self, lastPhase = 0):
 		text, map = [], self.map
 		shut = [x for y in self.powers for x in y.units
@@ -2828,25 +2841,36 @@ class Game:
 			'The following units were affected by geographic changes:\n'] +
 			text + [''])
 	#	----------------------------------------------------------------------
+	def advancePhase(self, roll = None):
+		text = []
+		while 1:
+			self.phase = self.findNextPhase()
+			self.phaseType = self.phase.split()[-1][0]
+			if not self.checkPhase(text) and not roll: break
+			if roll and os.path.isfile(self.file('status.' + self.phaseAbbr() + '.0')): break
+		return text
+	#	----------------------------------------------------------------------
 	def findNextPhase(self, phaseType = None, skip = 0):
 		return self.map.findNextPhase(self.phase, phaseType, skip)
 	#	----------------------------------------------------------------------
 	def findPreviousPhase(self, phaseType = None, skip = 0):
 		return self.map.findPreviousPhase(self.phase, phaseType, skip)
 	#	----------------------------------------------------------------------
-	def checkPhase(self):
-		if self.phase in (None, 'FORMING', 'COMPLETED'): return []
-		if self.phaseType == 'M': return ((self.includeOwnership or
+	def checkPhase(self, text):
+		if self.phase in (None, 'FORMING', 'COMPLETED'): return
+		if self.phaseType == 'M': 
+			if ((self.includeOwnership or
 				('BLIND' in self.rules) > ('NO_UNITS_SEE' in self.rules)
-				+ ('SEE_NO_SCS' in self.rules) + ('SEE_ALL_SCS' in self.rules))
-			and self.ownership() or [])
+				+ ('SEE_NO_SCS' in self.rules) + ('SEE_ALL_SCS' in self.rules))):
+				text += self.ownership()
+			return
 		if self.phaseType == 'R':
-			if [1 for x in self.powers if x.retreats]: return []
+			if [1 for x in self.powers if x.retreats]: return
 			for power in self.powers: power.retreats, power.adjust = {}, []
-			return self.advancePhase()
+			return 1
 		if self.phaseType == 'A':
-			text = self.captureCenters()
-			if self.phase == 'COMPLETED': return text
+			text += self.captureCenters()
+			if self.phase == 'COMPLETED': return
 			if self.phase.split()[1] in self.map.homeYears:
 				for power in [x for x in self.powers if not x.type]:
 					power.homes = power.centers
@@ -2858,16 +2882,16 @@ class Game:
 						len([0 for x in power.units
 							if x[2:5] in power.homes])))
 				if (units > centers
-				or (units < centers and self.buildSites(power))): return text
+				or (units < centers and self.buildSites(power))): return
 			for power in self.powers:
 				while 'SC?' in power.centers: power.centers.remove('SC?')
 				while 'SC*' in power.centers: power.centers.remove('SC*')
-			return text + self.advancePhase()
+			return 1
 		#	--------------------------------------
 		#	Other phases.  For now take no action.
 		#	--------------------------------------
 		self.await = 1
-		return ['The game is waiting for processing of the %s phase.\n' %
+		text += ['The game is waiting for processing of the %s phase.\n' %
 			self.phase.title()]
 	#	----------------------------------------------------------------------
 	def captureCenters(self, func = None):
@@ -3502,7 +3526,7 @@ class Game:
 		#	Advance the phase.  This method may return a list with
 		#	more lines to be packed onto the outgoing results mail
 		#	------------------------------------------------------
-		broadcast += self.advancePhase()
+		broadcast += self.advancePhase(roll)
 		if self.phase != 'COMPLETED':
 			#	---------------------------------------------------
 			#	Make any unit changes based on upcoming map changes
