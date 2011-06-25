@@ -20,7 +20,7 @@ class PostScriptMap:
 		self.map, self.lang, self.LANG = [], dict(), dict()
 		self.orders, self.retreats, self.ownerOrder = [], [], []
 		self.vassals, dislodgements, successes, retractions = {}, {}, {}, {}
-		self.owner, self.adj, self.units = {}, {}, {}
+		self.owner, self.adj, self.units, self.discoveries = {}, {}, {}, {}
 		self.startDoc(mapFile)
 		for line in lines:
 			word = line.upper().split()
@@ -186,16 +186,14 @@ class PostScriptMap:
 					if 'ALLEGIANCE' in word[upto:]:
 						# no drawing for this one, simply remove
 						for power in self.units:
-							for piece in self.units[power]:
-								if piece['loc']['nick'] == where['nick']:
-									self.units[power].remove(piece)
+							self.removeUnit(power, where)
 						if where['nick'] in successes:
 							idx = successes[where['nick']]
 							self.orders[idx] = ('%-22s %s' %
-								(self.orders[idx][:22], 'TORN'))
+								(self.orders[idx][:22], self.translate('TORN')))
 						elif where['nick'] in retractions:
 							idx = retractions[where['nick']]
-							self.retreats[idx] += ' TORN'
+							self.retreats[idx] += ' ' + self.translate('TORN')
 						continue
 					graphics += [('%d %d DestroyUnit' %
 						(where['x'], where['y']))]
@@ -215,7 +213,8 @@ class PostScriptMap:
 			#	Adjustment orders (modify the units list for final map)
 			#	-------------------------------------------------------
 			if word[1] in ('DEFAULTS,', 'REMOVES', 'BUILDS', 'BUILD'):
-				self.adj.setdefault(power, [self.translate(word[1][0] == 'B' and 'BUILDS' or 'REMOVES', 0, ['BUILDS', 'REMOVES'])])
+				self.adj.setdefault(power, [self.translate(word[1][0] == 'B' 
+					and 'BUILDS' or 'REMOVES', 0, ['BUILDS', 'REMOVES'])])
 				if word[2][:5] == 'WAIVE':
 					self.adj[power] += [self.translate('WAIVED')]
 					continue
@@ -228,9 +227,7 @@ class PostScriptMap:
 					(where['x'], where['y'], ('Fleet', 'Army')[unit == 'A']))
 				if word[1][0] != 'B':
 					temp += ('\t%d %d RemoveUnit\n' % (where['x'], where['y'])) 
-					for piece in self.units.get(power, [])[:]:
-						if piece['loc']['nick'] == where['nick']:
-							self.units[power].remove(piece)
+					self.removeUnit(power, where)
 				else:
 					temp += ('\t%d %d BuildUnit\n' % (where['x'], where['y'])) 
 					self.addUnit(power, unit, where, 1)
@@ -335,30 +332,18 @@ class PostScriptMap:
 				order = "- %-6.6s" % di['nick']
 				graph = ("%d %d Arrow" %
 					(di['x'], di['y']) + ('Move', 'Retreat')[section == 'R'])
-				if section == 'R': 
-					self.retreats += ['%-10s %s %s - ' %
-						(power, unit, si['nick']) + di['nick']]
-					if msg:
-						graph = 'FailedOrder %s OkOrder' % graph
-						self.retreats[-1] += ' DESTROYED'
-						del self.units[power][-1]
-					else: retractions[di['nick']] = len(self.retreats) - 1
 				if not msg: self.units[power][-1]['loc'] = di
 			#	-------
 			#	Disband
 			#	-------
 			elif order[:2] == 'DI':
-				order, graph = '', 'DisbandUnit'
-				self.retreats += ['%-10s %s %s DISBAND' %
-					(power, unit, si['nick'])]
+				order, graph, submsg = '', 'DisbandUnit', 'DISBAND'
 			#	-------
 			#	Arrives
 			#	-------
 			elif order[0] == 'A':
 				order = '- %.3s' % si['nick']
 				graph = 'Arrow' + (section == 'R' and 'Retreat' or '') + 'Arrive'
-				if section == 'R': self.retreats += ['%-10s %s ??? - ' %
-					(power, unit) + si['nick']]
 				if di: si = None
 			#	-------
 			#	Departs
@@ -366,41 +351,52 @@ class PostScriptMap:
 			elif order[:2] == 'DE':
 				order = '- ???'
 				graph = 'Arrow' + (section == 'R' and 'Retreat' or '') + 'Depart'
-				if section == 'R': self.retreats += ['%-10s %s %.3s - ???' %
-					(power, unit, si['nick'])]
 				
 			#	-----
 			#	Found
 			#	-----
 			elif order[0] == 'F':
 				order, graph, submsg = '', 'FindUnit', 'FOUND'
-				if section == 'R': self.retreats += ['%-10s %s %.3s FOUND' %
-					(power, unit, si['nick'])]
+				if section in 'RA': 
+					self.discoveries.setdefault(section, {}).setdefault(
+						power + ' F', []).append(unit + ' ' + si['nick'])
 			#	----
 			#	Lost
 			#	----
 			elif order[0] == 'L':
 				order, graph, submsg = '', 'LoseUnit', 'LOST'
-				if section == 'R': self.retreats += ['%-10s %s %.3s LOST' %
-					(power, unit, si['nick'])]
+				if section in 'RA': 
+					self.discoveries.setdefault(section, {}).setdefault(
+						power + ' L', []).append(unit + ' ' + si['nick'])
+					self.removeUnit(power, si)
 			#	---------------------
 			#	Simple order position
 			#	---------------------
 			else:
 				order, graph = '', ''
-				if section == 'R':
-					self.retreats += ['%-10s %s ' % (power, unit) + si['nick']]
 
 			#	----------------------------------------------------
 			#	Add information (order and graphic arrow) to the map
 			#	----------------------------------------------------
-			if section in 'MSA': 
+			if section in 'MS': 
 				if msg == 'DISLODGED' and si: 
 					dislodgements[si['nick']] = len(self.orders)
 				elif di:
 					successes[di['nick']] = len(self.orders)
 				self.orders += [' %c %.3s %-15s ' %
-					(unit, si and si['nick'] or '???', order) + self.translate(msg and msg or submsg)]
+					(unit, si and si['nick'] or '???', order) + 
+					self.translate(msg and msg or submsg)]
+			elif section == 'R':
+				if msg:
+					msg = 'DESTROYED'
+					del self.units[power][-1]
+				elif di:
+					retractions[di['nick']] = len(self.retreats)
+				if not submsg or submsg[0] not in 'FL':
+					self.retreats += ['%-10s %c %.3s ' %
+						(power, unit, si and si['nick'] or '???') +
+						(order and order + ' ' or '') + 
+						self.translate(msg and msg or submsg)]
 			if graph and section in 'MRA': graphics += ['%s%d %d ' %
 				(msg and 'FailedOrder ' or '', (si or di)['x'],
 				(si or di)['y']) + graph + (msg and ' OkOrder' or '')]
@@ -426,6 +422,11 @@ class PostScriptMap:
 	def addUnit(self, power, unit, where, built = None):
 		self.units.setdefault(power, []).append(
 			{'type': unit, 'loc': where, 'built': built})
+	#	----------------------------------------------------------------------
+	def removeUnit(self, power, where):
+		for piece in self.units.get(power, [])[:]:
+			if piece['loc']['nick'] == where['nick']:
+				self.units[power].remove(piece)
 	#	----------------------------------------------------------------------
 	def reportSCOwner(self):
 		#	-------------------
@@ -657,22 +658,37 @@ class PostScriptMap:
 		#	--------------
 		#	Retreat report
 		#	--------------
-		if self.retreats:
+		if self.retreats or 'R' in self.discoveries:
 			self.outFile.write('RetreatReport\n')
+		if self.retreats:
 			for order in sorted(self.retreats):
 				temp = '(%s) WriteRetreat\n' % order
 				self.outFile.write(temp.encode('latin-1'))
 			self.retreats = []
+		if 'R' in self.discoveries:
+			for powered in sorted(self.discoveries['R']):
+				temp = ('(%-10s %s %s) WriteRetreat\n' %
+					(powered[:-2], ', '.join(self.discoveries['R'][powered]),
+					self.translate(powered[-1] == 'F' and 'FOUND' or 'LOST')))
+				self.outFile.write(temp.encode('latin-1'))
 		#	-----------------
 		#	Adjustment report
 		#	-----------------
-		if self.adj:
+		if self.adj or 'A' in self.discoveries:
 			self.outFile.write('AdjustReport\n')
+		if self.adj:
 			for power in [x for x in self.ownerOrder if x in self.adj]:
 				temp = ('(%-10s %s %s) WriteAdjust\n' %
 					(power, self.adj[power][0], ', '.join(self.adj[power][1:])))
 				self.outFile.write(temp.encode('latin-1'))
 			self.adj = {}
+		if 'A' in self.discoveries:
+			for powered in sorted(self.discoveries['A']):
+				temp = ('(%-10s %s %s) WriteAdjust\n' %
+					(powered[:-2], ', '.join(self.discoveries['A'][powered]),
+					self.translate(powered[-1] == 'F' and 'FOUND' or 'LOST')))
+				self.outFile.write(temp.encode('latin-1'))
+		self.discoveries = {}
 		#	-------------------------------------
 		#	SC ownership report and SC coloration
 		#	-------------------------------------

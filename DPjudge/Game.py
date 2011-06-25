@@ -2314,9 +2314,9 @@ class Game:
 				os.rename(x, x[:-1] + `idx`)
 		if branch:
 			for x in glob.glob(self.file('status.*.' + `branch`)):
-				phase = x.split('.')[1]
+				phase = x.split('.')[-2]
 				if self.map.comparePhases(phase, self.phase) >= 0:
-					os.rename(x, 'status.' + phase + '.0')
+					os.rename(x, self.file('status.' + phase + '.0'))
 		return idx
 	#	----------------------------------------------------------------------
 	def occupant(self, site, anyCoast = 0):
@@ -3138,6 +3138,25 @@ class Game:
 						if (self.command.get(his, 'H')[0] != '-'
 						or self.result.get(his)): after += [his[2:]]
 						else: after += [self.command[his].split()[-1]]
+				elif self.phaseType == 'R':
+					if 'popped' not in vars(self): self.popped = []
+					after = [x for x in before if x not in
+					[y[2:] for y in seer.retreats.keys()]]
+					for order in seer.adjust:
+						word = order.split()
+						if (' ' in unit
+						and ('UNITS_SEE_SAME' in rules and word[1][0] != unit[0]
+						or	'UNITS_SEE_OTHER' in rules and word[1][0] == unit[0])):
+							continue
+						if word[3][0] == '-' and word[2] not in self.popped:
+							after += [word[-1]]
+				elif self.phaseType == 'A':
+					after = [x for x in before if x not in
+					[y.split()[2] for y in seer.adjust]] + [x[1] for x in
+					[y.split()[1:] for y in seer.adjust if y[0] == 'B']
+					if ' ' not in unit
+					or unit[0] != x[0][0] and 'UNITS_SEE_OTHER' in rules
+					or unit[0] == x[0][0] and 'UNITS_SEE_SAME' in rules]
 			#	------------------------------------------------
 			#	Get the list of the "seer"s sighted scs (if any)
 			#	------------------------------------------------
@@ -3200,7 +3219,8 @@ class Game:
 							'%-11s %s FOUND.' % (self.anglify(who.name) + ':',
 							self.anglify(what[0] + ' ' + it))]
 			power.units.remove(unit)
-		elif unit == 'WAIVED': return ['SHOW ' + power.name]
+		elif unit == 'WAIVED': return ['SHOW MASTER ' + ' '.join(
+			[x.name for x in self.powers if x == power or x.omniscient])]
 		else: cmd, there = 'H', unit
 		for who, how in self.visible(power, unit, cmd).items():
 			if how & 8:
@@ -3208,8 +3228,8 @@ class Game:
 				else: (found, came)[how & 4 > 0].append(who)
 			elif how & 1: (lost, gone)[how & 2 > 0].append(who)
 		if self.phaseType != 'M' and word[2] in notes: found = arrived = []
-		for who, what in ((gone, ('LOST', 'DEPARTS')[self.phaseType == 'M']),
-						  (lost, 'LOST'), (found, 'FOUND'), (came, 'ARRIVES')):
+		for who, what in ((gone, 'DEPARTS'), (lost, 'LOST'),
+						  (found, 'FOUND'), (came, 'ARRIVES')):
 			if who:
 				list += ['SHOW ' + ' '.join(who)]
 				if self.phaseType == 'M': list += ['%s: %s %s.' %
@@ -3217,7 +3237,7 @@ class Game:
 					self.anglify((unit, there)[what[0] in 'FA'], power), what) +
 					'  (*dislodged*)' * ('dislodged' in notes)]
 				else: list += ['%-11s %s %s.' % (self.anglify(power.name) + ':',
-					self.anglify((unit, there)[what[0] != 'L'], power), what)]
+					self.anglify((unit, there)[what[0] in 'FA'], power), what)]
 		return list + ['SHOW ' + ' '.join(all)]
 	#	----------------------------------------------------------------------
 	def moveResults(self):
@@ -3348,7 +3368,7 @@ class Game:
 		return list
 	#	----------------------------------------------------------------------
 	def otherResults(self):
-		conflicts, popped, owner, list = {}, [], 0, ['%s orders for ' %
+		conflicts, self.popped, owner, list = {}, [], 0, ['%s orders for ' %
 			self.phase.split()[2][:-1].title() + self.phaseName(), '']
 		for power in self.powers:
 			#	---------------------------------------------------
@@ -3424,7 +3444,7 @@ class Game:
 		#	be destroyed in PREFERENCE to other retreaters.
 		#	Ditto for Map.abutRules['~'] (strait crossings),
 		#	which are actually even WEAKER (drop them first).
-		#	When finished, "popped" will be a list of all
+		#	When finished, "self.popped" will be a list of all
 		#	retreaters who didn't make it.
 		#	-------------------------------------------------
 		for site, retreaters in conflicts.items():
@@ -3432,17 +3452,20 @@ class Game:
 				if len(retreaters) < 2: continue
 				for retreater in retreaters[:]:
 					if (retreater, site) in self.map.abutRules.get(weak, []):
-						popped += [retreater]
+						self.popped += [retreater]
 						retreaters.remove(retreater)
-			if len(retreaters) > 1: popped += retreaters
+			if len(retreaters) > 1: self.popped += retreaters
 		#	----------------------------
 		#	Add the orders to the output
 		#	----------------------------
 		for power in self.powers:
+			if 'BLIND' in self.rules:
+				for unit in power.units:
+					list += self.showLines(power, ['HOLD'] + unit.split(), [])[:-1]
 			for order in power.adjust or []:
 				word = order.split()
 				if 'BLIND' in self.rules:
-					list += self.showLines(power, word, popped)
+					list += self.showLines(power, word, self.popped)
 				list += ['%-11s %s.' %
 					(self.anglify(power.name) + ':', self.anglify(order))]
 				if word[0] == 'BUILD' and len(word) > 2:
@@ -3459,7 +3482,7 @@ class Game:
 						power.homes += [sc]
 				elif word[0] == 'REMOVE': power.units.remove(' '.join(word[1:]))
 				elif len(word) == 5:
-					if word[2] in popped: list[-1] += '  (*bounce, destroyed*)'
+					if word[2] in self.popped: list[-1] += '  (*bounce, destroyed*)'
 					else: power.units += [word[1] + ' ' + word[-1]]
 			if self.phaseType == 'A':
 				count = len(power.centers) - len(power.units)
