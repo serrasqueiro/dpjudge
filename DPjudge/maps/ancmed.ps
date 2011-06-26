@@ -143,6 +143,7 @@
 /ShowPage {
 	DrawAliases
 	InTextMode { FinishReport } { r } ifelse
+	FrameMap
 	showpage
 } bd
 /VisitColors {
@@ -153,14 +154,14 @@
 	/IceGrey .9 g
 	/ArrowBlack 0 g
 	/ArrowWhite .9 g
-	/Black 0 g
 	/White .9 g
+	/Black 0 g
 	/LandBrown .8 .7 .4 r
 	/SeaBlue .1 .4 .6 r
 	/ArrowRed 1 0 0 r
 	/ArrowBlue .529 .808 .922 r
-	/Blue 0 0 1 r
 	/DarkGreen 0 .4 0 r
+	/Blue 0 0 1 r
 	/Yellow 1 1 0 r
 	/Green 0 .7 0 r
 	/Red 1 0 0 r
@@ -545,45 +546,45 @@
 } bd
 /ArrowMove {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	PaintArrowMove
 	r
 } bd
 /ArrowHold {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	24 PaintArrowCircle
 	r
 } bd
 /ArrowSupport {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	center
 	8 PaintArrowCircle
 	r
 } bd
 /ArrowConvoy {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	center
 	12 PaintArrowCircle
 	r
 } bd
 /ArrowArrive {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	PaintArrowArrive
 	r
 } bd
 /ArrowDepart {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	PaintArrowDepart
 	r
 } bd
@@ -747,7 +748,7 @@
 	} ifelse
 	end
 } bd
-/DrawBorders {
+/DrawLayoutBorders {
 	s
 	TextFixedFont 8 y z
 	r
@@ -855,15 +856,6 @@
 } bd
 /FinishAdjustReport {
 	Adjustment begin Finish end
-} bd
-/DrawFrame {
-	SwitchToTextMode
-	s
-	Black 6 w
-	24.6 141 555.6 418 rectstroke
-	LandBrown 1.5 w
-	25.35 141.75 554.1 416.5 rectstroke
-	r
 } bd
 /Retreat <<
 	/Steps [
@@ -999,17 +991,24 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		27.6 144 549.6 412 rectclip
-		24.6 141.69 t .6293 .6293 x -14.57 -12 t
+		27.6 144 549.6 412 rectclip .6293 .6293 x 24.52 213.16 t
 		ArrowColor
 		OkOrder
 	} if
 } bd
+/FrameMap {
+	s
+	2 w LandBrown
+	24.6 141.69 m 580.2 141.69 l 580.2 558.31 l 24.6 558.31 l
+	p
+	s 8 w Black k r
+	clipsave clip k cliprestore
+	r
+} bd
 /PaintMap {
 	SwitchToMapMode
 	s
-	LandBrown
-	14.57 12 882.86 662 rectfill
+	LandBrown 14.57 12 882.86 662 rectfill
 	IncludeSeas
 	IncludeLands
 	IncludeBorders
@@ -1019,7 +1018,6 @@
 } bd
 /DrawMap {
 	PageSetup
-	DrawFrame
 	PaintMap
 	DrawSupplies
 } bd
@@ -1046,16 +1044,24 @@
 /IncludeSeas {
 	s
 	.1429 .1429 x
-	/fk { p s SeaBlue f r k } bd
-	7 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
+	/fk {
+		p
+		s SeaBlue f r
+		k
+	} bd
+	7 w BorderBlack
 	OutlineAncmedSeawater
 	r
 } bd
 /IncludeLands {
 	s
 	.1429 .1429 x
-	/fk { p s LandBrown f r k } bd
-	7 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
+	/fk {
+		p
+		s LandBrown f r
+		k
+	} bd
+	7 w BorderBlack
 	OutlineAncmedLandcolor
 	r
 } bd
@@ -1063,7 +1069,7 @@
 	s
 	.1429 .1429 x
 	/fk { k } bd
-	7 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
+	7 w BorderBlack
 	OutlineAncmedBlack
 	r
 } bd
@@ -1071,7 +1077,7 @@
 	s
 	.1429 .1429 x
 	/fk { k } bd
-	7 w [ ] 0 d 0 setlinecap 0 setlinejoin Blue
+	7 w Blue
 	OutlineAncmedRiverwater
 	r
 } bd
@@ -2715,11 +2721,12 @@ MapUnitLetterFont z
 } VisitPowers
 r
 /ChangeController false def
-{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind VisitSupplies
 /EGYPTCENTER /EGYPT ld
 /CARTHAGECENTER /CARTHAGE ld
 /GREECECENTER /GREECE ld
 /ROMECENTER /ROME ld
 /PERSIACENTER /PERSIA ld
 /UNOWNEDCENTER /UNOWNED ld
+{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind
+VisitSupplies
 %%EndSetup

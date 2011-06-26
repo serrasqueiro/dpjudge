@@ -1,999 +1,1734 @@
-%!PS-Adobe-2.0
-%%Title: Diplomacy map (Sail Ho!)
-%%Orientation: Landscape
+%!PS-Adobe-3.0
+%%Title: Diplomacy Map (Sail Ho!)
+%%Creator: dpmap, using a map created with DPeye by Mario Huys (woelpad@yahoo.com)
 %%DocumentPaperSizes: Letter
-%%BoundingBox: 0 0 612 792
-%%Pages: (atend) 1
+%%LanguageLevel: 2
+%%Orientation: Landscape
+%%Pages: (atend)
+%%DocumentNeededResources: font Helvetica-Bold Courier Courier-Bold Times-Roman
 %%EndComments
 
+%%BeginDefaults
+%%PageResources: font Helvetica-Bold Courier Courier-Bold Times-Roman
+%%EndDefaults
+
 % INFO
-% 330 330 Psy/wc Village of Psyche (west coast)
-% 400 330 Psy/ec Village of Psyche (east coast)
-% 203 307 Hes/nc Shrine to Hestia (north coast)
-% 195 280 Hes/sc Shrine to Hestia (south coast)
-% 170 390 Mor Morpheus' Palace
-% 180 450 Alc Alcmene's Village
-% 230 470 Her Hercules' Respite
-% 290 510 Oly Mount Olympus
-% 350 510 Aeo Village of Aeolus
-% 420 510 Chi Chiron's Cave
-% 460 475 Cen Centaur Forest
-% 460 420 Ech Echo's Glade
-% 470 380 Ama Amazon Village
-% 275 420 Sal Salmonius' Scheme
-% 315 460 Mid Realm of King Midas
-% 300 380 Pro Prometheus' Cliff
-% 200 360 SoD Sea of Dreams
-% 250 390 GoC Gulf of Chains
-% 120 340 Wes Western Ocean
-% 250 330 SoA Sea of Arrows
-% 360 455 Gli Glittering Gulf
-% 410 455 Nar Narcissus' Reflection
-% 370 410 SoW Sea of Waves
-% 167 297 Les Isle of Lesbos
-% 200 305 Hes Shrine to Hestia
-% 235 290 Ves Convent of the Vestal Virgins
-% 195 230 Fir Sea of Fire
-% 120 270 LbS Lesbian Sea
-% 120 200 Pea Ocean of Peace
-% 140 160 Cha Charon's Crossing
-% 190 180 Tar Tartarus
-% 240 180 Per Persephone's Garden
-% 290 175 Had Depths of Hades
-% 330 175 Gab Gabrielle's Village
-% 380 170 Xen Xena's Rest
-% 425 160 Arg Argo's Pasture
-% 290 215 SoT Sea of Tears
-% 360 220 Pos Poseidon's Curse
-% 480 173 Cec Cecrops' Channel
-% 510 135 Sou South Sea
-% 530 310 Eas Eastern Ocean
-% 490 210 Str Strife's Cave
-% 485 250 Are Palace of Ares
-% 490 280 Ser Serina's Village
-% 450 225 Hin Forest of the Golden Hind
-% 440 260 Nes Nestor's Kingdom
-% 540 450 Min Minotaur's Labyrinth
-% 430 320 Sch Scholars Channel
-% 330 250 Lov Lover's Lane
-% 345 300 Cup Cupid's Cloud
-% 360 330 Psy Village of Psyche
-% 370 370 Aph Aphrodite's Beach
-% 500 540 Sis Sisyphus' Hill
-% 300 555 Zeu Temple of Zeus
-% 410 555 Tan Tantalus' Pool
-% 120 450 Jas Jason's Kingdom
-% 150 520 Fie Field of the Golden Fleece
-% 105 155 Ely Elysian Fields
-% 210 132 Fur Realm of the 3 Furies
-% 290 132 Cal Callisto's Stronghold
-% 350 132 Aut Autolycus' Hideout
-% 400 132 Jox Joxter's Retreat
-% 220 550 Dei Deianeira's Grave
-% 520 390 Hip Hippolyta's Girdle
+%  378  568 AEO    Village of Aeolus
+%  208  508 ALC    Alcmene's Village
+%  498  438 AMA    Amazon Village
+%  398  428 APH    Aphrodite's Beach
+%  513  308 ARE    Palace of Ares
+%  453  218 ARG    Argo's Pasture
+%  378  190 AUT    Autolycus' Hideout
+%  318  190 CAL    Callisto's Stronghold
+%  508  231 CEC    Cecrops' Channel
+%  488  533 CEN    Centaur Forest
+%  168  218 CHA    Charon's Crossing
+%  448  568 CHI    Chiron's Cave
+%  373  358 CUP    Cupid's Cloud
+%  248  608 DEI    Deianeira's Grave
+%  558  368 EAS    Eastern Ocean
+%  488  478 ECH    Echo's Glade
+%  133  213 ELY    Elysian Fields
+%  178  578 FIE    Field of the Golden Fleece
+%  223  288 FIR    Sea of Fire
+%  238  190 FUR    Realm of the 3 Furies
+%  358  233 GAB    Gabrielle's Village
+%  388  513 GLI    Glittering Gulf
+%  278  448 GOC    Gulf of Chains
+%  318  233 HAD    Depths of Hades
+%  258  528 HER    Hercules' Respite
+%  228  363 HES    Shrine to Hestia
+%  231  365 HES/NC Shrine to Hestia (north coast)
+%  223  338 HES/SC Shrine to Hestia (south coast)
+%  478  283 HIN    Forest of the Golden Hind
+%  548  448 HIP    Hippolyta's Girdle
+%  148  508 JAS    Jason's Kingdom
+%  428  190 JOX    Joxter's Retreat
+%  148  328 LBS    Lesbian Sea
+%  195  355 LES    Isle of Lesbos
+%  358  308 LOV    Lover's Lane
+%  343  518 MID    Realm of King Midas
+%  568  508 MIN    Minotaur's Labyrinth
+%  198  448 MOR    Morpheus' Palace
+%  438  513 NAR    Narcissus' Reflection
+%  468  318 NES    Nestor's Kingdom
+%  318  568 OLY    Mount Olympus
+%  148  258 PEA    Ocean of Peace
+%  268  238 PER    Persephone's Garden
+%  388  278 POS    Poseidon's Curse
+%  328  438 PRO    Prometheus' Cliff
+%  388  388 PSY    Village of Psyche
+%  428  388 PSY/EC Village of Psyche (east coast)
+%  358  388 PSY/WC Village of Psyche (west coast)
+%  303  478 SAL    Salmonius' Scheme
+%  458  378 SCH    Scholars Channel
+%  518  338 SER    Serina's Village
+%  528  598 SIS    Sisyphus' Hill
+%  278  388 SOA    Sea of Arrows
+%  228  418 SOD    Sea of Dreams
+%  318  273 SOT    Sea of Tears
+%  538  193 SOU    South Sea
+%  398  468 SOW    Sea of Waves
+%  518  268 STR    Strife's Cave
+%  438  613 TAN    Tantalus' Pool
+%  218  238 TAR    Tartarus
+%  263  348 VES    Convent of the Vestal Virgins
+%  148  398 WES    Western Ocean
+%  408  228 XEN    Xena's Rest
+%  328  613 ZEU    Temple of Zeus
 % MAP
 
-% * modified by George Boyce for use with his mapit program, i.e.
-% * this file provides the following procedures:
-% *
-% * DrawMap      draws the base map
-% * DrawName     draws a province name
-% * DrawArmy     draws an army
-% * DrawFleet    draws a fleet
-% * DrawTitle    write game title
-% * DrawMessage  write a footnote/message
-%
-% * OrderReport   positions point to write order report
-% * RetreatReport
-% * OwnerReport
-% * AdjustReport
-% * StatusReport
-%
-% * WriteOrder   writes the order line
-% * WriteRetreat
-% * WriteOwner
-% * WriteAdjust
-% * WriteStatus
-%
-% * ArrowMove    draws arrow indicating a move order
-% * ArrowHold
-% * ArrowSupport
-% * ArrowConvoy
-% * ArrowRetreat
-%
-% * BuildUnit    draws ray around newly built unit
-% * DestroyUnit  draws slash through destroyed unit
-% * DisbandUnit
-% * RemoveUnit
-%
-
-% shorthands:
+%%BeginSetup
 /bd { bind def } bind def
 /xd { exch def } bd
 /ld { load def } bd
-
-% constants:
-  /NameOffset {LetterSize} def		% distance below point to draw name
-  /UnitOffset 6 def			% distance above point to draw unit
-
-  /TitleFontSize 20 def			% font size (Times-Roman)
-  /MessageFontSize 8 def		% font size (Times-Roman)
-  /NameFontSize 9 def			% font size (Helvetica-Bold)
-  /OrderFontSize 10 def			% font size (Courier)
-  /OwnerFontSize 8 def			% font size (Courier)
-
-  /HeadLength 6 def			% of a move arrow head
-  /HalfHeadThickness 4 2 div def	
-
-  /HalfThickness 1 40 div def		% of a move/support/convoy arrow shaft
-
-  /HoldCircle 9 def	% of a support hold arrow
-  /MoveCircle 4 def	% of a support move arrow
-  /ConvoyCircle 6 def	% of a convoy arrow
-
-/ShowPage /showpage load def	% nothing special required
-
-/OrderReport {	% to the right of the map
- maxx 5 add maxy 75 sub moveto
- /Courier findfont OrderFontSize scalefont setfont
-} def
-/RetreatReport { % below order report with a title in slightly larger font
- maxx 5 add maxy 485 sub moveto
- /Courier-Bold findfont OrderFontSize 2 add scalefont setfont
- currentpoint OrderFontSize sub 2 sub (Retreat orders:) show moveto
- /Courier findfont OrderFontSize scalefont setfont
-} def
-/OwnerReport {	% below left half of 
- minx miny 10 sub moveto
- /Courier findfont OwnerFontSize scalefont setfont
-} def
-/AdjustReport {	% below right half of map
- minx 330 add miny 10 sub moveto
- /Courier findfont OwnerFontSize scalefont setfont
-} def
-/StatusReport {	% in upper right corner of map
- maxx 100 sub maxy 10 sub moveto
- /Courier findfont OwnerFontSize scalefont setfont
-} def
-
-/Write { currentpoint 3 2 roll show moveto 0 FontSize neg rmoveto } def
-/WriteOrder { /FontSize OrderFontSize def Write } def
-/WriteRetreat { WriteOrder } def
-/WriteOwner { /FontSize OwnerFontSize def Write } def
-/WriteAdjust { WriteOwner } def
-/WriteStatus { WriteOwner } def
-
-% failed orders get dashed lines, good orders normal lines
-/FailedOrder { [2] 1 setdash } def
-/OkOrder { [] 0 setdash } def
-
-/DrawTitle {
-% maxx 5 add maxy 10 sub moveto
- maxx 5 add maxy 40 sub moveto
- /Times-Roman findfont TitleFontSize scalefont setfont
- currentpoint (DIPLOMACY) show moveto
- 0 TitleFontSize neg rmoveto
- dup stringwidth pop 192 exch div dup 1 lt
-	{ gsave 1 scale show grestore }{ pop show } ifelse
-} def
-
-/DrawMessage {
- minx maxy MessageFontSize add moveto
- /Times-Roman findfont MessageFontSize scalefont setfont
- show
-} def
-
-% draw an arrow indicating a move order between two points
-/ArrowMove {
-  /tipy exch def
-  /tipx exch def
-  /taily exch def
-  /tailx exch def
-
-  /dx tipx tailx sub def
-  /dy tipy taily sub def
-  /angle dy dx atan def
-
-% positon origin at base of arrow with arrow point along x axis
-  gsave
-  tailx taily translate
-  angle rotate
-
-  /arrowlength dx dx mul dy dy mul add sqrt def
-  /base arrowlength HeadLength sub def
-
-  % if base of arrow is long enough, shorten it
-  % e.g. which moves arrow start beyond support circle
-  /x base LetterSize gt {/base base LetterSize sub def LetterSize /arrowlength arrowlength LetterSize sub def} {0} ifelse def
-  % if base is still 5 or longer, shorten it some more
-  % which makes arrow head touch support circle
-  base LetterSize ge {/base base LetterSize sub def /arrowlength arrowlength LetterSize sub def} if
-
-  x 0 translate
-
-  newpath
-  0 HalfThickness neg moveto
-  base HalfThickness neg lineto
-  base HalfHeadThickness neg lineto
-  arrowlength 0 lineto
-  base HalfHeadThickness lineto
-  base HalfThickness lineto
-  0 HalfThickness lineto
-  closepath
-
-  stroke
-
-  grestore
-} def
-
-% draw an arrow indicating support of a unit holding at p1
-/ArrowHold {
-  /tipy exch def
-  /tipx exch def
-  /taily exch def
-  /tailx exch def
-
-  tailx taily tipx tipy HoldCircle ArrowCircle
-
-} def
-
-% draw arrow indicating support of a unit moving from p1 to p2
-/ArrowSupport {
-  /y2 exch def
-  /x2 exch def
-  /y1 exch def
-  /x1 exch def
-  /taily exch def
-  /tailx exch def
-
-% find midpoint of (x1,y1)-(x2,y2)
-  /tipx x1 x2 min x1 x2 sub abs 2 div add def
-  /tipy y1 y2 min y1 y2 sub abs 2 div add def
-
-  tailx taily tipx tipy MoveCircle ArrowCircle
-
-} def
-
-% draw arrow indicating convoy of a unit moving from p1 to p2
-/ArrowConvoy {
-  /y2 exch def
-  /x2 exch def
-  /y1 exch def
-  /x1 exch def
-  /taily exch def
-  /tailx exch def
-
-% find midpoint of (x1,y1)-(x2,y2)
-  /tipx x1 x2 min x1 x2 sub abs 2 div add def
-  /tipy y1 y2 min y1 y2 sub abs 2 div add def
-
-  tailx taily tipx tipy ConvoyCircle ArrowCircle
-
-} def
-
-% draw an arrow indicating a retreat order between two points
-/ArrowRetreat {
-  /tipy exch def
-  /tipx exch def
-  /taily exch def
-  /tailx exch def
-
-  /dx tipx tailx sub def
-  /dy tipy taily sub def
-  /angle dy dx atan def
-
-% positon origin at base of arrow with arrow point along x axis
-  gsave
-  Red
-  tailx taily translate
-  angle rotate
-
-  /arrowlength dx dx mul dy dy mul add sqrt def
-  /base arrowlength HeadLength 2 mul HalfThickness HalfHeadThickness div sub sub def
-
-  % if base of arrow is long enough, shorten it
-  % e.g. which moves arrow start beyond support circle
-  /x base LetterSize gt {/base base LetterSize sub def LetterSize /arrowlength arrowlength LetterSize sub def} {0} ifelse def
-  % if base is still 5 or longer, shorten it some more
-  % which makes arrow head touch support circle
-  base LetterSize ge {/base base LetterSize sub def /arrowlength arrowlength LetterSize sub def} if
-
-  /headBase arrowlength base add HalfThickness HalfHeadThickness div sub 2 div def
-
-  x 0 translate
-
-  newpath
-  0 HalfThickness neg moveto
-  base HalfThickness neg lineto
-  base HalfHeadThickness neg lineto
-  headBase HalfThickness neg lineto
-  headBase HalfHeadThickness neg lineto
-  arrowlength 0 lineto
-  headBase HalfHeadThickness lineto
-  headBase HalfThickness lineto
-  base HalfHeadThickness lineto
-  base HalfThickness lineto
-  0 HalfThickness lineto
-  closepath
-
-  stroke
-
-  grestore
-} def
-
-/ArrowCircle {	% like an arrow but with a circle at the tip
-  /headdiam exch def
-  /tipy exch def
-  /tipx exch def
-  /taily exch def
-  /tailx exch def
-
-  /dx tipx tailx sub def
-  /dy tipy taily sub def
-  /arrowlength dx dx mul dy dy mul add sqrt def
-  /angle dy dx atan def
-  /base arrowlength headdiam sub def
-
-% positon origin at base of arrow with arrow point along x axis
-  gsave
-  tailx taily translate
-  angle rotate
-
-  % if base of arrow is long enough, shorten it by LetterSize
-  % e.g. which moves arrow start beyond support circle
-  /x base LetterSize gt {/base base LetterSize sub def /arrowlength arrowlength LetterSize sub def LetterSize} {0} ifelse def
-
-  x 0 translate
-
-% draw the shaft first...
-  base HalfThickness neg moveto
-  0 HalfThickness neg lineto
-  0 HalfThickness lineto
-  base HalfThickness lineto
-% now the circle...
-  /a 180 HalfThickness headdiam 2 div atan sub def
-  /b 180 HalfThickness headdiam 2 div atan add def
-  arrowlength 0 headdiam a b arcn
-
-  closepath
-  stroke
-  grestore
-} def
-
-% draw the given name centered just below the specified point
-/DrawName { % x y str => -
- gsave
- 0 2 translate
- /Helvetica-Bold findfont NameFontSize scalefont setfont
- 3 1 roll translate
-% mark the spot...
-% 0 0 5 0 360 arc fill
- dup stringwidth pop
- -2 div 0 NameOffset sub moveto show
- grestore
-} def
-
-% Letters for the different countries
-%
-% 0 means "nobody", then 1-4 going alphabetically from east
-/Countries [
-  (?) (E) (N) (S) (W) (?)
-] def
-
-/country 0 def
-
-/Black { 0 0 0 setrgbcolor }   bind def
-/White { 0.9 0.9 0.9 setrgbcolor }   bind def
-/Grey  { 0.7 setgray } bind def
-
-/Red    { 1 0 0   setrgbcolor } bind def
-/Pink   { 0.3 0 0 setrgbcolor } bind def
-/Blue   { 0 0 1   setrgbcolor } bind def
-/Mauve  { 1 0 1   setrgbcolor } bind def
-/Yellow { 1 1 0   setrgbcolor } bind def
-/Orange { 1 0.5 0.3  setrgbcolor } bind def
-/Green  { 0 0.7 0 setrgbcolor } bind def
-/Brown  { 0.6 0.45 0.2 setrgbcolor } bind def
-/Turquoise { 0.2 0.7 0.7 setrgbcolor } bind def
-
-% Piece colourname, Contrast colourname
-/UnownedColours { /Brown /White } def
-/EastColours { /Black  /White } def
-/NorthColours  { /Blue  /White } def
-/SouthColours { /Red /White } def
-/WestColours  { /Green /White } def
-
-/set_country { % N /piececolour /contrast => -
-    load /Contrast exch store
-    load /PieceColour exch store
-    /country exch store
-} bind def
-
-/UNOWNED { 0 UnownedColours set_country } def
-/EAST    { 1 EastColours set_country } def
-/NORTH   { 2 NorthColours  set_country } def
-/SOUTH   { 3 SouthColours set_country } def
-/WEST    { 4 WestColours  set_country } def
-
-/Offsets 5 array def
-
-/max { % p q => max(p,q)
-  2 copy lt { exch} if pop
-} bind def
-
-/min { % p q => min(p,q)
-  2 copy gt { exch} if pop
-} bind def
-
-/InitLetters {
-  0 0				% maxdx maxdy
-  0 1 4 {
-    /N exch def
-    Countries N get	% maxdx maxdy (N)
-    newpath 0 0 moveto
-    true charpath pathbbox     % ... llx lly urx ury
-    %
-    % Compute the offset in to centre the letter at 0,0
-       4 copy		% llx lly urx ury
-       3 -1 roll add -2 div	% llx urx dy
-       3 1 roll add -2 div	% dy dx
-       exch 2 array astore	% [dx,dy]
-       Offsets N 3 -1 roll put  % - ([dx,dy] stored in offsets)
-    %
-    % Update maximum xwidth, ywidth
-    3 -1 roll sub		% llx urx leny
-    3 1 roll exch sub exch	% lenx leny
-    				% maxdx maxdy lenx leny
-    3 -1 roll max		% maxdx lenx newmaxdy
-    3 1 roll max		% newmaxdy newmaxdx
-    exch
-  } for
-
-  newpath
-  % maxdx maxdy = biggest bounding rectangle of the letters
-  max 1.5 mul /LetterSize exch def
-} def
-
-/supply 
-{
-  gsave  translate
-  newpath 1.000 0.957 scale
-  0.05 setlinewidth 
-  0 0 3.2 0.000 360.000 arc gsave PieceColour fill grestore Black stroke
-  grestore 
-} 
-def
-
-/MOR { 170 370} def
-/ALC { 180 430} def
-/HER { 230 450} def
-/OLY { 290 490} def
-/AEO { 350 490} def
-/CHI { 420 490} def
-/CEN { 460 455} def
-/ECH { 460 400} def
-/AMA { 470 360} def
-/SAL { 275 400} def
-/MID { 315 440} def
-/PRO { 300 365} def
-/SOD { 200 340} def
-/GOC { 250 370} def
-/WES { 120 320} def
-/SOA { 250 310} def
-/GLI { 360 435} def
-/NAR { 410 435} def
-/SOW { 370 390} def
-/LES { 152 290} def
-/HES { 200 285} def
-/VES { 235 270} def
-/FIR { 195 210} def
-/LBS { 120 250} def
-/PEA { 120 180} def
-/CHA { 140 140} def
-/TAR { 190 160} def
-/PER { 240 160} def
-/HAD { 290 155} def
-/GAB { 330 155} def
-/XEN { 380 150} def
-/ARG { 425 140} def
-/SOT { 290 195} def
-/POS { 360 200} def
-/CEC { 480 153} def
-/SOU { 510 115} def
-/EAS { 530 290} def
-/STR { 490 195} def
-/ARE { 485 235} def
-/SER { 490 260} def
-/HIN { 450 205} def
-/NES { 440 245} def
-/MIN { 540 430} def
-/SCH { 430 300} def
-/LOV { 330 230} def
-/CUP { 325 300} def
-/PSY { 360 310} def
-/APH { 370 355} def
-/SIS { 500 520} def
-/ZEU { 300 535} def
-/TAN { 410 535} def
-/JAS { 120 430} def
-/FIE { 150 500} def
-/ELY { 103 135} def
-/FUR { 210 112} def
-/CAL { 290 112} def
-/AUT { 350 112} def
-/JOX { 400 112} def
-/DEI { 220 530} def
-/HIP { 520 370} def
-
-
-/cen {
-gsave
-UNOWNED
-MOR supply
-HER supply
-AEO supply
-CEN supply
-AMA supply
-PRO supply
-LES supply
-VES supply
-TAR supply
-HAD supply
-XEN supply
-STR supply
-ARE supply
-NES supply
-CUP supply
-APH supply
-grestore
-} def
-
-/Offsets 6 array def
-
-/max { % p q => max(p,q)
-  2 copy lt { exch} if pop
-} bind def
-
-/min { % p q => min(p,q)
-  2 copy gt { exch} if pop
-} bind def
-
-/InitLetters {
-  0 0				% maxdx maxdy
-  0 1 5 {
-    /N exch def
-    Countries N get	% maxdx maxdy (N)
-    newpath 0 0 moveto
-    true charpath pathbbox     % ... llx lly urx ury
-    %
-    % Compute the offset in to centre the letter at 0,0
-       4 copy		% llx lly urx ury
-       3 -1 roll add -2 div	% llx urx dy
-       3 1 roll add -2 div	% dy dx
-       exch 2 array astore	% [dx,dy]
-       Offsets N 3 -1 roll put  % - ([dx,dy] stored in offsets)
-    %
-    % Update maximum xwidth, ywidth
-    3 -1 roll sub		% llx urx leny
-    3 1 roll exch sub exch	% lenx leny
-    				% maxdx maxdy lenx leny
-    3 -1 roll max		% maxdx lenx newmaxdy
-    3 1 roll max		% newmaxdy newmaxdx
-    exch
-  } for
-
-  newpath
-  % maxdx maxdy = biggest bounding rectangle of the letters
-  max 1.5 mul /LetterSize exch def
-} def
-
-/Helvetica-Bold findfont NameFontSize scalefont setfont InitLetters
-
-/PieceColour { 1 setgray } bind def
-/Contrast { 0 setgray } bind def
-
-% Army is a little cannon...
-/DrawArmy { % x y X => -
-  country
-  3 1 roll UnitOffset add
-  gsave translate
-    gsave 
-      newpath
-      0.8 0.8 scale
-      LetterSize 14 div dup scale
-      -20 7 moveto 30 0 rlineto 0 -4 rlineto 4 0 rlineto
-       0 -2 rlineto -30 0 rlineto 0  2 rlineto -4 0 rlineto
-       0 4 rlineto		% barrel
-       4 2 moveto 20 -10 rlineto 2 0 rlineto -8 0 rlineto
-      -20  10 rlineto		% carriage
-      Contrast 2 setlinewidth stroke
-      0 0 9 0 360 arc	% wheel
-      closepath
-      Contrast 2 setlinewidth stroke
-      newpath
-      -20 7 moveto 30 0 rlineto 0 -4 rlineto 4 0 rlineto
-       0 -2 rlineto -30 0 rlineto 0  2 rlineto -4 0 rlineto
-       0 4 rlineto		% barrel
-       4 2 moveto 20 -10 rlineto 2 0 rlineto -8 0 rlineto
-      -20  10 rlineto		% carriage
-      PieceColour fill
-      0 0 9 0 360 arc	% wheel
-      closepath
-      PieceColour fill
-    grestore
-    dup Offsets exch get aload pop	% N dx dy
-    moveto
-    /Helvetica-Bold findfont NameFontSize scalefont setfont
-    Countries exch get Contrast show	% then a white letter
-  grestore
-} bind def
-
-% Fleet is a little boat...
-/DrawFleet { % N x y => -
-  country
-  3 1 roll UnitOffset add
-  gsave translate
+/ifloor { .001 add floor cvi } bd
+/iceiling { .001 sub ceiling cvi } bd
+/min { 2 copy gt { exch } if pop } bd
+/max { 2 copy lt { exch } if pop } bd
+/secure_atan { 2 copy 0 eq exch 0 eq and { pop pop 0 } { atan } ifelse } bd
+/center { 3 2 roll add 2 div 3 1 roll add 2 div exch } bd
+/a /arc ld
+/c /curveto ld
+/d /setdash ld
+/f /fill ld
+/h /show ld
+/k /stroke ld
+/l /lineto ld
+/m /moveto ld
+/n /newpath ld
+/o /rotate ld
+/p /closepath ld
+/r /grestore ld
+/s /gsave ld
+/t /translate ld
+/w /setlinewidth ld
+/x /scale ld
+/y /scalefont ld
+/z /setfont ld
+/Powers 20 dict def
+%%IncludeResource: font Helvetica-Bold
+/MapUnitLetterFont /Helvetica-Bold findfont 14 y def
+%%IncludeResource: font Helvetica-Bold
+/MapNameFont /Helvetica-Bold findfont 14 y def
+%%IncludeResource: font Courier
+/TextFixedFont /Courier findfont def
+%%IncludeResource: font Courier-Bold
+/TextHeadingFont /Courier-Bold findfont def
+%%IncludeResource: font Times-Roman
+/TextTitleFont /Times-Roman findfont def
+/PageSetup {
+	612 0 t
+	90 o
+	/FinishReport { } def /InTextMode true def
+	Black
+	MovePhase
+} bd
+/ShowPage {
+	DrawAliases
+	InTextMode { FinishReport } { r } ifelse
+	FrameMap
+	showpage
+} bd
+/VisitColors {
 	3 dict begin
-	/m /moveto ld
-	/l /lineto ld
-	/p { lineto closepath } bd
-	2 .5 div setlinewidth [] 0 setdash
-	gsave
-	LetterSize 14 div .5 mul .8 mul dup scale
-	-35 -16 translate
-	newpath
-	12 3 m 12 9 l 9 12 l 6 13 l 6 17 l % bow
-	9 17 l 9 23 l 2 22 l 7 16 l 6 16 l 1 22 l % bowsprit
-	6 27 l 12 37 l 15 45 l % front sail
-	19 44 l 19 48 l 16 48 l 15 49 l 19 49 l 19 55 l 20 55 l 20 49 l 24 49 l 23 48 l 20 48 l 20 44 l % front mast
-	24 43 l 24 34 l 27 29 l 33 29 l 33 32 l 25 32 l 28 39 l 31 51 l % mid sail left
-	35 50 l 35 54 l 30 54 l 29 55 l 35 55 l 35 63 l 36 63 l 36 56 l 36 55 l 42 55 l 41 54 l 36 54 l 36 50 l % mid mast
-	41 49 l 41 32 l 36 32 l 36 29 l 39 29 l 41 43 l % mid sail right
-	45 43 l 45 47 l 41 47 l 41 48 l 45 48 l 45 55 l 46 55 l 46 48 l 51 48 l 50 47 l 46 47 l 46 43 l % rear mast
-	48 43 l 49 28 l 51 28 l 51 31 l 54 33 l 54 23 l 57 26 l 57 22 l 56 21 l % rear sail and flag
-	56 15 l 59 12 l 59 7 l 57 4 l 55 3 p % bow
-	gsave Contrast stroke grestore
-	PieceColour fill
-	grestore
+	/c xd /r xd /g xd
+	/BorderBlack .1 g
+	/MountainGrey .5 g
+	/IceGrey .9 g
+	/ArrowBlack 0 g
+	/ArrowWhite .9 g
+	/White .9 g
+	/Black 0 g
+	/LandBrown .8 .7 .4 r
+	/SeaBlue .1 .4 .6 r
+	/ArrowRed 1 0 0 r
+	/ArrowBlue .529 .808 .922 r
+	/DarkGreen 0 .4 0 r
+	/Blue 0 0 1 r
+	/Red 1 0 0 r
+	/Green 0 .7 0 r
+	/Brown .6 .45 .2 r
 	end
-    dup Offsets exch get aload pop	% N dx dy
-    moveto
-    /Helvetica-Bold findfont NameFontSize scalefont setfont
-    Countries exch get Contrast show	% then a white letter
-  grestore
-} bind def
-
-% draw a ray around a newly built unit
-/BuildUnit { % x y => -
-  gsave
-  UnitOffset add translate
-  LetterSize 14 div dup scale
-  White
-  6 setlinewidth [ 1 8 ] 0 setdash
-  newpath
-  0 0 24 0 360 arc
-  closepath stroke
-  grestore
-} bind def
-
-% draw a slash through a unit
-/SlashUnit { % x y => -
-  UnitOffset add translate
-  LetterSize 14 div dup scale
-  newpath
-  -21 -16 moveto
-  -5 0 lineto -21 16 lineto -11 16 lineto 0 5 lineto
-  11 16 lineto
-  21 16 lineto
-  5 0 lineto 21 -16 lineto 11 -16 lineto 0 -5 lineto
-  -11 -16 lineto
-  closepath
-  fill
-} bind def
-
-% draw a slash through a destroyed unit
-/DestroyUnit { % x y => -
-  gsave
-  Black SlashUnit
-  grestore
-} bind def
-
-% draw a slash through a disbanded unit
-/DisbandUnit { % x y => -
-  gsave
-  Red SlashUnit
-  grestore
-} bind def
-
-% draw a slash through a removed unit
-/RemoveUnit { % x y => -
-  gsave
-  White SlashUnit
-  grestore
-} bind def
-
-
-/Credits {
-
-% give credits
-/Times-Roman findfont 6 scalefont setfont
-30 70 moveto
-currentpoint (Sailho! Diplomacy) show
-moveto 0 -12 rmoveto
-currentpoint (Variant and map designed by Tarzan) show
-moveto 0 -6 rmoveto
-currentpoint (Electronic map by Juho Snellman) show
-moveto 0 -6 rmoveto
-currentpoint () show
-moveto 0 -12 rmoveto
-currentpoint (Diplomacy is a trademark of the Avalon Hill Game Company,) show
-moveto 0 -6 rmoveto
-(Baltimore, Maryland, all rights reserved.) show
 } def
-
-/DrawMap
+/VisitPowers {
+	1 dict begin
+	/p xd
+	/EAST (E) /Black /White p
+	/NORTH (N) /Blue /White p
+	/SOUTH (S) /Red /White p
+	/WEST (W) /Green /White p
+	/UNOWNED (?) /Brown /White p
+	end
+} def
+/Controls {
+	/ChangeController true def
+} bd
+/DrawFleet {
+	SwitchToMapMode
+	Power begin
+	s t
+	.7 .7 x
+	0 8 t
+	s
+	.5 .5 x -35 -16 t
+	12 3 m 12 9 l 9 12 l 6 13 l 6 17 l % bow
+	9 17 l 9 23 l 2 22 l 7 16 l 6 16 l
+	1 22 l % bowsprit
+	6 27 l 12 37 l 15 45 l % front sail
+	19 44 l 19 48 l 16 48 l 15 49 l 19 49 l
+	19 55 l 20 55 l 20 49 l 24 49 l 23 48 l
+	20 48 l 20 44 l % front mast
+	24 43 l 24 34 l 27 29 l 33 29 l 33 32 l
+	25 32 l 28 39 l 31 51 l % mid sail left
+	35 50 l 35 54 l 30 54 l 29 55 l 35 55 l
+	35 63 l 36 63 l 36 56 l 36 55 l 42 55 l
+	41 54 l 36 54 l 36 50 l % mid mast
+	41 49 l 41 32 l 36 32 l 36 29 l 39 29 l
+	41 43 l % mid sail right
+	45 43 l 45 47 l 41 47 l 41 48 l 45 48 l
+	45 55 l 46 55 l 46 48 l 51 48 l 50 47 l
+	46 47 l 46 43 l % rear mast
+	48 43 l 49 28 l 51 28 l 51 31 l 54 33 l
+	54 23 l 57 26 l 57 22 l 56 21 l % rear sail and flag
+	56 15 l 59 12 l 59 7 l 57 4 l 55 3 l p % bow
+	s Controlled { s 12 w Outer k r } if 4 w Contrast k r Paint f
+	r
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	r
+	end
+} bd
+/DrawArmy {
+	SwitchToMapMode
+	Power begin
+	s t
+	.7 .7 x
+	0 8 t
+	n 0 0 9 0 360 a p % wheel
+	Controlled { s 6 w Outer k r } if 2 w Contrast k
+	-20 7 m 10 7 l 10 3 l 14 3 l
+	14 1 l -16 1 l -16 3 l -20 3 l p % barrel
+	4 2 m 24 -8 l 26 -8 l 18 -8 l -2 2 l % carriage
+	s Controlled { s 6 w Outer k r } if 2 w Contrast k r Paint f
+	n 0 0 9 0 360 a p % wheel
+	Paint f
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	r
+	end
+} bd
+/DrawAlias {
+	SwitchToMapMode
+	s
+	3 1 roll t
+	.7 .7 x
+	0 -14 t
+	MapNameFont z
+	dup stringwidth pop -2 div 0 neg m h
+	r
+} bd
+/DrawName {
+	pop pop pop
+} bd
+/VisitTerritories {
+	5 dict begin
+	/b xd
+	/g xd
+	/w xd
+	/l xd
+	/c xd
+	(MOR) 198 448 c
+	(ALC) 208 508 c
+	(HER) 258 528 c
+	(AEO) 378 568 c
+	(CHI) 448 568 c
+	(CEN) 488 533 c
+	(ECH) 488 478 c
+	(AMA) 498 438 c
+	(SAL) 303 478 c
+	(MID) 343 518 c
+	(PRO) 328 438 c
+	(LES) 195 355 c
+	(VES) 263 348 c
+	(CHA) 168 218 c
+	(TAR) 218 238 c
+	(PER) 268 238 c
+	(HAD) 318 233 c
+	(GAB) 358 233 c
+	(XEN) 408 228 c
+	(ARG) 453 218 c
+	(STR) 518 268 c
+	(SER) 518 338 c
+	(HIN) 478 283 c
+	(NES) 468 318 c
+	(MIN) 568 508 c
+	(CUP) 373 358 c
+	(APH) 398 428 c
+	(JAS) 148 508 c
+	(ELY) 133 213 c
+	(JOX) 428 190 c
+	(HIP) 548 448 c
+	(OLY) 318 568 l
+	(ARE) 513 308 l
+	(SIS) 528 598 l
+	(ZEU) 328 613 l
+	(TAN) 438 613 l
+	(FIE) 178 578 l
+	(FUR) 238 190 l
+	(CAL) 318 190 l
+	(AUT) 378 190 l
+	(DEI) 248 608 l
+	(SOD) 228 418 w
+	(GOC) 278 448 w
+	(WES) 148 398 w
+	(SOA) 278 388 w
+	(GLI) 388 513 w
+	(NAR) 438 513 w
+	(SOW) 398 468 w
+	(FIR) 223 288 w
+	(LBS) 148 328 w
+	(PEA) 148 258 w
+	(SOT) 318 273 w
+	(POS) 388 278 w
+	(CEC) 508 231 w
+	(SOU) 538 193 w
+	(EAS) 558 368 w
+	(SCH) 458 378 w
+	(LOV) 358 308 w
+	(HES) 228 363 g
+	(PSY) 388 388 g
+	(PSY/WC) 358 388 b
+	(PSY/EC) 428 388 b
+	(HES/NC) 231 365 b
+	(HES/SC) 223 338 b
+	end
+} def
+/VisitSupplies {
+	1 dict begin
+	/s xd
+	/MOR 198 428 s
+	/HER 258 508 s
+	/AEO 378 548 s
+	/CEN 488 513 s
+	/AMA 498 418 s
+	/PRO 328 423 s
+	/LES 180 348 s
+	/VES 263 328 s
+	/TAR 218 218 s
+	/HAD 318 213 s
+	/XEN 408 208 s
+	/STR 518 253 s
+	/ARE 513 293 s
+	/NES 468 303 s
+	/CUP 353 358 s
+	/APH 398 413 s
+	end
+} def
+/supply {
+	SwitchToMapMode
+	Power begin
+	s
+	t
+	.7 .7 x
+	Controlled {
+		Outer
+		n 0 0 8 0 360 a f
+		Contrast
+		n 0 0 6 0 360 a f
+	} if
+	Paint
+	n 0 0 4 0 360 a f
+	r
+	end
+} bd
+/SetArrowStateOk {
+	[] 0 d
+} bd
+/OkOrder {
+	/SetArrowState /SetArrowStateOk ld
+} bd
+/SetArrowStateFailed {
+	[4 6] 2 d
+} bd
+/FailedOrder {
+	/SetArrowState /SetArrowStateFailed ld
+} bd
+/MovePhase {
+	/ArrowColor /ArrowBlack ld
+	/ArrowBase 20 def
+	/TraceArrowHead /TraceSingleArrowHead ld
+	InTextMode not { ArrowColor } if
+} bd
+/RetreatPhase {
+	/ArrowColor /ArrowRed ld
+	/ArrowBase 39.8 def
+	/TraceArrowHead /TraceDoubleArrowHead ld
+	InTextMode not { ArrowColor } if
+} bd
+/ProposePhase {
+	/ArrowColor /ArrowWhite ld
+	/ArrowBase 39.8 def
+	/TraceArrowHead /TraceDoubleArrowHead ld
+	InTextMode not { ArrowColor } if
+} bd
+/TraceSingleArrowHead {
+	% draw the arrow head ...
+	n
+	dup -5 m
+	dup 20 add 0 l
+	dup 5 l
+	p
+} bd
+/TraceDoubleArrowHead {
+	% draw the double arrow head ...
+	n
+	dup -5 m
+	dup 19.8 add
+	dup -1 l
+	dup -5 l
+	dup 20 add 0 l
+	dup 5 l
+	1 l
+	dup 5 l
+	p
+} bd
+/PaintArrowMove {
+	s
+	3 index 3 index t
+	3 2 roll sub 3 1 roll exch sub exch
+	2 copy dup mul exch dup mul add sqrt 3 1 roll exch secure_atan
+	.7 .7 x
+	0 8 t
+	o
+	.7 div ArrowBase sub
+	% if base of arrow is long enough, shorten it enough
+	% to e.g. move arrow start beyond support circle
+	dup 14 gt {
+		14 14 0 t sub
+	} {
+		0 t 0
+	} ifelse
+	% if base is still too long, shorten it some more
+	% to make arrow head touch support circle
+	dup 14 gt {
+		14 sub
+	} {
+		pop 0
+	} ifelse
+	1 w
+	TraceArrowHead
+	k
+	% now the shaft ...
+	2 w
+	0 0 m
+	0 l
+	k
+	r
+} bd
+/PaintArrowCircle {
+	s
+	5 1 roll
+	3 index 3 index t
+	3 2 roll sub 3 1 roll exch sub exch
+	2 copy dup mul exch dup mul add sqrt 3 1 roll exch secure_atan
+	.7 .7 x
+	0 8 t
+	o
+	.7 div
+	1 index sub
+	% if base of arrow is long enough, shorten it enough
+	% to e.g. move arrow start beyond support circle
+	dup 14 gt {
+		14 14 0 t sub
+	} {
+		0 t 0
+	} ifelse
+	% draw the circle ...
+	1 w
+	n
+	2 copy add 0 4 3 roll 0 360 a
+	p k
+	% now the shaft ...
+	2 w
+	0 0 m
+	0 l
+	k
+	r
+} bd
+/PaintArrowArrive {
+	s
+	t
+	.7 .7 x
+	0 8 t
+	180 rotate 54 ArrowBase add neg 0 t
+	40
+	1 w
+	TraceArrowHead
+	k
+	% now the shaft ...
+	2 w
+	0 0 m
+	0 l
+	k
+	-5 0 m -10 0 l
+	-15 0 m -20 0 l
+	k
+	r
+} bd
+/PaintArrowDepart {
+	s
+	t
+	.7 .7 x
+	0 8 t
+	-54 0 t
+	40
+	2 w
+	0 0 m
+	0 l
+	-6 0 m -10 0 l
+	-16 0 m -20 0 l
+	k
+	r
+} bd
+/ArrowMove {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowMove
+	r
+} bd
+/ArrowHold {
+	SwitchToMapMode
+	s
+	SetArrowState
+	24 PaintArrowCircle
+	r
+} bd
+/ArrowSupport {
+	SwitchToMapMode
+	s
+	SetArrowState
+	center
+	8 PaintArrowCircle
+	r
+} bd
+/ArrowConvoy {
+	SwitchToMapMode
+	s
+	SetArrowState
+	center
+	12 PaintArrowCircle
+	r
+} bd
+/ArrowArrive {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowArrive
+	r
+} bd
+/ArrowDepart {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowDepart
+	r
+} bd
+/ArrowRetreat {
+	RetreatPhase
+	ArrowMove
+	MovePhase
+} bd
+/ArrowPropose {
+	ProposePhase
+	ArrowMove
+	MovePhase
+} bd
+/ArrowRetreatArrive {
+	RetreatPhase
+	ArrowArrive
+	MovePhase
+} bd
+/ArrowRetreatDepart {
+	RetreatPhase
+	ArrowDepart
+	MovePhase
+} bd
+/BuildUnit {
+	SwitchToMapMode
+	s
+	t
+	ArrowWhite
+	.7 .7 x
+	0 8 t
+	6 w [ 3.14 6.28 ] 1.57 d
+	n
+	0 0 24 0 360 a
+	p k
+	r
+} bd
+/SlashUnit {
+	s
+	3 1 roll t
+	.7 .7 x
+	0 8 t
+	n
+	-21 -16 m
+	11 16 l
+	21 16 l
+	-11 -16 l
+	p
+	exec
+	r
+} bd
+/DestroyUnit {
+	SwitchToMapMode
+	{ ArrowRed f } SlashUnit
+} bd
+/DisbandUnit {
+	SwitchToMapMode
+	{ s ArrowWhite f r 1 w ArrowRed k } SlashUnit
+} bd
+/RemoveUnit {
+	SwitchToMapMode
+	{ ArrowWhite f } SlashUnit
+} bd
+/FindUnit {
+	SwitchToMapMode
+	s
+	t
+	ArrowBlue
+	.7 .7 x
+	0 8 t
+	6 w [ 3.14 6.28 ] 1.57 d
+	n
+	0 0 24 0 360 a
+	p k
+	r
+} bd
+/LoseUnit {
+	SwitchToMapMode
+	s
+	t
+	ArrowBlue
+	.7 .7 x
+	0 8 t
+	4 w
+	-12 4 m
+	-8 7 -4 7 0 4 c
+	4 1 8 1 12 4 c
+	-12 -4 m
+	-8 -1 -4 -1 0 -4 c
+	4 -7 8 -7 12 -4 c
+	k
+	r
+} bd
+/QueryUnit {
+	SwitchToMapMode
+	s
+	t
+	ArrowWhite
+	.7 .7 x
+	0 8 t
+	4 w
+	-12 4 m
+	-8 7 -4 7 0 4 c
+	4 1 8 1 12 4 c
+	-12 -4 m
+	-8 -1 -4 -1 0 -4 c
+	4 -7 8 -7 12 -4 c
+	k
+	r
+} bd
+/SplitString {
+	7 dict begin
+	/nrChars xd
+	/indentString xd
+	/objectString xd
+	/objectLast objectString length 1 sub def
+	% Short string?
+	objectLast nrChars lt {
+		false objectString
+	} {
+		% Look for a suitable place to split.
+		% First tracking backwards, if that doesn't work, look forward.
+		/splitIndex -1 def
+		nrChars -1 0 {
+			objectString 1 index get 32 eq {
+				/splitIndex xd exit
+			} if pop
+		} for splitIndex -1 eq {
+			nrChars 1 add 1 objectLast {
+				objectString 1 index get 32 eq {
+					/splitIndex xd exit
+				} if pop
+			} for
+		} if
+		splitIndex -1 eq splitIndex objectLast eq or {
+			false objectString
+		} {
+			% The first part.
+			objectString 0 splitIndex getinterval
+			% The second part.
+			objectString splitIndex 1 add objectLast splitIndex sub getinterval
+			% Add indentation if needed.
+			indentString length 0 gt {
+				dup length indentString length add string
+				dup 0 indentString putinterval
+				dup indentString length 4 3 roll putinterval
+			} if
+			% Add white space of the first part.
+			/nonSpaceIndex objectLast 1 add def
+			0 1 objectLast {
+				objectString 1 index get 32 ne {
+					/nonSpaceIndex xd exit
+				} if pop
+			} for
+			nonSpaceIndex 0 gt nonSpaceIndex splitIndex lt and {
+				dup length nonSpaceIndex add string
+				dup 0 objectString 0 nonSpaceIndex getinterval putinterval
+				dup nonSpaceIndex 4 3 roll putinterval
+			} if
+			exch true exch
+		} ifelse
+	} ifelse
+	end
+} bd
+/DrawLayoutBorders {
+	s
+	TextFixedFont 12 y z
+	r
+} bd
+/Owner <<
+	/Steps [
+		{ /Count 0 def /Y 123.36 def false true } bind
+		{
+			Count 7 ge { false true } {
+				65 SplitString
+				/Count Count 1 add def /Y Y 12 sub def
+				21.6 Y m h
+				true false
+			} ifelse
+		} bind
+		{
+			65 SplitString [ exch {
+				21.6 27.36 m h
+			} /exec load ] cvx /Finish xd
+			true true
+		} bind
+		{
+			/Count 1 def /Finish {
+				21.6 27.36 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
+			} bd false true
+		} bind
+		{ /Count Count 1 add def 65 SplitString pop true false } bind
+	]
+	/Start {
+		TextFixedFont 12 y z
+		/StepIndex 0 def
+		/Step Steps 0 get def
+		/Finish { } def
+	} bind
+	/Write {
+		(  ) {
+			Step {
+				/StepIndex StepIndex 1 add def
+				/Step Steps StepIndex get def
+			} if { not { exit } if () } if
+		} loop
+	} bind
+>> def
+/OwnerReport {
+	SwitchToTextMode
+	Owner begin Start end
+	/FinishReport /FinishOwnerReport load def
+} bd
+/WriteOwner {
+	Owner begin Write end
+} bd
+/FinishOwnerReport {
+	Owner begin Finish end
+} bd
+/Adjustment <<
+	/Steps [
+		{ /Count 0 def /Y 123.36 def false true } bind
+		{
+			Count 7 ge { false true } {
+				37 SplitString
+				/Count Count 1 add def /Y Y 12 sub def
+				504 Y m h
+				true false
+			} ifelse
+		} bind
+		{
+			37 SplitString [ exch {
+				504 27.36 m h
+			} /exec load ] cvx /Finish xd
+			true true
+		} bind
+		{
+			/Count 1 def /Finish {
+				504 27.36 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
+			} bd false true
+		} bind
+		{ /Count Count 1 add def 37 SplitString pop true false } bind
+	]
+	/Start {
+		TextHeadingFont 12 y z
+		504 123.36 moveto
+		(Adjustments) h
+		TextFixedFont 12 y z
+		/StepIndex 0 def
+		/Step Steps 0 get def
+		/Finish { } def
+	} bind
+	/Write {
+		(  ) {
+			Step {
+				/StepIndex StepIndex 1 add def
+				/Step Steps StepIndex get def
+			} if { not { exit } if () } if
+		} loop
+	} bind
+>> def
+/AdjustReport {
+	SwitchToTextMode
+	Adjustment begin Start end
+	/FinishReport /FinishAdjustReport load def
+} bd
+/WriteAdjust {
+	Adjustment begin Write end
+} bd
+/FinishAdjustReport {
+	Adjustment begin Finish end
+} bd
+/Retreat <<
+	/Steps [
+		{ /Count 0 def /Y 231.36 def false true } bind
+		{
+			Count 7 ge { false true } {
+				37 SplitString
+				/Count Count 1 add def /Y Y 12 sub def
+				504 Y m h
+				true false
+			} ifelse
+		} bind
+		{
+			37 SplitString [ exch {
+				504 135.36 m h
+			} /exec load ] cvx /Finish xd
+			true true
+		} bind
+		{
+			/Count 1 def /Finish {
+				504 135.36 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
+			} bd false true
+		} bind
+		{ /Count Count 1 add def 37 SplitString pop true false } bind
+	]
+	/Start {
+		TextHeadingFont 12 y z
+		504 231.36 moveto
+		(Retreats) h
+		TextFixedFont 12 y z
+		/StepIndex 0 def
+		/Step Steps 0 get def
+		/Finish { } def
+	} bind
+	/Write {
+		(  ) {
+			Step {
+				/StepIndex StepIndex 1 add def
+				/Step Steps StepIndex get def
+			} if { not { exit } if () } if
+		} loop
+	} bind
+>> def
+/RetreatReport {
+	SwitchToTextMode
+	Retreat begin Start end
+	/FinishReport /FinishRetreatReport load def
+} bd
+/WriteRetreat {
+	Retreat begin Write end
+} bd
+/FinishRetreatReport {
+	Retreat begin Finish end
+} bd
+/Order <<
+	/Steps [
+		{ /Count 0 def /Y 519.36 def false true } bind
+		{
+			Count 22 ge { false true } {
+				37 SplitString
+				/Count Count 1 add def /Y Y 12 sub def
+				504 Y m h
+				true false
+			} ifelse
+		} bind
+		{
+			37 SplitString [ exch {
+				504 243.36 m h
+			} /exec load ] cvx /Finish xd
+			true true
+		} bind
+		{
+			/Count 1 def /Finish {
+				504 243.36 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
+			} bd false true
+		} bind
+		{ /Count Count 1 add def 37 SplitString pop true false } bind
+	]
+	/Start {
+		TextFixedFont 12 y z
+		/StepIndex 0 def
+		/Step Steps 0 get def
+		/Finish { } def
+	} bind
+	/Write {
+		(  ) {
+			Step {
+				/StepIndex StepIndex 1 add def
+				/Step Steps StepIndex get def
+			} if { not { exit } if () } if
+		} loop
+	} bind
+>> def
+/OrderReport {
+	SwitchToTextMode
+	Order begin Start end
+	/FinishReport /FinishOrderReport load def
+} bd
+/WriteOrder {
+	Order begin Write end
+} bd
+/FinishOrderReport {
+	Order begin Finish end
+} bd
+/DrawTitle {
+	SwitchToTextMode
+	TextTitleFont 36 y z
+	(Diplomacy)
+	504 562.08 m h
+	TextTitleFont 24 y z
+	dup stringwidth pop dup 266.4 gt {
+		504 528 m
+		266.4 exch div dup 1 x exch
+		0 6.72 rmoveto h
+		1 exch div 1 x
+	} {
+		pop 504 534.72 m h
+	} ifelse
+} bd
+/SwitchToTextMode {
+	InTextMode {
+		FinishReport /FinishReport { } def
+	} {
+		r /InTextMode true def
+	} ifelse
+} bd
+/SwitchToMapMode {
+	InTextMode {
+		FinishReport /FinishReport { } def
+		/InTextMode false def
+		s
+		27.6 138 456 444 rectclip .9649 .9649 x -93.87 -33.27 t
+		ArrowColor
+		OkOrder
+	} if
+} bd
+/FrameMap {
+	s
+	2 w LandBrown
+	24.6 135.95 m 486.6 135.95 l 486.6 584.05 l 24.6 584.05 l
+	p
+	s 8 w Black k r
+	clipsave clip k cliprestore
+	r
+} bd
+/PaintMap {
+	SwitchToMapMode
+	s
+	SeaBlue 119.36 174.16 478.8 464.4 rectfill
+	IncludeIsland
+	IncludeInternalBorders
+	r
+} bd
+/DrawMap {
+	PageSetup
+	PaintMap
+	DrawSupplies
+} bd
+/DrawSupplies {
+	SwitchToMapMode
+	UNOWNEDCENTER
+	{ supply pop } bind
+	VisitSupplies
+} bd
+/DrawAliases {
+	NameTerritories
+} bd
+/NameTerritories {
+	SwitchToMapMode
+	s
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ White 3 2 roll DrawAlias } bind
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ pop pop pop } bind
+	VisitTerritories
+	r
+} bd
+/IncludeIsland {
+	s
+	/fk {
+		p
+		s LandBrown f r
+		k
+	} bd
+	1 w BorderBlack
+	OutlineChartBrown
+	r
+} bd
+/IncludeInternalBorders {
+	s
+	/fk { k } bd
+	1 w [ 6 2 ] 3 d BorderBlack
+	OutlineChartBlack
+	r
+} bd
+/OutlineChartBrown {
+	445.36 307.84 m
+	448.72 301.2 l
+	453.2 298.8 l
+	456.8 294 l
+	455.6 288.32 l
+	460.8 277.36 l
+	473.6 267.6 l
+	476.88 265.52 l
+	480.8 264.32 l
+	482.56 261.36 l
+	490.8 255.12 l
+	510.56 246.72 l
+	521.28 244.8 l
+	540 255.12 l
+	543.2 259.2 l
+	547.36 270.96 l
+	544.4 274.24 l
+	544.96 280.56 l
+	549.76 283.52 l
+	553.12 288 l
+	559.68 288.96 l
+	561.6 292.96 l
+	559.2 309.12 l
+	545.36 335.52 l
+	535.76 341.52 l
+	520.8 349.92 l
+	489.6 352.32 l
+	461.36 334.96 l
+	459.2 329.12 l
+	454.4 325.2 l
+	445.2 307.92 l
+	445.36 307.84 l
+	fk
+	120 173.92 m
+	120 218.72 l
+	126.56 229.36 l
+	142.16 234.16 l
+	158.4 226.96 l
+	172.96 228 l
+	192 234.16 l
+	212.4 246.16 l
+	235.2 248.56 l
+	266.96 244.96 l
+	271.36 244.8 l
+	277.68 242.16 l
+	296.4 240.72 l
+	307.68 237.36 l
+	323.92 242.72 l
+	338.88 240 l
+	362.96 241.92 l
+	379.76 251.52 l
+	387.76 251.12 l
+	403.12 253.2 l
+	424.8 250.32 l
+	433.12 241.2 l
+	448.08 236.72 l
+	460.08 228.96 l
+	472.08 225.92 l
+	489.6 211.36 l
+	476.4 189.76 l
+	476.96 174.16 l
+	120 173.92 l
+	fk
+	170.4 342.72 m
+	175.76 338.56 l
+	183.52 337.2 l
+	193.2 332.56 l
+	214.16 343.92 l
+	224 341.12 l
+	234.56 342.16 l
+	240.56 333.12 l
+	246 315.12 l
+	252.56 312.16 l
+	262.72 310.8 l
+	271.2 314.56 l
+	280.16 322.96 l
+	284.96 333.76 l
+	280.96 345.04 l
+	279.6 354.72 l
+	269.36 359.52 l
+	261.6 364.96 l
+	250.96 368.16 l
+	244.8 372.72 l
+	227.6 374.72 l
+	217.12 372.32 l
+	199.76 372.16 l
+	187.76 370.32 l
+	181.76 370.96 l
+	172.8 363.12 l
+	169.76 356.56 l
+	170.96 342.16 l
+	170.4 342.72 l
+	fk
+	347.36 349.36 m
+	364.16 341.52 l
+	382.72 342 l
+	385.76 346.96 l
+	393.2 355.2 l
+	398.32 356.72 l
+	403.2 361.36 l
+	415.76 371.52 l
+	416 388.56 l
+	430.16 407.52 l
+	421.76 433.92 l
+	411.52 439.52 l
+	400.08 440.16 l
+	390.48 440.16 l
+	382.8 436.96 l
+	376.16 421.36 l
+	364.8 406.32 l
+	363.52 395.44 l
+	350.96 375.76 l
+	342.48 366 l
+	341.28 353.44 l
+	347.28 348.96 l
+	347.36 349.36 l
+	fk
+	597.2 637.12 m
+	120 637.52 l
+	119.92 432 l
+	178.8 433.36 l
+	190.4 422.16 l
+	197.92 420 l
+	202.8 421.92 l
+	210.48 432.96 l
+	216 446.56 l
+	217.76 449.52 l
+	227.36 472.96 l
+	234.56 483.12 l
+	238.8 483.12 l
+	241.76 492.16 l
+	250.8 485.52 l
+	256.8 486.16 l
+	266.4 478.32 l
+	278.4 477.76 l
+	286.8 457.36 l
+	298.8 442.32 l
+	302.96 435.76 l
+	310.16 408.16 l
+	324 409.36 l
+	324.56 412.96 l
+	337.76 414.72 l
+	346.16 437.52 l
+	351.6 444.16 l
+	346.16 481.92 l
+	366.56 510.72 l
+	364.16 517.92 l
+	371.36 528.16 l
+	379.76 536.56 l
+	391.76 540.72 l
+	401.36 546.72 l
+	404.4 546.72 l
+	421.2 549.12 l
+	425.36 547.92 l
+	428.96 547.92 l
+	444.56 540.72 l
+	456 531.76 l
+	469.2 507.12 l
+	464.96 486.16 l
+	464.96 453.12 l
+	476.4 424.32 l
+	483.6 420.72 l
+	492 397.36 l
+	492.56 393.12 l
+	496.16 393.12 l
+	499.76 388.96 l
+	511.76 391.36 l
+	525.6 402.72 l
+	535.76 415.92 l
+	543.6 426.16 l
+	559.2 429.76 l
+	567.6 429.76 l
+	572.96 426.16 l
+	582 425.52 l
+	597.6 418.32 l
+	597.2 637.12 l
+	fk
+} bd
+/OutlineChartBlack {
+	145.76 232.32 m
+	146.4 219.12 l
+	144.56 212.56 l
+	144 207.76 l
+	146.96 203.52 l
+	149.36 199.92 l
+	171.6 196.96 l
+	178.8 197.52 l
+	193.2 201.12 l
+	200.4 210.72 l
+	196.8 216.72 l
+	194.4 235.36 l
+	fk
+	192 201.76 m
+	194.96 196.96 l
+	202.8 196.96 l
+	212.96 196.32 l
+	216.56 199.36 l
+	230.96 198.16 l
+	237.6 202.32 l
+	240 206.56 l
+	250.8 208.96 l
+	244.8 221.52 l
+	242.4 225.76 l
+	244.16 234.72 l
+	243.76 247.2 l
+	fk
+	198 174.72 m
+	202.8 182.56 l
+	209.92 190.24 l
+	214.8 198.16 l
+	fk
+	251.36 208.96 m
+	255.6 205.36 l
+	265.2 199.92 l
+	270 199.36 l
+	274.16 194.56 l
+	283.12 190.8 l
+	286.16 184.96 l
+	291.6 183.12 l
+	296.4 174.72 l
+	fk
+	270.48 199.2 m
+	277.2 200.56 l
+	282 201.76 l
+	286.8 201.76 l
+	294.56 199.36 l
+	301.76 199.92 l
+	291.6 210.72 l
+	290.4 214.96 l
+	290.4 228.72 l
+	297.2 240.96 l
+	fk
+	301.68 199.52 m
+	306 199.36 l
+	324 199.92 l
+	328.16 196.96 l
+	345.6 196.96 l
+	351.6 186.16 l
+	349.2 174.72 l
+	fk
+	338.88 239.76 m
+	337.76 232.32 l
+	340.8 218.56 l
+	340.8 213.76 l
+	344.96 205.92 l
+	344.96 197.52 l
+	fk
+	350.96 187.36 m
+	356.96 190.96 l
+	360.56 199.92 l
+	370.16 204.16 l
+	377.36 211.36 l
+	380.4 220.96 l
+	386.96 236.56 l
+	385.2 243.12 l
+	387.76 251.12 l
+	fk
+	378.56 213.76 m
+	383.36 208.96 l
+	388.16 207.76 l
+	391.2 202.96 l
+	403.36 195.92 l
+	397.76 187.92 l
+	398.4 183.12 l
+	400.8 181.36 l
+	395.2 174.32 l
+	fk
+	403.12 196.24 m
+	412.16 201.12 l
+	417.52 207.04 l
+	424.16 210.16 l
+	434.96 213.76 l
+	437.36 219.76 l
+	451.2 234.72 l
+	fk
+	417.52 207.36 m
+	454.16 192.72 l
+	459.6 193.36 l
+	477.6 189.76 l
+	fk
+	492 351.76 m
+	498 333.76 l
+	503.36 325.92 l
+	fk
+	503.36 325.92 m
+	503.36 321.76 l
+	487.76 312.16 l
+	484.16 306.72 l
+	466.8 291.76 l
+	456.8 286.24 l
+	fk
+	482.96 305.52 m
+	490.8 299.52 l
+	490.8 294.72 l
+	500.96 287.52 l
+	502.16 283.92 l
+	497.36 271.92 l
+	491.36 262.96 l
+	484.8 259.36 l
+	fk
+	501.2 286.8 m
+	508.8 283.36 l
+	516.56 282.16 l
+	527.36 283.92 l
+	531.6 292.96 l
+	537.6 301.36 l
+	546 306.72 l
+	559.2 307.92 l
+	fk
+	502.8 325.36 m
+	506.4 325.36 l
+	511.2 320.56 l
+	518.4 321.12 l
+	524.4 321.12 l
+	529.76 319.36 l
+	536.4 316.96 l
+	545.36 310.32 l
+	546 306.72 l
+	fk
+	350.56 375.36 m
+	371.36 370.96 l
+	393.6 373.36 l
+	413.36 370.32 l
+	413.36 370.96 l
+	fk
+	364.16 404.56 m
+	372.56 408.16 l
+	382.8 404.56 l
+	394.16 403.36 l
+	399.6 405.76 l
+	407.36 403.36 l
+	418.8 400.96 l
+	422.4 402.16 l
+	425.92 402 l
+	fk
+	213.2 372 m
+	205.76 339.76 l
+	fk
+	241.2 330.16 m
+	242.4 335.52 l
+	246.56 339.12 l
+	248.4 345.76 l
+	252 352.32 l
+	256.8 358.32 l
+	266.4 361.36 l
+	fk
+	464.96 463.92 m
+	491.36 462.16 l
+	499.76 460.32 l
+	507.6 460.32 l
+	518.4 454.32 l
+	522 442.32 l
+	522.56 438.72 l
+	526.8 437.52 l
+	530.4 432.16 l
+	533.36 432.16 l
+	542.32 423.36 l
+	fk
+	570.48 427.52 m
+	571.2 433.92 l
+	566.4 445.36 l
+	570.56 452.56 l
+	578.4 459.12 l
+	582.56 468.72 l
+	577.76 478.96 l
+	559.76 478.96 l
+	546 468.16 l
+	538.16 469.92 l
+	531.6 477.12 l
+	522 477.12 l
+	517.76 472.96 l
+	514.16 468.72 l
+	518.4 454.32 l
+	fk
+	169.76 493.36 m
+	192 490.96 l
+	195.6 482.56 l
+	205.2 476.56 l
+	208.8 466.32 l
+	222 459.12 l
+	fk
+	241.68 491.76 m
+	241.76 495.12 l
+	232.16 510.16 l
+	225.6 531.12 l
+	219.6 543.76 l
+	181.2 543.12 l
+	fk
+	223.2 638.56 m
+	222.56 622.32 l
+	235.76 601.36 l
+	230.4 591.12 l
+	225.6 579.76 l
+	222 567.76 l
+	220.8 560.56 l
+	220.16 541.92 l
+	fk
+	346.16 481.92 m
+	337.2 475.36 l
+	332.4 468.72 l
+	318 462.72 l
+	305.36 454.96 l
+	297.76 443.44 l
+	fk
+	277.2 477.12 m
+	282 496.32 l
+	288.56 514.32 l
+	301.2 526.32 l
+	312.56 525.12 l
+	315.6 515.52 l
+	316.16 503.52 l
+	319.2 491.52 l
+	325.76 485.52 l
+	337.76 476.56 l
+	fk
+	293.36 639.12 m
+	290.96 626.56 l
+	288.56 604.96 l
+	276 589.92 l
+	257.36 584.56 l
+	254.4 590.56 l
+	248.4 591.12 l
+	232.16 594.72 l
+	fk
+	391.2 639.12 m
+	388.8 631.92 l
+	388.8 624.72 l
+	393.6 613.36 l
+	395.28 600.96 l
+	388.8 599.52 l
+	382.8 595.36 l
+	373.76 590.56 l
+	358.8 586.96 l
+	342 586.32 l
+	325.76 586.32 l
+	314.96 589.36 l
+	309.6 591.12 l
+	288.56 604.96 l
+	fk
+	348.16 586.8 m
+	343.76 570.16 l
+	342.56 561.12 l
+	343.2 550.32 l
+	344.96 546.72 l
+	349.76 545.52 l
+	355.76 544.96 l
+	358.16 539.52 l
+	370.16 525.76 l
+	fk
+	312.16 525.36 m
+	317.36 535.36 l
+	326.96 535.36 l
+	332.96 535.36 l
+	345.6 546.72 l
+	fk
+	272.88 589.2 m
+	271.2 564.72 l
+	277.76 549.76 l
+	283.76 540.16 l
+	301.76 526.32 l
+	fk
+	394.8 601.36 m
+	409.2 594.16 l
+	415.2 589.92 l
+	439.2 589.92 l
+	442.8 593.52 l
+	458.96 598.32 l
+	468.56 597.12 l
+	481.2 592.32 l
+	485.92 591.36 l
+	491.36 598.96 l
+	491.36 605.52 l
+	483.6 618.16 l
+	484.16 622.96 l
+	492 639.12 l
+	fk
+	418.72 589.84 m
+	421.76 557.52 l
+	421.76 549.12 l
+	fk
+	454.8 532.96 m
+	462.56 545.52 l
+	468.56 555.12 l
+	476.96 559.36 l
+	483.6 564.72 l
+	493.2 565.92 l
+	498 568.96 l
+	515.36 570.16 l
+	516 573.76 l
+	fk
+	531.6 476.56 m
+	540.56 481.92 l
+	542.96 487.36 l
+	541.2 497.52 l
+	539.36 501.76 l
+	532.8 503.52 l
+	524.96 505.92 l
+	506.4 504.16 l
+	493.76 506.56 l
+	468.56 507.76 l
+	fk
+	518.4 505.92 m
+	514.8 513.12 l
+	516 520.32 l
+	519.6 526.32 l
+	523.2 528.16 l
+	536.96 525.76 l
+	546.56 524.56 l
+	553.2 527.52 l
+	559.76 547.92 l
+	fk
+	118.8 298.32 m
+	128.4 289.92 l
+	135.6 289.92 l
+	146.4 291.76 l
+	152.4 292.32 l
+	163.2 296.56 l
+	172.8 295.36 l
+	212.4 246.16 l
+	fk
+	192 332.56 m
+	192 324.72 l
+	190.8 320.56 l
+	188.96 317.52 l
+	182.4 310.96 l
+	170.96 294.72 l
+	fk
+	118.8 368.32 m
+	127.76 362.56 l
+	139.2 362.56 l
+	144 364.32 l
+	153.6 359.52 l
+	170.4 355.92 l
+	fk
+	175.2 433.36 m
+	175.2 421.92 l
+	174 415.36 l
+	181.2 402.16 l
+	182.96 397.92 l
+	192 388.96 l
+	194.96 387.76 l
+	196.16 371.52 l
+	fk
+	184.72 395.44 m
+	194.96 396.16 l
+	203.36 392.56 l
+	210 392.56 l
+	230.4 396.72 l
+	244.8 402.16 l
+	265.2 415.92 l
+	266.96 423.12 l
+	260.96 432.16 l
+	252 438.72 l
+	246.56 448.96 l
+	227.36 471.76 l
+	fk
+	266.88 423.04 m
+	282.56 417.76 l
+	290.4 416.56 l
+	307.2 420.72 l
+	fk
+	284.88 334.24 m
+	293.36 334.96 l
+	312 341.52 l
+	317.36 340.32 l
+	334.16 343.36 l
+	347.28 348.96 l
+	fk
+	343.36 429.92 m
+	356.4 430.32 l
+	360.56 432.16 l
+	366.56 430.96 l
+	376.08 421.84 l
+	fk
+	349.12 458.4 m
+	360 469.36 l
+	366 477.12 l
+	379.76 481.36 l
+	397.2 480.16 l
+	409.2 483.12 l
+	412.8 487.36 l
+	413.36 496.32 l
+	415.76 508.96 l
+	415.2 517.92 l
+	410.96 533.52 l
+	408 547.92 l
+	fk
+	413.36 489.76 m
+	420.56 486.16 l
+	427.2 486.16 l
+	443.36 484.32 l
+	444.56 481.36 l
+	454.16 484.96 l
+	464.56 484.8 l
+	fk
+	426.56 420.72 m
+	430.16 424.32 l
+	438.56 424.96 l
+	452.4 425.52 l
+	457.2 425.52 l
+	470.4 420.72 l
+	484.8 418.96 l
+	fk
+	519.52 397.84 m
+	523.2 381.76 l
+	529.76 370.32 l
+	534.56 359.52 l
+	536.96 346.96 l
+	536.96 340.32 l
+	fk
+	401.92 359.76 m
+	417.6 352.32 l
+	426 351.76 l
+	451.76 347.52 l
+	457.76 347.52 l
+	475.36 343.84 l
+	fk
+	489.52 210.96 m
+	510.56 215.52 l
+	542.96 222.72 l
+	565.2 229.36 l
+	598.16 234.16 l
+	fk
+	540.56 255.76 m
+	544.16 247.36 l
+	552.56 237.12 l
+	559.2 238.32 l
+	566.4 229.36 l
+	fk
+	424.8 250.96 m
+	436.16 250.32 l
+	446.96 252.16 l
+	470.88 269.44 l
+	fk
+	357.76 241.2 m
+	363.6 267.76 l
+	364.16 280.96 l
+	371.36 291.12 l
+	380.4 294.16 l
+	399.6 298.96 l
+	425.36 300.16 l
+	446.88 304.56 l
+	fk
+	270.56 315.12 m
+	279.6 299.52 l
+	277.2 286.32 l
+	277.76 273.76 l
+	269.36 258.16 l
+	267.6 245.52 l
+	fk
+	278.4 289.36 m
+	297.6 294.72 l
+	312 298.32 l
+	322.16 294.72 l
+	332.4 293.52 l
+	342.56 291.76 l
+	344.4 289.92 l
+	371.36 291.12 l
+	fk
+	120 559.92 m
+	128.4 547.92 l
+	143.36 543.12 l
+	157.2 546.16 l
+	177.6 547.36 l
+	182.4 541.92 l
+	181.76 537.76 l
+	184.8 528.72 l
+	181.2 520.96 l
+	181.2 513.12 l
+	172.16 493.36 l
+	168 493.36 l
+	159.6 478.96 l
+	160.8 469.92 l
+	160.8 462.72 l
+	154.16 454.32 l
+	151.2 450.72 l
+	155.92 432.64 l
+	fk
+	485.36 591.76 m
+	498 589.36 l
+	502.16 585.12 l
+	506.96 580.32 l
+	514.8 576.16 l
+	518.4 568.96 l
+	527.36 558.72 l
+	530.96 553.92 l
+	547.76 553.92 l
+	555.6 549.76 l
+	562.8 545.52 l
+	566.96 559.92 l
+	571.2 568.96 l
+	579.6 571.36 l
+	584.4 570.72 l
+	597.6 564.16 l
+	fk
+} bd
 {
-
-/maxx 585 def /minx 100 def 
-/maxy 600 def /miny 120 def 
-
-%592 -58 translate
-632 -8  translate
-90 rotate
-
-gsave
-65 30 translate
-%Credits
-grestore
-
-gsave
-
-/gr {grestore} bind def
-/gs {gsave} bind def
-/l {lineto} bind def
-/m {moveto} bind def
-/n {newpath} bind def
-/s {stroke} bind def
-
-8 setlinewidth
-
-/Coastcolour { 20 setlinewidth 0 setgray } def
-/Swisscolour { 0.5 setgray } def
-/Seawater { 0.1 0.4 0.6 setrgbcolor } bind def
-/Landcolor  { 0.8 0.7 0.4 setrgbcolor } bind def
-
-/SEA {
-    closepath
-    gsave Seawater fill grestore
-    gsave Coastcolour stroke grestore
-    newpath
-} def
-
-/ISLAND {
-    closepath
-    gsave Landcolor fill grestore
-    gsave Coastcolour stroke grestore
-    newpath
-} def
-
--30 700 translate
-1 -1 scale
-
-0.08000 0.08000 scale
-
-Black
-
-n 1522 1477 m 7507 1477 l 7507 7282 l 1522 7282 l SEA
-
-7.500 setlinewidth
-n 5597 5611 m 5639 5694 l 5695 5724 l 5740 5784 l 5725 5855 l 5790 5992 l
- 5950 6114 l 5991 6140 l 6040 6155 l 6062 6192 l 6165 6270 l
- 6412 6375 l 6546 6399 l 6780 6270 l 6820 6219 l 6872 6072 l
- 6835 6031 l 6842 5952 l 6902 5915 l 6944 5859 l 7026 5847 l
- 7050 5797 l 7020 5595 l 6847 5265 l 6727 5190 l 6540 5085 l
- 6150 5055 l 5797 5272 l 5770 5345 l 5710 5394 l 5595 5610 l ISLAND
-
-n 1530 7285 m 1530 6725 l 1612 6592 l 1807 6532 l 2010 6622 l 2192 6609 l
- 2430 6532 l 2685 6382 l 2970 6352 l 3367 6397 l 3422 6399 l
- 3501 6432 l 3735 6450 l 3876 6492 l 4079 6425 l 4266 6459 l
- 4567 6435 l 4777 6315 l 4877 6320 l 5069 6294 l 5340 6330 l
- 5444 6444 l 5631 6500 l 5781 6597 l 5931 6635 l 6150 6817 l
- 5985 7087 l 5992 7282 l ISLAND
-
-n 2160 5175 m 2227 5227 l 2324 5244 l 2445 5302 l 2707 5160 l 2830 5195 l
- 2962 5182 l 3037 5295 l 3105 5520 l 3187 5557 l 3314 5574 l
- 3420 5527 l 3532 5422 l 3592 5287 l 3542 5146 l 3525 5025 l
- 3397 4965 l 3300 4897 l 3167 4857 l 3090 4800 l 2875 4775 l
- 2744 4805 l 2527 4807 l 2377 4830 l 2302 4822 l 2190 4920 l
- 2152 5002 l 2167 5182 l ISLAND
-
-n 4372 5092 m 4582 5190 l 4814 5184 l 4852 5122 l 4945 5019 l 5009 5000 l
- 5070 4942 l 5227 4815 l 5230 4602 l 5407 4365 l 5302 4035 l
- 5174 3965 l 5031 3957 l 4911 3957 l 4815 3997 l 4732 4192 l
- 4590 4380 l 4574 4516 l 4417 4762 l 4311 4884 l 4296 5041 l
- 4371 5097 l ISLAND
-
-n 7495 1495 m 1530 1490 l 1529 4059 l 2265 4042 l 2410 4182 l 2504 4209 l
- 2565 4185 l 2661 4047 l 2730 3877 l 2752 3840 l 2872 3547 l
- 2962 3420 l 3015 3420 l 3052 3307 l 3165 3390 l 3240 3382 l
- 3360 3480 l 3510 3487 l 3615 3742 l 3765 3930 l 3817 4012 l
- 3907 4357 l 4080 4342 l 4087 4297 l 4252 4275 l 4357 3990 l
- 4425 3907 l 4357 3435 l 4612 3075 l 4582 2985 l 4672 2857 l
- 4777 2752 l 4927 2700 l 5047 2625 l 5085 2625 l 5295 2595 l
- 5347 2610 l 5392 2610 l 5587 2700 l 5730 2812 l 5895 3120 l
- 5842 3382 l 5842 3795 l 5985 4155 l 6075 4200 l 6180 4492 l
- 6187 4545 l 6232 4545 l 6277 4597 l 6427 4567 l 6600 4425 l
- 6727 4260 l 6825 4132 l 7020 4087 l 7125 4087 l 7192 4132 l
- 7305 4140 l 7500 4230 l ISLAND
-
-n 1852 6555 m 1860 6720 l 1837 6802 l 1830 6862 l 1867 6915 l 1897 6960 l
- 2175 6997 l 2265 6990 l 2445 6945 l 2535 6825 l 2490 6750 l
- 2460 6517 l s
-
-n 2430 6937 m 2467 6997 l 2565 6997 l 2692 7005 l 2737 6967 l 2917 6982 l
- 3000 6930 l 3030 6877 l 3165 6847 l 3090 6690 l 3060 6637 l
- 3082 6525 l 3077 6369 l s
-
-n 2505 7275 m 2565 7177 l 2654 7081 l 2715 6982 l s 
-
-n 3172 6847 m 3225 6892 l 3345 6960 l 3405 6967 l 3457 7027 l 3569 7074 l
- 3607 7147 l 3675 7170 l 3735 7275 l s 
-
-n 3411 6969 m 3495 6952 l 3555 6937 l 3615 6937 l 3712 6967 l 3802 6960 l
- 3675 6825 l 3660 6772 l 3660 6600 l 3745 6447 l s 
-
-n 3801 6965 m 3855 6967 l 4080 6960 l 4132 6997 l 4350 6997 l 4425 7132 l
- 4395 7275 l s 
-
-n 4266 6462 m 4252 6555 l 4290 6727 l 4290 6787 l 4342 6885 l 4342 6990 l s 
-
-n 4417 7117 m 4492 7072 l 4537 6960 l 4657 6907 l 4747 6817 l 4785 6697 l
- 4867 6502 l 4845 6420 l 4877 6320 l s 
-
-n 4762 6787 m 4822 6847 l 4882 6862 l 4920 6922 l 5072 7010 l 5002 7110 l
- 5010 7170 l 5040 7192 l 4970 7280 l s 
-
-n 5069 7006 m 5182 6945 l 5249 6871 l 5332 6832 l 5467 6787 l 5497 6712 l
- 5670 6525 l s 
-
-n 5249 6867 m 5707 7050 l 5775 7042 l 6000 7087 l s 
-
-n 6180 5062 m 6255 5287 l 6322 5385 l s 
-
-n 6322 5385 m 6322 5437 l 6127 5557 l 6082 5625 l 5865 5812 l 5740 5881 l s 
-
-n 6067 5640 m 6165 5715 l 6165 5775 l 6292 5865 l 6307 5910 l 6247 6060 l
- 6172 6172 l 6090 6217 l s 
-
-n 6295 5874 m 6390 5917 l 6487 5932 l 6622 5910 l 6675 5797 l 6750 5692 l
- 6855 5625 l 7020 5610 l s 
-
-n 6315 5392 m 6360 5392 l 6420 5452 l 6510 5445 l 6585 5445 l 6652 5467 l
- 6735 5497 l 6847 5580 l 6855 5625 l s 
-
-n 4412 4767 m 4672 4822 l 4950 4792 l 5197 4830 l 5197 4822 l s 
-
-n 4582 4402 m 4687 4357 l 4815 4402 l 4957 4417 l 5025 4387 l 5122 4417 l
- 5265 4447 l 5310 4432 l 5354 4434 l s 
-
-n 2695 4809 m 2602 5212 l s 
-
-n 3045 5332 m 3060 5265 l 3112 5220 l 3135 5137 l 3180 5055 l 3240 4980 l
- 3360 4942 l s 
-
-n 5842 3660 m 6172 3682 l 6277 3705 l 6375 3705 l 6510 3780 l 6555 3930 l
- 6562 3975 l 6615 3990 l 6660 4057 l 6697 4057 l 6809 4167 l s 
-
-n 7161 4115 m 7170 4035 l 7110 3892 l 7162 3802 l 7260 3720 l 7312 3600 l
- 7252 3472 l 7027 3472 l 6855 3607 l 6757 3585 l 6675 3495 l
- 6555 3495 l 6502 3547 l 6457 3600 l 6510 3780 l s 
-
-n 2152 3292 m 2430 3322 l 2475 3427 l 2595 3502 l 2640 3630 l 2805 3720 l s 
-
-n 3051 3312 m 3052 3270 l 2932 3082 l 2850 2820 l 2775 2662 l 2295 2670 l s 
-
-n 2820 1477 m 2812 1680 l 2977 1942 l 2910 2070 l 2850 2212 l 2805 2362 l
- 2790 2452 l 2782 2685 l s 
-
-n 4357 3435 m 4245 3517 l 4185 3600 l 4005 3675 l 3847 3772 l 3752 3916 l s 
-
-n 3495 3495 m 3555 3255 l 3637 3030 l 3795 2880 l 3937 2895 l 3975 3015 l
- 3982 3165 l 4020 3315 l 4102 3390 l 4252 3502 l s 
-
-n 3697 1470 m 3667 1627 l 3637 1897 l 3480 2085 l 3247 2152 l 3210 2077 l
- 3135 2070 l 2932 2025 l s 
-
-n 4920 1470 m 4890 1560 l 4890 1650 l 4950 1792 l 4971 1947 l 4890 1965 l
- 4815 2017 l 4702 2077 l 4515 2122 l 4305 2130 l 4102 2130 l
- 3967 2092 l 3900 2070 l 3637 1897 l s 
-
-n 4382 2124 m 4327 2332 l 4312 2445 l 4320 2580 l 4342 2625 l 4402 2640 l
- 4477 2647 l 4507 2715 l 4657 2887 l s 
-
-n 3932 2892 m 3997 2767 l 4117 2767 l 4192 2767 l 4350 2625 l s 
-
-n 3441 2094 m 3420 2400 l 3502 2587 l 3577 2707 l 3802 2880 l s 
-
-n 4965 1942 m 5145 2032 l 5220 2085 l 5520 2085 l 5565 2040 l 5767 1980 l
- 5887 1995 l 6045 2055 l 6104 2067 l 6172 1972 l 6172 1890 l
- 6075 1732 l 6082 1672 l 6180 1470 l s 
-
-n 5264 2086 m 5302 2490 l 5302 2595 l s 
-
-n 5715 2797 m 5812 2640 l 5887 2520 l 5992 2467 l 6075 2400 l 6195 2385 l
- 6255 2347 l 6472 2332 l 6480 2287 l s 
-
-n 6675 3502 m 6787 3435 l 6817 3367 l 6795 3240 l 6772 3187 l 6690 3165 l
- 6592 3135 l 6360 3157 l 6202 3127 l 5887 3112 l s 
-
-n 6510 3135 m 6465 3045 l 6480 2955 l 6525 2880 l 6570 2857 l 6742 2887 l
- 6862 2902 l 6945 2865 l 7027 2610 l s 
-
-n 1515 5730 m 1635 5835 l 1725 5835 l 1860 5812 l 1935 5805 l 2070 5752 l
- 2190 5767 l 2685 6382 l s 
-
-n 2430 5302 m 2430 5400 l 2415 5452 l 2392 5490 l 2310 5572 l 2167 5775 l s 
-
-n 1515 4855 m 1627 4927 l 1770 4927 l 1830 4905 l 1950 4965 l 2160 5010 l s 
-
-n 2220 4042 m 2220 4185 l 2205 4267 l 2295 4432 l 2317 4485 l 2430 4597 l
- 2467 4612 l 2482 4815 l s 
-
-n 2339 4516 m 2467 4507 l 2572 4552 l 2655 4552 l 2910 4500 l 3090 4432 l
- 3345 4260 l 3367 4170 l 3292 4057 l 3180 3975 l 3112 3847 l
- 2872 3562 l s 
-
-n 3366 4171 m 3562 4237 l 3660 4252 l 3870 4200 l s 
-
-n 3591 5281 m 3697 5272 l 3930 5190 l 3997 5205 l 4207 5167 l 4371 5097 l s 
-
-n 4322 4085 m 4485 4080 l 4537 4057 l 4612 4072 l 4731 4186 l s 
-
-n 4394 3729 m 4530 3592 l 4605 3495 l 4777 3442 l 4995 3457 l 5145 3420 l
- 5190 3367 l 5197 3255 l 5227 3097 l 5220 2985 l 5167 2790 l
- 5130 2610 l s 
-
-n 5197 3337 m 5287 3382 l 5370 3382 l 5572 3405 l 5587 3442 l 5707 3397 l
- 5837 3399 l s 
-
-n 5362 4200 m 5407 4155 l 5512 4147 l 5685 4140 l 5745 4140 l 5910 4200 l
- 6090 4222 l s 
-
-n 6524 4486 m 6570 4687 l 6652 4830 l 6712 4965 l 6742 5122 l 6742 5205 l s 
-
-n 5054 4962 m 5250 5055 l 5355 5062 l 5677 5115 l 5752 5115 l 5972 5161 l s 
-
-n 6149 6822 m 6412 6765 l 6817 6675 l 7095 6592 l 7507 6532 l s 
-
-n 6787 6262 m 6832 6367 l 6937 6495 l 7020 6480 l 7110 6592 l s 
-
-n 5340 6322 m 5482 6330 l 5617 6307 l 5916 6091 l s 
-
-n 4502 6444 m 4575 6112 l 4582 5947 l 4672 5820 l 4785 5782 l 5025 5722 l
- 5347 5707 l 5616 5652 l s 
-
-n 3412 5520 m 3525 5715 l 3495 5880 l 3502 6037 l 3397 6232 l 3375 6390 l s 
-
-n 3510 5842 m 3750 5775 l 3930 5730 l 4057 5775 l 4185 5790 l 4312 5812 l
- 4335 5835 l 4672 5820 l s 
-
-n 1530 2460 m 1635 2610 l 1822 2670 l 1995 2632 l 2250 2617 l 2310 2685 l
- 2302 2737 l 2340 2850 l 2295 2947 l 2295 3045 l 2182 3292 l
- 2130 3292 l 2025 3472 l 2040 3585 l 2040 3675 l 1957 3780 l
- 1920 3825 l 1979 4051 l s 
-
-n 6097 2062 m 6255 2092 l 6307 2145 l 6367 2205 l 6465 2257 l 6510 2347 l
- 6622 2475 l 6667 2535 l 6877 2535 l 6975 2587 l 7065 2640 l
- 7117 2460 l 7170 2347 l 7275 2317 l 7335 2325 l 7500 2407 l s 
-
-50.000 setlinewidth
-n 1532 1486 m 7506 1486 l 7506 7284 l 1532 7284 l closepath s 
-
-
-gr
-
-cen
-
-}
-def
-
+	currentdict end 3 1 roll [ exch /setgray load ] cvx def begin
+}{
+	currentdict end 5 1 roll [ 4 1 roll /setrgbcolor load ] cvx def begin
+}{
+	currentdict end 6 1 roll [ 5 1 roll /setcmykcolor load ] cvx def begin
+} bind VisitColors
+s
+MapUnitLetterFont z
+{
+	exch load exch load
+	2 index [ exch n 0 0 m true charpath pathbbox 3 2 roll add -2 div 3 1 roll add -2 div exch ] 3 1 roll
+	4 dict begin /Contrast xd /Paint xd /Offset xd /Letter xd currentdict end
+	[ /Power 3 2 roll { dup /Controlled ChangeController put ChangeController { dup /Outer Power /Paint get put /ChangeController false def } if } /exec load /def load ] cvx
+	currentdict end 3 1 roll def begin
+} VisitPowers
+r
+/ChangeController false def
+/EASTCENTER /EAST ld
+/NORTHCENTER /NORTH ld
+/SOUTHCENTER /SOUTH ld
+/WESTCENTER /WEST ld
+/UNOWNEDCENTER /UNOWNED ld
+{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind
+VisitSupplies
+%%EndSetup

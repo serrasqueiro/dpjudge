@@ -146,6 +146,7 @@
 /ShowPage {
 	DrawAliases
 	InTextMode { FinishReport } { r } ifelse
+	FrameMap
 	showpage
 } bd
 /VisitColors {
@@ -555,45 +556,45 @@
 } bd
 /ArrowMove {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	PaintArrowMove
 	r
 } bd
 /ArrowHold {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	24 PaintArrowCircle
 	r
 } bd
 /ArrowSupport {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	center
 	8 PaintArrowCircle
 	r
 } bd
 /ArrowConvoy {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	center
 	12 PaintArrowCircle
 	r
 } bd
 /ArrowArrive {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	PaintArrowArrive
 	r
 } bd
 /ArrowDepart {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	PaintArrowDepart
 	r
 } bd
@@ -757,7 +758,7 @@
 	} ifelse
 	end
 } bd
-/DrawBorders {
+/DrawLayoutBorders {
 	s
 	TextFixedFont 8 y z
 	r
@@ -824,15 +825,6 @@
 			} if
 		} if
 	} if
-} bd
-/DrawFrame {
-	SwitchToTextMode
-	s
-	Black 6 w
-	24.6 97 555.6 490 rectstroke
-	LandBrown 1.5 w
-	25.35 97.75 554.1 488.5 rectstroke
-	r
 } bd
 /Owner <<
 	/Steps [
@@ -1078,17 +1070,24 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		27.6 100 549.6 484 rectclip
-		26.1 99.58 t .8799 .8799 x -22 -25 t
+		27.6 100 549.6 484 rectclip .8799 .8799 x 7.66 88.16 t
 		ArrowColor
 		OkOrder
 	} if
 } bd
+/FrameMap {
+	s
+	2 w LandBrown
+	26.1 99.58 m 578.7 99.58 l 578.7 584.42 l 26.1 584.42 l
+	p
+	s 8 w Black k r
+	clipsave clip k cliprestore
+	r
+} bd
 /PaintMap {
 	SwitchToMapMode
 	s
-	SeaBlue
-	22 25 628 551 rectfill
+	SeaBlue 22 25 628 551 rectfill
 	IncludeLand
 	IncludeInternalBorders
 	IncludeBorders
@@ -1098,7 +1097,6 @@
 } bd
 /DrawMap {
 	PageSetup
-	DrawFrame
 	PaintMap
 	DrawSupplies
 } bd
@@ -1124,41 +1122,53 @@
 } bd
 /IncludeLand {
 	s
-	/fk { p s LandBrown f r k } bd
-	.75 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
-	OutlineRenaissanceLandBrown
-	OutlineRenaissanceBrown
+	/fk {
+		p
+		s LandBrown f r
+		k
+	} bd
+	.75 w BorderBlack
+	OutlineChartLandBrown
+	OutlineChartBrown
 	r
 } bd
 /IncludeInternalBorders {
 	s
 	/fk { k } bd
-	.75 w [ 4.5 1.5 ] 2.25 d 0 setlinecap 0 setlinejoin BorderBlack
-	OutlineRenaissanceBlack
+	.75 w [ 4.5 1.5 ] 2.25 d BorderBlack
+	OutlineChartBlack
 	r
 } bd
 /IncludeBorders {
 	s
 	/fk { k } bd
-	1.5 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
-	OutlineRenaissanceBorderBlack
+	1.5 w BorderBlack
+	OutlineChartBorderBlack
 	r
 } bd
 /IncludeMountain {
 	s
-	/fk { p s LandBrown f r k } bd
-	1.5 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
-	OutlineRenaissanceGrey
+	/fk {
+		p
+		s LandBrown f r
+		k
+	} bd
+	1.5 w BorderBlack
+	OutlineChartGrey
 	r
 } bd
 /IncludeLake {
 	s
-	/fk { p s SeaBlue f r k } bd
-	.75 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
-	OutlineRenaissanceBlue
+	/fk {
+		p
+		s SeaBlue f r
+		k
+	} bd
+	.75 w BorderBlack
+	OutlineChartBlue
 	r
 } bd
-/OutlineRenaissanceLandBrown {
+/OutlineChartLandBrown {
 	549 25 m
 	549 31 l
 	555 43 l
@@ -1642,7 +1652,7 @@
 	22 80 l
 	fk
 } bd
-/OutlineRenaissanceBrown {
+/OutlineChartBrown {
 	130 300 m
 	134 297 l
 	140 300 l
@@ -1876,7 +1886,7 @@
 	174 421 l
 	fk
 } bd
-/OutlineRenaissanceBlack {
+/OutlineChartBlack {
 	446 142 m
 	436 141 l
 	433 143 l
@@ -2208,7 +2218,7 @@
 	66 107 l
 	fk
 } bd
-/OutlineRenaissanceBorderBlack {
+/OutlineChartBorderBlack {
 	224 74 m
 	224 60 l
 	213 52 l
@@ -2541,7 +2551,7 @@
 	355 177 l
 	fk
 } bd
-/OutlineRenaissanceGrey {
+/OutlineChartGrey {
 	271 212 m
 	266 206 l
 	260 212 l
@@ -2561,7 +2571,7 @@
 	271 212 l
 	fk
 } bd
-/OutlineRenaissanceBlue {
+/OutlineChartBlue {
 	448 412 m
 	451 418 l
 	457 420 l
@@ -2614,7 +2624,6 @@ MapUnitLetterFont z
 } VisitPowers
 r
 /ChangeController false def
-{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind VisitSupplies
 /VENICECENTER /VENICE ld
 /ENGLANDCENTER /ENGLAND ld
 /FRANCECENTER /FRANCE ld
@@ -2623,4 +2632,6 @@ r
 /POLAND-LITHUANIACENTER /POLAND-LITHUANIA ld
 /OTTOMANTURKCENTER /OTTOMANTURK ld
 /UNOWNEDCENTER /UNOWNED ld
+{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind
+VisitSupplies
 %%EndSetup

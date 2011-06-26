@@ -145,6 +145,7 @@
 /ShowPage {
 	DrawAliases
 	InTextMode { FinishReport } { r } ifelse
+	FrameMap
 	showpage
 } bd
 /VisitColors {
@@ -558,45 +559,45 @@
 } bd
 /ArrowMove {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	PaintArrowMove
 	r
 } bd
 /ArrowHold {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	24 PaintArrowCircle
 	r
 } bd
 /ArrowSupport {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	center
 	8 PaintArrowCircle
 	r
 } bd
 /ArrowConvoy {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	center
 	12 PaintArrowCircle
 	r
 } bd
 /ArrowArrive {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	PaintArrowArrive
 	r
 } bd
 /ArrowDepart {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	PaintArrowDepart
 	r
 } bd
@@ -760,18 +761,9 @@
 	} ifelse
 	end
 } bd
-/DrawBorders {
+/DrawLayoutBorders {
 	s
 	TextFixedFont 8 y z
-	r
-} bd
-/DrawFrame {
-	SwitchToTextMode
-	s
-	Black 6 w
-	24.6 113 546 474 rectstroke
-	LandBrown 1.5 w
-	25.35 113.75 544.5 472.5 rectstroke
 	r
 } bd
 /Owner <<
@@ -1015,17 +1007,24 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		27.6 116 540 468 rectclip
-		26.09 113 t .4827 .4827 x 0 0 t
+		27.6 116 540 468 rectclip .4827 .4827 x 54.05 234.11 t
 		ArrowColor
 		OkOrder
 	} if
 } bd
+/FrameMap {
+	s
+	2 w LandBrown
+	26.09 113 m 569.11 113 l 569.11 587 l 26.09 587 l
+	p
+	s 8 w Black k r
+	clipsave clip k cliprestore
+	r
+} bd
 /PaintMap {
 	SwitchToMapMode
 	s
-	SeaBlue
-	0 0 1125 982 rectfill
+	SeaBlue 0 0 1125 982 rectfill
 	IncludeSeaBorders
 	IncludeLand
 	IncludeInternalBorders
@@ -1033,7 +1032,6 @@
 } bd
 /DrawMap {
 	PageSetup
-	DrawFrame
 	PaintMap
 	DrawConnections
 	DrawSupplies
@@ -1057,32 +1055,6 @@
 	{ DarkGreen 3 2 roll DrawAlias } bind
 	{ White 3 2 roll DrawAlias } bind
 	VisitTerritories
-	r
-} bd
-/IncludeSeaBorders {
-	s
-	.1667 .1667 x
-	/fk { k } bd
-	6 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
-	OutlineWaterBlack
-	OutlineWater2Grey
-	r
-} bd
-/IncludeLand {
-	s
-	.1667 .1667 x
-	/fk { p s LandBrown f r k } bd
-	6 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
-	OutlineContinentGreen
-	r
-} bd
-/IncludeInternalBorders {
-	s
-	.1667 .1667 x
-	/fk { k } bd
-	6 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
-	OutlineInternalBlack
-	OutlineInternal2Grey
 	r
 } bd
 /ConnectCrossings {
@@ -1122,6 +1094,36 @@
 	/3 277 267 241 265 cn
 	r
 	end
+} bd
+/IncludeSeaBorders {
+	s
+	.1667 .1667 x
+	/fk { k } bd
+	6 w BorderBlack
+	OutlineWaterBlack
+	OutlineWater2Grey
+	r
+} bd
+/IncludeLand {
+	s
+	.1667 .1667 x
+	/fk {
+		p
+		s LandBrown f r
+		k
+	} bd
+	6 w BorderBlack
+	OutlineContinentGreen
+	r
+} bd
+/IncludeInternalBorders {
+	s
+	.1667 .1667 x
+	/fk { k } bd
+	6 w BorderBlack
+	OutlineInternalBlack
+	OutlineInternal2Grey
+	r
 } bd
 /OutlineWaterBlack {
 	3300 5886 m
@@ -2277,7 +2279,6 @@ MapUnitLetterFont z
 } VisitPowers
 r
 /ChangeController false def
-{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind VisitSupplies
 /SHIMAZUCENTER /SHIMAZU ld
 /MORICENTER /MORI ld
 /CHOSOKABECENTER /CHOSOKABE ld
@@ -2288,4 +2289,6 @@ r
 /HOJOCENTER /HOJO ld
 /NEUTRALCENTER /NEUTRAL ld
 /UNOWNEDCENTER /UNOWNED ld
+{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind
+VisitSupplies
 %%EndSetup

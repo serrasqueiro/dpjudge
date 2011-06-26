@@ -146,6 +146,7 @@
 /ShowPage {
 	DrawAliases
 	InTextMode { FinishReport } { r } ifelse
+	FrameMap
 	showpage
 } bd
 /VisitColors {
@@ -545,45 +546,45 @@
 } bd
 /ArrowMove {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	PaintArrowMove
 	r
 } bd
 /ArrowHold {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	24 PaintArrowCircle
 	r
 } bd
 /ArrowSupport {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	center
 	8 PaintArrowCircle
 	r
 } bd
 /ArrowConvoy {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	center
 	12 PaintArrowCircle
 	r
 } bd
 /ArrowArrive {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	PaintArrowArrive
 	r
 } bd
 /ArrowDepart {
 	SwitchToMapMode
-	SetArrowState
 	s
+	SetArrowState
 	PaintArrowDepart
 	r
 } bd
@@ -747,18 +748,9 @@
 	} ifelse
 	end
 } bd
-/DrawBorders {
+/DrawLayoutBorders {
 	s
 	TextFixedFont 8 y z
-	r
-} bd
-/DrawFrame {
-	SwitchToTextMode
-	s
-	Black 6 w
-	24.6 97 555.6 490 rectstroke
-	LandBrown 1.5 w
-	25.35 97.75 554.1 488.5 rectstroke
 	r
 } bd
 /Owner <<
@@ -1002,17 +994,24 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		27.6 100 549.6 484 rectclip
-		26.1 99.58 t .8799 .8799 x -22 -25 t
+		27.6 100 549.6 484 rectclip .8799 .8799 x 7.66 88.16 t
 		ArrowColor
 		OkOrder
 	} if
 } bd
+/FrameMap {
+	s
+	2 w LandBrown
+	26.1 99.58 m 578.7 99.58 l 578.7 584.42 l 26.1 584.42 l
+	p
+	s 8 w Black k r
+	clipsave clip k cliprestore
+	r
+} bd
 /PaintMap {
 	SwitchToMapMode
 	s
-	LandBrown
-	22 25 628 551 rectfill
+	LandBrown 22 25 628 551 rectfill
 	IncludeSea
 	IncludeIsland
 	IncludeInternalBorders
@@ -1022,7 +1021,6 @@
 } bd
 /DrawMap {
 	PageSetup
-	DrawFrame
 	PaintMap
 	DrawSupplies
 } bd
@@ -1049,40 +1047,52 @@
 } bd
 /IncludeSea {
 	s
-	/fk { p s SeaBlue f r k } bd
-	.75 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
-	OutlineMilanBlue
+	/fk {
+		p
+		s SeaBlue f r
+		k
+	} bd
+	.75 w BorderBlack
+	OutlineChartBlue
 	r
 } bd
 /IncludeIsland {
 	s
-	/fk { p s LandBrown f r k } bd
-	.75 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
-	OutlineMilanBrown
+	/fk {
+		p
+		s LandBrown f r
+		k
+	} bd
+	.75 w BorderBlack
+	OutlineChartBrown
 	r
 } bd
 /IncludeInternalBorders {
 	s
 	/fk { k } bd
-	.75 w [ 4.5 1.5 ] 2.25 d 0 setlinecap 0 setlinejoin BorderBlack
-	OutlineMilanBlack
+	.75 w [ 4.5 1.5 ] 2.25 d BorderBlack
+	OutlineChartBlack
 	r
 } bd
 /IncludeBorders {
 	s
 	/fk { k } bd
-	1.5 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
-	OutlineMilanBorderBlack
+	1.5 w BorderBlack
+	OutlineChartBorderBlack
 	r
 } bd
 /IncludeMountain {
 	s
-	/fk { p s MountainGrey f r k } bd
-	1.5 w [ ] 0 d 0 setlinecap 0 setlinejoin BorderBlack
-	OutlineMilanGrey
+	/fk {
+		p
+		s MountainGrey f r
+		k
+	} bd
+	1.5 w BorderBlack
+	OutlineChartGrey
 	r
 } bd
-/OutlineMilanBlue {
+/OutlineChartBlue {
 	448 412 m
 	451 418 l
 	457 420 l
@@ -1594,7 +1604,7 @@
 	239 25 l
 	fk
 } bd
-/OutlineMilanBrown {
+/OutlineChartBrown {
 	130 300 m
 	134 297 l
 	140 300 l
@@ -1828,7 +1838,7 @@
 	174 421 l
 	fk
 } bd
-/OutlineMilanBlack {
+/OutlineChartBlack {
 	639 259 m
 	632 285 l
 	622 304 l
@@ -2138,7 +2148,7 @@
 	66 107 l
 	fk
 } bd
-/OutlineMilanBorderBlack {
+/OutlineChartBorderBlack {
 	224 74 m
 	224 60 l
 	213 52 l
@@ -2378,7 +2388,7 @@
 	280 331 l
 	fk
 } bd
-/OutlineMilanGrey {
+/OutlineChartGrey {
 	271 212 m
 	266 206 l
 	260 212 l
@@ -2416,7 +2426,6 @@ MapUnitLetterFont z
 } VisitPowers
 r
 /ChangeController false def
-{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind VisitSupplies
 /AUSTRIACENTER /AUSTRIA ld
 /ENGLANDCENTER /ENGLAND ld
 /FRANCECENTER /FRANCE ld
@@ -2425,4 +2434,6 @@ r
 /RUSSIACENTER /RUSSIA ld
 /TURKEYCENTER /TURKEY ld
 /UNOWNEDCENTER /UNOWNED ld
+{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind
+VisitSupplies
 %%EndSetup
