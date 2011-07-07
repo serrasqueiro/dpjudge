@@ -11,12 +11,13 @@ class XtalballPower(Power):
 			if orders: text += '%s\n%s\n' % (listName, '\n'.join(orders))
 		return text.encode('latin-1')
 	#	----------------------------------------------------------------------
-	def reinit(self, includeFlags = 2):
+	def reinit(self, includeFlags = 6):
 		Power.reinit(self, includeFlags)
 		#	-----------------------------------
 		#	Initialize the transient parameters
 		#	-----------------------------------
-		self.list, self.notes = {'SOONER': [], 'LATER': []}, {}
+		if includeFlags & 4:
+			self.list, self.notes = {'SOONER': [], 'LATER': []}, {}
 	#	----------------------------------------------------------------------
 	def movesSubmitted(self):
 		if self.name not in self.game.map.powers: return 1

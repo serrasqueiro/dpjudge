@@ -23,12 +23,13 @@ class PayolaPower(Power):
 		for offer in self.sheet: text += '%s\n' % offer
 		return text.encode('latin-1')
 	#	----------------------------------------------------------------------
-	def reinit(self, includeFlags = 2):
+	def reinit(self, includeFlags = 6):
 		Power.reinit(self, includeFlags)
 		#	-----------------------------------
 		#	Initialize the transient parameters
 		#	-----------------------------------
-		self.overpaid, self.offers, self.sheet, self.sent = 0, [], [], []
+		if includeFlags & 4:
+			self.overpaid, self.offers, self.sheet, self.sent = 0, [], [], []
 		self.accept = self.liquid = self.left = None
 		#	-----------------------------------------------
 		#	The three attributes below are ZeroSum-specific

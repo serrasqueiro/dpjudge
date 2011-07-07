@@ -17,12 +17,13 @@ class StandardPower(Power):
 			text += order + '\n'
 		return text.encode('latin-1')
 	#	----------------------------------------------------------------------
-	def reinit(self, includeFlags = 2):
+	def reinit(self, includeFlags = 6):
 		Power.reinit(self, includeFlags)
 		#	-----------------------------------
 		#	Initialize the transient parameters
 		#	-----------------------------------
-		self.orders, self.held = {}, 0
+		if includeFlags & 4:
+			self.orders, self.held = {}, 0
 	#	----------------------------------------------------------------------
 	def movesSubmitted(self):
 		return self.orders or not self.units

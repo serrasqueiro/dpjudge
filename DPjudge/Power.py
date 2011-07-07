@@ -32,11 +32,12 @@ class Power:
 		text = '\n'.join([text] + self.units + self.adjust) + '\n'
 		return text.encode('latin-1')
 	#	----------------------------------------------------------------------
-	def reinit(self, includeFlags = 2):
+	def reinit(self, includeFlags = 6):
 		#	---------------------------------------------
 		#	Reinitializes the power specific data.
 		#   Relevant bit values for includeFlags:
-		#		2: include persistent game and power data
+		#		2: include persistent data
+		#		4: include transient data
 		#	---------------------------------------------
 
 		#	------------------------------------
@@ -49,10 +50,11 @@ class Power:
 		#	-----------------------------------
 		#	Initialize the transient parameters
 		#	-----------------------------------
-		wait = balance = homes = None
-		held = adjusted = goner = 0
-		centers, units, adjust, ceo = [], [], [], []
-		retreats, funds, sees = {}, {}, []
+		if includeFlags & 4:
+			wait = balance = homes = None
+			held = adjusted = goner = 0
+			centers, units, adjust, ceo = [], [], [], []
+			retreats, funds, sees = {}, {}, []
 		vars(self).update(locals())
 	#	----------------------------------------------------------------------
 	def compare(self, other):

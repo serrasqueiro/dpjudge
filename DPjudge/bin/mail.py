@@ -722,7 +722,7 @@ class Procmail:
 				if power.name != 'MASTER':
 					self.respond('Only the Master can ROLLFORWARD the game')
 				try:
-					phase, flags = '', 0
+					phase, flags = '', 4
 					for param in [x.upper() for x in word[1:]]:
 						if param in ('RESTORE', 'RECOVER'): flags |= 1
 						elif param == 'FULL': flags |= 2

@@ -72,7 +72,7 @@ class PayolaGame(Game):
 		return '\n'.join([x for x in text.split('\n')
 						if x not in self.directives]).encode('latin-1')
 	#	----------------------------------------------------------------------
-	def reinit(self, includeFlags = 2):
+	def reinit(self, includeFlags = 6):
 		#	------------------------------------
 		#	Initialize the persistent parameters
 		#	------------------------------------
@@ -82,7 +82,8 @@ class PayolaGame(Game):
 		#	-----------------------------------
 		#	Initialize the transient parameters
 		#	-----------------------------------
-		self.offers, self.orders = {}, {} 
+		if includeFlags & 4:
+			self.offers, self.orders = {}, {} 
 		Game.reinit(self, includeFlags)
 	#	----------------------------------------------------------------------
 	def parseGameData(self, word, includeFlags):
@@ -128,19 +129,6 @@ class PayolaGame(Game):
 		#	-----
 		if self.mode:
 			return 0
-		#	-------------------------------
-		#	Power-specific data (transient)
-		#	-------------------------------
-		if word[0] == 'SENT':		# (one_transfer)
-			try: power.sent += [word[1]]
-			except: self.error += ['BAD SENT FOR ' + power.name]
-		elif word[0] == 'ELECT':	# (exchange)
-			for item in word[1:]:
-				company, candidate = item.split(':')
-				power.elect[company] = candidate
-		elif word[0] == 'STATE':		# (exchange, undocumented?)
-			if len(word) == 2: power.state = word[1]
-			else: error += ['BAD STATE FOR ' + power.name]
 		#	-------------------
 		#	Offers and comments
 		#	-------------------
@@ -148,18 +136,35 @@ class PayolaGame(Game):
 			if not includeFlags & 1: return -1
 			power.sheet += [upline]
 			if word[0][0] != '%': power.held = 1
+		#	-------------------------------
+		#	Power-specific data (transient)
+		#	-------------------------------
+		found = 0
+		if includeFlags & 4:
+			found = 1
+			if word[0] == 'SENT':		# (one_transfer)
+				try: power.sent += [word[1]]
+				except: self.error += ['BAD SENT FOR ' + power.name]
+			elif word[0] == 'ELECT':	# (exchange)
+				for item in word[1:]:
+					company, candidate = item.split(':')
+					power.elect[company] = candidate
+			elif word[0] == 'STATE':		# (exchange, undocumented?)
+				if len(word) == 2: power.state = word[1]
+				else: error += ['BAD STATE FOR ' + power.name]
+			else: found = 0
 		#	--------------------------------
 		#	Power-specific data (persistent)
 		#	--------------------------------
-		elif not includeFlags & 2:
-			return 0
-		elif word[0] == 'ACCEPT':
-			if power.accept: self.error += ['TWO ACCEPTS FOR ' + power.name]
-			elif len(word) != 2:
-				self.error += ['BAD ACCEPT FOR ' + power.name]
-			else: power.accept = word[1]
-		else: return 0
-		return 1
+		if not found and includeFlags & 3:
+			found = 1
+			if word[0] == 'ACCEPT':
+				if power.accept: self.error += ['TWO ACCEPTS FOR ' + power.name]
+				elif len(word) != 2:
+					self.error += ['BAD ACCEPT FOR ' + power.name]
+				else: power.accept = word[1]
+			else: found = 0
+		return found
 	#	----------------------------------------------------------------------
 	def finishPowerData(self, power):
 		Game.finishPowerData(self, power)

@@ -8,7 +8,7 @@ class XtalballGame(Game):
 		self.variant, self.powerType = 'xtalball', XtalballPower
 		Game.__init__(self, gameName, fileName)
 	#	----------------------------------------------------------------------
-	def reinit(self, includeFlags = 2):
+	def reinit(self, includeFlags = 6):
 		#	------------------------------------
 		#	Initialize the persistent parameters
 		#	------------------------------------
@@ -17,7 +17,8 @@ class XtalballGame(Game):
 		#	-----------------------------------
 		#	Initialize the transient parameters
 		#	-----------------------------------
-		self.largest = self.smallest = None
+		if includeFlags & 4:
+			self.largest = self.smallest = None
 		Game.reinit(self, includeFlags)
 	#	----------------------------------------------------------------------
 	def unitOwner(self, unit, power = None):
@@ -195,13 +196,13 @@ class XtalballGame(Game):
 ##	def capture(self, sender, receiver, text, subject):
 ##		self.results = text
 ##	#	----------------------------------------------------------------------
-##	def process(self, now = 0, email = None):
-##		if not Game.process(self, now) and game.phase[-1] == 'M':
+##	def process(self, now = 0, email = None, roll = 0):
+##		if not Game.process(self, now, email, roll) and game.phase[-1] == 'M':
 ##			save, self.mailPress, self.preview = self.mailPress, self.capture, 1
 ##			Game.process(self, now = 2)
 ##			self.mailPress, self.preview = save, 0
 ##			if 'VICTORY!' in self.results:
-##				Game.process(self, now = 2, email = email)
+##				Game.process(self, now = 2, email = email, roll = roll)
 	#	----------------------------------------------------------------------
 	def getOrders(self, power):
 		text = ''

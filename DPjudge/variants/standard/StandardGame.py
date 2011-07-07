@@ -8,7 +8,7 @@ class StandardGame(Game):
 		self.powerType = StandardPower
 		Game.__init__(self, gameName, fileName)
 	#	----------------------------------------------------------------------
-	def reinit(self, includeFlags = 2):
+	def reinit(self, includeFlags = 6):
 		#	------------------------------------
 		#	Initialize the persistent parameters
 		#	------------------------------------
@@ -233,7 +233,7 @@ class StandardGame(Game):
 				power.orders['REORDER %d' % count] = ' '.join(word)
 			else: self.error += ['UNIT REORDERED: ' + unit]
 	#	----------------------------------------------------------------------
-	def process(self, now = 0, email = None):
+	def process(self, now = 0, email = None, roll = 0):
 		#	-------------------------------------------------------------
 		#	Convert all raw movement phase "ORDER"s in a NO_CHECK game to
 		#	standard orders before calling Game.process().  All "INVALID"
@@ -247,7 +247,7 @@ class StandardGame(Game):
 				for status, order in orders.items():
 					if status[:5] != 'ORDER': power.orders[status] = order
 					else: self.addOrder(power, order.split())
-		return Game.process(self, now, email)
+		return Game.process(self, now, email, roll)
 	#	----------------------------------------------------------------------
 	def updateOrders(self, power, orders):
 		#	----------------------------------------
