@@ -12,7 +12,7 @@ class Map:
 		rules, files, powers, scs, owns, inhabits = [], [], [], [], [], []
 		flow, unclear, size, homeYears, dummies, locs = [], [], [], [], [], []
 		reserves, militia, dynamic, factory, partisan = [], [], {}, {}, {}
-		leagues, directives, error, notify = {}, {}, [], []
+		leagues, directives, phaseAbbrev, error, notify = {}, {}, {}, [], []
 		aliases = {			'-': '-',		'H': 'H',		'P': 'P',
 			'A': 'A',		'F': 'F',		'S': 'S',		'C': 'C',
 			'B': 'BUILD',	'R': 'REMOVE',	'D': 'DISBAND',
@@ -142,7 +142,7 @@ class Map:
 		#	------------------
 		#	Validate game FLOW
 		#	------------------
-		abbrev = {	'M': 'MOVEMENT', 'R': 'RETREATS', 'A': 'ADJUSTMENTS' }
+		self.phaseAbbrev = abbrev = {	'M': 'MOVEMENT', 'R': 'RETREATS', 'A': 'ADJUSTMENTS' }
 		try:
 			self.seq, hasNewYear = [], 0
 			for item in self.flow:

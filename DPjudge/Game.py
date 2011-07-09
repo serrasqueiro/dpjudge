@@ -1024,7 +1024,7 @@ class Game:
 		elif len(self.rotate) > 1:
 			for how in range(0, len(self.rotate), 2):
 				if (self.rotate[how] in ('FOR', 'AFTER', 'BEFORE', 'CONTROL')
-				and self.rotate[how + 1][0] in abbrev): continue
+				and self.rotate[how + 1][0] in self.map.phaseAbbrev): continue
 				error += ['BAD CONTROL ROTATION']
 				break
 		#	---------------------

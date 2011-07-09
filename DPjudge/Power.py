@@ -180,12 +180,19 @@ class Power:
 		#		and the CD_DUMMIES rule is on.
 		#	-----------------------------------
 		game = self.game
-		return not self.type and self.player and (not self.isResigned()
-		and game.deadline <= game.Time()
-		and ((('CIVIL_DISORDER' in game.rules or 'CD_DUMMIES' not in game.rules
-			and {'M': 'CD_SUPPORTS', 'R': 'CD_RETREATS', 'A': 'CD_BUILDS'}
-			.get(game.phaseType) in game.rules) and game.graceExpired())
-		or	self.isDummy() and 'CD_DUMMIES' in game.rules and not self.ceo))
+		return not self.type and self.player and (
+			self.isDummy() and not self.ceo and (
+				'CD_DUMMIES' in game.rules or
+				game.deadline <= game.Time() and
+				{'M': 'CD_SUPPORTS', 'R': 'CD_RETREATS', 'A': 'CD_BUILDS'}
+				.get(game.phaseType) in game.rules
+			) or
+			not self.isResigned() and
+			game.deadline <= game.Time() and game.graceExpired() and
+			'CIVIL_DISORDER' in game.rules and
+			{'M': 'CD_SUPPORTS', 'R': 'CD_RETREATS', 'A': 'CD_BUILDS'}
+			.get(game.phaseType) in game.rules
+		)
 	#	----------------------------------------------------------------------
 	def movesSubmitted(self):
 		#	Each variant had pretty much better override this guy!  :-)
