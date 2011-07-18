@@ -81,6 +81,7 @@ showResultsText()
 def showPressArea():
 	if type(page.recipient) in (str, unicode): page.recipient = [page.recipient]
 	if 'ALL' in page.recipient: page.recipient = ['All']
+	what = 'it'
 	page.write(
 		"""
 		<script>function sendit(){
@@ -134,6 +135,7 @@ def showPressArea():
 				eligible = page.game.eligiblePressRecipients(page.power, 1)
 				if ('MASTER' not in page.recipient
 				and page.recipient != ['All']): eligible.remove('MASTER')
+				what = ''
 				page.write(
 					"""
 					<br><table><tr><th align=right valign=top class=bodycopy>
@@ -176,12 +178,10 @@ def showPressArea():
 	page.write(
 		"""
 		<P><input type=button class=inputSubmit value="Send This Message"
-			onclick=%s()></form>
+			onclick=send%s()></form>
 		<script>document.press.message.select();
 		document.press.message.focus();</script>
-		""" % ('sendit', 'send')['FAKE_PRESS' in page.game.rules
-		and page.power.name != 'MASTER' and page.recipient != ['MASTER']
-		and 'PUBLIC_PRESS' not in page.game.rules])
+		""" % what)
 #	----------------------------------------------------------------------
 showPressArea()
 :>

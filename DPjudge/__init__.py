@@ -12,7 +12,7 @@ host.hostDir = os.path.dirname(os.path.abspath(host.__file__))
 for (var, value) in [
 	('toolsDir', host.packageDir + '/tools'),
 	('dpjudgeDir', host.hostDir + '/web'), ('gameDir', host.hostDir + '/games'),
-	('bannerHtml', '')]: vars(host).setdefault(var, value)
+	('bannerHtml', ''), ('tester', '')]: vars(host).setdefault(var, value)
 
 #   =========================================================================
 #   Synchronize the timestamps we will get from time.time() with NTP service.

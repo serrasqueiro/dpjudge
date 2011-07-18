@@ -34,6 +34,8 @@ class Game:
 			for morph in self.morphs: text += '\nMORPH ' + morph
 		if self.master: text += '\nMASTER ' + '|'.join(self.master)
 		text += '\nPASSWORD ' + self.password
+		if self.tester and self.tester[-1] == '!':
+			text += '\nTESTER ' + self.tester[:-1]
 		if self.groups: text += '\nGROUPS ' + ('|').join(self.groups)
 		if self.start: text += '\nSTART ' + self.start
 		if self.end: text += '\nFINISH ' + self.end
@@ -88,6 +90,7 @@ class Game:
 			avail, zones, morphs = [], [], []
 			try: metaRules = self.rules[:]
 			except: metaRules, rules = [], []
+			tester = host.tester
 			groups = password = start = ''
 			map = private = zone = None
 			timing, terrain, status = {}, {}, Status().dict.get(self.name, [])
@@ -715,6 +718,10 @@ class Game:
 					replace('<', '&lt;').replace('>', '&gt;')]
 				elif self.password: error += ['TWO MASTER PASSWORDS']
 				else: self.password = word[1]
+			elif upword == 'TESTER':
+				if self.tester and self.tester[-1] == '!': error += ['TWO TESTER STATEMENTS']
+				elif len(word) == 1: self.tester = '!'
+				else: self.tester = word[1] + '!'
 			elif upword == 'DESC':
 				if len(word) > 1: self.desc += [' '.join(word[1:])]
 				else: self.mode, self.modeRequiresEnd = upword, 1
@@ -1892,7 +1899,8 @@ class Game:
 		#	Parameters are:
 		#		sender    - the Power sending press (None OK if subject)
 		#		readers   -	a [list] of recipient NAMES (strings), which
-		#					will be ['All'] for a broadcast or ['All!']
+		#					will be ['All'] for a broadcast or ['All!'];
+		#					ignored if self.tester is set (see below)
 		#					for results (to go to all AND any MONITORS).
 		#		message   - a STRING of the lines forming the message
 		#		claimFrom - a NAME (string) of Power to claim as sender
@@ -1905,49 +1913,69 @@ class Game:
 		#	------------------------------------------------------------
 		if sender:
 			claimFrom, claimTo = claimFrom or sender.name, claimTo or readers[:]
-		#	-----------------------
-		#	See who is listening in
-		#	-----------------------
-		omniscient, sentTo = ['MASTER'][:'EAVESDROP' in self.rules
-									or 'EAVESDROP!' in self.rules], []
-		omniscient += [x.name for x in self.powers if x.omniscient == 2]
-		if private: omniscient = []
-		#	----------------------------------------
-		#	Now send the message to each destination
-		#	----------------------------------------
-		for reader in self.powers + ['MASTER'] + ['JUDGEKEEPER']:
-			#	----------------------------------
-			#	Get the recipient's e-mail address
-			#	----------------------------------
-			if reader == 'MASTER':
-				if (sender and sender.name != reader and readers == ['All']
-				and 'PRESS_MASTER' in self.rules): continue
-				power, email = reader, self.master[1]
-			elif reader == 'JUDGEKEEPER':
-				if readers in (['All'], ['All!']): continue
-				power, email = reader, host.judgekeeper
-			else:
-				if reader.type == 'MONITOR' and readers != ['All!']: continue
-				power = reader.name
-				if reader.address: email = reader.address[0]
-				else:
-					try: email = [x.address[0] for x in self.powers
-						if x.name == reader.ceo[0]][0]
-					except: continue
-			#	---------------------------------------------
-			#	Make sure this party should receive the press
-			#	---------------------------------------------
-			if ((readers not in (['All'], ['All!'])
-			and power not in (readers + (sender and [sender.name] or []))
-			and power not in omniscient)
-			or (sender and power == sender.name and not receipt)): continue
-			#	-------------------------
-			#	Format and send the press
-			#	-------------------------
-			if email not in sentTo:
-				self.deliverPress(sender, power, email, readers, message,
+		sentTo = []
+		#	---------------------------------------------------------------
+		#	If there's a tester, send only to that address (if real)
+		#	This variable can either be set for this game only, or in the
+		#	host, so as to operate on all games on this server.
+		#	When in interactive mode (e.g. using inspect), adding a '!' at
+		#	the end of the string will ensure that upon the next call to
+		#	self.save() the variable will be saved in the status file.
+		#	To not send anything at all, use a single character, like '@'
+		#	or '!' (the latter will store TESTER in the status file without
+		#	a value).
+		#	---------------------------------------------------------------
+		if self.tester:
+			email = self.tester 
+			if email[-1] == '!': email = email[:-1]
+			if len(email) > 2 and '@' in email:
+				self.deliverPress(sender, 'MASTER', email, readers, message,
 								  claimFrom, claimTo, subject = subject)
 				sentTo += [email]
+		else:
+			#	-----------------------
+			#	See who is listening in
+			#	-----------------------
+			omniscient = ['MASTER'][:'EAVESDROP' in self.rules
+									or 'EAVESDROP!' in self.rules]
+			omniscient += [x.name for x in self.powers if x.omniscient == 2]
+			if private: omniscient = []
+			#	----------------------------------------
+			#	Now send the message to each destination
+			#	----------------------------------------
+			for reader in self.powers + ['MASTER'] + ['JUDGEKEEPER']:
+				#	----------------------------------
+				#	Get the recipient's e-mail address
+				#	----------------------------------
+				if reader == 'MASTER':
+					if (sender and sender.name != reader and readers == ['All']
+					and 'PRESS_MASTER' in self.rules): continue
+					power, email = reader, self.master[1]
+				elif reader == 'JUDGEKEEPER':
+					if readers in (['All'], ['All!']): continue
+					power, email = reader, host.judgekeeper
+				else:
+					if reader.type == 'MONITOR' and readers != ['All!']: continue
+					power = reader.name
+					if reader.address: email = reader.address[0]
+					else:
+						try: email = [x.address[0] for x in self.powers
+							if x.name == reader.ceo[0]][0]
+						except: continue
+				#	---------------------------------------------
+				#	Make sure this party should receive the press
+				#	---------------------------------------------
+				if ((readers not in (['All'], ['All!'])
+				and power not in (readers + (sender and [sender.name] or []))
+				and power not in omniscient)
+				or (sender and power == sender.name and not receipt)): continue
+				#	-------------------------
+				#	Format and send the press
+				#	-------------------------
+				if email not in sentTo:
+					self.deliverPress(sender, power, email, readers, message,
+									  claimFrom, claimTo, subject = subject)
+					sentTo += [email]
 		if not sender: return
 		press = self.file('press')
 		file = open(press, 'a')
@@ -1962,7 +1990,7 @@ class Game:
 		file.close()
 		try: os.chmod(press, 0666)
 		except: pass
-		if 'suspect' in self.status and host.judgekeeper not in sentTo:
+		if not self.tester and 'suspect' in self.status and host.judgekeeper not in sentTo:
 			self.deliverPress(sender, 'MASTER', host.judgekeeper,
 				readers, message, claimFrom, claimTo, subject = subject)
 	#	---------------------------------------------------------------------
@@ -2123,6 +2151,11 @@ class Game:
 		return 1
 	#	----------------------------------------------------------------------
 	def process(self, now = 0, email = None, roll = 0):
+		#	----------------------------------------------------------------
+		#	Tip: During tests or debugging, use self.tester to send mail to
+		#	yourself only or, if you specify an invalid address like '@', to
+		#	no one in particular.
+		#	----------------------------------------------------------------
 		if (now > 1 or self.ready(now) or self.preview
 		or	self.graceExpired() and 'CIVIL_DISORDER' in self.rules):
 			if not now:
@@ -2156,7 +2189,11 @@ class Game:
 				self.addCoasts()
 				if not self.preview and not self.preMoveUpdate(): return
 			for power in self.powers: power.wait = None
-			self.resolve(email = email, roll = roll)
+			if self.preview and email:
+				tester, self.tester = self.tester, email
+			self.resolve(roll = roll)
+			if self.preview and email:
+				self.tester = tester
 			#	---------------------------------------------
 			#	Move aside any rolled back status file backup
 			#	---------------------------------------------
@@ -2172,13 +2209,16 @@ class Game:
 		if not self.preview: self.save()
 	#	---------------------------------------------------------------------
 	def rollback(self, phase = None, includeFlags = 0):
-		#	--------------------------------------------------------------
+		#	---------------------------------------------------------------
 		#	Rolls back to the specified phase, or to the previous phase if
 		#	none is specified.
 		#   Relevant bit values for includeFlags:
 		#		1: include orders for each power
 		#		2: include persistent power data
-		#	---------------------------------------------------------------
+		#	Tip: During tests or debugging, use self.tester to send mail to
+		#	yourself only or, if you specify an invalid address like '@', to
+		#	no one in particular.
+		#	----------------------------------------------------------------
 		if self.status[1] != 'active': raise RollbackGameInactive
 		lines, outphase = [], self.phaseAbbr()
 		if phase:
@@ -2251,14 +2291,17 @@ class Game:
 		if self.error: return self.error
 	#	---------------------------------------------------------------------
 	def rollforward(self, phase = None, includeFlags = 4):
-		#	--------------------------------------------------------------
+		#	---------------------------------------------------------------
 		#	Rolls forward to the specified phase, or to the next phase if
 		#	none is specified.
 		#   Relevant bit values for includeFlags:
 		#		1: include orders for each power
 		#		2: include persistent data
 		#		4: include transient data
-		#	---------------------------------------------------------------
+		#	Tip: During tests or debugging, use self.tester to send mail to
+		#	yourself only or, if you specify an invalid address like '@', to
+		#	no one in particular.
+		#	----------------------------------------------------------------
 		if self.status[1] != 'active': raise RollforwardGameInactive
 		unphase = outphase = self.phaseAbbr()
 		if not os.path.isfile(self.file('status.' + outphase + '.0')):
@@ -3544,7 +3587,7 @@ class Game:
 		return ["The %s phase of '%s' has been completed." %
 				(self.phase.title(), self.name), '']
 	#	----------------------------------------------------------------------
-	def resolve(self, email = None, roll = None):
+	def resolve(self, roll = None):
 		thisPhase, lastPhase = self.phaseType, self.phaseAbbr()
 		subject = 'Diplomacy results %s ' % self.name + lastPhase
 		broadcast = self.mapperHeader()
@@ -3593,10 +3636,8 @@ class Game:
 		else: broadcast += ['The game is over.  Thank you for playing.']
 		self.await, text = 0, [x + '\n' for x in broadcast + ['']]
 		if self.preview:
-			if email: masterEmail = self.master[1]; self.master[1] = email
 			self.mailPress(None, ['MASTER'],
 				''.join(text), subject = 'PREVIEW ' + subject)
-			if email: self.master[1] = masterEmail
 			return
 		if roll: self.fileResults(text, subject)
 		else: self.mailResults(text, subject)

@@ -311,6 +311,9 @@ page.include('functions')
 		 pages of the players.  (another pwdFlag == 1 thing)
 	-->
 
+<p><dt><b><tt>TESTER <i>[email]</i></tt></b><dd>
+	Used primarily for debugging. Sends mail only to the specified address, not to any of the players, observers, or even the master. If no address is given, sends no mail at all.
+
 <A name=START></a>
 <p><dt><b><tt>START <i>gameStartDate</i></tt></b><dd>
 	Game start date.  This information is automatically provided
