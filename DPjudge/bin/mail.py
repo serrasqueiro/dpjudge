@@ -587,7 +587,8 @@ class Procmail:
 							self.respond('Fake press not allowed')
 					elif claimFrom == 'MASTER' or (claimTo
 					and 'MASTER' in claimTo
-					and 'MASTER' not in readers and readers != ['All']):
+					and 'MASTER' not in readers and (
+					'PRESS_MASTER' in rules or readers != ['All'])):
 						self.respond('Cannot fake press to or from the Master')
 					if (('YELLOW_PRESS' in rules and readers == ['All'])
 					or 'GREY_PRESS' in rules): claimFrom = '(ANON)'

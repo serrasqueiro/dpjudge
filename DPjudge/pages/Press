@@ -133,46 +133,49 @@ def showPressArea():
 			page.write('<option value=(ANON)>Anonymously</select>')
 			if 'PUBLIC_PRESS' not in page.game.rules:
 				eligible = page.game.eligiblePressRecipients(page.power, 1)
-				if ('MASTER' not in page.recipient
-				and page.recipient != ['All']): eligible.remove('MASTER')
+				if 'PRESS_MASTER' in page.game.rules:
+					if 'MASTER' in page.recipient: eligible.remove('ALL')
+					else: eligible.remove('MASTER')
+				elif (page.recipient != ['All']
+				and 'MASTER' not in page.recipient):
+					eligible.remove('ALL')
+					eligible.remove('MASTER')
 				what = ''
 				page.write(
 					"""
 					<br><table><tr><th align=right valign=top class=bodycopy>
 					...And As If Sent To</th><td class=bodycopy><b>
-					<script>var count=%d;function setOn(which){
-					document.press.claimTo[count-which].checked=true;}
-					function send(){for(i=0;i<=count;++i)
+					<script>function send(){for(i=0;i<%d;++i)
 					if(document.press.claimTo[i].checked){sendit();return;}
 					alert('Please specify the claimed recipients.');}
-					function reclick(broadcast){if(!count)return;
-					if(broadcast){for(i=0;i<count-%d;++i)
-					document.press.claimTo[i].checked=
-					document.press.claimTo[count].checked;
-					""" % (len(eligible) - 1, 'MASTER' in eligible))
-				if 'YELLOW_PRESS' in page.game.rules: page.write(
-					'if(document.press.claimTo[count].checked)'
-					'document.press.claimFrom.selectedIndex=%d;' %
-					len(page.game.powers))
-				page.write(
-					'}else document.press.claimTo[count].checked=false;}'
-					'</script>')
+					""" % len(eligible))
+				if 'ALL' in eligible:
+					page.write(
+						"""
+						var count=%d;function reclick(broadcast){
+						if(broadcast){for(i=0;i<count;++i)
+						document.press.claimTo[i].checked=
+						document.press.claimTo[count].checked;
+						""" % eligible.index('ALL'))
+					if 'MASTER' in eligible: page.write(
+						'document.press.claimTo[%d].checked = true;' %
+						eligible.index('MASTER'))
+					if 'YELLOW_PRESS' in page.game.rules: page.write(
+						'if(document.press.claimTo[count].checked)'
+						'document.press.claimFrom.selectedIndex=%d;' %
+						len(page.game.powers))
+					page.write(
+						'}else document.press.claimTo[count].checked=false;}')
+				page.write('</script>')
 				for power in eligible:
-					#	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-					#	Note -- you can FAKE TO ALL and it won't go
-					#	to the MASTER....  Hmmm....  Is that okay??
-					#
-					#	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 					on = ' checked' * (page.recipient == ['All']
 						or power in page.recipient)
 					if power == 'MASTER':
-						if (page.recipient != ['All']
-						and power not in page.recipient): continue
-						onClick = 'setOn(1)'
-					else: onClick = 'reclick(%d)' % (power == 'ALL')
+						on += ' onClick="this.checked=true"'
+					elif 'ALL' in eligible: on += ' onClick="reclick(%d)"' % (power == 'ALL')
 					page.write('<input type=checkbox name=claimTo '
-						'class=inputBox value=%s onClick=%s%s>%s<br>' %
-						(power, onClick, on, page.game.anglify(power)))
+						'class=inputBox value=%s%s>%s<br>' %
+						(power, on, page.game.anglify(power)))
 				page.write('</b></td></tr></table>')
 			page.write('</th></tr></table>')
 	page.write(

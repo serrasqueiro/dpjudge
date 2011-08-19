@@ -692,22 +692,31 @@ def showPressOptions():
 	if len(readers) > 1:
 		page.write(
 			"""
-			<script>var count=%d;function compose(){for(i=0;i<=count;++i)
+			<script>var total=%d;
+			function compose(){for(i=0;i<total;i++)
 			if(document.press.recipient[i].checked){
 			document.press.submit();return;}
 			alert('Please specify the press recipients.');}
-			function reclick(broadcast){if(!count)return;
-			if(broadcast)for(i=0;i<=count;++i)
-			{%s document.press.recipient[i].checked=
-			document.press.recipient[count].checked;}
-			else document.press.recipient[count].checked=false;}</script>
+			""" % len(readers))
+		if 'ALL' in readers:
+			page.write(
+				"""
+				var count=%d;
+				function reclick(broadcast){
+				if(broadcast){for(i=0;i<count;++i)
+				document.press.recipient[i].checked=
+				document.press.recipient[count].checked;
+				for(++i;i<total;++i)
+				document.press.recipient[i].checked=false;}
+				else document.press.recipient[count].checked=false;}
+				""" % readers.index('ALL'))
+		page.write(
+			"""
+			</script>
 			<td class="bodycopy" nowrap><b>Send Press To:</b></td>
 			</tr>
 			<td valign=top class=bodycopy><b>
-			""" % (len(readers) - 1 - (page.power.name == 'MASTER'), 'if(i==count-1)'
-			'document.press.recipient[i].checked=false;else' *
-			('PRESS_MASTER' in page.game.rules
-			and page.power.name != 'MASTER')))
+			""")
 		for power in readers:
 			page.write('<input type=checkbox name=recipient value=' + power)
 			if 'ALL' in readers:

@@ -1830,7 +1830,8 @@ class Game:
 		#	----------------------------------------
 		#	Create list of eligible press recipients
 		#	----------------------------------------
-		who = self.powers + ['MASTER', 'ALL']
+		who = self.powers + (['MASTER', 'ALL'], ['ALL', 'MASTER'])[
+		'PRESS_MASTER' in self.rules]
 		if sendingPower.name == 'MASTER': 
 			who.remove('MASTER')
 			who.append('JUDGEKEEPER')
@@ -1994,15 +1995,23 @@ class Game:
 			self.deliverPress(sender, 'MASTER', host.judgekeeper,
 				readers, message, claimFrom, claimTo, subject = subject)
 	#	---------------------------------------------------------------------
-	def pressHeader(self, power, whoTo, reader, sender = 0):
+	def pressHeader(self, power, whoTo, reader, sender = 0, recipient = 0):
 		text = ('Message', 'Broadcast message')[whoTo == ['All']]
+		omniscient = reader and (reader == 'MASTER' or [1 for x in self.powers
+		if x.name == reader and x.omniscient])
 		if sender:
 			if sender != '(ANON)': text += ' from ' + self.anglify(sender)
-			if reader == 'MASTER' and sender != power.name:
+			if omniscient and sender != power.name:
 				text += ' [%s %s]' % (('by', 'from')[sender == '(ANON)'],
 					self.anglify(power.name))
 		else: text += ' sent'
-		return text + self.listReaders(whoTo)
+		text += self.listReaders(whoTo)
+		if recipient and omniscient and set(recipient) != set(whoTo):
+			if text[-1] == ']': text = text[:-1] + ' '
+			else: text += ' ['
+			text += 'sent%s]' % ((self.listReaders(recipient),
+			' as broadcast')[recipient == ['All']])
+		return text
 	#	----------------------------------------------------------------------
 	def listReaders(self, who):
 		if who == ['All']: return ''
@@ -2038,8 +2047,8 @@ class Game:
 			#	---------------------------------------
 			if reader == sender.name: mail.write(
 				self.pressHeader(sender, recipient, reader) + ':\n\n')
-			mail.write('%s in %s:\n\n' %
-				(self.pressHeader(sender, claimTo, reader, claimFrom),
+			mail.write('%s in %s:\n\n' % (
+			self.pressHeader(sender, claimTo, reader, claimFrom, recipient),
 				self.name))
 		#	--------------------
 		#	Add the message body
@@ -2856,7 +2865,7 @@ class Game:
 							if ch != '+': word += ch
 						break
 					else:
-						if word in (['MASTER', 'UNOWNED'] +
+						if word in (['MASTER', 'JUDGEKEEPER', 'UNOWNED'] +
 							[x.name for x in self.powers]): word = word.title()
 						elif word in self.map.ownWord.values():
 							word = word.replace('+', ' ').title()

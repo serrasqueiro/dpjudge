@@ -529,7 +529,7 @@ def powerData():
 		<tr valign=top>
 		<td class="bodycopy"><b>Data&nbsp;for:&nbsp;<select class=inputBox
 		name=powerChoice onchange=fillPower()>%s</select>
-		<P>
+		<br><br>
 		Resign&nbsp;this&nbsp;power?&nbsp;<input type=checkbox %s name=resign
 			onclick=resignPlayer()>
 		<br>
