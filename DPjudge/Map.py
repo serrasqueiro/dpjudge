@@ -890,12 +890,14 @@ class Map:
 		return ' '.join([new[0], `year`, new[1]])
 	#	----------------------------------------------------------------------
 	def comparePhases(self, phase1, phase2):
-		if len(phase1.split()) == 1: phase1 = self.phaseLong(phase1, phase1)
-		if len(phase2.split()) == 1: phase2 = self.phaseLong(phase2, phase2)
+		if len(phase1.split()) == 1: phase1 = self.phaseLong(phase1, phase1.upper())
+		if len(phase2.split()) == 1: phase2 = self.phaseLong(phase2, phase2.upper())
 		if phase1 == phase2: return 0
 		now1, now2 = phase1.split(), phase2.split()
 		if len(now1) < 3 or len(now2) < 3: 
-			return len(now1) < 3 and (len(now2) < 3 and 0 or -1) or 1
+			order1 = len(now1) > 2 and 2 or phase1 == 'FORMING' and 1 or phase1 == 'COMPLETED' and 3 or 0
+			order2 = len(now2) > 2 and 2 or phase2 == 'FORMING' and 1 or phase2 == 'COMPLETED' and 3 or 0
+			return order1 > order2 and 1 or order1 < order2 and -1 or 0
 		year1, year2 = int(now1[1]), int(now2[1])
 		if year1 != year2: return year1 > year2 and 1 or -1
 		which1, which2 = (self.seq.index(now1[0] + ' ' + now1[2]), 

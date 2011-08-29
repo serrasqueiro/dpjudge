@@ -10,7 +10,7 @@ from Game import Game, Power, Mail, Status
 host.packageDir = __path__[0]
 host.hostDir = os.path.dirname(os.path.abspath(host.__file__))
 for (var, value) in [
-	('toolsDir', host.packageDir + '/tools'),
+	('toolsDir', host.packageDir + '/tools'), ('zoneFile', host.toolsDir + '/zone.tab'),
 	('dpjudgeDir', host.hostDir + '/web'), ('gameDir', host.hostDir + '/games'),
 	('bannerHtml', ''), ('tester', '')]: vars(host).setdefault(var, value)
 

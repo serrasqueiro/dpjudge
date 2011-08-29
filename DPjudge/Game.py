@@ -551,7 +551,7 @@ class Game:
 	def setTimeZone(self, zone = 'GMT'):
 		if not self.zones:
 			self.zones = ['GMT']
-			zoneFile = open(host.toolsDir + '/zone.tab')
+			zoneFile = open(host.zoneFile)
 			for line in zoneFile:
 				word = line.strip().split()
 				if word and word[0][0] != '#': self.zones.append(word[2])
@@ -1244,16 +1244,17 @@ class Game:
 		#	------------------------------------
 		#	Deliver game summary to Hall of Fame
 		#	------------------------------------
-		try: os.unlink(fileName)
-		except: pass
-		self.openMail('HoF: %s in ' %
-			('Victory', 'Draw')[len(self.outcome) > 2] + self.name,
-			copyFile = 'summary',
-			mailTo = host.hall_keeper, mailAs = host.dpjudge)
-		self.mail.copy.write('<pre>\n')
-		self.mail.write(text)
-		self.mail.copy.write('</pre>\n')
-		self.mail.close()
+		if not self.tester:
+			try: os.unlink(fileName)
+			except: pass
+			self.openMail('HoF: %s in ' %
+				('Victory', 'Draw')[len(self.outcome) > 2] + self.name,
+				copyFile = 'summary',
+				mailTo = host.hall_keeper, mailAs = host.dpjudge)
+			self.mail.copy.write('<pre>\n')
+			self.mail.write(text)
+			self.mail.copy.write('</pre>\n')
+			self.mail.close()
 		try:
 			self.rules.remove('NO_REVEAL')
 			self.save()
@@ -1286,22 +1287,27 @@ class Game:
 			origin = [self.map.bbox[0] * upscale, self.map.bbox[1] * upscale]
 			size = [(self.map.bbox[2] - self.map.bbox[0]) * upscale,
 					(self.map.bbox[3] - self.map.bbox[1]) * upscale]
+		psf, ppmf, tmpf1, tmpf2 = file + 'ps', file + 'ppm', file + 'dat', file + 'dta'
 		if os.name == 'nt':
-			inp = ('%sppm' % file, '< %sdat' % file,
-				   '< %sdta' % file, '< %sdat' % file)
-			outp = ('>%s;' % inp[1][1:], '>%s;' % inp[2][1:],
-					'>%s;' % inp[1][1:])
-		else: inp, outp = ('%sppm' % file, '2>/dev/null', '2>/dev/null', '2>/dev/null'), ('|', '|', '|')
+			err  = '2>nul'
+			inp  = (psf, tmpf1, 
+					ppmf, '< %s' % tmpf1, '< %s' % tmpf2, '< %s' % tmpf1)
+			outp = ('> %s;' % tmpf1, ppmf, 
+					'> %s;' % tmpf1, '> %s;' % tmpf2, '> %s;' % tmpf1)
+		else: 
+			err  = '2>/dev/null'
+			inp  = (psf, '-', ppmf, '', '', '')
+			outp = ('|', ppmf, '|', '|', '|')
+		if err: inp = tuple(['%s %s' % (x, err) for x in inp])
 		toolsDir = host.toolsDir
-		chop = ('%s/psselect -p_%%d %sps %s %s'
-				'%s/gs -q -r%d -dSAFER -sDEVICE=ppmraw -sOutputFile=%sppm %s;' %
-				(toolsDir, file, inp[1] * (os.name != 'nt'), outp[0],
-				toolsDir, host.imageResolution, file,
-				(inp[1], '-')[os.name != 'nt']))
+		chop = ('%s/psselect -p_%%d %s %s'
+				'%s/gs -q -r%d -dSAFER -sDEVICE=ppmraw -o %s %s;' %
+				(toolsDir, inp[0], outp[0],
+				toolsDir, host.imageResolution, outp[1], inp[1]))
 		#	----------------------------------------------------------
 		#	All landscape maps must be rotated 270 degrees by pnmflip.
 		#	----------------------------------------------------------
-		make, idx = '', 0
+		make, idx = '', 2
 		if self.map.rotation:
 			make += '%s/pnmflip -r%d %s %s' % (toolsDir,
 				self.map.rotation * 90, inp[idx], outp[idx])
@@ -1324,7 +1330,7 @@ class Game:
 			#	------------------------------------------------------------
 			if os.path.getsize(gif): os.chmod(gif, 0666)
 			else: os.unlink(gif)
-		try: map(os.unlink, (file + 'ppm', file + 'dat', file + 'dta'))
+		try: map(os.unlink, (ppmf, tmpf1, tmpf2))
 		except: pass
 	#	----------------------------------------------------------------------
 	def makePdfMaps(self, password = ''):
@@ -2215,17 +2221,21 @@ class Game:
 		#   Relevant bit values for includeFlags:
 		#		1: include orders for each power
 		#		2: include persistent power data
+		#		16: include completed game (self.tester needs to be set)
 		#	Tip: During tests or debugging, use self.tester to send mail to
 		#	yourself only or, if you specify an invalid address like '@', to
-		#	no one in particular.
+		#	no one in particular. With self.tester, a completed game will
+		#	not be sent to the hall of fame, but on the other hand it's
+		#	possible to roll back a complete game.
 		#	----------------------------------------------------------------
-		if self.status[1] != 'active': raise RollbackGameInactive
-		lines, outphase = [], self.phaseAbbr()
+		complete = includeFlags & 16 and self.tester and self.phase == 'COMPLETED'
+		if not complete and self.status[1] != 'active': raise RollbackGameInactive
+		lines, outphase = [], self.map.phaseAbbr(self.phase, self.phase.lower())
 		if phase:
 			phase = phase.upper()
 			if len(phase.split()) > 1: phase = self.phaseAbbr(phase)
-			if phase != outphase:
-				if (self.map.comparePhases(phase, outphase) >= 0 or 
+			if complete or phase != outphase:
+				if ((not complete and self.map.comparePhases(phase, outphase) >= 0) or 
 					not os.path.isfile(self.file('status.' + phase))):
 					raise RollbackPhaseInvalid
 				file = open(self.file('results'), 'r', 'latin-1')
@@ -2257,6 +2267,8 @@ class Game:
 			if not phase or not os.path.isfile(self.file('status.' + phase)):
 				raise RollbackPhaseInvalid
 		if os.path.isfile(self.file('status.' + outphase + '.0')):
+			try: os.unlink(self.file('status.rollback'))
+			except: pass
 			os.rename(self.file('status'), self.file('status.rollback'))
 		else:
 			os.rename(self.file('status'), self.file('status.' + outphase + '.0'))
@@ -2303,26 +2315,26 @@ class Game:
 		#	no one in particular.
 		#	----------------------------------------------------------------
 		if self.status[1] != 'active': raise RollforwardGameInactive
-		unphase = outphase = self.phaseAbbr()
+		unphase = outphase = self.map.phaseAbbr(self.phase, self.phase.lower())
 		if not os.path.isfile(self.file('status.' + outphase + '.0')):
 			raise RollforwardPhaseInvalid
 		preview = self.preview; self.preview = 0
 		if phase:
 			phase = phase.upper()
 			if len(phase.split()) > 1: phase = self.phaseAbbr(phase)
-			if phase != outphase:
+			if phase != outphase.upper():
 				if (self.map.comparePhases(phase, outphase) <= 0 or 
 					not os.path.isfile(self.file('status.' + phase + '.0'))):
 					raise RollforwardPhaseInvalid
 				unphase = outphase
-				while unphase != phase:
+				while phase != unphase.upper():
 					# Load the phase, including orders.
 					self.load('status.' + unphase + '.0', includeFlags | 1)
 					# Process the phase, suppressing any mail
 					self.process(now = 2, roll = includeFlags & 4 and 2 or 1)
 					try: os.unlink(self.file('status.' + unphase + '.0'))
 					except: pass
-					unphase = self.phaseAbbr()
+					unphase = self.map.phaseAbbr(self.phase, self.phase.lower())
 					if not os.path.isfile(self.file('status.' + unphase + '.0')):
 						raise RollforwardPhaseInvalid
 				self.makeMaps()
@@ -2340,7 +2352,7 @@ class Game:
 			self.makeMaps()
 			try: os.unlink(self.file('status.' + outphase + '.0'))
 			except: pass
-			unphase = self.phaseAbbr()
+			unphase = self.map.phaseAbbr(self.phase, self.phase.lower())
 			if not os.path.isfile(self.file('status.' + unphase + '.0')):
 				raise RollforwardPhaseInvalid
 		self.preview = preview
@@ -2351,12 +2363,16 @@ class Game:
 		self.setDeadline()
 		self.delay = None
 		self.save()
-		self.mailPress(None, ['All!'],
-			"Diplomacy game '%s' has been rolled forward to %s\n"
-			'and all orders have been %s.\n\n'
-			'The new deadline is %s.\n' %
-			(self.name, self.phaseName(form = 2), includeFlags & 1 and 'restored' or 'cleared', self.timeFormat()),
-			subject = 'Diplomacy rollforward notice')
+		if self.phase != 'COMPLETED':
+			self.mailPress(None, ['All!'],
+				"Diplomacy game '%s' has been rolled forward to %s\n"
+				'and all orders have been %s.\n\n'
+				'The new deadline is %s.\n' %
+				(self.name, self.phaseName(form = 2), includeFlags & 1 and 'restored' or 'cleared', self.timeFormat()),
+				subject = 'Diplomacy rollforward notice')
+		else:
+			self.mailPress(None, ['All!'],
+				'The game is over once more. Thank you for playing.')
 		if self.error: return self.error
 	#	----------------------------------------------------------------------
 	def rollin(self, branch = None):
@@ -2907,6 +2923,7 @@ class Game:
 		if roll: roll = roll & 2
 		text = []
 		while 1:
+			if self.phase in (None, 'FORMING', 'COMPLETED'): break
 			self.phase = self.findNextPhase()
 			self.phaseType = self.phase.split()[-1][0]
 			if not self.checkPhase(text) and not roll: break

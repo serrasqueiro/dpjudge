@@ -63,7 +63,7 @@ class Power:
 	def initialize(self, game):
 		self.game = game
 		if self.homes is None:
-			self.homes = game.map.homes.get(self.name, [])
+			self.homes = game.map.homes.get(self.name, self.type and None or [])
 		if self.type: return
 		if 'MOBILIZE' in game.rules: self.centers = ['SC!']
 		elif 'BLANK_BOARD' in game.rules:
