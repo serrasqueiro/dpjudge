@@ -19,7 +19,8 @@ class Power:
 			{'0': 'LOSS', '1': 'SOLO', 'YES': 'YES'}.get(self.vote,
 			self.vote + 'WAY'))
 		for line in self.msg: text += '\nMSG ' + line
-		if self.homes is not None: text += '\nINHABITS ' + ' '.join(self.homes)
+		if self.homes or not self.type and self.homes is not None: 
+			text += '\nINHABITS ' + ' '.join(self.homes)
 		if self.centers: text += '\nOWNS ' + ' '.join(self.centers)
 		if self.sees: text += '\nSEES ' + ' '.join(self.sees)
 		if self.balance != None: self.funds['$'] = self.balance
@@ -135,7 +136,7 @@ class Power:
 	#	----------------------------------------------------------------------
 	def removeBlindMaps(self):
 		for suffix in ('.ps', '.pdf', '.gif', '_.gif'):
-			try: os.unlink(host.dpjudgeDir + '/maps/' + self.game.name + '.' +
+			try: os.unlink(host.gameMapDir + '/' + self.game.name + '.' +
 				(self.abbrev or 'O') +
 				`hash((self.password or self.game.password) + self.name)` +
 				suffix)

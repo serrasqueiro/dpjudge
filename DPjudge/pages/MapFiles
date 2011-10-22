@@ -5,6 +5,47 @@
 <:
 page.include('stylesheet')
 page.include('functions')
+
+def sortMaps(one, two):
+	std = (two.startswith('standard'), one.startswith('standard'))
+	if std[0] != std[1]: return cmp(*std)
+	result = cmp(one.split('.')[0], two.split('.')[0])
+	if result: return result
+	if one.endswith('.map'): return -1
+	if two.endswith('.map'): return 1
+	return cmp(one, two)
+
+def drawFileListTable(trial, lang):
+	page.write("""
+		<table border=1 cellpadding=5 cellspacing=1>
+		""")
+	DIR = '<PKG>/%s/' % ('maps', 'trials')[trial]
+	files = [x for x in os.listdir(DIR)
+		if '[' not in x and os.path.isfile(DIR + x)
+		and ('_' in x) == lang # <-- hides or displays the language change maps
+		and '.bak' not in x and '.err' not in x
+		and x != 'psinfo']
+	variant, num, COLS = '', 0, 5
+	for file in sorted(files, sortMaps):
+		if file.split('.')[0] != variant:
+			if variant:
+				page.write('</td>')
+				if num % COLS == 0: page.write('</tr>')
+			if num == 0: page.write('<tr valign=top>')
+			variant = file.split('.')[0]
+			page.write('<td class=bodycopy>')
+			page.write("""
+				<input type=button class=inputBox value="View Map"
+				onclick="showMap('%s', %d)"><br>
+				""" % (variant, trial))
+			num += 1
+			num %= COLS
+		page.write("<a href=<URL>?page=MapFiles&file=%s&trial=%d>%s</a><br>" %
+			(file, trial, file))
+	page.write('</td>')
+	if num: page.write('<td colspan=%d>&nbsp;</td>' % (COLS - num))
+	page.write('</tr></table>');
+
 :>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
@@ -13,10 +54,12 @@ page.include('functions')
 <form name=show method=post target=_blank>
 <input type=hidden name=page value=DPmapit>
 <input type=hidden name=map value="">
+<input type=hidden name=trial value=0>
 <input type=hidden name=make value=1>
 </form>
 <script>
-function showMap(name) { document.show.map.value=name; document.show.submit(); }
+function showMap(name, trial) { document.show.map.value=name;
+document.show.trial.value=trial; document.show.submit(); }
 </script>
 <table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
 <tr valign=top>
@@ -50,17 +93,9 @@ function showMap(name) { document.show.map.value=name; document.show.submit(); }
 </tr>
 <tr valign=top bgcolor="#CCCCCC">
 <:
-def sortMaps(one, two):
-	std = (two.startswith('standard'), one.startswith('standard'))
-	if std[0] != std[1]: return cmp(*std)
-	result = cmp(one.split('.')[0], two.split('.')[0])
-	if result: return result
-	if one.endswith('.map'): return -1
-	if two.endswith('.map'): return 1
-	return cmp(one, two)
-
-DIR = '<PKG>/maps/'
 if 'file' in vars(page):
+	DIR = '<PKG>/%s/' % ('maps', 'trials')[
+		'trial' in vars(page) and int(page.trial) or 0]
 	page.write('<td align=center class="grey"><b>File %s</b></td>' %
 		page.file)
 	page.write("""
@@ -73,6 +108,12 @@ if 'file' in vars(page):
 	<pre>""")
 	file = open(DIR + page.file)
 	page.write(file.read().expandtabs(4))
+	page.write(
+		"""
+		</pre>
+		</td></tr>
+		</table>
+		""")
 else:
 	page.write(
 		"""
@@ -102,39 +143,13 @@ else:
 		<tr valign=top>
 		<td align=center class=bodycopy colspan=3>
 		&nbsp;<br>
-		<table border=1 cellpadding=5 cellspacing=1>
 		""")
-	variant, num, COLS, files = '', 0, 5, [x for x in os.listdir(DIR)
-		if '[' not in x and os.path.isfile(DIR + x)
-		and '_' not in x # <-- currently hides the language change maps
-		and '.bak' not in x and '.err' not in x]
-	for file in sorted(files, sortMaps):
-		if file.split('.')[0] != variant:
-			if variant:
-				page.write('</td>')
-				if num % COLS == 0: page.write('</tr>')
-			if num == 0: page.write('<tr valign=top>')
-			variant = file.split('.')[0]
-			page.write('<td class=bodycopy>')
-			page.write("""
-				<input type=button class=inputBox value="View Map"
-				onclick=showMap('%s')><br>
-				""" % variant)
-			num += 1
-			num %= COLS
-		page.write("<a href=<URL>?page=MapFiles&file=%s>%s</a><br>" %
-			((file,) * 2))
-	page.write('</td>')
-	if num: page.write('<td colspan=%d>&nbsp;</td>' % (COLS - num))
-:>
-</tr>
-</table>
-<P>
-</td>
-</tr>
-<:
-if 'file' not in vars(page):
-	page.write("""
+	drawFileListTable(0, 0)
+	page.write(
+		"""
+		<br>&nbsp;
+		</td>
+		</tr>
 		<tr>
 		<td align=center class="grey"><b>Non-English Language Maps</b></td>
 		</tr><tr><td class=bodycopy>
@@ -147,35 +162,31 @@ if 'file' not in vars(page):
 		phase names, deadline dates and times, and text like
 		"<tt>(*&nbsp;bounce,&nbsp;dislodged,&nbsp;destroyed&nbsp;*)</tt>"
 		&mdash; are still in English, regardless of the map language.
+		For this reason these maps are still in
+		<tt><a href=<URL>?page=Status#MAP>TRIAL</a></tt> mode,
+		meaning you need to use the <tt>TRIAL</tt> keyword instead of
+		<tt>MAP</tt> when creating a game.
 		<br>&nbsp;
 		</td></tr>
 		<tr><td align=center class=bodycopy>
 		&nbsp;<br>
-		<table border=1 cellpadding=5 cellspacing=1>
 		""")
-	variant, num, COLS, files = '', 0, 5, [x for x in os.listdir(DIR)
-		if '[' not in x and os.path.isfile(DIR + x)
-		and '_' in x
-		and '.bak' not in x and '.err' not in x]
-	for file in sorted(files, sortMaps):
-		if file.split('.')[0] != variant:
-			if variant:
-				page.write('</td>')
-				if num % COLS == 0: page.write('</tr>')
-			if num == 0: page.write('<tr valign=top>')
-			variant = file.split('.')[0]
-			page.write('<td class=bodycopy>')
-			page.write("""
-				<input type=button class=inputBox value="View Map"
-				onclick=showMap('%s')><br>
-				""" % variant)
-			num += 1
-			num %= COLS
-		page.write("<a href=<URL>?page=MapFiles&file=%s>%s</a><br>" %
-			((file,) * 2))
-	page.write('</td>')
-	if num and num > COLS:
-		page.write('<td colspan=%d>&nbsp;</td>' % (COLS - num))
-	page.write('</td></tr></table><br></td></tr>')
+	drawFileListTable(1, 1)
+	page.write(
+		"""
+		<br>&nbsp;
+		</td>
+		</tr>
+		<tr>
+		<td align=center class="grey"><b>Other Trial Maps</b></td></tr>
+		<tr><td align=center class=bodycopy>
+		&nbsp;<br>
+		""")
+	drawFileListTable(1, 0)
+:>
+<br>&nbsp;
+</td>
+</tr>
+<:
 footer()
 :>

@@ -81,6 +81,7 @@ class Page:
 			if where < 0: stuff, data = data, ''
 			else: stuff, data = data[:where], data[where + len(lims[inCode]):]
 			stuff = (stuff.replace('<URL>',		host.dpjudgeURL)
+						  .replace('<MAP>',		host.gameMapURL)
 						  .replace('<PAGE>',	host.dpjudgeURL + '?page=')
 						  .replace('<WEB>',		host.dpjudgeDir)
 						  .replace('<ID>',		host.dpjudgeID)

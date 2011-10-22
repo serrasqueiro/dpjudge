@@ -830,7 +830,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	use of additional rules, listed below.
 <!-- RULE END -->
 
-<a name=OWN_SCS_SEE></a><p><dt><b><tt>OWNED_SCS_SEE</tt></b> (<tt>BLIND</tt> modifier)<dd>
+<a name=OWN_SCS_SEE></a><p><dt><b><tt>OWN_SCS_SEE</tt></b> (<tt>BLIND</tt> modifier)<dd>
 <!-- RULE OWN_SCS_SEE !NO_SCS_SEE +BLIND -->
 	A <tt>OWN_SCS_SEE</tt> game is a <tt>BLIND</tt> game (as described above)
 	except that players see data in and around all their currently-owned
@@ -840,7 +840,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE END -->
 
 <a name=NO_SCS_SEE></a><p><dt><b><tt>NO_SCS_SEE</tt></b> (<tt>BLIND</tt> modifier)<dd>
-<!-- RULE NO_SCS_SEE !OWNED_SCS_SEE +BLIND -->
+<!-- RULE NO_SCS_SEE !OWN_SCS_SEE +BLIND -->
 	A <tt>NO_SCS_SEE</tt> game is a <tt>BLIND</tt> game (as described above)
 	except that supply centers do not provide information (information only is
 	provided by units).
@@ -891,7 +891,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE END -->
 
 <a name=MYOPIC></a><p><dt><b><tt>MYOPIC</tt></b (<tt>BLIND</tt> modifier)<dd>
-<!-- RULE MYOPIC !OWNED_SCS_SEE +SEE_NO_SCS +SEE_NO_UNITS +NO_UNITS_SEE +NO_SCS_SEE +BLIND -->
+<!-- RULE MYOPIC !OWN_SCS_SEE +SEE_NO_SCS +SEE_NO_UNITS +NO_UNITS_SEE +NO_SCS_SEE +BLIND -->
 	A <tt>MYOPIC</tt> game is a <tt>BLIND</tt> game in which players
 	<i>never</i> see any units other than their own and are never
 	informed of the ownership of any supply center not their own.
@@ -900,19 +900,19 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE END -->
 
 <a name=VENETIAN></a><p><dt><b><tt>VENETIAN</tt></b (<tt>BLIND</tt> modifier)<dd>
-<!-- RULE VENETIAN +OWNED_SCS_SEE +SEE_NO_SCS +BLIND -->
+<!-- RULE VENETIAN +OWN_SCS_SEE +SEE_NO_SCS +BLIND -->
 	A <tt>VENETIAN</tt> game is a <tt>BLIND</tt> mixture, in which owned (as opposed
 	to home) units have "visibility" and foreign supply center ownership is not revealed.
 <!-- RULE END -->
 
 <a name=GREEK></a><p><dt><b><tt>GREEK</tt></b (<tt>BLIND</tt> modifier)<dd>
-<!-- RULE GREEK +UNITS_SEE_SAME +NO_SCS_SEE !OWNED_UNITS_SEE +BLIND -->
+<!-- RULE GREEK +UNITS_SEE_SAME +NO_SCS_SEE !OWN_SCS_SEE +BLIND -->
 	A <tt>GREEK</tt> game is a <tt>BLIND</tt> mixture in which units only "see" units of
 	the same type (army or fleet) and supply centers do not report information.
 <!-- RULE END -->
 
 <a name=TROJAN></a><p><dt><b><tt>GREEK</tt></b (<tt>BLIND</tt> modifier)<dd>
-<!-- RULE TROJAN +UNITS_SEE_OTHER +NO_SCS_SEE !OWNED_UNITS_SEE +BLIND -->
+<!-- RULE TROJAN +UNITS_SEE_OTHER +NO_SCS_SEE !OWN_UNITS_SEE +BLIND -->
 	A <tt>TROJAN</tt> game is a <tt>BLIND</tt> mixture in which units only "see" units of
 	the opposite type (army or fleet) and supply centers do not report information.
 <!-- RULE END -->
@@ -1270,6 +1270,8 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE NO_MINOR_WAIT -->
 	If this rule is used, players will only see (and be able to use) a
 	"wait for processing" checkbox during movement phases.
+	Furthermore, if <a href=#ALWAYS_WAIT><tt>ALWAYS_WAIT</tt></a> is set,
+	the latter rule will only apply to movement phases.
 <!-- RULE END -->
 
 <a name=ALWAYS_WAIT></a><p><dt><b><tt>ALWAYS_WAIT</tt></b><dd>
@@ -1277,7 +1279,8 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	If this rule is used, orders will never process until the deadline
 	has arrived (unless requested by the Master using a <tt>PROCESS</tt>
 	command sent via e-mail).  This rule is incompatible with
-	<tt>REAL_TIME</tt> [above].
+	<a href=#REAL_TIME><tt>REAL_TIME</tt></a> and restricted to movement
+	phases if <a href=#NO_MINOR_WAIT><tt>NO_MINOR_WAIT</tt></a> is selected.
 <!-- RULE END -->
 
 <a name=PLAYER_DEADLINES></a><p><dt><b><tt>PLAYER_DEADLINES</tt></b><dd>

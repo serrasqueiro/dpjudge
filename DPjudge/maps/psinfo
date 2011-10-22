@@ -6,10 +6,6 @@
 
 # Standard
 standard 21,22,584,518
-standard_dutch 21,22,579,518
-standard_french 21,22,560,502
-standard_german 21,22,579,518
-standard_glhetg 21,22,550,494
 
 # Standard map variants 
 brazilian 21,22,584,518
@@ -21,7 +17,6 @@ renaissance 21,22,584,518
 crowded 21,22,550,486
 fiveman 21,22,584,518
 v8 21,22,579,510
-vassal 20,22,571,506
 void 21,20,584,508
 
 # Expansions to the standard map

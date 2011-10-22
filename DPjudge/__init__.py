@@ -9,10 +9,28 @@ from Game import Game, Power, Mail, Status
 
 host.packageDir = __path__[0]
 host.hostDir = os.path.dirname(os.path.abspath(host.__file__))
+
+# No default for host.dpjudgeURL?
 for (var, value) in [
-	('toolsDir', host.packageDir + '/tools'), ('zoneFile', host.toolsDir + '/zone.tab'),
-	('dpjudgeDir', host.hostDir + '/web'), ('gameDir', host.hostDir + '/games'),
-	('bannerHtml', ''), ('tester', '')]: vars(host).setdefault(var, value)
+('toolsSubDir', 'tools'),
+('gameSubDir', 'games'),
+('dpjudgeSubDir', 'web'),
+('gameMapSubDir', 'maps'),
+('zoneFileName', 'zone.tab'),
+('bannerHtml', ''), ('tester', ''), ('notify', 0)]:
+	vars(host).setdefault(var, value)
+
+for (var, base, path) in [
+('toolsDir', 'packageDir', 'toolsSubDir'),
+('gameDir', 'hostDir', 'gameSubDir'),
+('dpjudgeDir', 'hostDir', 'dpjudgeSubDir'),
+('gameMapDir', 'dpjudgeDir', 'gameMapSubDir'),
+('gameMapURL', 'dpjudgeURL', 'gameMapSubDir'),
+('zoneFile', 'toolsDir', 'zoneFileName')]:
+	if var not in vars(host):
+		vars(host)[var] = os.path.join(vars(host)[base], vars(host)[path])
+	elif not os.path.isabs(vars(host)[var]):
+		vars(host)[var] = os.path.join(vars(host)[base], vars(host)[var])
 
 #   =========================================================================
 #   Synchronize the timestamps we will get from time.time() with NTP service.

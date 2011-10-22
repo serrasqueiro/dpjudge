@@ -25,7 +25,8 @@ class Game:
 	def __repr__(self):
 		text = ('GAME ' + self.name + (self.await and '\nAWAIT '
 				or self.skip and '\nSKIP ' or '\nPHASE ') + self.phase)
-		if self.map: text += '\nMAP ' + self.map.name
+		if self.map: text += '\n%s ' % (
+			['MAP', 'TRIAL'][self.map.trial]) + self.map.name
 		if len(self.morphs) > 3 or [1 for x in self.morphs if not x.strip()]:
 			text += '\nMORPH'
 			for morph in self.morphs: text += '\n' + morph
@@ -509,9 +510,9 @@ class Game:
 	def addRule(self, rule):
 		if rule not in self.rules: self.rules += [rule]
 	#	----------------------------------------------------------------------
-	def loadMap(self, mapName = 'standard', lastPhase = 0):
+	def loadMap(self, mapName = 'standard', trial = 0, lastPhase = 0):
 		import Map
-		self.map, phases = Map.Map(mapName), []
+		self.map, phases = Map.Map(mapName, trial), []
 		self.error += self.map.error
 		#	-------------------------------------------
 		#	Have the Game process all lines in the map
@@ -749,9 +750,9 @@ class Game:
 					if includeFlags & 8:
 						if item not in self.map.rules: self.map.rules += [item]
 						if item not in self.metaRules: self.metaRules += [item]
-			elif upword == 'MAP':
+			elif upword in ['MAP', 'TRIAL']:
 				if self.map: error += ['TWO MAP STATEMENTS']
-				elif len(word) == 2: self.loadMap(word[1])
+				elif len(word) == 2: self.loadMap(word[1], upword == 'TRIAL')
 				else: error += ['BAD MAP STATEMENT']
 			elif upword == 'ROTATE':
 				if self.rotate: error += ['TWO ROTATE STATEMENTS']
@@ -1262,13 +1263,13 @@ class Game:
 	#	----------------------------------------------------------------------
 	def makePostScriptMap(self, viewer = 0, password = ''):
 		import DPmap
-		fileName = host.dpjudgeDir + '/maps/' + self.name + password
+		fileName = host.gameMapDir + '/' + self.name + password
 		for ext in ['.ps', '.pdf', '.gif', '_.gif', '_.pdf']:
 			try: os.unlink(fileName + ext)
 			except: pass
-		DPmap.PostScriptMap(host.packageDir + '/maps/' + self.map.rootMap,
-			self.file('results'),
-			host.dpjudgeDir + '/maps/' + self.name + password + '.ps', viewer)
+		DPmap.PostScriptMap(host.packageDir + '/' + self.map.rootMapDir + '/' +
+			self.map.rootMap, self.file('results'),
+			host.gameMapDir + '/' + self.name + password + '.ps', viewer)
 		os.chmod(fileName + '.ps', 0666)
 	#	----------------------------------------------------------------------
 	def makeGifMaps(self, password = ''):
@@ -1279,7 +1280,7 @@ class Game:
 		#	Andrew Duggan's "psutils" package), and mess
 		#	with it until it is all converted to a .gif.
 		#	--------------------------------------------
-		root = host.dpjudgeDir + '/maps/' + self.name + password
+		root = host.gameMapDir + '/' + self.name + password
 		file = root + '.'
 		upscale = host.imageResolution / 72.
 		origin = size = None
@@ -1337,7 +1338,7 @@ class Game:
 		#	---------------------------------------------------------
 		#	Make a .pdf file with the final page(s) from the .ps file
 		#	---------------------------------------------------------
-		fileName, params = host.dpjudgeDir + '/maps/' + self.name + password, []
+		fileName, params = host.gameMapDir + '/' + self.name + password, []
 		outfileName = fileName + '.pdf'
 		if self.map.papersize: params = ['-sPAPERSIZE=' + self.map.papersize]
 		#	----------------------------------------
@@ -2075,7 +2076,8 @@ class Game:
 	def ready(self, process = 0):
 		return process == 2 or ((self.deadline and self.deadline <= self.Time())
 		or process or not ([1 for power in self.powers if power.wait]
-		or 'ALWAYS_WAIT' in self.rules)) and not self.latePowers()
+		or ('ALWAYS_WAIT' in self.rules and (self.phaseType == 'M'
+		or 'NO_MINOR_WAIT' not in self.rules)))) and not self.latePowers()
 	#	----------------------------------------------------------------------
 	def findGoners(self, phase = 1):
 		if self.phaseType == '-': return
@@ -2239,12 +2241,13 @@ class Game:
 		#	----------------------------------------------------------------
 		complete = includeFlags & 16 and self.tester and self.phase == 'COMPLETED'
 		if not complete and self.status[1] != 'active': raise RollbackGameInactive
-		lines, outphase = [], self.map.phaseAbbr(self.phase, self.phase.lower())
+		lines, outphase = [], complete and self.outcome[0] or (
+			self.map.phaseAbbr(self.phase, self.phase.lower()))
 		if phase:
 			phase = phase.upper()
 			if len(phase.split()) > 1: phase = self.phaseAbbr(phase)
-			if complete or phase != outphase:
-				if ((not complete and self.map.comparePhases(phase, outphase) >= 0) or 
+			if phase != outphase:
+				if ((self.map.comparePhases(phase, outphase) >= 0) or 
 					not os.path.isfile(self.file('status.' + phase))):
 					raise RollbackPhaseInvalid
 				file = open(self.file('results'), 'r', 'latin-1')
@@ -2283,17 +2286,8 @@ class Game:
 			os.rename(self.file('status'), self.file('status.' + outphase + '.0'))
 		if phase != outphase:
 			os.rename(self.file('status.' + phase), self.file('status.' + phase + '.0'))
-			file = open(self.file('results'), 'w')
-			temp = lines[:num - 1]
-			file.write(''.join(temp).encode('latin-1'))
-			file.close()
 			if not start:
-				[os.unlink(host.dpjudgeDir + '/maps/' + x)
-					for x in os.listdir(host.dpjudgeDir + '/maps')
-					if x.startswith(self.name.encode('latin-1'))
-					and x.endswith('_.gif')]
 				self.phase = self.map.phase
-			self.makeMaps()
 		# Load the phase.
 		self.load('status.' + phase + '.0', includeFlags | 4)
 		self.await = self.skip = None
@@ -2309,6 +2303,18 @@ class Game:
 			'The new deadline is %s.\n' %
 			(self.name, self.phaseName(form = 2), includeFlags & 1 and 'restored' or 'cleared', self.timeFormat()),
 			subject = 'Diplomacy rollback notice')
+		# Remake the maps
+		if phase != outphase:
+			file = open(self.file('results'), 'w')
+			temp = lines[:num - 1]
+			file.write(''.join(temp).encode('latin-1'))
+			file.close()
+			if not start:
+				[os.unlink(host.gameMapDir + '/' + x)
+					for x in os.listdir(host.gameMapDir)
+					if x.startswith(self.name.encode('latin-1'))
+					and x.endswith('_.gif')]
+			self.makeMaps()
 		if self.error: return self.error
 	#	---------------------------------------------------------------------
 	def rollforward(self, phase = None, includeFlags = 4):
@@ -2366,22 +2372,33 @@ class Game:
 				raise RollforwardPhaseInvalid
 		self.preview = preview
 		# Load the last phase
+		prephase = self.phase
 		self.load('status.' + unphase + '.0', includeFlags)
 		self.await = self.skip = None
-		self.changeStatus('active')
-		self.setDeadline()
-		self.delay = None
-		self.save()
 		if self.phase != 'COMPLETED':
+			self.changeStatus('active')
+			self.setDeadline()
+			self.delay = None
+			self.save()
 			self.mailPress(None, ['All!'],
 				"Diplomacy game '%s' has been rolled forward to %s\n"
 				'and all orders have been %s.\n\n'
 				'The new deadline is %s.\n' %
-				(self.name, self.phaseName(form = 2), includeFlags & 1 and 'restored' or 'cleared', self.timeFormat()),
+				(self.name, self.phaseName(form = 2), includeFlags & 1 and
+				'restored' or 'cleared', self.timeFormat()),
 				subject = 'Diplomacy rollforward notice')
 		else:
-			self.mailPress(None, ['All!'],
-				'The game is over once more. Thank you for playing.')
+			if prephase != 'COMPLETED' and self.outcome:
+				victors = self.outcome[1]
+				self.outcome, self.phase = None, prephase
+				self.proposal = [len(victors) == 1 and victors[0] or
+				('DIAS', 'NO_DIAS')['NO_DIAS' in self.rules]]
+				self.endByAgreement()
+			else:
+				self.changeStatus('completed')
+				self.save()
+				self.mailPress(None, ['All!'],
+					'The game is over once more. Thank you for playing.')
 		if self.error: return self.error
 	#	----------------------------------------------------------------------
 	def rollin(self, branch = None):
@@ -2931,12 +2948,13 @@ class Game:
 	def advancePhase(self, roll = None):
 		if roll: roll = roll & 2
 		text = []
-		while 1:
+		for idx in range(len(self.map.seq)):
 			if self.phase in (None, 'FORMING', 'COMPLETED'): break
 			self.phase = self.findNextPhase()
 			self.phaseType = self.phase.split()[-1][0]
 			if not self.checkPhase(text) and not roll: break
 			if roll and os.path.isfile(self.file('status.' + self.phaseAbbr() + '.0')): break
+		else: raise FailedToAdvancePhase
 		return text
 	#	----------------------------------------------------------------------
 	def findNextPhase(self, phaseType = None, skip = 0):
@@ -3668,8 +3686,8 @@ class Game:
 		if roll: self.fileResults(text, subject)
 		else: self.mailResults(text, subject)
 		self.finishPhase()
-		if not roll: self.makeMaps()
 		self.save()
+		if not roll: self.makeMaps()
 		if self.phase == 'COMPLETED': self.fileSummary()
 	#	----------------------------------------------------------------------
 	def endByAgreement(self):
@@ -3703,7 +3721,7 @@ class Game:
 		self.save()
 		if 'BLIND' in self.rules:
 			for power in self.powers: power.removeBlindMaps()
-			file = host.dpjudgeDir + '/maps/' + self.name
+			file = host.gameMapDir + '/' + self.name
 			for suffix in ('.ps', '.pdf', '.gif', '_.gif'):
 				try: os.rename(file + `hash(self.password)` + suffix,
 					file + suffix)
@@ -4304,7 +4322,7 @@ class Game:
 		except: pass
 	#	----------------------------------------------------------------------
 	def mailMap(self, email, mapType, power = None):
-		fileName = (host.dpjudgeDir + '/maps/' + self.name +
+		fileName = (host.gameMapDir + '/' + self.name +
 			(power and 'BLIND' in self.rules
 			and (power, self)[power.name == 'MASTER'].password or '')
 			+ '.' + mapType)

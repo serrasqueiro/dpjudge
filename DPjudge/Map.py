@@ -5,14 +5,17 @@ import host
 
 class Map:
 	#	----------------------------------------------------------------------
-	def __init__(self, name = 'standard'):
-		victory = phase = rootMap = flagDir = validated = textOnly = None
+	def __init__(self, name = 'standard', trial = 0):
+		victory = phase = validated = textOnly = None
+		rootMap = rootMapDir = flagDir = None
 		homes, locName, locType, locAbut, abutRules = {}, {}, {}, {}, {}
 		ownWord, abbrev, centers, units, powName, flag = {}, {}, {}, {}, {}, {}
 		rules, files, powers, scs, owns, inhabits = [], [], [], [], [], []
 		flow, unclear, size, homeYears, dummies, locs = [], [], [], [], [], []
 		reserves, militia, dynamic, factory, partisan = [], [], {}, {}, {}
 		leagues, directives, phaseAbbrev, error, notify = {}, {}, {}, [], []
+		if host.notify and host.judgekeeper and (trial or host.notify > 1):
+			notify = [host.judgekeeper]
 		aliases = {			'-': '-',		'H': 'H',		'P': 'P',
 			'A': 'A',		'F': 'F',		'S': 'S',		'C': 'C',
 			'B': 'BUILD',	'R': 'REMOVE',	'D': 'DISBAND',
@@ -223,76 +226,87 @@ class Map:
 		#	-----------------
 		#	Open ps info file
 		#	-----------------
-		try: file = open(host.packageDir + '/maps/psinfo',
-			encoding = 'latin-1')
-		except: return error.append('PSINFO FILE NOT FOUND')
-		#	------------------------------------
-		#	Assign default values
-		#	Order: bbox papersize rotation blind
-		#	------------------------------------
-		self.bbox, self.papersize, self.rotation = None, '', 3
-		defVals = [''] * 3
-		curVals = defVals[:]
-		#	-----------------------------------------------------------
-		#	Parse the file, searching for the map name
-		#	and determining its parameter values
-		#	Missing values are replaced with the default values.
-		#   Special values:
-		#		'_': replace with the default value
-		#		'-': copy the corresponding value for the preceding map
-		#		'=': copy all remaining values from the preceding map
-		#	-----------------------------------------------------------
-		for line in file:
-			word = line.split()
-			if not word or word[0][0] == '#': continue
-			curName = word.pop(0)
-			for idx in range(len(defVals)):
-				if len(word) <= idx or word[idx] == '_':
-					curVals[idx] = defVals[idx]
-				elif word[idx] == '-': pass
-				elif word[idx] == '=': break
-				else: curVals[idx] = word[idx]
-			if curName == self.rootMap: break
-		if curName != self.rootMap: return error.append(
-			'MAP NOT DEFINED IN PSINFO FILE: ' + self.rootMap)	
-		#	------------------------------------------------------
-		#	Determine bbox and pixel size of graphic map at 72 dpi
-		#	after rotation (for .gif file creation and display)
-		#	------------------------------------------------------
-		if curVals[0] != '':
-			try: 
-				bbox = [eval(x) for x in curVals[0].split(',')]
-				if len(bbox) == 4:
-					self.bbox = bbox
-					self.size = [bbox[2] - bbox[0], bbox[3] - bbox[1]]
-				else: raise 
-			except: error.append('BBOX NOT CORRECT IN PSINFO FOR MAP: ' +
-				self.rootMap)
-		#	-------------------
-		#	Determine papersize
-		#	-------------------
-		if curVals[1] != '': self.papersize = curVals[1]
-		#	-----------------------------------------
-		#	Determine rotation from page orientation: 
-		#		Portrait:	0 (No rotation)
-		#		Landscape:	3 (270 degrees rotation)
-		#		(Seascape:	1 (90 degrees rotation))
-		#	-----------------------------------------
-		if curVals[2] != '':
-			try: 
-				rotation = eval(curVals[2])
-				if rotation in range(4): self.rotation = rotation
-				else: raise
-			except: error.append('ROTATION NOT 0 TO 3 IN PSINFO FOR MAP: ' +
-				self.rootMap)
+		for mapDir in ['trials', 'maps'][not self.trial:]:
+			try: file = open(host.packageDir + '/' + mapDir + '/psinfo',
+				encoding = 'latin-1')
+			except:
+				err = 'PSINFO FILE NOT FOUND'
+				continue
+			#	------------------------------------
+			#	Assign default values
+			#	Order: bbox papersize rotation blind
+			#	------------------------------------
+			self.bbox, self.papersize, self.rotation = None, '', 3
+			defVals = [''] * 3
+			curVals = defVals[:]
+			#	-----------------------------------------------------------
+			#	Parse the file, searching for the map name
+			#	and determining its parameter values
+			#	Missing values are replaced with the default values.
+			#   Special values:
+			#		'_': replace with the default value
+			#		'-': copy the corresponding value for the preceding map
+			#		'=': copy all remaining values from the preceding map
+			#	-----------------------------------------------------------
+			for line in file:
+				word = line.split()
+				if not word or word[0][0] == '#': continue
+				curName = word.pop(0)
+				for idx in range(len(defVals)):
+					if len(word) <= idx or word[idx] == '_':
+						curVals[idx] = defVals[idx]
+					elif word[idx] == '-': pass
+					elif word[idx] == '=': break
+					else: curVals[idx] = word[idx]
+				if curName == self.rootMap: break
+			else:
+				err = 'MAP NOT DEFINED IN PSINFO FILE: ' + self.rootMap
+				continue
+			#	------------------------------------------------------
+			#	Determine bbox and pixel size of graphic map at 72 dpi
+			#	after rotation (for .gif file creation and display)
+			#	------------------------------------------------------
+			if curVals[0] != '':
+				try: 
+					bbox = [eval(x) for x in curVals[0].split(',')]
+					if len(bbox) == 4:
+						self.bbox = bbox
+						self.size = [bbox[2] - bbox[0], bbox[3] - bbox[1]]
+					else: raise 
+				except: error.append('BBOX NOT CORRECT IN PSINFO FOR MAP: ' +
+					self.rootMap)
+			#	-------------------
+			#	Determine papersize
+			#	-------------------
+			if curVals[1] != '': self.papersize = curVals[1]
+			#	-----------------------------------------
+			#	Determine rotation from page orientation: 
+			#		Portrait:	0 (No rotation)
+			#		Landscape:	3 (270 degrees rotation)
+			#		(Seascape:	1 (90 degrees rotation))
+			#	-----------------------------------------
+			if curVals[2] != '':
+				try: 
+					rotation = eval(curVals[2])
+					if rotation in range(4): self.rotation = rotation
+					else: raise
+				except: error.append('ROTATION NOT 0 TO 3 IN PSINFO FOR MAP: ' +
+					self.rootMap)
+			break
+		else: return error.append(err)
 	#	----------------------------------------------------------------------
 	def load(self, fileName = 0):
 		error = self.error
 		if type(fileName) is not list:
 			fileName, power = fileName or (self.name + '.map'), 0
-			try: file = open(host.packageDir + '/maps/' + fileName,
-				encoding = 'latin-1')
-			except: return error.append('MAP FILE NOT FOUND: ' + fileName)
+			for mapDir in ['trials', 'maps'][not self.trial:]:
+				try: file = open(host.packageDir + '/' + mapDir + '/' +
+					fileName, encoding = 'latin-1')
+				except: continue
+				if fileName.split('.')[0] == (self.rootMap or self.name):
+					self.rootMapDir = mapDir
+				break
+			else: return error.append('MAP FILE NOT FOUND: ' + fileName)
 			self.files += [fileName]
 		else: file = fileName
 		phase = variant = 0
@@ -387,7 +401,7 @@ class Map:
 			#	---------------------------------------------------
 			#	Year(s), if any, in which new home SC's are decided
 			#	---------------------------------------------------
-			elif upword == 'NEWHOMES': self.homes = word[1:]
+			elif upword == 'NEWHOMES': self.homeYears = word[1:]
 			#	----------------------
 			#	Placenames and aliases
 			#	----------------------
@@ -623,14 +637,14 @@ class Map:
 				if len(word) > 2 and word[1] == '->': 
 					oldPower = power
 					word = word[2:]
-					power = word[0].upper() 
+					upword = power = word[0].upper()
 					if power in ('NEUTRAL', 'CENTERS', 'UNOWNED'): power = 0
 					if not oldPower or not power:
 						error += ['RENAMING UNOWNED DIRECTIVE NOT ALLOWED']
 					else: self.renamePower(oldPower, power)						
-				upword = power or 'UNOWNED'
 				if power and upword not in self.powName.values():
 					self.powName[upword] = power = power.replace('+', '')
+				upword = power or 'UNOWNED'
 				if upword != 'UNOWNED' and len(word) > 1 and word[1][0] == '(':
 					self.ownWord[upword] = word[1][1:-1] or power
 					if ':' in word[1]:
@@ -710,9 +724,12 @@ class Map:
 	def renamePower(self, old, new):
 		if old not in self.powName.values(): 
 			return error.append('RENAMING UNDEFINED POWER ' + old)
-		[x.pop(old, None) for x in (self.powName, self.ownWord, self.abbrev)]
+		self.powName.pop(old, None)
+		old, new = old.replace('+', ''), new.replace('+', '')
+		[x.pop(old, None) for x in (self.ownWord, self.abbrev)]
 		if old == new: return
-		for data in (self.homes, self.units, self.centers, self.powers, self.factory, self.partisan):
+		for data in (self.homes, self.units, self.centers, self.powers,
+		self.factory, self.partisan):
 			try:
 				data[new] = data[old]
 				del data[old]

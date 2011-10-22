@@ -272,14 +272,22 @@ page.include('functions')
 	directives are given in the status file.
 
 <A name=MAP></a>
-<p><dt><b><tt>MAP <i>mapName</i></tt></b><dd>
+<p><dt><b><tt>MAP <i>mapName</i></tt> -or-<br>
+<tt>TRIAL <i>mapName</i></tt></b><dd>
 	Specifies the game map to be used.  If not given, the
 	<tt><i>mapName</i></tt> will default to <tt>standard</tt>.
 	Map files have the extension <tt>.map</tt> and must be installed
-	in the map directory at the DPjudge site.  
+	in the map directory at the DPjudge site or, in case of trial maps,
+	in the trial directory.  
+	A trial map is a map in development, or whose functionality
+	(special rules, etc.) is not yet fully supported.
+	Games played on trial maps can only be <a href=<URL>?page=Email#create>
+	created through mail</a>. The judgekeeper will automatically be informed
+	of any trial games created.
 	The <a href=<URL>?page=Map>map file syntax description</a> should be
-	consulted to create any new map.  The supported maps are listed and
-	viewable on the <a href=<URL>?page=MapFiles>map files list</a>.
+	consulted to create any new map.  The supported maps, including trial maps,
+	are listed and viewable on the
+	<a href=<URL>?page=MapFiles>map files list</a>.
 
 <A name=MORPH></a>
 <p><dt><b><tt>MORPH <i>mapFileLine</i></tt> -or-<br>

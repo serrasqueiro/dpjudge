@@ -1,11 +1,12 @@
 from codecs import open
+from smtplib import *
 
 import host
 
 class Mail:
 	#	----------------------------------------------------------------------
 	def __init__(self, sendTo, subject, copy = '', mailAs = '', header = ''):
-		import smtplib, socket, os
+		import socket, os
 		self.copy = self.copyFile = copy
 		if copy:
 			try: self.copy = open(copy, 'a')
@@ -19,10 +20,10 @@ class Mail:
 			except: pass
 		mailAs = mailAs or host.dpjudge
 		if host.smtpService is not None:
-			try: self.mail = smtplib.SMTP()
+			try: self.mail = SMTP()
 			except:
 				socket.gethostname = lambda: 'localhost'
-				self.mail = smtplib.SMTP()
+				self.mail = SMTP()
 			self.msg, self.mailAs, self.mailTo = '', mailAs, sendTo.split(',')
 			self.mail.connect(host.smtpService)
 		elif host.sendmailDir:
@@ -43,15 +44,15 @@ class Mail:
 				self.msg.encode('latin-1'))
 			except SMTPServerDisconnected:
 				logtext  = '{ERROR: Server Disconnected|\n'
-			except SMTPResponseException: 
+			except SMTPResponseException, exception: 
 				logtext  = '{ERROR: Response Error|\n'
-				logtext += SMTPResponseException.smtp_error
-			except SMTPSenderRefused: 
+				logtext += exception.smtp_error
+			except SMTPSenderRefused, exception: 
 				logtext  = '{ERROR: Sender Address Refused|\n'
-				logtext += SMTPSenderRefused.sender
-			except SMTPRecipientsRefused: 
+				logtext += exception.sender
+			except SMTPRecipientsRefused, exception: 
 				logtext  = '{ERROR: All Recipients Refused|\n'
-				for key, recip in SMTPRecipientsRefused.recipients.items():
+				for key, recip in exception.recipients.items():
 					logtext += `recip` + ';'
 			except SMTPDataError: 
 				logtext  = '{ERROR: Data Error|\n'

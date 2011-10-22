@@ -105,7 +105,7 @@ def showGameHeader():
 #	----------------------------------------------------------------------
 def showMapButtons():
 	file, game = mapName(), page.game
-	map = host.dpjudgeDir + '/maps/' + file
+	map = host.gameMapDir + '/' + file
 	gif = os.path.exists(map + '.gif') | (os.path.exists(map + '_.gif') * 2)
 	pdf, ps = os.path.exists(map + '.pdf'), os.path.exists(map + '.ps')
 	if not (gif or pdf or ps): return
@@ -128,8 +128,8 @@ def showMapButtons():
 		if gif > 2: page.write(
 			"""
 			win.document.write("if(game.src.indexOf('_.gif')<0)"+
-				"game.src='%s/maps/%s_%s';else game.src='%s/maps/%s%s';");
-			""" % ((host.dpjudgeURL, file, noCache) * 2))
+				"game.src='%s/%s_%s';else game.src='%s/%s%s';");
+			""" % ((host.gameMapURL, file, noCache) * 2))
 		if game.phase == 'COMPLETED': label += 'Final Map/Last Moves'
 		else:
 			if gif & 1: label += 'Current Map' + '/' * (gif > 1)
@@ -137,7 +137,7 @@ def showMapButtons():
 		page.write(
 			"""
 			win.document.write('return false">'+
-			'<img border=0 name=game height=%d width=%d src=%s/maps/%s%s%s></a>');
+			'<img border=0 name=game height=%d width=%d src=%s/%s%s%s></a>');
 			win.document.close(); win.focus();}</script>
 			<form>
 			<td class="bodycopy" align=right nowrap>%s (GIF)</td>
@@ -145,7 +145,7 @@ def showMapButtons():
 				value="View"></td>
 			</tr>
 			</form>
-			""" % (height, width, host.dpjudgeURL, file, "_"[gif != 2:], noCache, label))
+			""" % (height, width, host.gameMapURL, file, "_"[gif != 2:], noCache, label))
 		if pdf or ps: page.write('<tr><td></td>')
 	if pdf:
 		page.write(
@@ -157,18 +157,18 @@ def showMapButtons():
 			win.focus();}else window.location=url;return false;}</script>
 			<form>
 			<td class="bodycopy" align=right nowrap>By Season (PDF)</td>
-			<td><input type=button onClick=showPdf("%s/maps/%s.pdf");
+			<td><input type=button onClick=showPdf("%s/%s.pdf");
 			class="inputSubmit" value='View'></td>
 			</tr></form>
-			""" % (game.name, host.dpjudgeURL, file))
+			""" % (game.name, host.gameMapURL, file))
 		if ps: page.write('<tr><td></td>')
 	if ps: page.write(
 			"""
-			<form method=get action=%s/maps/%s.ps>
+			<form method=get action=%s/%s.ps>
 			<td class="bodycopy" align=right nowrap>By Season (PS)</td>
 			<td><input type=submit value="View" class="inputSubmit"></td>
 			</tr></form>
-			""" % (host.dpjudgeURL, file))
+			""" % (host.gameMapURL, file))
 	page.write('</tr>')
 #	----------------------------------------------------------------------
 def showResultsText(list = None, subject = None):
@@ -317,7 +317,8 @@ def showGameInfo():
 		variant += [text]
 	if game.variant: variant += [game.variant.title()]
 	if 'NO_DIAS' in game.rules: variant += ['No DIAS']
-	showInfo('Variant', ', '.join(variant) + '<!, Anonymous>.')
+	showInfo(' '.join(['Trial', 'Variant'][not game.map.trial:]),
+		', '.join(variant) + '<!, Anonymous>.')
 	showInfo('Press', game.pressSettings())
 	rules = game.rules[:]
 	for rule in game.metaRules + ['EAVESDROP']:
@@ -1243,7 +1244,8 @@ def powerInfo():
 	if game.map.name != game.variant: variant += [game.map.name.title()]
 	if game.variant: variant += [game.variant.title()]
 	if 'NO_DIAS' in game.rules: variant += ['No DIAS']
-	showInfo('Variant', ', '.join(variant) + '<!, Anonymous>.', 1)
+	showInfo(' '.join(['Trial', 'Variant'][not game.map.trial:]),
+		', '.join(variant) + '<!, Anonymous>.', 1)
 	showInfo('Press', game.pressSettings(), 1)
 	rules = game.rules[:]
 	for rule in game.metaRules + ['EAVESDROP']:

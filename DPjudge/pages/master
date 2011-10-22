@@ -223,8 +223,8 @@ def changeButton():
 def outStatusFile():
 	hidden = ('GAME', 'START', 'DELAY', 'FINISH', 'RESULT',
 				'PHASE', 'AWAIT', 'NEED')
-	implemented = ('DESC', 'GAME', 'DEADLINE', 'ZONE', 'NAME',
-				'MASTER', 'RULE', 'PRIVATE', 'MAP', 'PASSWORD', 'MORPH')
+	implemented = ('DESC', 'GAME', 'DEADLINE', 'ZONE', 'NAME', 'MORPH',
+				'MASTER', 'RULE', 'PRIVATE', 'MAP', 'TRIAL', 'PASSWORD')
 	modal = ('DESC', 'NAME', 'MORPH')
 	noshow, mode = hidden + implemented, None
 	file, outfile = open(page.game.file('status'), encoding='latin-1'), ''
@@ -337,18 +337,19 @@ def showStatusFile():
 	page.write('</select></td></tr>')
 	if varLocked: page.write('<input type=hidden name=curVariant value=%s>' %
 		curVariant)
-	page.write("<tr class=bodycopy><td><b>Map:</b><td>")
+	page.write("<tr class=bodycopy><td><b>%sMap:</b><td>" %
+		'Trial ' * page.game.map.trial)
 	if page.game.phase == 'FORMING':
-		DIR = "<PKG>/maps"
+		DIR = "<PKG>/" + ["maps", "trials"][page.game.map.trial]
 		page.write('<select class=bodycopy name=map>')
-		files, map = os.listdir(DIR), ''
+		files, gameFile = os.listdir(DIR), page.game.map.name + '.map'
+		if gameFile not in files: files += [gameFile]
 		for file in sorted(files):
 			if not file.endswith('.map'): continue
-			if file.endswith('.notyet'): continue
-			if os.path.isfile(DIR + '/' + file) and file.split('.')[0] != map:
-				map = file.split('.')[0]
+			map = file.split('.')[0]
 			page.write("<option value=%s%s>%s</option>" %
-			(map, ' selected' * (page.game.map.name == map), map))
+				(map, ' selected' * (gameFile == file),
+				('(%s)' % map, map)[os.path.isfile(DIR + '/' + file)]))
 		page.write("</select>")
 	else: page.write(page.game.map.name)
 	page.write("</td></tr>")
@@ -596,7 +597,7 @@ def updateMaster():
 	#	Update status file
 	#	------------------
 	#	NEW STUFF (TO BE USED TO UPDATE WITH)
-	if 'map' in vars(page): page.game.map = Map(page.map)
+	if 'map' in vars(page): page.game.map = Map(page.map, page.game.map.trial)
 	page.game.password = page.newPassword
 	if page.privacy == 'public': page.game.private = None
 	else: page.game.private = page.private
@@ -720,9 +721,11 @@ def checkErrors():
 				"\\nPlease Report This To The GameMaster!");
 			window.history.back();
 			</script>
-			""" % (page.game.error and 'Status' or 'Map'))
+			""" % (page.game.map.error and 'Map' or 'Status'))
 		raise SystemExit
-	if page.game.error:
+	statuserror = [x for x in page.game.error
+		if x not in page.game.map.error]
+	if statuserror:
 		page.write(
 			"""
 			<tr valign=top bgcolor="#CCCCCC">
@@ -731,7 +734,7 @@ def checkErrors():
 			<tr valign=top><th bgcolor=red class=bodycopy>
 			<font color=yellow size=3><pre>
 			""")
-		map(page.write, page.game.error)
+		map(page.write, statuserror)
 		page.write('</pre></td></tr>')
 	if page.game.map.error:
 		page.write(

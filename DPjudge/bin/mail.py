@@ -105,8 +105,9 @@ class Procmail:
 				for info in self.message[1:]:
 					word = ''.join(info.upper().split()[:1])
 					if word == 'DESC': break
-					if word == 'MAP': onmap = (' on the %s map' %
-						''.join(info.split()[1:2]).title())
+					if word in ('MAP', 'TRIAL'): onmap = ' on the %s%s map' % (
+						''.join(info.split()[1:2]).title(),
+						('', ' trial')[word == 'TRIAL'])
 				else:
 					temp = 'DESC A %s game%s.\n' % (desc, onmap)
 					file.write(temp.encode('latin-1'))

@@ -1,0 +1,12 @@
+# Format: 
+#  variant bbox=None papersize=letter rotation=3
+# Use the '_' placeholder to select a default value before the end of the line.
+# Use the '-' placeholder to copy the value of the preceding variant.
+# Use the '=' placeholder to copy all remaining values of the preceding variant.
+
+# Standard
+standard_dutch 21,22,579,518
+standard_french 21,22,560,502
+standard_german 21,22,579,518
+standard_glhetg 21,22,550,494
+

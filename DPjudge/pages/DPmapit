@@ -63,9 +63,9 @@ class MapPower:
 		self.name = name
 
 class GameMap(Game):
-	def __init__(self, results, map):
-		self.gameDir = host.dpjudgeDir + '/maps'
-		self.name, self.rules, self.map = name, [], Map(map)
+	def __init__(self, results, map, trial):
+		self.gameDir = host.gameMapDir
+		self.name, self.rules, self.map = name, [], Map(map, trial)
 		self.phase = self.map.phase
 		#	Since it's being put into a <td>, not a decorated pop-up window
 		#	(which eats some of the pixels) the width is reduced by 10 pixels
@@ -90,36 +90,37 @@ class GameMap(Game):
 		for line in results.split('\015'): file.write(line.encode('latin-1'))
 		file.close()
 		for ext in ('.ps', '.pdf', '.gif', '_.gif'):
-			try: os.unlink(host.dpjudgeDir + '/maps/' + name + ext)
+			try: os.unlink(host.gameMapDir + '/' + name + ext)
 			except: pass
 		self.makeMaps()
 
 if 'make' in vars(page):
 	page.write('</td><td valign=top align=center>')
 	if 'results' not in vars(page): page.results = ''
-	x = GameMap(page.results, page.map)
+	x = GameMap(page.results, page.map,
+		'trial' in vars(page) and int(page.trial) or 0)
 	page.write('<table border=5>')
-	if os.path.exists(host.dpjudgeDir + '/maps/' + name + '_.gif'):
+	if os.path.exists(host.gameMapDir + '/' + name + '_.gif'):
 		page.write("""
 		<caption><b>Click Map To Toggle Between Most Recent
 		Moves / Current Position</b></caption>
 		""")
 	page.write('<tr><th>')
-	if os.path.exists(host.dpjudgeDir + '/maps/' + name + '_.gif'):
+	if os.path.exists(host.gameMapDir + '/' + name + '_.gif'):
 		page.write("""<a href=. onClick="if(image.src.indexOf('_.gif')<0)"""
-		"""image.src='<URL>/maps/%s_.gif';"""
-		"""else image.src='<URL>/maps/%s.gif';return false">""" 
+		"""image.src='<MAP>/%s_.gif';"""
+		"""else image.src='<MAP>/%s.gif';return false">""" 
 		% (name, name))
 	page.write(
 		"""
-		<img border=0 name=image src=<URL>/maps/%s.gif></a></th></tr>
+		<img border=0 name=image src=<MAP>/%s.gif></a></th></tr>
 		</table>
 		<table cellpadding=10><th>
-		<form action=<URL>/maps/%s.ps>
+		<form action=<MAP>/%s.ps>
 		<input class=inputSubmit type=submit value="PostScript Version">
 		</th></form>
 		<th width=50>&nbsp;</th><th>
-		<form action=<URL>/maps/%s.pdf>
+		<form action=<MAP>/%s.pdf>
 		<input class=inputSubmit type=submit value="PDF Version">
 		</th>
 		</form>
@@ -131,11 +132,19 @@ if 'make' in vars(page):
 		</tr></table>
 		""" % (name, name, name))
 else:
-	options = ''
+	options = trialOptions = ''
 	for each in sorted([x.split('.')[0]
 		for x in os.listdir(host.packageDir + '/maps')
 		if '[' not in x and x.endswith('.map')]):
 		options += '<option%s>%s' % (' selected' * (each == 'standard'), each)
+	for each in sorted([x.split('.')[0]
+		for x in os.listdir(host.packageDir + '/trials')
+		if '[' not in x and x.endswith('.map')]):
+		trialOptions += '<option>%s' % each
+	if options: options = ('<optgroup label="Official Maps">'
+		+ options + '</optgroup>')
+	if trialOptions: options += ('<optgroup label="Trial Maps">'
+		+ trialOptions + '</optgroup>')
 	page.write(
 		"""
 		<b><u>Instructions:</u></b>
@@ -150,9 +159,15 @@ else:
 		allowed to toggle (by clicking on the map) between two maps --
 		one showing the moves, and the other showing the results.
 		<center>
-		<form method=post>
+		<script>
+		function setTrial() {document.mapit.trial.value =
+			document.mapit.map.options[document.mapit.map.selectedIndex
+			].parentNode.label[0]=='T'?'1':'0'}
+		</script>
+		<form method=post name=mapit>
 		Map:
 		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=trial value=0>
 		<select name=map class=inputBox>
 		%s
 		</select>
@@ -163,7 +178,7 @@ else:
 		the "Movement results..." or "Retreat orders..." or "Status of the..."
 		(etc., etc.) line --<br>
 		<textarea name=results rows=20 cols=75 wrap=off></textarea><p>
-		<input class=inputSubmit type=submit value="Make The Maps">
+		<input class=inputSubmit type=submit value="Make The Maps" onclick=setTrial()>
 		</form>
 		""" % options)
 :>
