@@ -6,36 +6,36 @@ alb     ->  Schqiperia                     = sch
 ank     ->  Ancara                         = anc
 apu     ->  Apuglh                         = apu
 arm     ->  Haiastan                       = hai
-bal     ->  Mar Baltesc                    = bal baltesc
+bal     ->  Mar Balteasca                  = bal balteasca
 bar     ->  Mar Bárents                    = bar barents
-bel     ->  Belxhíc                        = bel Belxhic
+bel     ->  Belxhíc                        = bel belxhic
 ber     ->  Berlin                         = ber
 bla     ->  Mar Neagra                     = nea neagra
 boh     ->  Ces'chipäts                    = ces
 bre     ->  Cézembre                       = cez céz
 bud     ->  Búdapescht                     = bud búd
 bul/ec  ->  Bülgaria (costa oriental)      = bül/co bül(co) bul/co bul(co)
-bul/sc  ->  Bülgaria (costa midziual)      = bül/cm bül(cm) bul/cm bul(cm)
+bul/sc  ->  Bülgaria (costa sudeasca)      = bül/cs bül(cs) bul/cs bul(cs)
 bul     ->  Bülgaria                       = bül bul
 bur     ->  Burgogn                        = bur
 cly     ->  Claid                          = cla
 con     ->  Cunstantinop                   = cun
 den     ->  Danmarc                        = dan
-eas     ->  Mar Internal del Orient        = mor
+eas     ->  Mar Internal del Orient        = mor mio
 edi     ->  Edinbuerg                      = edi
 eng     ->  L'Esliva                       = esl les
-fin     ->  Finpäts                        = fin
+fin     ->  Finphäts                       = fin
 gal     ->  Galiçía                        = gal galicia
 gas     ->  Gaschcugn                      = gas
 gre     ->  Graicea                        = gra
 lyo     ->  Golf dal Liun                  = gdl liu
-bot     ->  Golf da Botgna                = gdb bot
+bot     ->  Golf da Botgna                 = gdb bot
 hel     ->  Buc'ht da Hailgapäts           = bdh
 hol     ->  Olança                         = ola
 ion     ->  Mar Ion                        = ion
 iri     ->  Mar Óiresch                    = oir óir
-kie     ->  Chil                           = chi
-lvp     ->  Liverpool                      = lvp
+kie     ->  Chilonia                       = chi
+lvp     ->  Liverpoula                     = lvp
 lvn     ->  Livogn                         = liv
 lon     ->  Londra                         = lon
 mar     ->  Marseglha                      = mar
@@ -43,8 +43,8 @@ mao     ->  Mar Adlant del Centreu         = mac
 mos     ->  Moscal                         = mos
 mun     ->  Müntsch                        = mün mun
 nap     ->  Nabell                         = nab
-nao     ->  Mar Adlant del Sentriun        = mas
-naf     ->  África                         = afr áfr
+nao     ->  Mar Adlant dal Sentriun        = mas
+naf     ->  Africa                         = afr
 nth     ->  Mar Septentrional              = sep
 nwy     ->  Norvexhà                       = nor
 nwg     ->  Mar Norvexhan                  = mno
@@ -61,11 +61,11 @@ sev     ->  Sevástopol                     = sev
 sil     ->  Schlesia                       = sls
 ska     ->  Skagerrak                      = ska
 smy     ->  Ismir                          = ism
-spa/nc  ->  Espain (costa northesc)        = esp/cn esp(cn) espain/cn espain(cn)
-spa/sc  ->  Espain (costa midziual)        = esp/cm spa(cm) espain/cm espain(cm)
+spa/nc  ->  Espain (costa nordeasca)       = esp/cn esp(cn) espain/cn espain(cn)
+spa/sc  ->  Espain (costa sudeasca)        = esp/cs spa(cs) espain/cs espain(cs)
 spa     ->  Espain                         = esp
-stp/nc  ->  S:t Pairbuerg (costa northesc) = stp/cn stp(cn)
-stp/sc  ->  S:t Pairbuerg (costa midziual) = stp/cm stp(cm)
+stp/nc  ->  S:t Pairbuerg (costa nordeasca) = stp/cn stp(cn)
+stp/sc  ->  S:t Pairbuerg (costa sudeasca) = stp/cs stp(cs)
 stp     ->  S:t Pairbuerg                  = stp
 swe     ->  Sveiria                        = sve
 syr     ->  Süria                          = sür sur
@@ -86,12 +86,12 @@ swi     ->  Suiça                          = sui
 AUSTRIA -> AUSTRIA     (AUSTRIAC)
 ENGLAND -> ANGLATZARA  (ANGLESC:E)
 FRANCE  -> FRANÇA      (FRANÇAL)
-GERMANY -> TZARATÜSCH  (TÜSCH:G)
+GERMANY -> TZARATÜTSCH (TÜTSCH:G)
 ITALY   -> TALIA       (TALIAN:I)
-RUSSIA  -> RUSSÍA      (RUSSESC)
+RUSSIA  -> RUßÍA       (RUßESC)
 TURKEY  -> TÜRCHIA     (TÜRCHESCH)
 
-FLOW		PRIMAVERA:MOVEMENT,RETREATS
+FLOW		PRIMAVARA:MOVEMENT,RETREATS
 FLOW		OTOGNEU:MOVEMENT,RETREATS
-FLOW		TGIVEREU:ADJUSTMENTS
-BEGIN		PRIMAVERA 1901 MOVEMENT
+FLOW		ÞIVEREU:ADJUSTMENTS
+BEGIN		PRIMAVARA 1901 MOVEMENT
