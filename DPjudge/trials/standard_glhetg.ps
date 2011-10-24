@@ -14,7 +14,7 @@
 
 % INFO
 %  311  155 ADR    Mar Adriatic
-%  190   71 AFR    África
+%  190   71 AFR    Africa
 %  425   59 AIG    Mar Aigaivian
 %  511  124 ANC    Ancara
 %  328  121 APU    Apuglh
@@ -26,8 +26,8 @@
 %  376  205 BUD    Búdapescht
 %  226  230 BUR    Burgogn
 %  415  148 BÜL    Bülgaria
-%  424  121 BÜL/CS Bülgaria (costa sudeasca)
 %  448  151 BÜL/CO Bülgaria (costa oriental)
+%  424  121 BÜL/CS Bülgaria (costa sudeasca)
 %  318  252 CES    Ces'chipäts
 %  162  257 CEZ    Cézembre
 %  274  295 CHI    Chilonia
@@ -37,8 +37,8 @@
 %  189  401 EDI    Edinbuerg
 %  145  288 ESL    L'Esliva
 %  122  165 ESP    Espain
-%  101  109 ESP/CS Espain (costa sudeasca)
 %   77  211 ESP/CN Espain (costa nordeasca)
+%  101  109 ESP/CS Espain (costa sudeasca)
 %  194  343 EVO    Evoratzara
 %  398  437 FIN    Finphäts
 %  396  242 GAL    Galiçía
@@ -81,8 +81,8 @@
 %  288  381 SKA    Skagerrak
 %  329  281 SLS    Schlesia
 %  465  403 STP    S:t Pairbuerg
-%  430  402 STP/CS S:t Pairbuerg (costa sudeasca)
 %  476  474 STP/CN S:t Pairbuerg (costa nordeasca)
+%  430  402 STP/CS S:t Pairbuerg (costa sudeasca)
 %  247  218 SUI    Suiça
 %  326  384 SVE    Sveiria
 %  603   50 SÜR    Süria
@@ -781,6 +781,42 @@
 	TextFixedFont 8 y z
 	r
 } bd
+/ReplaceOwnerName {
+	dup length 0 gt {
+		dup 0 get 32 eq dup 3 1 roll {
+			dup length 1 sub 1 exch getinterval
+		} if
+		1 dict begin
+		11 2 index { 1 sub } if /NameLength xd
+		dup length 0 gt {
+			dup 0 get 32 ne {
+				( ) search {
+					exch pop true exch
+					0 3 index {
+						32 ne { exit } if 1 add
+					} forall dup 4 index length eq {
+						pop 3 1 roll pop pop false
+					} {
+						dup 0 eq { pop } {
+							4 3 roll dup length 3 2 roll dup 3 1 roll sub getinterval 3 1 roll
+						} ifelse
+					} ifelse
+				} { false exch } ifelse
+				exch {
+					dup length dup NameLength lt { NameLength } { dup } ifelse 1 add
+					dup 4 index length add string
+					3 2 roll 1 3 index 1 sub { 1 index exch 32 put } for
+					dup 0 5 4 roll putinterval
+					dup 3 2 roll 4 3 roll putinterval
+				} if
+			} if
+		} if
+		end
+		exch {
+			dup length 1 add string dup 0 32 put dup 1 4 3 roll putinterval
+		} if
+	} if
+} bd
 /ReplaceAdjustmentName {
 	dup length 0 gt {
 		dup 0 get 32 ne {
@@ -798,7 +834,32 @@
 			} { false exch } ifelse
 			dup cvn load exec Power /DefiniteName get dup length 0 gt { exch } if pop
 			exch {
-				dup length dup 13 lt { 13 } { dup } ifelse 1 add
+				dup length dup 14 lt { 14 } { dup } ifelse 1 add
+				dup 4 index length add string
+				3 2 roll 1 3 index 1 sub { 1 index exch 32 put } for
+				dup 0 5 4 roll putinterval
+				dup 3 2 roll 4 3 roll putinterval
+			} if
+		} if
+	} if
+} bd
+/ReplaceRetreatName {
+	dup length 0 gt {
+		dup 0 get 32 ne {
+			( ) search {
+				exch pop true exch
+				0 3 index {
+					32 ne { exit } if 1 add
+				} forall dup 4 index length eq {
+					pop 3 1 roll pop pop false
+				} {
+					dup 0 eq { pop } {
+						4 3 roll dup length 3 2 roll dup 3 1 roll sub getinterval 3 1 roll
+					} ifelse
+				} ifelse
+			} { false exch } ifelse
+			exch {
+				dup length dup 11 lt { 11 } { dup } ifelse 1 add
 				dup 4 index length add string
 				3 2 roll 1 3 index 1 sub { 1 index exch 32 put } for
 				dup 0 5 4 roll putinterval
@@ -809,17 +870,17 @@
 } bd
 /Owner <<
 	/Steps [
-		{ /Count 0 def /Y 112.24 def false true } bind
+		{ /Count 0 def /Y 120.24 def false true } bind
 		{
-			Count 10 ge { false true } {
-				110 SplitString
+			Count 11 ge { false true } {
+				109 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
 				21.6 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			110 SplitString [ exch {
+			109 SplitString [ exch {
 				21.6 24.24 m h
 			} /exec load ] cvx /Finish xd
 			true true
@@ -831,7 +892,7 @@
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 110 SplitString pop true false } bind
+		{ /Count Count 1 add def 109 SplitString pop true false } bind
 	]
 	/Start {
 		TextFixedFont 8 y z
@@ -840,6 +901,7 @@
 		/Finish { } def
 	} bind
 	/Write {
+		ReplaceOwnerName
 		(  ) {
 			Step {
 				/StepIndex StepIndex 1 add def
@@ -864,30 +926,30 @@
 		{ /Count 0 def /Y 104.24 def false true } bind
 		{
 			Count 9 ge { false true } {
-				44 SplitString
+				45 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
-				559.2 Y m h
+				554.4 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			44 SplitString [ exch {
-				559.2 24.24 m h
+			45 SplitString [ exch {
+				554.4 24.24 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				559.2 24.24 m (... \() h
+				554.4 24.24 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 44 SplitString pop true false } bind
+		{ /Count Count 1 add def 45 SplitString pop true false } bind
 	]
 	/Start {
 		TextHeadingFont 8 y z
-		559.2 104.24 moveto
+		554.4 104.24 moveto
 		(Asatamaintschen) h
 		TextFixedFont 8 y z
 		/StepIndex 0 def
@@ -920,30 +982,30 @@
 		{ /Count 0 def /Y 184.24 def false true } bind
 		{
 			Count 8 ge { false true } {
-				44 SplitString
+				45 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
-				559.2 Y m h
+				554.4 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			44 SplitString [ exch {
-				559.2 112.24 m h
+			45 SplitString [ exch {
+				554.4 112.24 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				559.2 112.24 m (... \() h
+				554.4 112.24 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 44 SplitString pop true false } bind
+		{ /Count Count 1 add def 45 SplitString pop true false } bind
 	]
 	/Start {
 		TextHeadingFont 8 y z
-		559.2 184.24 moveto
+		554.4 184.24 moveto
 		(Retreateux) h
 		TextFixedFont 8 y z
 		/StepIndex 0 def
@@ -951,6 +1013,7 @@
 		/Finish { } def
 	} bind
 	/Write {
+		ReplaceRetreatName
 		(  ) {
 			Step {
 				/StepIndex StepIndex 1 add def
@@ -975,26 +1038,26 @@
 		{ /Count 0 def /Y 544.24 def false true } bind
 		{
 			Count 43 ge { false true } {
-				44 SplitString
+				45 SplitString
 				/Count Count 1 add def /Y Y 8 sub def
-				559.2 Y m h
+				554.4 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			44 SplitString [ exch {
-				559.2 192.24 m h
+			45 SplitString [ exch {
+				554.4 192.24 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				559.2 192.24 m (... \() h
+				554.4 192.24 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 44 SplitString pop true false } bind
+		{ /Count Count 1 add def 45 SplitString pop true false } bind
 	]
 	/Start {
 		TextFixedFont 8 y z
@@ -1026,15 +1089,15 @@
 	SwitchToTextMode
 	TextTitleFont 24 y z
 	(Diplomacy)
-	559.2 572.72 m h
+	554.4 572.72 m h
 	TextTitleFont 16 y z
-	dup stringwidth pop dup 211.2 gt {
-		559.2 550 m
-		211.2 exch div dup 1 x exch
+	dup stringwidth pop dup 216 gt {
+		554.4 550 m
+		216 exch div dup 1 x exch
 		0 4.48 rmoveto h
 		1 exch div 1 x
 	} {
-		pop 559.2 554.48 m h
+		pop 554.4 554.48 m h
 	} ifelse
 } bd
 /SwitchToTextMode {
@@ -1049,7 +1112,7 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		27.6 126.32 516 455.36 rectclip .8264 .8264 x 9.58 127.85 t
+		27.6 132.42 511.2 451.15 rectclip .8188 .8188 x 9.88 136.73 t
 		ArrowColor
 		OkOrder
 	} if
@@ -1057,7 +1120,7 @@
 /FrameMap {
 	s
 	2 w LandBrown
-	26.1 126.32 m 545.1 126.32 l 545.1 581.68 l 26.1 581.68 l
+	26.1 132.42 m 540.3 132.42 l 540.3 583.58 l 26.1 583.58 l
 	p
 	s 8 w Black k r
 	clipsave clip k cliprestore

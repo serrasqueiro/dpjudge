@@ -1376,17 +1376,14 @@
 	IncludeInternalBorders
 	IncludeSeaBorders
 	IncludeCanalBorders
+	IncludePointers
 	r
 } bd
 /DrawMap {
 	PageSetup
 	PaintMap
-	DrawConnections
 	DrawSupplies
 	DrawOffBoardBoxes
-} bd
-/DrawConnections {
-	ConnectPointers
 } bd
 /DrawSupplies {
 	SwitchToMapMode
@@ -1440,39 +1437,6 @@
 	{ DarkGreen 2 copy 6 5 roll DrawAlias exch exch -7 add 3 2 roll DrawAlias } bind
 	VisitOffBoardBoxes
 	r
-} bd
-/ConnectPointers {
-	1 dict begin
-	s
-	.75 w ArrowBlack
-	/cn {
-		s
-		3 index 3 index t
-		3 2 roll sub 3 1 roll exch sub exch
-		2 copy dup mul exch dup mul add sqrt 3 1 roll exch secure_atan
-		.5 .5 x
-		0 0 t
-		o
-		.5 div 24 sub
-		% draw the arrow head ...
-		n
-		dup -3.0 m
-		dup 10.0 l
-		dup 24 add 0 l
-		dup -10.0 l
-		3.0 l
-		% now the shaft ...
-		0 3.0 l
-		0 -3.0 l
-		p
-		s White f r
-		k
-		r
-		pop
-	} bd
-	/OBA 307 902 290 901 cn
-	r
-	end
 } bd
 /IncludeIce {
 	s
@@ -1555,6 +1519,17 @@
 	/fk { k } bd
 	3 w BorderBlack
 	OutlineBorders1Navy
+	r
+} bd
+/IncludePointers {
+	s
+	/fk {
+		p
+		s White f r
+		k
+	} bd
+	.38 w ArrowBlack
+	ShapeArrows
 	r
 } bd
 /OutlineIceBlack {
@@ -3290,6 +3265,10 @@
 	fk
 	1356 3048 m
 	1374 3042 l
+	fk
+} bd
+/ShapeArrows {
+	307 902 t -176.63 o 5.03 1.5 m 0 1.5 l 0 -1.5 l 5.03 -1.5 l 5.03 5 l 17.03 0 l 5.03 -5 l p 176.63 o -307 -902 t
 	fk
 } bd
 {

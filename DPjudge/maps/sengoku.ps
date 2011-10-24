@@ -1028,16 +1028,13 @@
 	IncludeSeaBorders
 	IncludeLand
 	IncludeInternalBorders
+	IncludeCrossings
 	r
 } bd
 /DrawMap {
 	PageSetup
 	PaintMap
-	DrawConnections
 	DrawSupplies
-} bd
-/DrawConnections {
-	ConnectCrossings
 } bd
 /DrawSupplies {
 	SwitchToMapMode
@@ -1056,44 +1053,6 @@
 	{ White 3 2 roll DrawAlias } bind
 	VisitTerritories
 	r
-} bd
-/ConnectCrossings {
-	1 dict begin
-	s
-	ArrowBlack
-	/cn {
-		s
-		3 index 3 index t
-		3 2 roll sub 3 1 roll exch sub exch
-		2 copy dup mul exch dup mul add sqrt 3 1 roll exch secure_atan
-		.8 .8 x
-		0 0 t
-		o
-		.8 div 4.5 sub
-		% draw the arrow head ...
-		n
-		dup -0.75 m
-		dup -3.0 l
-		dup 4.5 add 0 l
-		dup 3.0 l
-		0.75 l
-		% again the arrow head at the other side ...
-		4.5 0.75 l
-		4.5 3.0 l
-		0 0 l
-		4.5 -3.0 l
-		4.5 -0.75 l
-		% close
-		p
-		f
-		r
-		pop
-	} bd
-	/1 431 365 437 341 cn
-	/2 201 355 170 333 cn
-	/3 277 267 241 265 cn
-	r
-	end
 } bd
 /IncludeSeaBorders {
 	s
@@ -1123,6 +1082,13 @@
 	6 w BorderBlack
 	OutlineInternalBlack
 	OutlineInternal2Grey
+	r
+} bd
+/IncludeCrossings {
+	s
+	/fk { f } bd
+	ArrowBlack
+	ShapeBridges
 	r
 } bd
 /OutlineWaterBlack {
@@ -2259,6 +2225,12 @@
 	780 786 m
 	780 812 809 870 846 852 c
 	867 841 866 822 894 822 c
+	fk
+} bd
+/ShapeBridges {
+	431 365 t -75.96 o 21.14 .6 m 3.6 .6 l 3.6 2.4 l 0 0 l 3.6 -2.4 l 3.6 -.6 l 21.14 -.6 l 21.14 -2.4 l 24.74 0 l 21.14 2.4 l p 75.96 o -431 -365 t
+	201 355 t -144.64 o 34.41 .6 m 3.6 .6 l 3.6 2.4 l 0 0 l 3.6 -2.4 l 3.6 -.6 l 34.41 -.6 l 34.41 -2.4 l 38.01 0 l 34.41 2.4 l p 144.64 o -201 -355 t
+	277 267 t -176.82 o 32.46 .6 m 3.6 .6 l 3.6 2.4 l 0 0 l 3.6 -2.4 l 3.6 -.6 l 32.46 -.6 l 32.46 -2.4 l 36.06 0 l 32.46 2.4 l p 176.82 o -277 -267 t
 	fk
 } bd
 {
