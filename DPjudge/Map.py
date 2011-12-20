@@ -728,13 +728,13 @@ class Map:
 		old, new = old.replace('+', ''), new.replace('+', '')
 		[x.pop(old, None) for x in (self.ownWord, self.abbrev)]
 		if old == new: return
-		for data in (self.homes, self.units, self.centers, self.powers,
+		for data in (self.homes, self.units, self.centers,
 		self.factory, self.partisan):
 			try:
 				data[new] = data[old]
 				del data[old]
 			except: pass
-		for data in (self.militia, self.reserves):
+		for data in (self.militia, self.reserves, self.powers, self.dummies):
 			try:
 				data.remove(old)
 				data.append(new)

@@ -8,15 +8,15 @@ RULE !BUILD_ANY
 
 DUMMY BELGIUM HOLLAND GREECE TUNIS PORTUGAL NORWAY
 DUMMY BULGARIA RUMANIA SERBIA DENMARK SWEDEN SPAIN
-Belgium  -> _Belgium
-Bulgaria -> _Bulgaria
-Spain    -> _Spain
-Serbia   -> _Serbia
-Sweden   -> _Sweden
-Greece   -> _Greece
-Tunis    -> _Tunis
-Rumania  -> _Rumania
-Denmark  -> _Denmark
-Holland  -> _Holland
-Norway   -> _Norway
-Portugal -> _Portugal
+Belgium  -> _Belgium  (Belgian)
+Bulgaria -> _Bulgaria (Bulgarian)
+Spain    -> _Spain    (Spanish)
+Serbia   -> _Serbia   (Serbian)
+Sweden   -> _Sweden   (Swedish)
+Greece   -> _Greece   (Greek)
+Tunis    -> _Tunis    (Tunisian)
+Rumania  -> _Rumania  (Rumanian)
+Denmark  -> _Denmark  (Danish)
+Holland  -> _Holland  (Dutch)
+Norway   -> _Norway   (Norwegian)
+Portugal -> _Portugal (Portuguese)

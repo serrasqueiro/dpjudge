@@ -363,7 +363,7 @@ class Procmail:
 				and command != 'RESIGN'): self.respond(
 					"You are already playing game '%s'" % game.name)
 			else: continue
-			if game.isValidPassword(existing, password) != 1:
+			if existing.isValidPassword(password) != 1:
 				self.respond("Incorrect password to modify player ID '%s'" %
 				existing.name)
 			if command != 'RESIGN': del game.powers[num]
@@ -407,26 +407,8 @@ class Procmail:
 					game.master[2].replace('_', ' '), game.master[1]))
 				game.mail.close()
 				self.respond('You are now the Master of game ' + game.name)
-			self.power.address = self.power.address or ['']
-			self.power.address[0], self.power.password = self.email, password
-			if (len(self.power.player) > 2
-			and self.power.player[2].split('|')[0] == self.dppd.split('|')[0]):
-				del self.power.player[:2]
-			else: self.power.player[0] = self.dppd
-			try: game.avail.remove([x for x in game.avail
-				if x.startswith(self.power.name)][0])
-			except: pass
-			if not game.avail:
-				game.changeStatus('active')
-				game.setDeadline()
-			game.save()
-			if 'BLIND' in game.rules: game.makeMaps()
-			game.mailPress(None, ['All!'],
-				"The abandoned %s has been taken over in game '%s'.\n" %
-				(game.anglify(self.power.name), game.name) +
-				('', 'The deadline for orders is now %s.\n' %
-				game.timeFormat())[not game.avail],
-				subject = 'Diplomacy position taken over')
+			response = self.power.takeover(self.dppd, self.email, password)
+			if response: self.respond(response)
 		#	-------------------------------------------------------
 		#	Add the new power, then process the rest of the message
 		#	-------------------------------------------------------
@@ -519,7 +501,7 @@ class Procmail:
 		else:
 			try: power = [x for x in self.game.powers
 				if x.name.replace('+', '') == powerName
-				and (newPass or self.game.isValidPassword(x, password))][0]
+				and (newPass or x.isValidPassword(password))][0]
 			except:
 				if mustBe: self.respond('Invalid power or password specified')
 				power = None
@@ -735,10 +717,10 @@ class Procmail:
 					self.respond('ROLLFORWARD can only occur on an active game')
 				except RollforwardPhaseInvalid:
 					self.respond('Invalid ROLLFORWARD phase')
-			#	--------------------------------------------
-			#	See if we are RESIGNing or DUMMYing a player
-			#	--------------------------------------------
-			elif command in ('RESIGN', 'DUMMY'):
+			#	--------------------------------------------------------
+			#	See if we are trying to RESIGN, DUMMY or REVIVE a player
+			#	--------------------------------------------------------
+			elif command in ('RESIGN', 'DUMMY', 'REVIVE'):
 				#Only the master can do these things
 				if power.name != 'MASTER':
 					self.respond('Only the Master can %s a player' % command)
@@ -748,18 +730,26 @@ class Procmail:
 				#Power must exist
 				goner = [x for x in game.powers if x.name == word[1]]
 				if goner: goner = goner[0]
-				#Cannot RESIGN or DUMMY the MASTER
+				#Cannot RESIGN, DUMMY or REVIVE the MASTER
 				elif target == 'MASTER':
 					self.respond('Cannot %s the MASTER' % command)
 				else: self.respond('Could not find power to ' + command)
+				#Power must be resigned to be revived
+				if command == 'REVIVE':
+					if not goner.isResigned() and not goner.isDummy():
+						self.respond('Cannot REVIVE a non-resigned power')
 				#Power must not be already resigned or dummied
-				if goner.player[0].startswith(command):
+				elif goner.player[0].startswith(command):
 					self.respond('Cannot %s a %s player' %
 						(command, goner.player[0]))
 				#copied from RESIGN signon format
-				if command == 'RESIGN': goner.resign(1)
+				if command == 'RESIGN': response = goner.resign(1)
 				#modified TAKEOVER format
-				else: goner.dummy()
+				elif command == 'REVIVE':
+					response = goner.takeover(
+						password = len(word) > 2 and word[2] or None)
+				else: response = goner.dummy()
+				if response: self.respond(response)
 			#	--------------------------
 			#	SET ADDRESS, SET PASSWORD,
 			#	and SET DEADLINE handling.

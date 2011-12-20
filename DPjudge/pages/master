@@ -338,7 +338,7 @@ def showStatusFile():
 	if varLocked: page.write('<input type=hidden name=curVariant value=%s>' %
 		curVariant)
 	page.write("<tr class=bodycopy><td><b>%sMap:</b><td>" %
-		'Trial ' * page.game.map.trial)
+		('Trial ' * page.game.map.trial))
 	if page.game.phase == 'FORMING':
 		DIR = "<PKG>/" + ["maps", "trials"][page.game.map.trial]
 		page.write('<select class=bodycopy name=map>')
@@ -455,6 +455,7 @@ def powerData():
 		var powerData = new Array();
 		var isGone = new Array();
 		var isDummy = new Array();
+		var isUnplayed = new Array();
 		var powerType = new Array();
 		function fillPower()
 		{
@@ -465,10 +466,11 @@ def powerData():
 				document.master.powerChoice.options[lastPower].value].value =
 				powerData[lastPower];
 			document.master.resign.checked = isGone[lastPower];
-			document.master.resign.disabled = isGone[lastPower];
+			document.master.resign.disabled = isGone[lastPower]
+				&& isUnplayed[lastPower];
 			document.master.dummy.checked = isDummy[lastPower];
-			document.master.dummy.disabled = document.master.dummy.checked
-				|| powerType[lastPower] != "";
+			document.master.dummy.disabled = powerType[lastPower] != ""
+				|| isDummy[lastPower] && isUnplayed[lastPower];
 		}
 		""")
 	text = first = isGone = isDummy = ''
@@ -476,51 +478,30 @@ def powerData():
 		text += '<option value=%d>%s</option>' % (num, power.name)
 		item = `power`.strip()
 		page.write('powerData[%d] = %s;\n' % (num, `item`))
-		gone = dum = 'false'
-		try: dum = ('false', 'true')[power.player[0] == 'DUMMY']
-		except: pass
-		try: gone = ('false', 'true')[power.player[0] == 'RESIGNED']
-		except: pass
+		gone, dum = power.isResigned(), power.isDummy()
+		unplay = len(power.player) < (gone and 3 or dum and 3 or 1)
 		page.write('powerType[%d] = "%s";' % (num, power.type or ''))
-		page.write('isDummy[%d] = %s;' % (num, dum))
-		page.write('isGone[%d] = %s;' % (num, gone))
+		page.write('isDummy[%d] = %s;' % (num, ('false', 'true')[dum]))
+		page.write('isGone[%d] = %s;' % (num, ('false', 'true')[gone]))
+		page.write('isUnplayed[%d] = %s;' % (num, ('false', 'true')[unplay]))
 		page.write('document.master["powerData%s"].value = %s' %
 			(`num`, `item`))
 		if not first:
 			first = `power`
-			if power.player:
-				isGone = 'checked disabled' * (power.player[0] == 'RESIGNED')
-				isDummy = 'checked disabled' * (power.player[0] == 'DUMMY')
+			isGone = ('checked' + ' disabled' * unplay) * gone
+			isDummy = power.type and 'disabled' or (
+				'checked' + ' disabled' * unplay) * dum
 	page.write(
 		"""
-		function resignPlayer()
+		function alterPlayer(checkbox)
 		{
-			if (!document.master.resign.checked)
-			{
-				document.master.resign.checked = true;
-				return true;
-			}
-			who = document.master.powerChoice.options[
+			var act = checkbox.name;
+			if (!checkbox.checked) act = "revive";
+			var who = document.master.powerChoice.options[
 				document.master.powerChoice.options.selectedIndex].text;
-			if (!confirm("Are you sure you want to resign " + who + "?"))
+			if (!confirm("Are you sure you want to " + act + " " + who + "?"))
 			{
-				document.master.resign.checked = false;
-				return false;
-			}
-			prepSubmit();
-		}
-		function dummyPlayer()
-		{
-			if (!document.master.dummy.checked)
-			{
-				document.master.dummy.checked = true;
-				return true;
-			}
-			who = document.master.powerChoice.options[
-				document.master.powerChoice.options.selectedIndex].text;
-			if (!confirm("Are you sure you want to make " + who + " a DUMMY?"))
-			{
-				document.master.dummy.checked = false;
+				checkbox.checked = !checkbox.checked;
 				return false;
 			}
 			prepSubmit();
@@ -532,10 +513,10 @@ def powerData():
 		name=powerChoice onchange=fillPower()>%s</select>
 		<br><br>
 		Resign&nbsp;this&nbsp;power?&nbsp;<input type=checkbox %s name=resign
-			onclick=resignPlayer()>
+			onclick="alterPlayer(this)">
 		<br>
 		Make a <tt>DUMMY</tt>? <input type=checkbox %s name=dummy
-			onclick=dummyPlayer()>
+			onclick="alterPlayer(this)">
 		</b></td>
 		""" % (text, isGone, isDummy))
 	page.write(
@@ -688,8 +669,12 @@ def updateMaster():
 		for target in rd_game.powers:
 			if target.name == vars(page)['currpower']:
 				if resign == 'true' and not target.isResigned():
-					target.resign(1)
+					target.resign(byMaster = 1)
+				elif resign == 'false' and target.isResigned():
+					target.takeover(byMaster = 1)
 				elif dummy == 'true' and not target.isDummy(): target.dummy()
+				elif dummy == 'false' and target.isDummy():
+					target.takeover(byMaster = 1)
 	rd_game.save()
 	####################################################
 	if vars(page)['proc_now'] == "now": page.game.process(now=1)

@@ -1,4 +1,4 @@
-import os, time, random, socket, textwrap, urllib, glob
+import os, time, random, socket, textwrap, urllib, glob, re, string
 from codecs import open
 
 import host
@@ -984,11 +984,11 @@ class Game:
 	#	----------------------------------------------------------------------
 	def finishPowerData(self, power):
 		self.mode = self.modeRequiresEnd = None
+	#	----------------------------------------------------------------------
+	def validateStatus(self):
 		for power in self.powers:
 			if power.homes is None:
 				power.homes = self.map.homes.get(power.name, [])
-	#	----------------------------------------------------------------------
-	def validateStatus(self):
 		#	-----------------------------------------
 		#	Make sure the game has a map and a master
 		#	-----------------------------------------
@@ -1194,7 +1194,11 @@ class Game:
 		words = subject.split()
 		if (self.name and self.name not in words
 		and '(%s)' % self.name not in words): subject += ' (%s)' % self.name
-		self.mail = Mail(mailTo or host.dpjudge, subject,
+		if self.tester:
+			mailTo = (self.tester, self.tester[:-1])[self.tester[-1] == '!']
+			mailTo = mailTo * (len(mailTo) > 2 and '@' in mailTo)
+		else: mailTo = mailTo or host.dpjudge
+		self.mail = Mail(mailTo, subject,
 			copy = copyFile and self.file(copyFile),
 			mailAs = mailAs or self.master[1], header = 'Errors-To: ' +
 				(self.master and self.master[1] or host.judgekeeper))
@@ -1330,7 +1334,9 @@ class Game:
 			#	If the gif make fails, the file will be 0 bytes.  Remove it.
 			#	------------------------------------------------------------
 			if os.path.getsize(gif): os.chmod(gif, 0666)
-			else: os.unlink(gif)
+			else:
+				try: os.unlink(gif)
+				except: pass
 		try: map(os.unlink, (ppmf, tmpf1, tmpf2))
 		except: pass
 	#	----------------------------------------------------------------------
@@ -1403,30 +1409,15 @@ class Game:
 	def finishPhase(self):
 		pass
 	#	----------------------------------------------------------------------
-	def isValidPassword(self, power, pwd):
+	def isValidPassword(self, power, password):
 		if not power: return
-		pwd = pwd.upper()
 		#	---------------------------------------
 		#	Find proper power to check his password
 		#	---------------------------------------
 		if type(power) in (str, unicode):
 			try: power = [x for x in self.powers if x.name == power][0]
 			except: return
-		#	-------------------------------------------------------------------
-		#	If power is run by controller, password is in the controller's data
-		#	-------------------------------------------------------------------
-		if not power.ceo: player = power
-		else: player = [x for x in self.powers if x.name == power.ceo[0]][0]
-		#	---------------------------
-		#	Determine password validity
-		#	---------------------------
-		if (player.password and pwd == player.password.upper()
-		or pwd == self.password.upper()): return 1
-		#	----------------------------------------
-		#	Check against omniscient power passwords
-		#	----------------------------------------
-		if [1 for x in self.powers if x.omniscient and player.name != 'MASTER'
-			and x.password and pwd == x.password.upper()]: return 2
+		return power.isValidPassword(password)
 	#	----------------------------------------------------------------------
 	def makeMaps(self):
 		#	--------------------------------------------------------
@@ -1529,7 +1520,8 @@ class Game:
 	def sortPowers(self):
 		self.powers.sort(Power.compare)
 	#	----------------------------------------------------------------------
-	def begin(self, move1st = 0):
+	def begin(self, move1st = 0, roll = 0):
+		if not roll: self.rollin()
 		self.phase = self.map.phase
 		self.phaseType = self.phase.split()[-1][0]
 		if 'MOBILIZE' in self.rules or 'BLANK_BOARD' in self.rules:
@@ -2074,10 +2066,11 @@ class Game:
 	#							ADJUDICATION METHODS
 	#	----------------------------------------------------------------------
 	def ready(self, process = 0):
-		return process == 2 or ((self.deadline and self.deadline <= self.Time())
+		return self.status[1] == 'active' and (
+		process == 2 or ((self.deadline and self.deadline <= self.Time())
 		or process or not ([1 for power in self.powers if power.wait]
 		or ('ALWAYS_WAIT' in self.rules and (self.phaseType == 'M'
-		or 'NO_MINOR_WAIT' not in self.rules)))) and not self.latePowers()
+		or 'NO_MINOR_WAIT' not in self.rules)))) and not self.latePowers())
 	#	----------------------------------------------------------------------
 	def findGoners(self, phase = 1):
 		if self.phaseType == '-': return
@@ -2242,22 +2235,25 @@ class Game:
 		complete = includeFlags & 16 and self.tester and self.phase == 'COMPLETED'
 		if not complete and self.status[1] != 'active': raise RollbackGameInactive
 		lines, outphase = [], complete and self.outcome[0] or (
-			self.map.phaseAbbr(self.phase, self.phase.lower()))
+			self.map.phaseAbbr(self.phase, self.phase))
 		if phase:
 			phase = phase.upper()
 			if len(phase.split()) > 1: phase = self.phaseAbbr(phase)
+			start = phase != 'FORMING'
 			if phase != outphase:
-				if ((self.map.comparePhases(phase, outphase) >= 0) or 
+				if ((self.map.comparePhases(phase, outphase) >= 0) or start and
 					not os.path.isfile(self.file('status.' + phase))):
 					raise RollbackPhaseInvalid
 				file = open(self.file('results'), 'r', 'latin-1')
-				lines, start = file.readlines(), 0
+				lines = file.readlines()
 				file.close()
-				for num, text in enumerate(lines):
-					if '%s ' % self.name + phase in text: break
-					start |= 'Diplomacy results' in text
+				if not start: num = -1
 				else:
-					raise RollbackPhaseInvalid
+					for num, text in enumerate(lines):
+						if '%s ' % self.name + phase in text: break
+						if 'Diplomacy results' in text: start = 2
+					else:
+						raise RollbackPhaseInvalid
 				for text in lines[num + 1:]:
 					if 'Diplomacy results' not in text: continue
 					word = text.split()
@@ -2274,9 +2270,10 @@ class Game:
 				word = text.split()
 				try: phase = word[word.index(self.name, word.index('results') + 1) + 1]
 				except: raise RollbackResultInvalid
-				start |= num != -1
+				start = start and 2 or 1
 				num = nr 
-			if not phase or not os.path.isfile(self.file('status.' + phase)):
+			if not start: phase = 'FORMING'
+			elif not os.path.isfile(self.file('status.' + phase)):
 				raise RollbackPhaseInvalid
 		if os.path.isfile(self.file('status.' + outphase + '.0')):
 			try: os.unlink(self.file('status.rollback'))
@@ -2284,37 +2281,58 @@ class Game:
 			os.rename(self.file('status'), self.file('status.rollback'))
 		else:
 			os.rename(self.file('status'), self.file('status.' + outphase + '.0'))
-		if phase != outphase:
-			os.rename(self.file('status.' + phase), self.file('status.' + phase + '.0'))
-			if not start:
-				self.phase = self.map.phase
-		# Load the phase.
-		self.load('status.' + phase + '.0', includeFlags | 4)
-		self.await = self.skip = None
-		self.changeStatus('active')
 		try: os.unlink(self.file('summary'))
 		except: pass
-		self.setDeadline()
-		self.delay = None
-		self.save()
-		self.mailPress(None, ['All!'],
-			"Diplomacy game '%s' has been rolled back to %s\n"
-			'and all orders have been %s.\n\n'
-			'The new deadline is %s.\n' %
-			(self.name, self.phaseName(form = 2), includeFlags & 1 and 'restored' or 'cleared', self.timeFormat()),
-			subject = 'Diplomacy rollback notice')
-		# Remake the maps
-		if phase != outphase:
-			file = open(self.file('results'), 'w')
-			temp = lines[:num - 1]
-			file.write(''.join(temp).encode('latin-1'))
-			file.close()
-			if not start:
-				[os.unlink(host.gameMapDir + '/' + x)
-					for x in os.listdir(host.gameMapDir)
-					if x.startswith(self.name.encode('latin-1'))
-					and x.endswith('_.gif')]
-			self.makeMaps()
+		if not start:
+			self.reinit(4)
+			self.phase = 'FORMING'
+			self.changeStatus('forming')
+			self.save()
+			self.mailPress(None, ['All!'],
+				"Diplomacy game '%s' has been reset to the forming state,\n"
+				'but the players retain their assigned power.\n'
+				"The Master will have to either set the game in 'active' mode\n"
+				'or roll forward.\n' % self.name)
+			try: os.unlink(self.file('results'))
+			except: pass
+			name = self.name.encode('latin-1')
+			try: [os.unlink(host.gameMapDir + '/' + x)
+				for x in os.listdir(host.gameMapDir)
+				if x.startswith(name)
+				and re.match('^_?\.', x[len(name):])]
+			except: pass
+		else:
+			if phase != outphase:
+				os.rename(self.file('status.' + phase),
+					self.file('status.' + phase + '.0'))
+			# Load the phase.
+			self.load('status.' + phase + '.0', includeFlags | 4)
+			self.await = self.skip = None
+			self.changeStatus('active')
+			self.setDeadline()
+			self.delay = None
+			self.save()
+			self.mailPress(None, ['All!'],
+				"Diplomacy game '%s' has been rolled back to %s\n"
+				'and all orders have been %s.\n\n'
+				'The new deadline is %s.\n' %
+				(self.name, self.phaseName(form = 2), includeFlags & 1 and 'restored' or 'cleared', self.timeFormat()),
+				subject = 'Diplomacy rollback notice')
+			# Remake the maps
+			if phase != outphase:
+				file = open(self.file('results'), 'w')
+				temp = lines[:num - 1]
+				file.write(''.join(temp).encode('latin-1'))
+				file.close()
+				if start == 1:
+					name = self.name.encode('latin-1')
+					try: [os.unlink(host.gameMapDir + '/' + x)
+						for x in os.listdir(host.gameMapDir)
+						if x.startswith(name)
+						and re.match('^_?\.', x[len(name):])
+						and x.endswith('_.gif')]
+					except: pass
+				self.makeMaps()
 		if self.error: return self.error
 	#	---------------------------------------------------------------------
 	def rollforward(self, phase = None, includeFlags = 4):
@@ -2329,27 +2347,35 @@ class Game:
 		#	yourself only or, if you specify an invalid address like '@', to
 		#	no one in particular.
 		#	----------------------------------------------------------------
-		if self.status[1] != 'active': raise RollforwardGameInactive
-		unphase = outphase = self.map.phaseAbbr(self.phase, self.phase.lower())
+		if self.status[1] not in ('forming', 'active'):
+			raise RollforwardGameInactive
+		preview, self.preview = self.preview, 0
+		tester, self.tester = self.tester, '@'
+		if self.phase == 'FORMING':
+			self.begin(roll = 1)
+			if not phase: phase = self.phase
+		unphase = outphase = self.map.phaseAbbr(self.phase, self.phase)
 		if not os.path.isfile(self.file('status.' + outphase + '.0')):
 			raise RollforwardPhaseInvalid
-		preview = self.preview; self.preview = 0
 		if phase:
 			phase = phase.upper()
 			if len(phase.split()) > 1: phase = self.phaseAbbr(phase)
-			if phase != outphase.upper():
+			if phase != outphase:
 				if (self.map.comparePhases(phase, outphase) <= 0 or 
 					not os.path.isfile(self.file('status.' + phase + '.0'))):
 					raise RollforwardPhaseInvalid
 				unphase = outphase
-				while phase != unphase.upper():
+				while phase != unphase:
 					# Load the phase, including orders.
 					self.load('status.' + unphase + '.0', includeFlags | 1)
 					# Process the phase, suppressing any mail
 					self.process(now = 2, roll = includeFlags & 4 and 2 or 1)
 					try: os.unlink(self.file('status.' + unphase + '.0'))
 					except: pass
-					unphase = self.map.phaseAbbr(self.phase, self.phase.lower())
+					if self.phase == 'COMPLETED':
+						unphase = self.outcome[0]
+						break
+					unphase = self.map.phaseAbbr(self.phase, self.phase)
 					if not os.path.isfile(self.file('status.' + unphase + '.0')):
 						raise RollforwardPhaseInvalid
 				self.makeMaps()
@@ -2367,10 +2393,13 @@ class Game:
 			self.makeMaps()
 			try: os.unlink(self.file('status.' + outphase + '.0'))
 			except: pass
-			unphase = self.map.phaseAbbr(self.phase, self.phase.lower())
+			if self.phase == 'COMPLETED':
+				unphase = self.outcome[0]
+			else:
+				unphase = self.map.phaseAbbr(self.phase, self.phase.upper())
 			if not os.path.isfile(self.file('status.' + unphase + '.0')):
 				raise RollforwardPhaseInvalid
-		self.preview = preview
+		self.preview, self.tester = preview, tester
 		# Load the last phase
 		prephase = self.phase
 		self.load('status.' + unphase + '.0', includeFlags)
@@ -3056,7 +3085,10 @@ class Game:
 			and (centers, thisYear.count(centers)) == (max(thisYear), 1)):
 				if not self.preview: self.finish([power.name])
 				victor, func = power, None
-		return list + self.powerSizes(victor, func)
+				break
+		list += self.powerSizes(victor, func)
+		if not victor: list += self.checkVotes(1)
+		return list
 	#	----------------------------------------------------------------------
 	def vassalship(self):
 		if 'VASSAL_DUMMIES' not in self.rules: return []
@@ -3690,8 +3722,22 @@ class Game:
 		if not roll: self.makeMaps()
 		if self.phase == 'COMPLETED': self.fileSummary()
 	#	----------------------------------------------------------------------
-	def endByAgreement(self):
-		lines = [x + '\n' for x in self.mapperHeader()]
+	def checkVotes(self, append = 0):
+		if 'PROPOSE_DIAS' in self.rules: return []
+		votes = []
+		for power in self.powers:
+			try: power.centers and votes.append(int(power.vote))
+			except: return []
+		votes = filter(None, votes)
+		if not votes or len(votes) > min(votes): return []
+		if len(votes) > 1 and 'NO_DIAS' not in self.rules:
+			self.proposal = ['DIAS']
+		else:
+			self.proposal = ['NO_DIAS']
+		return self.endByAgreement(append)
+	#	----------------------------------------------------------------------
+	def endByAgreement(self, append = 0):
+		lines = not append and [x + '\n' for x in self.mapperHeader()] or []
 		result = self.proposal[0]
 		if result in ('DIAS', 'NO_DIAS'):
 			victors = sorted([x.name for x in self.powers
@@ -3707,9 +3753,11 @@ class Game:
 			('conceded to ', 'declared a draw between ')[len(victors) > 1])
 		lines += [x + '\n' for x in textwrap.wrap(info + drawers, 75)]
 		lines += ['\nCongratulations on a game well-played.\n']
-		self.mailResults(lines, "Diplomacy game '%s' complete" % self.name)
+		if not append:
+			self.mailResults(lines, "Diplomacy game '%s' complete" % self.name)
 		self.finish(victors)
 		self.fileSummary()
+		if append: return lines
 	#	----------------------------------------------------------------------
 	def finish(self, victors):
 		self.end = time.strftime('%d %B %Y', time.localtime())
@@ -4354,7 +4402,7 @@ class Game:
 			contents, boundary))
 		mail.close()
 		return 1
-	#	----------------------------------------------------------------------
+	#	-------------------------------------------------------
 	def setState(self):
 		if self.status[1] == 'preparation': return
 		if self.error and self.status[1] not in ('completed', 'terminated'):
@@ -4391,8 +4439,14 @@ class Game:
 		#	instead of a POST.  Something to look into.
 		query = '?&'['?' in host.dppdURL]
 		page = urllib.urlopen(host.dppdURL + query + 'page=update&' + dict)
-		#print '<!--' + `page.readlines()` + '-->'
+		#   --------------------------------------------------------------------
+		#   Check for an error report and raise an exception if that's the case.
+		#   --------------------------------------------------------------------
+		lines = page.readlines()
 		page.close()
+		if [1 for x in lines if 'DPjudge Error' in x]:
+			print(''.join(lines))
+			raise DPPDStatusUpdateFailed
 	#	----------------------------------------------------------------------
 	def changeStatus(self, status):
 		self.status[1] = status

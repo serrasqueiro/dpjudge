@@ -101,7 +101,13 @@ class DPPD(dict):
 		return results or None
 	#	----------------------------------------------------------------------
 	def updateGame(self, data):
-		print 'UPDATING', data
+		#	-----------------------------------------------------------------
+		#	Any non-ascii character in the data can make this print statement
+		#	fail, unless the environment variable PYTHONIOENCODING is set to
+		#	something suitable, like utf-8.
+		#	-----------------------------------------------------------------
+		try: print 'UPDATING', data
+		except: pass
 		game = oldgame = gameType = result = 0
 		newrules, newroles = set(), []
 		for info in [x.split(':') for x in data.split('|')]:

@@ -37,8 +37,8 @@ pouchLinks()
 		<a href="<URL>?page=Questions">DPjudge questions</a>
 		<br>
 		<a href="<POUCH>/Zine/W1995A/Payola/">payola rules</a> |
-		<a href="<URL>?page=Questions&variant=payola">payola questions</a> |
-		<a href="<URL>?page=Ratings&variant=payola">the payroll</a><br>
+		<a href="<URL>?page=Questions&variant=payola">payola questions</a><!-- |
+		<a href="<URL>?page=Ratings&variant=payola">the payroll</a><br> -->
 		</td>
 		</tr>
 		</table>

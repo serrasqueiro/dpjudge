@@ -86,7 +86,7 @@ page.include('functions')
 		<a href=mailto:<MAIL>><tt><MAIL></tt></a>
 
 		<P><b>If I send an e-mail to the DPjudge, what commands may I include in that e-mail?</b><br>
-		The DPjudge recognizes only the following thirty-one commands:
+		The DPjudge recognizes only the following thirty-two commands:
 	
 			<P><table border=0 cellpadding=0 align=center>
 			<tr valign=top>
@@ -110,24 +110,25 @@ page.include('functions')
 			</tr>
 			</table>
 
-		<P><b>Hey, you said there were <i>thirty-one</i> recognized commands!
+		<P><b>Hey, you said there were <i>thirty-two</i> recognized commands!
 		That's only twenty-one!</b><br>
-		Okay, you're right.  I left out the ten "Master commands"
+		Okay, you're right.  I left out the eleven "Master commands"
 		(those that may be used only by a game's Master). These are:
 	
 			<P><table border=0 cellpadding=0 align=center>
 			<tr valign=top>
-			  <td class="bodycopy" valign=top>&middot;<a href=#create>CREATE</a></td><td width=20></td>
+			  <td class="bodycopy" valign=top>&middot;<a href=#create>CREATE</a><br>&middot;<a href=#deadline>SET DEADLINE</a></td><td width=20></td>
 			  <td class="bodycopy">&middot;<a href=#process>PROCESS</a>
 			<br>&middot;<a href=#preview>PREVIEW</a>
 			</td>
 				<td width=20></td>
 			  <td class="bodycopy">&middot;<a href=#m_resign>RESIGN</a>
 			<br>&middot;<a href=#m_dummy>DUMMY</a>
+			<br>&middot;<a href=#revive>REVIVE</a>
 				<td width=20></td>
 			<td class="bodycopy">&middot;<a href=#official>OFFICIAL</a><br>&middot;<a href=#reveal>REVEAL</a></td>
 				<td width=20></td>
-			<td class="bodycopy" valign=top>&middot;<a href=#rollback>ROLLBACK</a><br>&middot;<a href=#rollforward>ROLLFORWARD</a><br>&middot;<a href=#deadline>SET DEADLINE</a></td>
+			<td class="bodycopy" valign=top>&middot;<a href=#rollback>ROLLBACK</a><br>&middot;<a href=#rollforward>ROLLFORWARD</a></td>
 			</tr>
 			</table>
 	
@@ -1130,6 +1131,22 @@ does, but tell me anyway.</b><br>
 	someone after the power has already been dummied.  You can then use the
 	<tt><a href=#m_resign>RESIGN</a></tt> command to un-dummy the dummied position.
 
+<a name=revive></a>
+<P><b>And what if I use the <tt>REVIVE</tt> command?</b><br>
+	In that case the resignation will be undone and the player will regain his
+	power. This is the same as when the player sends a <tt>TAKEOVER</tt> mail
+	for his own power.
+	You can optionally add a password as a second parameter. If omitted a
+	random one is created.
+	In either case the player is informed of the new password in the welcome
+	back mail. He can later change it with <tt>SET PASSWORD</tt>.
+
+<P><b>But what if in the meantime someone else took the spot?</b><br>
+	Inform him politely that the original player desires to play on. If he
+	agrees, you can <tt>RESIGN</tt> him first, and then <tt>REVIVE</tt> the
+	original player. Assuming the game didn't process the turn yet, this
+	succession of commands should do the trick.
+
 <a name=rollback></a>
 <P><b>How would I put a game back at a previous phase?</b><br>
 	You would do this using the <tt>ROLLBACK</tt> command.  This command
@@ -1145,7 +1162,7 @@ does, but tell me anyway.</b><br>
 	FULL, which will undo any persistent settings, like game rules or
 	the game description or even whether a player is a dummy, to what 
 	they were in the previous phase. 
-	For example
+	For example<br>
 	<tt>&nbsp;&nbsp;&nbsp;&nbsp;ROLLBACK&nbsp;FULL&nbsp;RESTORE&nbsp;W1904A</tt><br>
 	will roll back to the Winter 1904 Adjustments, with all build orders
 	restored and any rule and other persistent changes made after that 
@@ -1158,6 +1175,14 @@ does, but tell me anyway.</b><br>
 	that may cause you some headaches. In case of doubts or trouble, 
 	contact the judgekeeper.
 
+<P><b>What if the game had started prematurely, while I had forgotten a
+crucial parameter that influences the game start?</b><br>
+	You can rollback to the forming phase with<br>
+	<tt>&nbsp;&nbsp;&nbsp;&nbsp;ROLLBACK&nbsp;FORMING</tt><br>
+	This will not change power assignment. After you made your changes,
+	change the game status to 'Active' and the game starts again with the same
+	players playing the same powers.
+
 <a name=rollforward></a>
 <P><b>And can I undo a rollback?</b><br>
 	Yes, you can, thanks to the aptly called <tt>ROLLFORWARD</tt> command. 
@@ -1165,6 +1190,7 @@ does, but tell me anyway.</b><br>
 	but instead of going back to an earlier phase, it jumps to a later phase,
 	provided that the game has never been processed since the last rollback.
 	Multiple rollbacks can be undone by a single rollforward and vice versa.
+	<br>
 	Note that if you changed a rule that affects the game results before 
 	rolling forward, the results and even the game maps may look different
 	than before the rollback. For example if you chose a different blind rule, 

@@ -36,8 +36,8 @@ pouchLinks()
 		<a href="<URL>?page=Questions">DPjudge questions</a>
 		<br>
 		<a href="<POUCH>/Online/variants/crystalball.html">crystal ball rules</a> |
-		<a href="<URL>?page=Questions&variant=xtalball">crystal ball questions</a> |
-		<a href="<URL>?page=Ratings&variant=xtalball">cbd ratings</a><br>
+		<a href="<URL>?page=Questions&variant=xtalball">crystal ball questions</a><!-- |
+		<a href="<URL>?page=Ratings&variant=xtalball">cbd ratings</a><br> -->
 		</td>
 		</tr>
 		</table>

@@ -18,60 +18,63 @@ class Mail:
 		if self.copy:
 			try: os.chmod(copy, 0666)
 			except: pass
-		mailAs = mailAs or host.dpjudge
-		if host.smtpService is not None:
-			try: self.mail = SMTP()
-			except:
-				socket.gethostname = lambda: 'localhost'
-				self.mail = SMTP()
-			self.msg, self.mailAs, self.mailTo = '', mailAs, sendTo.split(',')
-			self.mail.connect(host.smtpService)
-		elif host.sendmailDir:
-			self.mail = os.popen(host.sendmailDir + '/sendmail -t', 'w')
+		self.mailAs, self.mailTo = mailAs or host.dpjudge, sendTo.split(',')
+		if self.mailTo:
+			if host.smtpService is not None:
+				try: self.mail = SMTP()
+				except:
+					socket.gethostname = lambda: 'localhost'
+					self.mail = SMTP()
+				self.msg = ''
+				self.mail.connect(host.smtpService)
+			elif host.sendmailDir:
+				self.mail = os.popen(host.sendmailDir + '/sendmail -t', 'w')
 		self.write('To: %s\nFrom: %s\nReply-To: %s\nDate: %s\n'
-			'Subject: %s\n%s\n\n' % (sendTo, mailAs, mailAs,
+			'Subject: %s\n%s\n\n' % (sendTo, self.mailAs, self.mailAs,
 			self.logTimeFormat(), subject, header), 0)
 	#	----------------------------------------------------------------------
 	def write(self, text, addToCopy = 1):
-		if host.smtpService is not None: self.msg += text
-		elif host.sendmailDir: self.mail.write(text.encode('latin-1'))
+		if self.mailTo:
+			if host.smtpService is not None: self.msg += text
+			elif host.sendmailDir: self.mail.write(text.encode('latin-1'))
 		if addToCopy and self.copy: self.copy.write(text.encode('latin-1'))
 	#	----------------------------------------------------------------------
 	def close(self):
-		if host.smtpService is not None:
-			logtext = 0
-			try: self.mail.sendmail(self.mailAs, self.mailTo,
-				self.msg.encode('latin-1'))
-			except SMTPServerDisconnected:
-				logtext  = '{ERROR: Server Disconnected|\n'
-			except SMTPResponseException, exception: 
-				logtext  = '{ERROR: Response Error|\n'
-				logtext += exception.smtp_error
-			except SMTPSenderRefused, exception: 
-				logtext  = '{ERROR: Sender Address Refused|\n'
-				logtext += exception.sender
-			except SMTPRecipientsRefused, exception: 
-				logtext  = '{ERROR: All Recipients Refused|\n'
-				for key, recip in exception.recipients.items():
-					logtext += `recip` + ';'
-			except SMTPDataError: 
-				logtext  = '{ERROR: Data Error|\n'
-			except SMTPConnectError: 
-				logtext  = '{ERROR: Connection Error|\n'
-			except SMTPHeloError: 
-				logtext  = '{ERROR: Helo Refused|\n'
-			except:
-				logtext  = '{ERROR: Unknown|\n'
-			if logtext:
-				try:
-					logfile = open(host.hostDir + '/log/smtperror.log', 'a')
-					logtext += '|\n' + self.msg + '|\n'
-					logtext += self.logTimeFormat() + '}'
-					logfile.write(logtext.encode('latin-1'))
-					logfile.close()
-				except: pass
-			self.mail.quit()
-		elif host.sendmailDir: self.mail.close()
+		if self.mailTo:
+			if host.smtpService is not None:
+				logtext = 0
+				try: self.mail.sendmail(self.mailAs, self.mailTo,
+					self.msg.encode('latin-1'))
+				except SMTPServerDisconnected:
+					logtext  = '{ERROR: Server Disconnected|\n'
+				except SMTPResponseException, exception: 
+					logtext  = '{ERROR: Response Error|\n'
+					logtext += exception.smtp_error
+				except SMTPSenderRefused, exception: 
+					logtext  = '{ERROR: Sender Address Refused|\n'
+					logtext += exception.sender
+				except SMTPRecipientsRefused, exception: 
+					logtext  = '{ERROR: All Recipients Refused|\n'
+					for key, recip in exception.recipients.items():
+						logtext += `recip` + ';'
+				except SMTPDataError: 
+					logtext  = '{ERROR: Data Error|\n'
+				except SMTPConnectError: 
+					logtext  = '{ERROR: Connection Error|\n'
+				except SMTPHeloError: 
+					logtext  = '{ERROR: Helo Refused|\n'
+				except:
+					logtext  = '{ERROR: Unknown|\n'
+				if logtext:
+					try:
+						logfile = open(host.hostDir + '/log/smtperror.log', 'a')
+						logtext += '|\n' + self.msg + '|\n'
+						logtext += self.logTimeFormat() + '}'
+						logfile.write(logtext.encode('latin-1'))
+						logfile.close()
+					except: pass
+				self.mail.quit()
+			elif host.sendmailDir: self.mail.close()
 		if self.copy:
 			self.copy.close()
 			try: os.chmod(self.copyFile, 0666)

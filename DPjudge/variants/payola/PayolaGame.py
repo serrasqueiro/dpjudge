@@ -136,6 +136,7 @@ class PayolaGame(Game):
 			if not includeFlags & 1: return -1
 			power.sheet += [upline]
 			if word[0][0] != '%': power.held = 1
+			return 1
 		#	-------------------------------
 		#	Power-specific data (transient)
 		#	-------------------------------
@@ -169,8 +170,6 @@ class PayolaGame(Game):
 	def finishPowerData(self, power):
 		Game.finishPowerData(self, power)
 		power.liquid = power.balance
-		for offer in power.sheet: self.parseOffer(power, offer)
-		self.validateOffers(power)
 	#	----------------------------------------------------------------------
 	def processExchangeReportsPhase(self):
 		for power in self.powers:
@@ -761,6 +760,14 @@ class PayolaGame(Game):
 		return Game.postMoveUpdate(self)
 	#	----------------------------------------------------------------------
 	def validateStatus(self):
+		#	------------------------------------------------------------
+		#	Parsing offers needs to be done after all powers are loaded,
+		#	thus not in finishPowerData(), because it checks whether an
+		#	ordered unit has an owner.
+		#	------------------------------------------------------------
+		for power in self.powers:
+			for offer in power.sheet: self.parseOffer(power, offer)
+			self.validateOffers(power)
 		self.map = self.map or Map.Map()
 		#	-------------------------------------------------
 		#	If the map's flow already holds any INCOME phase,

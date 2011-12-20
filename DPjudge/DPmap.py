@@ -38,9 +38,9 @@ class PostScriptMap:
 			copy = ' '.join(word)
 
 			if 'VASSAL' in word:
-				if 'STATUS' not in word:
-					vassal, master = line.upper().split(' IS A VASSAL OF')
-					self.vassals[vassal] = master.strip()[:-1]
+				participants = line.upper().split(' IS A VASSAL OF')
+				if len(participants) == 2:
+					self.vassals[participants[0]] = participants[1].strip()[:-1]
 				continue
 			if 'INDEPENDENT.' in word:
 				vassal = line.upper().split(' IS ')[0]

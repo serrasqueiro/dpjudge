@@ -91,7 +91,12 @@ class Page:
 						  .replace('<POUCH>',	'http://www.diplom.org'))
 			inCode = not inCode
 			if inCode: self.write(stuff)
-			elif stuff[:1] != '=': exec stuff in globals()
+			elif stuff[:1] != '=':
+				try:
+					exec stuff in globals()
+				except:
+					print('<!-- Exception while executing:\n' + stuff.replace('<','&lt;') + '-->')
+					raise
 			else: self.write(eval(stuff[1:]))
 		#	--------------
 		#	Template shown

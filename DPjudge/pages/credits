@@ -6,6 +6,7 @@
 		Manus Hand and John Woolley
 	<dd><b><a href="<POUCH>/Online/variants/crystalball.html">Crystal
 		Ball</a>:</b> Manus Hand, John Woolley, and Pitt Crandlemire
+</li>
 <li><b>Mix-In Rule Variants:</b>
 	<dd><b><a href="<PAGE>Rules#BLIND">Blind</a>:</b>
 		Adapted from Joan C. Artes by Manus Hand
@@ -42,6 +43,7 @@
 		Matt Ready
 	<dd><b><a href="<PAGE>Rules#VASSAL_DUMMIES">Vassals</a>:</b>
 		Joseph Wheeler
+</li>
 <li><b><a href=<PAGE>Map>Map Variants</a>:</b>
 	<dd><b><a href="<PAGE>about_1897">1897</a></b> (7 players):
 		Mark Nelson, Josh Smith, and Rick Westerman
@@ -106,6 +108,7 @@
 		Mario Huys
 	<dd><b><a href="<PAGE>about_youngstown">Youngstown</a></b> (10 players):
 		Rod Walker, A. Phillips, Ken Lowe, and Jon Monsarret
+</li>
 <li><b>Press Variants:</b>
 	<dd><b>Public-Press/No-Press:</b> <i>Unknown</i>
 	<dd><b>Grey/Fake Press:</b> <i>Unknown</i>
@@ -115,13 +118,19 @@
 		Andy Schwarz <font color=red><i>(broadcasts forbidden)</i></font>
 	<dd><b>Postage/Limited Press:</b> "Tarzan" and Manus Hand
 		<font color=red><i>(supported soon)</i></font>
+</li>
 <li><b>The DPjudge Itself:</b> Manus Hand
+</li>
 <li><b>DPjudge Web Page Design:</b> Patrick Lambrecht
+</li>
 <li><b>Mapit Map Generation:</b> George Boyce (original code),
 	followed by many others
+</li>
 <li><b><a href="<POUCH>/manus/mapit">Manusized Mapit</a> (dpmap):</b>
 	Manus Hand
+</li>
 <li><b><a href="<POUCH>/manus/mapit#maps">Manusized Maps</a>
 	and dpmap Enhancements:</b> Manus Hand, Juho Snellman, Mario Huys
+</li>
 
 <!--DESIGN CREDITS ENDS HERE-->

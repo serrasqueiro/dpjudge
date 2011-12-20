@@ -846,7 +846,8 @@ def showRetreatList():
 	else:
 		page.write('<table>')
 		for unit in power.retreats:
-			page.write('<tr><td class=bodycopy align=right>' + unit + '</td>')
+			page.write('<tr><td class=bodycopy align=right>' +
+				unit.replace(' ', '&nbsp;') + '</td>')
 			page.write('<td><select name=adjust class=inputBox>')
 			if not power.adjust or page.pwdFlag == 1:
 				page.write('<option>(NMR)')
@@ -1109,7 +1110,7 @@ def updateOffPhases():
 	page.game.updateOffPhases(page.power, page.adjust)
 #	----------------------------------------------------------------------
 def checkPassword():
-	page.pwdFlag = page.game.isValidPassword(page.power, page.password)
+	page.pwdFlag = page.power.isValidPassword(page.password)
 	if page.pwdFlag: return
 	page.write(
 		"""
@@ -1180,19 +1181,8 @@ def checkProposal():
 		else:
 			if page.proposal == '-1':
 				page.proposal = `len([1 for x in game.powers if x.centers])`
-			votes, page.power.vote = [], page.proposal
-			for power in game.powers:
-				try: power.centers and votes.append(int(power.vote))
-				except: break
-			else:
-				votes = filter(None, votes)
-				try:
-					if len(votes) <= min(votes):
-						if len(votes) > 1 and 'NO_DIAS' not in game.rules:
-							raise
-						game.proposal = ['NO_DIAS']
-				except: game.proposal = ['DIAS']
-				if game.proposal: game.endByAgreement()
+			page.power.vote = page.proposal
+			game.checkVotes()
 	#	--------------------------------------------
 	#	See if a vote on a proposal was just entered
 	#	--------------------------------------------

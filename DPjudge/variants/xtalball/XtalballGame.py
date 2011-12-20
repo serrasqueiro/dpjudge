@@ -273,7 +273,7 @@ class XtalballGame(Game):
 			self.mail = None
 		self.save()
 	#	----------------------------------------------------------------------
-	def begin(self):
-		Game.begin(self, 1)
+	def begin(self, roll = 0):
+		Game.begin(self, 1, roll)
 	#	----------------------------------------------------------------------
 
