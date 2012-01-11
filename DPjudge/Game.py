@@ -4014,7 +4014,7 @@ class Game:
 				self.mail.close()
 			return
 		results = ('Summary of game %s through %s.\n\n%s%s\n\n'
-					'Historical Supply Center Summary\n%s\n   ' %
+				   'Historical Supply Center Summary\n%s\n    ' %
 			(self.name, last, self.playerRoster(None, forPower, reveal)[:-1],
 			self.parameters(), '-' * 32))
 		scs.sort()
