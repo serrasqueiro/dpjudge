@@ -793,7 +793,7 @@ def showAdjustList():
 		#	(count may be set to zero by doing this!!)
 		#	-------------------------------------------
 		buildable = game.buildSites(power)
-		count = min(count, len(buildable))
+		count = min(count, game.buildLimit(power, buildable))
 	#	-----------------------
 	#	Create list of possible
 	#	build or remove orders.

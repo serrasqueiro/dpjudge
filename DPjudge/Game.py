@@ -900,6 +900,8 @@ class Game:
 				for sc in [x.upper() for x in word[1:]]:
 					if sc in self.map.scs: power.sees += [sc]
 					else: error += ['BAD SEEN CENTER: ' + sc]
+			elif upword == 'HIDES':
+				power.hides += [x.strip() for x in ' '.join(word[1:]).upper().split(',')]
 			else: found = 0
 		#	--------------------------------
 		#	Power-specific data (persistent)
@@ -1084,8 +1086,8 @@ class Game:
 			#	--------------------
 			for who in power.ceo:
 				if (who != 'MASTER'
-				and not ([1 for x in self.map.powers if x == who]
-					or	 [1 for x in self.powers if x.name == who])):
+					and not ([1 for x in self.map.powers if x == who]
+					or [1 for x in self.powers if x.name == who])):
 					error += ['BAD CONTROL FOR ' + power.name]
 			if not power.type and not power.player and not power.ceo:
 				error += ['NO PLAYER DATA FOR ' + power.name]
@@ -1093,10 +1095,10 @@ class Game:
 			#	Validate adjustment orders
 			#	--------------------------
 			if (power.adjust and self.phaseType not in 'AR'
-			and self.phase != 'COMPLETED'):
+				and self.phase != 'COMPLETED'):
 				error += ['ORDERS FOUND FOR PHASE NOT CURRENT']
 				continue
-			kind, goodOrders = None, []
+			kind, goodOrders, builds, sites = None, [], 0, []
 			for order in power.adjust:
 				word = order.split()
 				if not kind:
@@ -1104,6 +1106,9 @@ class Game:
 					if (kind == 'RETREAT') == (self.phaseType == 'A'):
 						error += ['IMPROPER ORDER TYPE: ' + order]
 						continue
+					if kind == 'BUILD':
+						sites = self.buildSites(power)
+						need = self.buildLimit(power, sites)
 				elif kind != word[0]:
 					error += ['MIXED ORDER TYPES: %s, ' % type + word[0]]
 					continue
@@ -1123,9 +1128,11 @@ class Game:
 				elif kind == 'REMOVE':
 					if unit not in power.units or len(word) > 3:
 						error += ['BAD REMOVE FOR %s: ' % power.name + order]
-				elif (not self.map.isValidUnit(unit) or len(word) > 3
-				or unit[2:5] not in self.buildSites(power)):
+				elif (not self.map.isValidUnit(unit)
+					or len(word) > 3 + (word[3:4] == ['HIDDEN'])
+					or not need or unit[2:5] not in sites):
 					error += ['BAD BUILD FOR %s: ' % power.name + order]
+				else: need -= 1
 	#	----------------------------------------------------------------------
 	def validateRules(self):
 		ruleData, rulesForced, rulesDenied = self.loadRules()
@@ -1510,12 +1517,23 @@ class Game:
 			if not [1 for x in orig if x in power.centers]: return []
 		revert = [y for x in self.powers for y in x.homes
 			if 'SC?' in x.centers or 'SC!' in x.centers]
-		return ([x for x in homes if x in power.centers and x not in
-			[y[2:5] for z in self.powers for y in z.units] + revert] +
-			[x for x in (self.map.factory.get(power.name, []) *
+		homes = [x for x in homes if x in power.centers and x not in
+			[y[2:5] for z in self.powers for y in z.units] + revert]
+		for alternative in [x[0] for x in self.map.alternative.get(
+			power.name, [])
+			if x[0] in homes and not [1 for y in x[1:] or power.homes
+			if y in homes]]: homes.remove(alternative)
+		return (homes + [x for x in (self.map.factory.get(power.name, []) *
 				('NO_FACTORIES' not in self.rules) +
 			self.map.partisan.get(power.name, []) * ('SC*' in power.centers))
 			if x[:3] not in [z[2:5] for y in self.powers for z in y.units]])
+	#	----------------------------------------------------------------------
+	def buildLimit(self, power, sites = None):
+		if sites is None: sites = self.buildSites(power)
+		if not sites or power.name not in self.map.alternative: 
+			return len(sites)
+		return len([x for x in sites if x not in [
+			y[0] for y in self.map.alternative[power.name]]])
 	#	----------------------------------------------------------------------
 	def sortPowers(self):
 		self.powers.sort(Power.compare)
@@ -2128,7 +2146,7 @@ class Game:
 						len([0 for x in power.units
 							if x[2:5] in power.homes])))
 				if (cd or centers == 0 or units == centers
-				or (units < centers and not self.buildSites(power))): continue
+				or (units < centers and not self.buildLimit(power))): continue
 			elif self.phaseType == 'R':
 				if power.adjust or not power.retreats: continue
 				#	-----------------------------------------------------
@@ -2307,6 +2325,7 @@ class Game:
 					self.file('status.' + phase + '.0'))
 			# Load the phase.
 			self.load('status.' + phase + '.0', includeFlags | 4)
+			self.loadMap(self.map.name, self.map.trial)
 			self.await = self.skip = None
 			self.changeStatus('active')
 			self.setDeadline()
@@ -2320,9 +2339,8 @@ class Game:
 				subject = 'Diplomacy rollback notice')
 			# Remake the maps
 			if phase != outphase:
-				file = open(self.file('results'), 'w')
-				temp = lines[:num - 1]
-				file.write(''.join(temp).encode('latin-1'))
+				file = open(self.file('results'), 'w', 'latin-1')
+				file.writelines(lines[:num - 1])
 				file.close()
 				if start == 1:
 					name = self.name.encode('latin-1')
@@ -2368,6 +2386,7 @@ class Game:
 				while phase != unphase:
 					# Load the phase, including orders.
 					self.load('status.' + unphase + '.0', includeFlags | 1)
+					self.loadMap(self.map.name, self.map.trial)
 					# Process the phase, suppressing any mail
 					self.process(now = 2, roll = includeFlags & 4 and 2 or 1)
 					try: os.unlink(self.file('status.' + unphase + '.0'))
@@ -2388,6 +2407,7 @@ class Game:
 				raise RollforwardPhaseInvalid
 			# Load the phase, including orders.
 			self.load('status.' + outphase + '.0', includeFlags | 1)
+			self.loadMap(self.map.name, self.map.trial)
 			# Process the phase, suppressing any mail
 			self.process(now = 2, roll = includeFlags & 4 and 2 or 1)
 			self.makeMaps()
@@ -2403,6 +2423,7 @@ class Game:
 		# Load the last phase
 		prephase = self.phase
 		self.load('status.' + unphase + '.0', includeFlags)
+		self.loadMap(self.map.name, self.map.trial)
 		self.await = self.skip = None
 		if self.phase != 'COMPLETED':
 			self.changeStatus('active')
@@ -2898,7 +2919,7 @@ class Game:
 					if self.map.areatype(tokens[-1]) == 'WATER': word += ' the'
 				else: word = 'Fleet'
 			elif word == 'BUILD':
-				word = 'Builds'[:6 - (tokens[num + 1][0] == 'W')]
+				word = 'Builds'[:6 - (tokens[num + 1][0] in 'WH')]
 			elif word in ('C', 'S'):
 				word = ('SUPPORT', 'CONVOY')[word == 'C']
 				if 'SHOW_PHANTOM' not in self.rules:
@@ -2907,7 +2928,7 @@ class Game:
 						word += ' ' + self.anglify(self.map.ownWord[help.name])
 			else:
 				try: word = {'REMOVE': 'Removes', 'WAIVED': 'waived',
-							'-': '->', 'H': 'HOLD'}[word]
+				 			'HIDDEN': 'hidden',	'-': '->', 'H': 'HOLD'}[word]
 				except:
 					for loc in [x.strip('_')
 						for x,y in self.map.locName.items() +
@@ -2944,7 +2965,7 @@ class Game:
 		text, map = [], self.map
 		shut = [x for y in self.powers for x in y.units
 			if not map.isValidUnit(x)]
-		self.loadMap(map.name, lastPhase = lastPhase)
+		self.loadMap(map.name, map.trial, lastPhase = lastPhase)
 		phases = [self.phaseAbbr().lower(), self.phase, self.phaseAbbr()]
 		map.validate(phases)
 		self.error += map.error
@@ -3018,7 +3039,7 @@ class Game:
 						len([0 for x in power.units
 							if x[2:5] in power.homes])))
 				if (units > centers
-				or (units < centers and self.buildSites(power))): return
+				or (units < centers and self.buildLimit(power))): return
 			for power in self.powers:
 				while 'SC?' in power.centers: power.centers.remove('SC?')
 				while 'SC*' in power.centers: power.centers.remove('SC*')
@@ -3056,7 +3077,11 @@ class Game:
 			for center in centers[:]:
 				for owner in self.powers:
 					if (owner is not power
-					and center in [x[2:5] for x in owner.units]):
+						and not ('VASSAL_DUMMIES' in self.rules
+							and (owner.ceo == power.ceo
+								or power.ceo == [owner.name],
+								owner.ceo == [power.name])[not power.ceo])  
+						and center in [x[2:5] for x in owner.units]):
 						self.transferCenter(power, owner, center)
 						if not power: unowned.remove(center)
 						break
@@ -3262,18 +3287,17 @@ class Game:
 			#	--------------------------------------------------
 			if 'NO_UNITS_SEE' in rules: before = after = []
 			else:
+				spotters = ' ' in unit and (
+					'UNITS_SEE_SAME' in rules and unit[0] or
+					'UNITS_SEE_OTHER' in rules and ('F', 'A')[unit[0] == 'F'] or
+					'') or ''
 				before = after = [x[2:]
 					for x in seer.units + seer.retreats.keys()
-					if ' ' not in unit
-					or unit[0] != x[0] and 'UNITS_SEE_OTHER' in rules
-					or unit[0] == x[0] and 'UNITS_SEE_SAME' in rules]
+					if not spotters or x[0] in spotters]
 				if self.phaseType == 'M':
 					after = []
 					for his in seer.units:
-						if (' ' in unit
-						and ('UNITS_SEE_SAME' in rules and his[0] != unit[0]
-						or	'UNITS_SEE_OTHER' in rules and his[0] == unit[0])):
-							continue
+						if spotters and his[0] not in spotters: continue
 						if (self.command.get(his, 'H')[0] != '-'
 						or self.result.get(his)): after += [his[2:]]
 						else: after += [self.command[his].split()[-1]]
@@ -3283,19 +3307,14 @@ class Game:
 					[y[2:] for y in seer.retreats.keys()]]
 					for order in seer.adjust:
 						word = order.split()
-						if (' ' in unit
-						and ('UNITS_SEE_SAME' in rules and word[1][0] != unit[0]
-						or	'UNITS_SEE_OTHER' in rules and word[1][0] == unit[0])):
-							continue
+						if spotters and word[1][0] not in spotters: continue
 						if word[3][0] == '-' and word[2] not in self.popped:
 							after += [word[-1]]
 				elif self.phaseType == 'A':
 					after = [x for x in before if x not in
 					[y.split()[2] for y in seer.adjust]] + [x[1] for x in
 					[y.split()[1:] for y in seer.adjust if y[0] == 'B']
-					if ' ' not in unit
-					or unit[0] != x[0][0] and 'UNITS_SEE_OTHER' in rules
-					or unit[0] == x[0][0] and 'UNITS_SEE_SAME' in rules]
+					if not spotters or x[0][0] in spotters]
 			#	------------------------------------------------
 			#	Get the list of the "seer"s sighted scs (if any)
 			#	------------------------------------------------
@@ -3319,14 +3338,24 @@ class Game:
 				#	----------------------------------------------------------
 				if 'BLANK_BOARD' not in rules and 'MOBILIZE' not in rules:
 					scs += [x[2:] for x in self.map.units.get(seer.name, [])]
+			#	-------------------------------------------------
+			#	When it comes to visibility, we can ignore coasts
+			#	-------------------------------------------------
+			before = set([x[:3] for x in before])
+			after = set([x[:3] for x in after])
+			both = (before & after) | set(scs)
+			before, after = before - both, after - both
+			old, new = old[:3], new[:3]
+			places = (' ' in unit and unit in power.hides and [(new, 4)] or
+				 old == new and [(old, 5)] or [(old, 1), (new, 4)])
+
 			#	-------------------------------------------------------
 			#	Set the bitmap for this "seer" if any unit or sc in the
 			#	lists (before, after, scs) can see the site in question
 			#	-------------------------------------------------------
-			for his, place in [(x[:3], y) for x in before + after + scs
-				for y in (old, new) if x == y or self.abuts('?', y, 'S', x)]:
-				bit = (his in before and 1) | (his in after and 2) or 3
-				if place == new: bit = bit * (place == old) | bit << 2
+			for bit in [b * m for (b, l) in [(1, before), (2, after), (3, both)]
+				 for x in l for (y, m) in places
+				 if x == y or self.abuts('?', y, 'S', x)]:
 				shows[seer.name] |= bit
 		return shows
 	#	----------------------------------------------------------------------
@@ -3358,7 +3387,8 @@ class Game:
 							'%-11s %s FOUND.' % (self.anglify(who.name) + ':',
 							self.anglify(what[0] + ' ' + it))]
 			power.units.remove(unit)
-		elif unit == 'WAIVED': return ['SHOW MASTER ' + ' '.join(
+		elif unit == 'WAIVED' or (len(word) > 3 and word[-1] == 'HIDDEN'):
+			return ['SHOW MASTER ' + ' '.join(
 			[x.name for x in self.powers if x == power or x.omniscient])]
 		else: cmd, there = 'H', unit
 		for who, how in self.visible(power, unit, cmd).items():
@@ -3384,6 +3414,13 @@ class Game:
 		list = ['Movement results for ' + self.phaseName(), '']
 		self.result[None], rules = 'invalid', self.rules
 		for power in [x for x in self.powers if x.units]:
+			#	---------------------------------------
+			#	Make any hidden units appear.
+			#	---------------------------------------
+			if 'BLIND' not in rules:
+				for unit in power.hides:
+					list += ['%s: %s FOUND.' %
+						(self.anglify(power.name), self.anglify(unit))]
 			for unit in power.units:
 				#	--------------------------------------------------------
 				#	Decide order annotations to be listed in the results.
@@ -3423,6 +3460,11 @@ class Game:
 						(self.anglify(power.name), order, invalid[:7].lower())]
 			if 'BLIND' in rules: list += ['SHOW']
 			list += ['']
+		#	-------------------------------------------------------------
+		#	Remove all hides now, because in blind games they are used to
+		#	determine visibility.
+		#	-------------------------------------------------------------
+		for power in self.powers: power.hides = [] 
 		#	----------------------
 		#	Determine any retreats
 		#	----------------------
@@ -3537,7 +3579,7 @@ class Game:
 							power.adjust += ['REMOVE ' + goner]
 					elif diff:
 						sites = self.buildSites(power)
-						need = min(len(sites), -diff)
+						need = min(self.buildLimit(power, sites), -diff)
 						power.adjust = ['BUILD WAIVED'] * need
 						if 'CD_BUILDS' in self.rules:
 							options = []
@@ -3545,12 +3587,35 @@ class Game:
 								if site[:3] in sites: options += filter(
 									self.map.isValidUnit,
 									('A ' + site, 'F ' + site))
+							alternatives = []
+							for limits in self.map.alternative.get(
+								power.name, []):
+								if limits[0] not in sites: continue
+								if len(limits) == 1: limits = limits[:] + [
+									x for x in power.homes if x in sites and
+									x not in [y[0] for y in 
+									self.map.alternative[power.name]]]
+								else: limits = limits[:1] + [
+									x for x in limits[1:] if x in sites]
+								if len(limits) > 1: alternatives += [limits]
 							for build in range(need):
 								if not options: break
-								power.adjust[build] = ('BUILD ' +
-									random.choice(options))
-								options = [x for x in options
-									if x[2:5] != power.adjust[build][8:11]]
+								unit = random.choice(options)
+								site = unit[2:5]
+								power.adjust[build] = ('BUILD ' + unit +
+									' HIDDEN' * ('HIDE_BUILDS' in self.rules or 
+									site in self.map.hidden.get(power.name, [])))
+								removals = [site]
+								while removals:
+									site, removals = removals[0], removals[1:]
+									options = [x for x in options
+										if x[2:5] != site]
+									for limits in alternatives:
+										if site not in limits: continue
+										limits.remove(site)
+										if len(limits) > 1: continue
+										removals.append(limits[0])
+										alternatives.remove(limits)
 				elif 'CD_RETREATS' in self.rules:
 					taken = []
 					for unit in power.retreats:
@@ -3605,9 +3670,15 @@ class Game:
 				word = order.split()
 				if 'BLIND' in self.rules:
 					list += self.showLines(power, word, self.popped)
+					if len(word) > 3 and word[-1] == 'HIDDEN': order = order[:-7]
+				elif len(word) > 3 and word[-1] == 'HIDDEN':
+				 	order = word[0] + ' HIDDEN'
 				list += ['%-11s %s.' %
 					(self.anglify(power.name) + ':', self.anglify(order))]
 				if word[0] == 'BUILD' and len(word) > 2:
+					if len(word) > 3 and word[-1] == 'HIDDEN':
+						word = word[:-1]
+						power.hides += [' '.join(word[1:])]
 					power.units += [' '.join(word[1:])]
 					sc = word[2][:3]
 					if 'SC!' in power.centers:
@@ -4112,7 +4183,19 @@ class Game:
 				len([0 for x in power.units
 					if x[3:5] in power.homes])))
 		orderType, claim = ('BUILD', 'REMOVE')[need < 0], []
-		if need > 0: needed = min(need, len(self.buildSites(power)))
+		if need > 0: 
+			sites = self.buildSites(power)
+			need = min(need, self.buildLimit(power, sites))
+			alternatives = []
+			for limits in self.map.alternative.get(power.name, []):
+				if limits[0] not in sites: continue
+				if len(limits) == 1: limits = limits[:] + [
+					x for x in power.homes if x in sites and
+					x not in [y[0] for y in 
+					self.map.alternative[power.name]]]
+				else: limits = limits[:1] + [
+				x for x in limits[1:] if x in sites]
+				if len(limits) > 1: alternatives += [limits]
 		for order in orders:
 			word = self.addUnitTypes(self.expandOrder([order]))
 			if word[0] != orderType: word[:0] = [orderType]
@@ -4129,14 +4212,24 @@ class Game:
 				site = word[2][:3]
 				if ('&SC' in power.homes
 				and site not in power.homes): claim += [site]
-				if site not in self.buildSites(power):
+				if site not in sites:
 					self.error += ['INVALID BUILD SITE: ' + order]
 				elif site in places:
 					self.error += ['MULTIPLE BUILDS IN SITE: ' + order]
-				elif self.map.isValidUnit(' '.join(word[1:])):
-					power.adjust += [order]
-					places += [site]
-				else: self.error += ['INVALID BUILD ORDER: ' + order]
+				elif not self.map.isValidUnit(' '.join(word[1:])):
+					self.error += ['INVALID BUILD ORDER: ' + order]
+				else:
+					for limits in alternatives:
+						if site in limits and len(
+							[x for x in limits if x not in places]) == 1:
+							self.error += ['BUILDS IN ALL ALTERNATIVE SITES ('
+								+ ', '.join(limits) + '): ' + order]
+							break
+					else:
+						power.adjust += [order + ' HIDDEN' * (
+							'HIDE_BUILDS' in self.rules or 
+							site in self.map.hidden.get(power.name, []))]
+						places += [site]
 			else: self.error += ['BAD ADJUSTMENT ORDER: ' + order]
 		if len(claim) > power.homes.count('&SC'):
 			self.error += ['EXCESS HOME CENTER CLAIM']

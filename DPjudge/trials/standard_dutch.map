@@ -17,7 +17,7 @@ bre     ->  Brest                          = bre
 bud     ->  Budapest                       = bud
 bul     ->  Bulgarije                      = bul
 bul/ec  ->  Bulgarije (oostkust)           = bul/ok bul(ok)
-bul/sc  ->  Bulgarije (westkust)           = bul/wk bul(wk)
+bul/sc  ->  Bulgarije (zuidkust)           = bul/zk bul(zk)
 bur     ->  Bourgondië                     = bou boe boergondië bourgogne
 cly     ->  Clyde                          = cly
 con     ->  Constantinopel                 = con kon konstantinopel
@@ -66,7 +66,7 @@ spa/nc  ->  Spanje (noordkust)             = spa/nk spa(nk)
 spa/sc  ->  Spanje (zuidkust)              = spa/zk spa(zk)
 stp     ->  Sint-Petersburg                = stp sint+petersburg st+petersburg
 stp/nc  ->  Sint-Petersbourg (noordkust)   = stp/nk stp(nk) sint+petersburg/nk st+petersburg/nk
-stp/sc  ->  Sint-Petersburg (zuidkust)     = stp/zk stp(zk) sint+petersburg/zk st+petersburg/zk
+stp/sc  ->  Sint-Petersburg (zuidkust)     = stp/zk stp(zk) sint+petersburg/nk st+petersburg/nk
 swe     ->  Zweden                         = zwe
 syr     ->  Syrië                          = syr
 tri     ->  Triëste                        = tri
@@ -91,7 +91,6 @@ ITALY   -> ITALIË     (ITALIAANSE)
 RUSSIA  -> RUSLAND    (RUSSISCHE)
 TURKEY  -> TURKIJE    (TURKSE)
 
-REFLOW
 FLOW        LENTE:MOVEMENT,RETREATS
 FLOW        HERFST:MOVEMENT,RETREATS
 FLOW        WINTER:ADJUSTMENTS

@@ -418,6 +418,28 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	<i>if and only if</i> the power owns at least one, but <u>not all</u>
 	of his original home supply centers.
 	This type of location is referred to as a <i>partisan</i> site.
+	<P><a name=ALTERNATIVE></a>
+	<u><b>Alternative Home Centers</b></u><br>
+	An alternative home center is a supply center where you may build if
+	you forego building in a normal owned and open home center. Otherwise
+	stated, it increases the number of build centers, but not the number
+	of builds. Say you have 3 home centers and 1 alternative home center,
+	all open and owned by you, that would allow you to build 3 units in
+	any 3 of the 4 centers. To indicate an alternative home center,
+	precede the center with an at sign (<tt>@</tt>). To restrict its usage
+	to a subset, list the home centers between round brackets and separated
+	by commas immediately after the center name. E.g. <tt>@CAL(NYO)</tt>
+	designates CAL as an alternative to NYO only. 
+	<P><a name=HIDDEN></a>
+	<u><b>Hiding Builds</b></u><br>
+	When a center is preceded by a tilde sign (<tt>~</tt>), any unit built
+	there is only revealed in the results of the next movement turn. The
+	adjustment results will simply state <tt>BUILD HIDDEN</tt> and no unit
+	will be displayed on the map. 
+	See also the <a href="<PAGE>Rule#HIDE_BUILDS"><tt>HIDE_BUILDS</tt></a>
+	rule for applying this effect to all builds for all players. 
+	This sign can be combined with other signs if you want to apply more than
+	one special property to the same center, as in <tt>~@CAL(NYO)</tt>.
 	<P>
 	If the <tt><i>center</i></tt> is preceded (immediately, with no
 	intervening space) by a dash (<tt>-</tt>), the center is removed

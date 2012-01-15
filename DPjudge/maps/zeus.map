@@ -1,0 +1,296 @@
+#   -------------------------------
+#   Zeus variant by Chris Northcott
+#   -------------------------------
+
+#   ------------------------------------------------------------
+#   Official names of each location, with all recognized aliases
+#   ------------------------------------------------------------
+Adriatic Sea		= adr
+Alaska				= ala
+Algiers				= alg tripoli tri tunis tun
+Amursk				= amu amur
+Arctic Ocean		= arc
+Austria				= aus 
+Baltic Sea			= bal
+Bay of Bengal		= ben
+Bay of Biscay		= bis
+Berlin				= ber
+Black Sea			= bla
+Burgundy			= bur brg
+Burma				= brm
+California			= cal san+francisco sfr
+Canada (east coast)	= can/ec can(ec) canada/ec canada(ec)
+Canada (west coast)	= can/wc can(wc) canada/wc canada(wc)
+Canada				= can
+Canton				= ctn
+Caroline Islands	= car wake+island wak
+Central Pacific Ocean	= cpo
+Chungking			= chu chongking chongqing
+Colombia (east coast)	= col/ec col(ec) colombia/ec colombia(ec)
+Colombia (west coast)	= col/wc col(wc) colombia/wc colombia(wc)
+Colombia			= col
+Czechoslovakia		= cze czech
+Denmark				= den
+Eastern Mediterranean Sea	= eas ems
+East China Sea		= ecs
+East Siberian Sea	= ess
+Edinburgh			= edi
+Egypt  				= egy
+English Channel		= eng
+Finland (north coast)	= fin/nc fin(nc) finland/nc finland(nc)
+Finland (south coast)	= fin/sc fin(sc) finland/sc finland(sc)
+Finland				= fin
+Gascony				= gas
+Gibraltar			= gib Gibralter
+Greece				= gre 
+Gulf of Bothnia		= bot gob
+Hamburg				= ham kie kiel
+Hawaii				= haw
+Helgoland Bight		= hel
+Hungary				= hun bud Budapest
+India				= ind
+Indian Ocean		= ino
+Indochina			= inc vietnam vie
+Ionian Sea			= ion
+Iran				= ira persia per
+Kazakhstan			= kaz kazakstan
+Korea 				= kor cor corea
+Kyushu				= kyu kiu kiushu 
+Leningrad (north coast)	= len/nc len(nc) leningrad/nc leningrad(nc)
+Leningrad (south coast)	= len/sc len(sc) leningrad/sc leningrad(sc)
+Leningrad			= len 
+Libya				= lib ben benghazi
+Lithuania			= lit liv lvn livonia
+London				= lon
+Low Countries		= low belgium holland netherlands net bel hol
+Magadan				= mag
+Marseilles			= mar vichy+france vichy vfr
+Middle East (south coast)	= mde/sc mde(sc) middle+east/sc middle+east(sc)
+Middle East (west coast)	= mde/wc mde(wc) middle+east/wc middle+east(wc)
+Middle East			= mde
+Mid-Atlantic Ocean	= mao
+Mid-Pacific Ocean	= mpo
+Midway Island		= mid
+Moscow				= mos
+Munich				= mun
+Nepal				= nep
+New York			= nyo new
+North Atlantic Ocean	= nao
+North Pacific Ocean		= npo
+North Sea			= nth
+Norway				= nwy nor
+Okinawa				= oki guam gua
+Oregon				= ore
+Panama				= pan
+Paris				= par 
+Peking				= pek beijing
+Piedmont			= pie
+Poland				= pol
+Prussia				= pru
+Rome				= rom
+Ruhr				= ruh
+Rumania				= rum romania
+Sapporo				= sap sapporro saporro saporo
+Sea of Japan		= soj
+Sea of Okhotsk		= soo okhotsk
+Sendai				= sen
+Siberia				= sib
+Sinkiang			= sin mongolia mon
+Solomon Islands		= sol philippines phi phillippines philipines phillipines
+South Atlantic Ocean	= sao
+South China Sea		= scs
+South Pacific Ocean	= spo
+Spain (north coast)	= spa/nc spa(nc) spain/nc spain(nc)
+Spain (south coast)	= spa/sc spa(sc) spain/sc spain(sc)
+Spain				= spa
+Stalingrad			= sta sev sevastopol
+Sweden				= swe
+Switzerland			= swi
+Tokyo (east coast)	= tok/ec tok(ec) tokyo/ec tokyo(ec) kyoto+(east+coast) kyo/ec kyo(ec) kyoto/ec kyoto(ec)
+Tokyo (west coast)	= tok/wc tok(wc) tokyo/wc tokyo(wc) kyoto+(west+coast) kyo/wc kyo(wc) kyoto/wc kyoto(wc)
+Tokyo				= tok kyoto kyo
+Turkey				= tur
+Venice				= ven
+Washington			= was
+Western Britain	= wbr ireland ire wales wal irish+sea iri
+Western Mediterranean Sea	= wes wms
+Yellow Sea			= yel
+Yugoslavia			= yug
+
+#   ----------------------------------
+#   Africa, South America (impassable)
+#   ---------------------------------- 
+Africa          	= afr
+South America   	= sam
+
+#   ------------------------------
+#   Location adjacency information
+#   ------------------------------
+
+WATER   ADR     ABUTS   GRE ION ROM VEN YUG
+COAST   ALA     ABUTS   ARC CAN/EC CAN/WC NPO
+COAST   ALG     ABUTS   AFR GIB LIB SAO WES
+COAST   AMU     ABUTS   KOR MAG pek sib sin SOJ SOO
+WATER   ARC     ABUTS   ALA CAN/EC EDI ESS NAO NTH NPO NWY SOO
+LAND    AUS     ABUTS   CZE HUN MUN PIE SWI VEN YUG
+WATER   BAL     ABUTS   BER BOT DEN HAM PRU SWE
+WATER   BEN     ABUTS   BRM INC IND INO
+COAST   BER     ABUTS   BAL cze HAM mun pol PRU
+WATER   BIS     ABUTS   ENG GAS MAO PAR SPA/NC WBR
+WATER   BLA     ABUTS   EAS GRE KAZ RUM STA TUR
+WATER   BOT     ABUTS   BAL FIN/SC LEN/SC LIT PRU SWE
+COAST   BRM     ABUTS   BEN INC IND nep ctn
+LAND    BUR     ABUTS   GAS LOW MAR MUN PAR RUH SWI
+COAST   CAL     ABUTS   HAW MID MPO nyo ORE PAN was
+COAST   CAN/EC  ABUTS   ALA ARC NAO NYO
+COAST   CAN/WC  ABUTS   ALA NPO ORE
+COAST   can     ABUTS   ALA ARC NAO NPO NYO ORE   
+WATER   CAR     ABUTS   CPO MID MPO OKI TOK/EC
+LAND    CHU     ABUTS   CTN KAZ NEP PEK SIN
+COAST   COL/EC  ABUTS   PAN SAM SAO
+COAST   COL/WC  ABUTS   PAN SAM SPO
+COAST   col     ABUTS   PAN SAM SAO SPO
+WATER   CPO     ABUTS   CAR HAW MID OKI SOL SPO
+COAST   CTN     ABUTS   brm chu ECS INC nep PEK SCS YEL
+LAND    CZE     ABUTS   AUS BER HUN MUN POL
+COAST   DEN     ABUTS   BAL HAM HEL NTH SWE
+WATER   EAS     ABUTS   BLA EGY GRE ION LIB MDE/WC TUR
+WATER   ECS     ABUTS   CTN KYU OKI SCS SOL SPO YEL
+COAST   EDI     ABUTS   ARC LON NAO NTH WBR
+COAST   EGY     ABUTS   AFR EAS INO LIB MDE/SC MDE/WC
+WATER   ENG     ABUTS   BIS LON LOW NTH PAR WBR
+WATER   ESS     ABUTS   ARC FIN/NC LEN/NC MAG NWY SOO
+COAST   FIN/NC  ABUTS   ESS LEN/NC NWY
+COAST   FIN/SC  ABUTS   BOT LEN/SC SWE
+COAST   fin     ABUTS   BOT ESS LEN/NC LEN/SC NWY SWE
+COAST   GAS     ABUTS   BIS bur mar PAR SPA/NC
+COAST   GIB     ABUTS   ALG MAO SPA/NC SPA/SC WES
+COAST   GRE     ABUTS   ADR BLA EAS ION RUM YUG
+COAST   HAM     ABUTS   BAL BER DEN HEL LOW mun ruh
+PORT    HAW     ABUTS   CAL CPO MID PAN SPO
+WATER   HEL     ABUTS   DEN HAM LOW NTH
+LAND    HUN     ABUTS   AUS CZE POL RUM YUG
+COAST   INC     ABUTS   BEN BRM CTN INO SCS SPO
+COAST   IND     ABUTS   BEN BRM INO IRA kaz nep
+WATER   INO     ABUTS   AFR BEN EGY INC IND MDE/SC IRA SPO
+WATER   ION     ABUTS   ADR EAS GRE LIB ROM WES
+COAST   IRA     ABUTS   IND INO kaz MDE/SC tur
+COAST   KAZ     ABUTS   BLA chu ind ira nep sib sin STA TUR 
+COAST   KOR     ABUTS   AMU KYU PEK SOJ YEL
+COAST   KYU     ABUTS   ECS KOR OKI SOJ TOK/EC TOK/WC YEL
+COAST   LEN/NC  ABUTS   ESS FIN/NC MAG
+COAST   LEN/SC  ABUTS   BOT FIN/SC LIT
+COAST   len     ABUTS   BOT ESS FIN/NC FIN/SC LIT MAG mos sib
+COAST   LIB     ABUTS   AFR ALG EAS EGY ION WES
+COAST   LIT     ABUTS   BOT LEN/SC mos pol PRU 
+COAST   LON     ABUTS   EDI ENG NTH WBR
+COAST   LOW     ABUTS   bur ENG HAM HEL NTH PAR ruh
+COAST   MAG     ABUTS   AMU ESS LEN/NC sib SOO
+WATER   MAO     ABUTS   BIS GIB NAO NYO PAN SAO SPA/NC WAS WBR WES
+COAST   MAR     ABUTS   bur gas PIE SPA/SC swi WES
+COAST   MDE/SC  ABUTS   EGY IRA INO
+COAST   MDE/WC  ABUTS   EAS EGY TUR
+COAST   mde     ABUTS   EAS EGY INO IRA TUR
+PORT    MID     ABUTS   CAL CAR CPO HAW MPO
+LAND    MOS     ABUTS   LEN LIT POL RUM SIB STA
+WATER   MPO     ABUTS   CAL CAR MID NPO ORE SEN TOK/EC    
+LAND    MUN     ABUTS   AUS BER BUR CZE HAM RUH SWI
+WATER   NAO     ABUTS   ARC CAN/EC EDI MAO NYO WBR
+LAND    NEP     ABUTS   BRM CHU CTN IND KAZ
+WATER   NPO     ABUTS   ALA ARC CAN/WC MPO ORE SAP SEN SOO   
+WATER   NTH     ABUTS   ARC DEN EDI ENG HEL LON LOW NWY SWE 
+COAST   NWY     ABUTS   ARC ESS FIN/NC NTH SWE
+COAST   NYO     ABUTS   CAN/EC cal MAO NAO ore WAS
+PORT    OKI     ABUTS   CAR CPO ECS KYU SOL TOK/EC
+COAST   ORE     ABUTS   CAL CAN/WC MPO NPO nyo
+COAST   PAN     ABUTS   CAL COL/EC COL/WC HAW MAO SAO SPO WAS
+COAST   PAR     ABUTS   BIS bur ENG GAS LOW
+COAST   PEK     ABUTS   amu chu CTN KOR sin YEL
+COAST   PIE     ABUTS   aus MAR ROM swi ven WES
+LAND    POL     ABUTS   BER CZE HUN LIT MOS PRU RUM   
+COAST   PRU     ABUTS   BAL BER BOT LIT pol
+COAST   ROM     ABUTS   ADR ION PIE VEN WES
+LAND    RUH     ABUTS   BUR HAM LOW MUN
+COAST   RUM     ABUTS   BLA GRE hun mos pol STA yug
+WATER   SAO     ABUTS   AFR ALG COL/EC MAO PAN SAM WES
+COAST   SAP     ABUTS   NPO SEN SOJ SOO TOK/WC
+WATER   SCS     ABUTS   CTN ECS INC SPO
+COAST   SEN     ABUTS   MPO NPO SAP TOK/EC
+LAND    SIB     ABUTS   AMU KAZ LEN MAG SIN MOS STA   
+LAND    SIN     ABUTS   AMU CHU KAZ PEK SIB
+WATER   SOJ     ABUTS   AMU KOR KYU SAP SOO TOK/WC
+PORT    SOL     ABUTS   CPO ECS OKI SPO
+WATER   SOO     ABUTS   AMU ARC ESS MAG NPO SAP SOJ   
+COAST   SPA/NC  ABUTS   BIS GAS GIB MAO
+COAST   SPA/SC  ABUTS   GIB MAR WES
+COAST   spa     ABUTS   BIS GAS GIB MAO MAR WES
+WATER   SPO     ABUTS   COL/WC CPO ECS HAW INC INO PAN SAM SCS SOL
+COAST   STA     ABUTS   BLA KAZ mos RUM sib
+COAST   SWE     ABUTS   BAL BOT DEN FIN/SC NTH NWY 
+LAND    SWI     ABUTS   AUS BUR MAR MUN PIE
+COAST   TOK/EC  ABUTS   CAR KYU MPO OKI SEN
+COAST   TOK/WC  ABUTS   KYU SAP SOJ
+COAST   tok     ABUTS   CAR KYU MPO OKI SAP SEN SOJ 
+COAST   TUR     ABUTS   BLA EAS KAZ MDE/WC ira
+COAST   VEN     ABUTS   ADR aus pie ROM YUG
+COAST   WAS     ABUTS   cal MAO NYO PAN
+COAST   WBR     ABUTS   BIS EDI ENG LON MAO NAO 
+WATER   WES     ABUTS   ALG GIB ION LIB MAO MAR PIE ROM SAO SPA/SC   
+WATER   YEL     ABUTS   CTN ECS KOR KYU PEK
+COAST   YUG     ABUTS   ADR aus GRE hun rum VEN
+
+#   ----------------------------------
+#   Africa, South America (impassable)
+#   ---------------------------------- 
+SHUT    AFR     ABUTS   EGY INO LIB SAO ALG
+SHUT    SAM     ABUTS   COL/EC COL/WC SAO SPO 
+
+#   -------------------------
+#   Powers, with home centers
+#   -------------------------
+BRITAIN	(BRITISH)	CAN EDI EGY LON MDE
+
+CHINA	(CHINESE)	CHU CTN PEK
+
+FRANCE	(FRENCH)	ALG MAR PAR
+
+GERMANY	(GERMAN)	BER HAM MUN ROM
+OWNS BER HAM MUN
+
+JAPAN	(JAPANESE)	SAP SEN TOK
+
+U+S+A	(AMERICAN)	@CAL HAW NYO WAS
+
+U+S+S+R	(SOVIET:S)	LEN MAG MOS STA
+
+_INDIA	(INDIAN)	IND
+DUMMY
+A IND
+
+UNOWNED DEN FIN GRE INC KOR LOW MID NWY OKI POL
+UNOWNED ROM RUM SOL SPA TUR VEN YUG
+
+# ---------------------------------------------------
+# Game starts in Winter 1930 to build in home centers
+# ---------------------------------------------------
+BEGIN WINTER 1930 ADJUSTMENTS
+
+# ---------------------
+# Twenty centers to win 
+# ---------------------
+VICTORY 20
+
+# -----------------------------------------
+# INDIA's army isn't going to move anywhere 
+# -----------------------------------------
+RULE CD_DUMMIES
+RULE CD_BUILDS
+RULE IMMOBILE_DUMMIES
+
+# ----------------------------------------------------------------------------
+# In Winter 1930 CAL is an alternative for NYO only, and both hide their build
+# ----------------------------------------------------------------------------
+IN W1930A
+U+S+A
+HOMES ~@CAL(NYO) HAW ~NYO WAS
+

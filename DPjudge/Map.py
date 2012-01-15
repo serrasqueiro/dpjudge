@@ -12,7 +12,8 @@ class Map:
 		ownWord, abbrev, centers, units, powName, flag = {}, {}, {}, {}, {}, {}
 		rules, files, powers, scs, owns, inhabits = [], [], [], [], [], []
 		flow, unclear, size, homeYears, dummies, locs = [], [], [], [], [], []
-		reserves, militia, dynamic, factory, partisan = [], [], {}, {}, {}
+		reserves, militia = [], []
+		dynamic, factory, partisan, alternative, hidden = {}, {}, {}, {}, {}
 		leagues, directives, phaseAbbrev, error, notify = {}, {}, {}, [], []
 		if host.notify and host.judgekeeper and (trial or host.notify > 1):
 			notify = [host.judgekeeper]
@@ -97,6 +98,22 @@ class Map:
 				for other, locs in self.factory.items():
 					if site in locs:
 						error += ['PARTISAN SITE CANNOT BE FACTORY: ' + site]
+		#	-------------------------------------
+		#	Validate alternative home limitations
+		#	-------------------------------------
+		for power, alternatives in self.alternative.items():
+			alts = [x[0] for x in alternatives]
+			for altHomes in alternatives:
+				for home in altHomes[1:]:
+					if home not in self.homes.get(power,[]):
+						error += ['LIMITATION FOR ALTERNATIVE HOME CENTER '
+							+ alt + ' FOR POWER ' + power
+							+ ' NOT A HOME CENTER: ' + home]
+					elif home in alts:
+						error += ['LIMITATION FOR ALTERNATIVE HOME CENTER '
+							+ alt + ' FOR POWER ' + power
+							+ ' CANNOT ITSELF BE ALTERNATIVE HOME CENTER: '
+							+ home]
 		#	-----------------
 		#	Validate RESERVES
 		#	-----------------
@@ -621,6 +638,8 @@ class Map:
 						if goner in self.abbrev: del self.abbrev[goner]
 						if goner in self.factory: del self.factory[goner]
 						if goner in self.partisan: del self.partisan[goner]
+						if goner in self.hidden: del self.hidden[goner]
+						if goner in self.alternative: del self.alternative[goner]
 						if goner in self.units: del self.units[goner]
 						self.powers = [x for x in self.powers if x != goner]
 						self.reserves = [x for x in self.reserves if x != goner]
@@ -664,25 +683,52 @@ class Map:
 			self.homes[power] = []
 			if power in self.partisan: del self.partisan[power]
 			if power in self.factory: del self.factory[power]
+			if power in self.hidden: del self.hidden[power]
+			if power in self.alternative: del self.alternative[power]
 		else:
 			self.homes.setdefault(power, [])
 		for home in ' '.join(homes).upper().split():
-			if home[0] == '-':
-				if home[1:] in self.factory.get(power, []):
-					self.factory[power].remove(home[1:])
-					continue
-				if home[1:] in self.partisan.get(power, []):
-					self.partisan[power].remove(home[1:])
-					continue
+			remove = partisan = factory = alternative = hidden = 0
+			while home:
+				if home[0] == '-': remove = 1
+				elif home[0] == '*': partisan = 1
+				elif home[0] == '+': factory = 1
+				elif home[0] == '~': hidden = 1
+				elif home[0] == '@': alternative = 1
+				else: break;
+				home = home[1:]
+			if not home: continue
+			if '(' in home and home[-1] == ')':
+				idx = home.index('(')
+				limits, home = home[idx + 1:-1].split(','), home[:idx]
+			else: limits = []
+			if not home: continue
+			if power in self.alternative.keys():
+				self.alternative[power] = [x for x in self.alternative[power]
+					if x[0] != home]
+			if home in self.hidden.get(power, []):
+				self.hidden[power].remove(home)
+			if home in self.factory.get(power, []):
+				self.factory[power].remove(home)
+			elif home in self.partisan.get(power, []):
+				self.partisan[power].remove(home)
+			else:
 				try:
-					self.homes[power].remove(home[1:])
+					self.homes[power].remove(home)
 					if power != 'UNOWNED':
-						self.homes['UNOWNED'].append(home[1:])
+						self.homes['UNOWNED'].append(home)
 				except: pass
-			elif home[0] == '*':
-				self.partisan.setdefault(power, []).append(home[1:])
-			elif home[0] != '+': self.homes[power].append(home)
-			else: self.factory.setdefault(power, []).append(home[1:])
+			if not remove:
+				if alternative:
+					self.alternative.setdefault(power, []).append(
+						[home] + limits)
+				if hidden:
+					self.hidden.setdefault(power, []).append(home)
+				if partisan:
+					self.partisan.setdefault(power, []).append(home)
+				elif factory: 
+					self.factory.setdefault(power, []).append(home)
+				else: self.homes[power].append(home)
 	#	----------------------------------------------------------------------
 	def rename(self, old, new):
 		old = old.upper()
@@ -694,9 +740,14 @@ class Map:
 		for site in [x for x in self.locs if x.upper() == old]:
 			self.locs.remove(site)
 			self.locs.append((new.lower(), new)[site == old])
-		for homes in [x for x in self.homes.values() if old in x]:
-			homes.remove(old)
-			homes.append(new)
+		for data in (self.homes, self.centers,
+			self.factory, self.partisan, self.hidden):
+			for sites in [x for x in data.values() if old in x]:
+				sites.remove(old)
+				sites.append(new)
+		for alternatives in self.alternative.values():
+			for sites in [x for x in alternatives if old in x]:
+				sites[sites.index(old)] = new
 		for units in self.units.values():
 			for unit in [x for x in units if x.endswith(old)]:
 				units.remove(unit)
@@ -729,7 +780,7 @@ class Map:
 		[x.pop(old, None) for x in (self.ownWord, self.abbrev)]
 		if old == new: return
 		for data in (self.homes, self.units, self.centers,
-		self.factory, self.partisan):
+		self.factory, self.partisan, self.alternative, self.hidden):
 			try:
 				data[new] = data[old]
 				del data[old]

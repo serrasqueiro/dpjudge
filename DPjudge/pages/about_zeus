@@ -1,0 +1,235 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Zeus Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=3>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>The Zeus Variant</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=3 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Contents</b></td>
+<td align=center class="grey"><a name="1"></a><b>Basic Rules</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=5>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br>
+		<b>&middot;</b>&nbsp;<a href="#2">Map Notes</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		<form action=<URL> target=hundred>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=zeus>
+		<input type=hidden name=make value=1>
+		<input type=hidden name=trial value=1>
+		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr><td class=bodycopy>
+	<ol>
+<li>
+The normal rules of the game of Diplomacy apply, with the following additions,
+exceptions, and clarifications.
+
+<p><li>
+There are 43 Supply Centers. The Victory Criterion is 22 Centers.
+
+<p><li>
+The Home Centers for the Great Powers are (capitals listed first):
+<center>
+<table border>
+<tr><th class=bodycopy bgcolor=blue><font color=white>Britain</font></th>
+	<td><tt>London</tt></tt>
+	<td><tt>Edinburgh</tt></tt>
+	<td><tt>Canada</tt></tt>
+	<td><tt>Egypt</tt></tt>
+	<td><tt>Middle East</tt></tt>
+</tr>
+<tr><th class=bodycopy bgcolor=orange><font color=white>China</font></th>
+	<td><tt>Chungking</tt></td>
+	<td><tt>Canton</tt></td>
+	<td><tt>Peking</tt></td>
+</tr>
+<tr><th class=bodycopy bgcolor=cyan>France</th>
+	<td><tt>Paris</tt></td>
+	<td><tt>Marseilles</tt></td>
+	<td><tt>Algiers</tt></td>
+</tr>
+<tr><th class=bodycopy bgcolor=black><font color=white>Germany</font></th>
+	<td><tt>Berlin</tt></td>
+	<td><tt>Hamburg</tt></td>
+	<td><tt>Munich</tt></td>
+</tr>
+<tr><th class=bodycopy bgcolor=#33b2b2>Japan</th>
+	<td><tt>Tokyo</tt></td>
+	<td><tt>Sapporo</tt></td>
+	<td><tt>Sendai</tt></td>
+</tr>
+<tr><th class=bodycopy bgcolor=#ff0066><font color=white>USA</font></th>
+	<td><tt>Washington</tt></td>
+	<td><tt>Hawaii</tt></td>
+	<td><tt>New York</tt></td>
+	<td class=bodycopy><tt>California</tt><br>(see below)</td>
+</tr>
+<tr><th class=bodycopy bgcolor=white>USSR</th>
+	<td><tt>Moscow</tt></td>
+	<td><tt>Leningrad</tt></td>
+	<td><tt>Stalingrad</tt></td>
+	<td><tt>Okhotsk</tt></td>
+</tr>
+</table></center>
+ 
+<p><li>
+The first move of the game is Winter 1939. On this turn, the players 
+specify their builds, which may be negotiated. If a Fleet is built in Canada, 
+Leningrad, or Middle East, the coast must be specified. USA can only build three
+units in the first year, but it may choose to build its third unit either in 
+New York or California and does not have to disclose where it has built it 
+until the Spring 1940 moves are disclosed.
+ 
+<p><li>
+U.S.A. may always build units in California instead of in a Home SC if it 
+wishes, provided it owns California.
+ 
+<p><li>
+If Germany owns Rome, she may build units there.
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="2"></a><b>Map Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+		<ol>
+
+<p><li>
+<u>Canal Provinces.</u> 
+Egypt, Hamburg and Panama are considered to have only one coast. Fleets 
+passing from one sea space to another via a canal must first move to a canal 
+province (e.g. F EMS-Egypt; then F Egypt-Indian Ocean).
+
+<p><li>
+<u>Land Crossings (Direct Passage).</u> 
+Both Armies and Fleets may move directly between Denmark and Sweden, Korea 
+and Kyushu, Tokyo and Kyushu, and Gibraltar and North Africa. Fleets may move 
+between North Sea and Baltic Sea or between Sea of Japan and Yellow Sea or 
+Okinawa only by first moving to one of the intervening land spaces. Denmark, 
+Sweden, Korea, Kyushu and Tokyo are considered one-coast provinces. Units may 
+not move directly between Greece and Turkey.
+
+<p><li>
+<u>Straits.</u>
+Fleets may move directly between West Med. Sea and either MAO or SAO; and 
+between East Med. Sea and Black Sea.
+
+<p><li>
+<u>Pacific Island Areas.</u>
+Armies may enter the Hawaiian, Midway, Okinawa and Solomon Is., spaces 
+without convoy, as if they were land provinces. Fleets may move and convoy 
+through these spaces as if they were ordinary sea spaces.
+
+<p><li>
+<u>Western Britain.</u>
+Western Britain is a coastal province consisting of Wales, SW England, Irish 
+Sea and Ireland. All units treat this area as a single space.
+
+<p><li>
+<u>India.</u>
+India contains a Standing Army, which must be dislodged before it can be 
+occupied and claimed as a Supply Center.
+
+<p><li>
+<u>Polish Corridor.</u>
+This map is inaccurate in showing Prussia as attached to the rest of 
+Germany in 1939. From 1919 to September 1939, East Prussia was cut off from 
+the area shown here as "Berlin" by the "Polish Corridor," which has been 
+omitted from the ZEUS map. However, for game purposes this is not too 
+serious, especially since the map has been badly distorted in so many areas 
+to fit everything in.
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="3"></a><b>Design Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+<p>
+The Zeus variant was created by Chris Northcott and Fred Davis.
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+<:
+footer()
+:>

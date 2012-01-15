@@ -146,6 +146,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=GREY_PRESS>GREY_PRESS
 <option value=HIBERNATE>HIBERNATE
 <option value=HIDE_ABSENTEES>HIDE_ABSENTEES
+<option value=HIDE_BUILDS>HIDE_BUILDS
 <option value=HIDE_DUMMIES>HIDE_DUMMIES
 <option value=HIDE_EXTENDERS>HIDE_EXTENDERS
 <option value=HIDE_LATE_POWERS>HIDE_LATE_POWERS
@@ -915,6 +916,20 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE TROJAN +UNITS_SEE_OTHER +NO_SCS_SEE !OWN_UNITS_SEE +BLIND -->
 	A <tt>TROJAN</tt> game is a <tt>BLIND</tt> mixture in which units only "see" units of
 	the opposite type (army or fleet) and supply centers do not report information.
+<!-- RULE END -->
+
+<a name=HIDE_BUILDS></a><p><dt><b><tt>HIDE_BUILDS</tt></b><dd>
+<!-- RULE HIDE_BUILDS -->
+	Builds are not revealed until the next movement turn gets processed.
+	The results for the Winter turn will only declare how many units
+	were built, but not where or what type, by including <tt>BUILD HIDDEN</tt>
+	lines (similar to <tt>BUILD WAIVED</tt> lines). 
+	The results for the Spring turn will include <tt>FOUND</tt> lines for each 
+	newly built unit, apart from the action it executed.
+	In blind games, the player (and the master) will be able to see the units he
+	built himself, but not those of his opponents.
+	Note that builds can also be <a href="<PAGE>Map#HIDDEN">hidden</a> for 
+	individual home centers by using the appropriate map syntax. 
 <!-- RULE END -->
 
 <a name=HIDE_EXTENDERS></a><p><dt><b><tt>HIDE_EXTENDERS</tt></b><dd>

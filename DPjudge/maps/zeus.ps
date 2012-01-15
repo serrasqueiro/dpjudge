@@ -1,0 +1,2784 @@
+%!PS-Adobe-3.0
+%%Title: Diplomacy Map (Zeus)
+%%Creator: dpmap, using a map created with DPeye by Mario Huys (woelpad@yahoo.com)
+%%DocumentPaperSizes: Letter
+%%LanguageLevel: 2
+%%Orientation: Landscape
+%%Pages: (atend)
+%%DocumentNeededResources: font Helvetica-Bold Courier Courier-Bold Times-Roman
+%%EndComments
+
+%%BeginDefaults
+%%PageResources: font Helvetica-Bold Courier Courier-Bold Times-Roman
+%%EndDefaults
+
+% INFO
+%  948  474 ADR    Adriatic Sea
+%  395  470 ALA    Alaska
+%  764   32 ALG    Algiers
+%  404  580 AMU    Amursk
+%  505  433 ARC    Arctic Ocean
+%  867  403 AUS    Austria
+%  716  477 BAL    Baltic Sea
+%  579  985 BEN    Bay of Bengal
+%  735  402 BER    Berlin
+%  475  131 BIS    Bay of Biscay
+%  764  732 BLA    Black Sea
+%  660  536 BOT    Gulf of Bothnia
+%  533  942 BRM    Burma
+%  672  187 BUR    Burgundy
+%  243  345 CAL    California
+%  348  367 CAN    Canada
+%  373  329 CAN/EC Canada (east coast)
+%  329  425 CAN/WC Canada (west coast)
+%  202  563 CAR    Caroline Islands
+%  520  828 CHU    Chungking
+%  211  170 COL    Colombia
+%  237  140 COL/EC Colombia (east coast)
+%  192  173 COL/WC Colombia (west coast)
+%  126  539 CPO    Central Pacific Ocean
+%  389  800 CTN    Canton
+%  828  441 CZE    Czechoslovakia
+%  652  386 DEN    Denmark
+%  933  705 EAS    Eastern Mediterranean Sea
+%  282  802 ECS    East China Sea
+%  485  308 EDI    Edinburgh
+%  953  802 EGY    Egypt
+%  541  194 ENG    English Channel
+%  499  507 ESS    East Siberian Sea
+%  561  552 FIN    Finland
+%  524  534 FIN/NC Finland (north coast)
+%  601  543 FIN/SC Finland (south coast)
+%  565  135 GAS    Gascony
+%  468   59 GIB    Gibraltar
+%  881  641 GRE    Greece
+%  685  337 HAM    Hamburg
+%  134  375 HAW    Hawaii
+%  625  332 HEL    Helgoland Bight
+%  833  581 HUN    Hungary
+%  460  910 INC    Indochina
+%  610  938 IND    India
+%  703  942 INO    Indian Ocean
+% 1005  522 ION    Ionian Sea
+%  684  831 IRA    Iran
+%  646  766 KAZ    Kazakhstan
+%  348  666 KOR    Korea
+%  288  694 KYU    Kyushu
+%  561  591 LEN    Leningrad
+%  513  563 LEN/NC Leningrad (north coast)
+%  630  591 LEN/SC Leningrad (south coast)
+% 1011  623 LIB    Libya
+%  674  573 LIT    Lithuania
+%  541  249 LON    London
+%  625  236 LOW    Low Countries
+%  463  548 MAG    Magadan
+%  359  164 MAO    Mid-Atlantic Ocean
+%  690  130 MAR    Marseilles
+%  769  853 MDE    Middle East
+%  785  889 MDE/SC Middle East (south coast)
+%  790  799 MDE/WC Middle East (west coast)
+%  177  460 MID    Midway Island
+%  665  643 MOS    Moscow
+%  233  485 MPO    Mid-Pacific Ocean
+%  730  299 MUN    Munich
+%  414  305 NAO    North Atlantic Ocean
+%  585  905 NEP    Nepal
+%  308  491 NPO    North Pacific Ocean
+%  563  303 NTH    North Sea
+%  591  411 NWY    Norway
+%  302  319 NYO    New York
+%  218  727 OKI    Okinawa
+%  291  393 ORE    Oregon
+%  189  263 PAN    Panama
+%  600  201 PAR    Paris
+%  417  707 PEK    Peking
+%  830  275 PIE    Piedmont
+%  746  594 POL    Poland
+%  718  546 PRU    Prussia
+%  980  415 ROM    Rome
+%  674  251 RUH    Ruhr
+%  815  655 RUM    Rumania
+%  301   73 SAO    South Atlantic Ocean
+%  296  549 SAP    Sapporo
+%  377  880 SCS    South China Sea
+%  259  579 SEN    Sendai
+%  537  638 SIB    Siberia
+%  502  714 SIN    Sinkiang
+%  317  608 SOJ    Sea of Japan
+%  154  687 SOL    Solomon Islands
+%  366  543 SOO    Sea of Okhotsk
+%  502   89 SPA    Spain
+%  447   95 SPA/NC Spain (north coast)
+%  548   52 SPA/SC Spain (south coast)
+%  158  834 SPO    South Pacific Ocean
+%  719  698 STA    Stalingrad
+%  645  476 SWE    Sweden
+%  740  234 SWI    Switzerland
+%  276  630 TOK    Tokyo
+%  256  643 TOK/EC Tokyo (east coast)
+%  281  643 TOK/WC Tokyo (west coast)
+%  817  761 TUR    Turkey
+%  869  323 VEN    Venice
+%  246  279 WAS    Washington
+%  476  219 WBR    Western Britain
+%  797  135 WES    Western Mediterranean Sea
+%  341  725 YEL    Yellow Sea
+%  899  524 YUG    Yugoslavia
+% MAP
+
+%%BeginSetup
+/bd { bind def } bind def
+/xd { exch def } bd
+/ld { load def } bd
+/ifloor { .001 add floor cvi } bd
+/iceiling { .001 sub ceiling cvi } bd
+/min { 2 copy gt { exch } if pop } bd
+/max { 2 copy lt { exch } if pop } bd
+/secure_atan { 2 copy 0 eq exch 0 eq and { pop pop 0 } { atan } ifelse } bd
+/center { 3 2 roll add 2 div 3 1 roll add 2 div exch } bd
+/a /arc ld
+/c /curveto ld
+/d /setdash ld
+/f /fill ld
+/h /show ld
+/k /stroke ld
+/l /lineto ld
+/m /moveto ld
+/n /newpath ld
+/o /rotate ld
+/p /closepath ld
+/r /grestore ld
+/s /gsave ld
+/t /translate ld
+/w /setlinewidth ld
+/x /scale ld
+/y /scalefont ld
+/z /setfont ld
+/Powers 20 dict def
+%%IncludeResource: font Helvetica-Bold
+/MapUnitLetterFont /Helvetica-Bold findfont 14 y def
+%%IncludeResource: font Helvetica-Bold
+/MapNameFont /Helvetica-Bold findfont 14 y def
+%%IncludeResource: font Courier
+/TextFixedFont /Courier findfont def
+%%IncludeResource: font Courier-Bold
+/TextHeadingFont /Courier-Bold findfont def
+%%IncludeResource: font Times-Roman
+/TextTitleFont /Times-Roman findfont def
+/PageSetup {
+	612 0 t
+	90 o
+	/FinishReport { } def /InTextMode true def
+	Black
+	MovePhase
+} bd
+/ShowPage {
+	DrawAliases
+	InTextMode { FinishReport } { r } ifelse
+	FrameMap
+	showpage
+} bd
+/VisitColors {
+	3 dict begin
+	/c xd /r xd /g xd
+	/BorderBlack .1 g
+	/MountainGrey .5 g
+	/IceGrey .9 g
+	/ArrowBlack 0 g
+	/ArrowWhite .9 g
+	/White .9 g
+	/Black 0 g
+	/Grey .7 g
+	/LandBrown .8 .7 .4 r
+	/SeaBlue .1 .4 .6 r
+	/ArrowRed 1 0 0 r
+	/ArrowBlue .529 .808 .922 r
+	/DarkGreen 0 .4 0 r
+	/Red 1 0 0 r
+	/Blue 0 0 1 r
+	/Orange 1 .6 0 r
+	/Turquoise .2 .7 .7 r
+	/Mauve 1 0 1 r
+	/@LimeGreen .196 .804 .196 r
+	/Brown .6 .45 .2 r
+	end
+} def
+/VisitPowers {
+	1 dict begin
+	/p xd
+	/BRITAIN (B) /Blue /White p
+	/CHINA (C) /Orange /White p
+	/FRANCE (F) /Turquoise /Black p
+	/GERMANY (G) /Black /White p
+	/JAPAN (J) /Grey /Black p
+	/USA (U) /Mauve /White p
+	/USSR (S) /White /Black p
+	/INDIA ( ) /@LimeGreen /White p
+	/UNOWNED (?) /Brown /White p
+	end
+} def
+/Controls {
+	/ChangeController true def
+} bd
+/DrawFleet {
+	SwitchToMapMode
+	Power begin
+	s t
+	1 1 x
+	0 8 t
+	-26 -7 m -26 -2 l -19 -2 l -19 -1 l % to bow
+	-22 -1 l -22 0 l -15 0 l -15 1 l % A turret
+	-18 1 l -18 2 l -10 2 l -10 0 l % B turret
+	-9 0 l -9 4 l -8 4 l -8 6 l % conn tower
+	-6 6 l -6 5 l -5 5 l -5 9 l % Infra struct
+	-3 9 l -3 14 l -2 14 l -2 9 l % funnel 1
+	0 9 l 0 5 l 1 5 l 1 8 l % funnel 2
+	3 8 l 3 13 l 4 13 l 4 8 l % mast 2
+	6 8 l 6 0 l 8 0 l 8 2 l % funnel 2
+	16 2 l 16 1 l 13 1 l 13 0 l % C turret
+	20 0 l 20 -1 l 17 -1 l 17 -2 l % D turret
+	23 -2 l 23 -3 l 25 -3 l 25 -5 l % stern
+	24 -5 l 24 -7 l p
+	s Controlled { s 6 w Outer k r } if 2 w Contrast k r Paint f
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	r
+	end
+} bd
+/DrawArmy {
+	SwitchToMapMode
+	Power begin
+	s t
+	1 1 x
+	0 8 t
+	n 0 0 9 0 360 a p % wheel
+	Controlled { s 6 w Outer k r } if 2 w Contrast k
+	-20 7 m 10 7 l 10 3 l 14 3 l
+	14 1 l -16 1 l -16 3 l -20 3 l p % barrel
+	4 2 m 24 -8 l 26 -8 l 18 -8 l -2 2 l % carriage
+	s Controlled { s 6 w Outer k r } if 2 w Contrast k r Paint f
+	n 0 0 9 0 360 a p % wheel
+	Paint f
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	r
+	end
+} bd
+/DrawAlias {
+	SwitchToMapMode
+	s
+	3 1 roll t
+	1 1 x
+	0 -14 t
+	MapNameFont z
+	dup stringwidth pop -2 div 0 neg m h
+	r
+} bd
+/DrawName {
+	pop pop pop
+} bd
+/VisitTerritories {
+	5 dict begin
+	/b xd
+	/g xd
+	/w xd
+	/l xd
+	/c xd
+	(BRM) 533 942 c
+	(IND) 610 938 c
+	(INC) 460 910 c
+	(IRA) 684 831 c
+	(CTN) 389 800 c
+	(EGY) 953 802 c
+	(KAZ) 646 766 c
+	(TUR) 817 761 c
+	(OKI) 218 727 c
+	(PEK) 417 707 c
+	(KYU) 288 694 c
+	(STA) 719 698 c
+	(SOL) 154 687 c
+	(KOR) 348 666 c
+	(RUM) 815 655 c
+	(GRE) 881 641 c
+	(LIB) 1011 623 c
+	(SEN) 259 579 c
+	(LIT) 674 573 c
+	(AMU) 404 580 c
+	(PRU) 718 546 c
+	(SAP) 296 549 c
+	(MAG) 463 548 c
+	(YUG) 899 524 c
+	(SWE) 645 476 c
+	(ALA) 395 470 c
+	(MID) 177 460 c
+	(ROM) 980 415 c
+	(NWY) 591 411 c
+	(BER) 735 402 c
+	(ORE) 291 393 c
+	(DEN) 652 386 c
+	(HAW) 134 375 c
+	(CAL) 243 345 c
+	(HAM) 685 337 c
+	(VEN) 869 323 c
+	(NYO) 302 319 c
+	(EDI) 485 308 c
+	(WAS) 246 279 c
+	(PIE) 830 275 c
+	(PAN) 189 263 c
+	(LON) 541 249 c
+	(LOW) 625 236 c
+	(WBR) 476 219 c
+	(PAR) 600 201 c
+	(GAS) 565 135 c
+	(MAR) 690 130 c
+	(GIB) 468 59 c
+	(ALG) 764 32 c
+	(NEP) 585 905 l
+	(CHU) 520 828 l
+	(SIN) 502 714 l
+	(MOS) 665 643 l
+	(SIB) 537 638 l
+	(POL) 746 594 l
+	(HUN) 833 581 l
+	(CZE) 828 441 l
+	(AUS) 867 403 l
+	(MUN) 730 299 l
+	(RUH) 674 251 l
+	(SWI) 740 234 l
+	(BUR) 672 187 l
+	(BEN) 579 985 w
+	(INO) 703 942 w
+	(SCS) 377 880 w
+	(SPO) 158 834 w
+	(ECS) 282 802 w
+	(BLA) 764 732 w
+	(YEL) 341 725 w
+	(EAS) 933 705 w
+	(SOJ) 317 608 w
+	(CAR) 202 563 w
+	(SOO) 366 543 w
+	(CPO) 126 539 w
+	(BOT) 660 536 w
+	(ION) 1005 522 w
+	(ESS) 499 507 w
+	(NPO) 308 491 w
+	(MPO) 233 485 w
+	(BAL) 716 477 w
+	(ADR) 948 474 w
+	(ARC) 505 433 w
+	(HEL) 625 332 w
+	(NAO) 414 305 w
+	(NTH) 563 303 w
+	(ENG) 541 194 w
+	(MAO) 359 164 w
+	(WES) 797 135 w
+	(BIS) 475 131 w
+	(SAO) 301 73 w
+	(MDE) 769 853 g
+	(TOK) 276 630 g
+	(LEN) 561 591 g
+	(FIN) 561 552 g
+	(CAN) 348 367 g
+	(COL) 211 170 g
+	(SPA) 502 89 g
+	(MDE/SC) 785 889 b
+	(MDE/WC) 790 799 b
+	(TOK/EC) 256 643 b
+	(TOK/WC) 281 643 b
+	(LEN/SC) 630 591 b
+	(LEN/NC) 513 563 b
+	(FIN/SC) 601 543 b
+	(FIN/NC) 524 534 b
+	(CAN/WC) 329 425 b
+	(CAN/EC) 373 329 b
+	(COL/WC) 192 173 b
+	(COL/EC) 237 140 b
+	(SPA/NC) 447 95 b
+	(SPA/SC) 548 52 b
+	end
+} def
+/VisitSupplies {
+	1 dict begin
+	/s xd
+	/INC 456 942 s
+	/IND 648 934 s
+	/CTN 413 842 s
+	/MDE 805 820 s
+	/EGY 905 811 s
+	/CHU 467 796 s
+	/OKI 224 757 s
+	/TUR 879 722 s
+	/STA 666 700 s
+	/KOR 334 693 s
+	/RUM 804 691 s
+	/PEK 413 678 s
+	/SOL 141 666 s
+	/MOS 614 660 s
+	/TOK 255 619 s
+	/GRE 923 618 s
+	/LEN 611 608 s
+	/YUG 890 572 s
+	/SEN 280 570 s
+	/FIN 613 565 s
+	/SAP 322 563 s
+	/POL 758 558 s
+	/MAG 429 544 s
+	/MID 153 444 s
+	/NWY 622 437 s
+	/BER 751 429 s
+	/DEN 676 410 s
+	/HAW 117 398 s
+	/HAM 687 370 s
+	/CAL 220 366 s
+	/VEN 886 347 s
+	/ROM 954 339 s
+	/CAN 329 334 s
+	/MUN 776 323 s
+	/NYO 316 296 s
+	/WAS 289 293 s
+	/EDI 490 287 s
+	/LOW 632 260 s
+	/LON 551 228 s
+	/PAR 597 178 s
+	/MAR 752 152 s
+	/SPA 532 83 s
+	/ALG 641 24 s
+	end
+} def
+/supply {
+	SwitchToMapMode
+	Power begin
+	s
+	t
+	1 1 x
+	Controlled {
+		Outer
+		n 0 0 8 0 360 a f
+		Contrast
+		n 0 0 6 0 360 a f
+	} if
+	Paint
+	n 0 0 4 0 360 a f
+	r
+	end
+} bd
+/SetArrowStateOk {
+	[] 0 d
+} bd
+/OkOrder {
+	/SetArrowState /SetArrowStateOk ld
+} bd
+/SetArrowStateFailed {
+	[4 6] 2 d
+} bd
+/FailedOrder {
+	/SetArrowState /SetArrowStateFailed ld
+} bd
+/MovePhase {
+	/ArrowColor /ArrowBlack ld
+	/ArrowBase 20 def
+	/TraceArrowHead /TraceSingleArrowHead ld
+	InTextMode not { ArrowColor } if
+} bd
+/RetreatPhase {
+	/ArrowColor /ArrowRed ld
+	/ArrowBase 39.8 def
+	/TraceArrowHead /TraceDoubleArrowHead ld
+	InTextMode not { ArrowColor } if
+} bd
+/ProposePhase {
+	/ArrowColor /ArrowWhite ld
+	/ArrowBase 39.8 def
+	/TraceArrowHead /TraceDoubleArrowHead ld
+	InTextMode not { ArrowColor } if
+} bd
+/TraceSingleArrowHead {
+	% draw the arrow head ...
+	n
+	dup -5 m
+	dup 20 add 0 l
+	dup 5 l
+	p
+} bd
+/TraceDoubleArrowHead {
+	% draw the double arrow head ...
+	n
+	dup -5 m
+	dup 19.8 add
+	dup -1 l
+	dup -5 l
+	dup 20 add 0 l
+	dup 5 l
+	1 l
+	dup 5 l
+	p
+} bd
+/PaintArrowMove {
+	s
+	3 index 3 index t
+	3 2 roll sub 3 1 roll exch sub exch
+	2 copy dup mul exch dup mul add sqrt 3 1 roll exch secure_atan
+	1 1 x
+	0 8 t
+	o
+	ArrowBase sub
+	% if base of arrow is long enough, shorten it enough
+	% to e.g. move arrow start beyond support circle
+	dup 14 gt {
+		14 14 0 t sub
+	} {
+		0 t 0
+	} ifelse
+	% if base is still too long, shorten it some more
+	% to make arrow head touch support circle
+	dup 14 gt {
+		14 sub
+	} {
+		pop 0
+	} ifelse
+	1 w
+	TraceArrowHead
+	k
+	% now the shaft ...
+	2 w
+	0 0 m
+	0 l
+	k
+	r
+} bd
+/PaintArrowCircle {
+	s
+	5 1 roll
+	3 index 3 index t
+	3 2 roll sub 3 1 roll exch sub exch
+	2 copy dup mul exch dup mul add sqrt 3 1 roll exch secure_atan
+	1 1 x
+	0 8 t
+	o
+	1 index sub
+	% if base of arrow is long enough, shorten it enough
+	% to e.g. move arrow start beyond support circle
+	dup 14 gt {
+		14 14 0 t sub
+	} {
+		0 t 0
+	} ifelse
+	% draw the circle ...
+	1 w
+	n
+	2 copy add 0 4 3 roll 0 360 a
+	p k
+	% now the shaft ...
+	2 w
+	0 0 m
+	0 l
+	k
+	r
+} bd
+/PaintArrowArrive {
+	s
+	t
+	1 1 x
+	0 8 t
+	180 rotate 54 ArrowBase add neg 0 t
+	40
+	1 w
+	TraceArrowHead
+	k
+	% now the shaft ...
+	2 w
+	0 0 m
+	0 l
+	k
+	-5 0 m -10 0 l
+	-15 0 m -20 0 l
+	k
+	r
+} bd
+/PaintArrowDepart {
+	s
+	t
+	1 1 x
+	0 8 t
+	-54 0 t
+	40
+	2 w
+	0 0 m
+	0 l
+	-6 0 m -10 0 l
+	-16 0 m -20 0 l
+	k
+	r
+} bd
+/ArrowMove {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowMove
+	r
+} bd
+/ArrowHold {
+	SwitchToMapMode
+	s
+	SetArrowState
+	24 PaintArrowCircle
+	r
+} bd
+/ArrowSupport {
+	SwitchToMapMode
+	s
+	SetArrowState
+	center
+	8 PaintArrowCircle
+	r
+} bd
+/ArrowConvoy {
+	SwitchToMapMode
+	s
+	SetArrowState
+	center
+	12 PaintArrowCircle
+	r
+} bd
+/ArrowArrive {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowArrive
+	r
+} bd
+/ArrowDepart {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowDepart
+	r
+} bd
+/ArrowRetreat {
+	RetreatPhase
+	ArrowMove
+	MovePhase
+} bd
+/ArrowPropose {
+	ProposePhase
+	ArrowMove
+	MovePhase
+} bd
+/ArrowRetreatArrive {
+	RetreatPhase
+	ArrowArrive
+	MovePhase
+} bd
+/ArrowRetreatDepart {
+	RetreatPhase
+	ArrowDepart
+	MovePhase
+} bd
+/BuildUnit {
+	SwitchToMapMode
+	s
+	t
+	ArrowWhite
+	1 1 x
+	0 8 t
+	6 w [ 3.14 6.28 ] 1.57 d
+	n
+	0 0 24 0 360 a
+	p k
+	r
+} bd
+/SlashUnit {
+	s
+	3 1 roll t
+	1 1 x
+	0 8 t
+	n
+	-21 -16 m
+	11 16 l
+	21 16 l
+	-11 -16 l
+	p
+	exec
+	r
+} bd
+/DestroyUnit {
+	SwitchToMapMode
+	{ ArrowRed f } SlashUnit
+} bd
+/DisbandUnit {
+	SwitchToMapMode
+	{ s ArrowWhite f r 1 w ArrowRed k } SlashUnit
+} bd
+/RemoveUnit {
+	SwitchToMapMode
+	{ ArrowWhite f } SlashUnit
+} bd
+/FindUnit {
+	SwitchToMapMode
+	s
+	t
+	ArrowBlue
+	1 1 x
+	0 8 t
+	6 w [ 3.14 6.28 ] 1.57 d
+	n
+	0 0 24 0 360 a
+	p k
+	r
+} bd
+/LoseUnit {
+	SwitchToMapMode
+	s
+	t
+	ArrowBlue
+	1 1 x
+	0 8 t
+	4 w
+	-12 4 m
+	-8 7 -4 7 0 4 c
+	4 1 8 1 12 4 c
+	-12 -4 m
+	-8 -1 -4 -1 0 -4 c
+	4 -7 8 -7 12 -4 c
+	k
+	r
+} bd
+/QueryUnit {
+	SwitchToMapMode
+	s
+	t
+	ArrowWhite
+	1 1 x
+	0 8 t
+	4 w
+	-12 4 m
+	-8 7 -4 7 0 4 c
+	4 1 8 1 12 4 c
+	-12 -4 m
+	-8 -1 -4 -1 0 -4 c
+	4 -7 8 -7 12 -4 c
+	k
+	r
+} bd
+/SplitString {
+	7 dict begin
+	/nrChars xd
+	/indentString xd
+	/objectString xd
+	/objectLast objectString length 1 sub def
+	% Short string?
+	objectLast nrChars lt {
+		false objectString
+	} {
+		% Look for a suitable place to split.
+		% First tracking backwards, if that doesn't work, look forward.
+		/splitIndex -1 def
+		nrChars -1 0 {
+			objectString 1 index get 32 eq {
+				/splitIndex xd exit
+			} if pop
+		} for splitIndex -1 eq {
+			nrChars 1 add 1 objectLast {
+				objectString 1 index get 32 eq {
+					/splitIndex xd exit
+				} if pop
+			} for
+		} if
+		splitIndex -1 eq splitIndex objectLast eq or {
+			false objectString
+		} {
+			% The first part.
+			objectString 0 splitIndex getinterval
+			% The second part.
+			objectString splitIndex 1 add objectLast splitIndex sub getinterval
+			% Add indentation if needed.
+			indentString length 0 gt {
+				dup length indentString length add string
+				dup 0 indentString putinterval
+				dup indentString length 4 3 roll putinterval
+			} if
+			% Add white space of the first part.
+			/nonSpaceIndex objectLast 1 add def
+			0 1 objectLast {
+				objectString 1 index get 32 ne {
+					/nonSpaceIndex xd exit
+				} if pop
+			} for
+			nonSpaceIndex 0 gt nonSpaceIndex splitIndex lt and {
+				dup length nonSpaceIndex add string
+				dup 0 objectString 0 nonSpaceIndex getinterval putinterval
+				dup nonSpaceIndex 4 3 roll putinterval
+			} if
+			exch true exch
+		} ifelse
+	} ifelse
+	end
+} bd
+/DrawLayoutBorders {
+	s
+	TextFixedFont 7 y z
+	r
+} bd
+/Owner <<
+	/Steps [
+		{ /Count 0 def /Y 87.46 def false true } bind
+		{
+			Count 8 ge { false true } {
+				123 SplitString
+				/Count Count 1 add def /Y Y 7 sub def
+				20.1 Y m h
+				true false
+			} ifelse
+		} bind
+		{
+			123 SplitString [ exch {
+				20.1 24.46 m h
+			} /exec load ] cvx /Finish xd
+			true true
+		} bind
+		{
+			/Count 1 def /Finish {
+				20.1 24.46 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
+			} bd false true
+		} bind
+		{ /Count Count 1 add def 123 SplitString pop true false } bind
+	]
+	/Start {
+		TextFixedFont 7 y z
+		/StepIndex 0 def
+		/Step Steps 0 get def
+		/Finish { } def
+	} bind
+	/Write {
+		(  ) {
+			Step {
+				/StepIndex StepIndex 1 add def
+				/Step Steps StepIndex get def
+			} if { not { exit } if () } if
+		} loop
+	} bind
+>> def
+/OwnerReport {
+	SwitchToTextMode
+	Owner begin Start end
+	/FinishReport /FinishOwnerReport load def
+} bd
+/WriteOwner {
+	Owner begin Write end
+} bd
+/FinishOwnerReport {
+	Owner begin Finish end
+} bd
+/Adjustment <<
+	/Steps [
+		{ /Count 0 def /Y 101.46 def false true } bind
+		{
+			Count 10 ge { false true } {
+				54 SplitString
+				/Count Count 1 add def /Y Y 7 sub def
+				545.1 Y m h
+				true false
+			} ifelse
+		} bind
+		{
+			54 SplitString [ exch {
+				545.1 24.46 m h
+			} /exec load ] cvx /Finish xd
+			true true
+		} bind
+		{
+			/Count 1 def /Finish {
+				545.1 24.46 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
+			} bd false true
+		} bind
+		{ /Count Count 1 add def 54 SplitString pop true false } bind
+	]
+	/Start {
+		TextHeadingFont 7 y z
+		545.1 101.46 moveto
+		(Adjustments) h
+		TextFixedFont 7 y z
+		/StepIndex 0 def
+		/Step Steps 0 get def
+		/Finish { } def
+	} bind
+	/Write {
+		(  ) {
+			Step {
+				/StepIndex StepIndex 1 add def
+				/Step Steps StepIndex get def
+			} if { not { exit } if () } if
+		} loop
+	} bind
+>> def
+/AdjustReport {
+	SwitchToTextMode
+	Adjustment begin Start end
+	/FinishReport /FinishAdjustReport load def
+} bd
+/WriteAdjust {
+	Adjustment begin Write end
+} bd
+/FinishAdjustReport {
+	Adjustment begin Finish end
+} bd
+/Retreat <<
+	/Steps [
+		{ /Count 0 def /Y 185.46 def false true } bind
+		{
+			Count 10 ge { false true } {
+				54 SplitString
+				/Count Count 1 add def /Y Y 7 sub def
+				545.1 Y m h
+				true false
+			} ifelse
+		} bind
+		{
+			54 SplitString [ exch {
+				545.1 108.46 m h
+			} /exec load ] cvx /Finish xd
+			true true
+		} bind
+		{
+			/Count 1 def /Finish {
+				545.1 108.46 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
+			} bd false true
+		} bind
+		{ /Count Count 1 add def 54 SplitString pop true false } bind
+	]
+	/Start {
+		TextHeadingFont 7 y z
+		545.1 185.46 moveto
+		(Retreats) h
+		TextFixedFont 7 y z
+		/StepIndex 0 def
+		/Step Steps 0 get def
+		/Finish { } def
+	} bind
+	/Write {
+		(  ) {
+			Step {
+				/StepIndex StepIndex 1 add def
+				/Step Steps StepIndex get def
+			} if { not { exit } if () } if
+		} loop
+	} bind
+>> def
+/RetreatReport {
+	SwitchToTextMode
+	Retreat begin Start end
+	/FinishReport /FinishRetreatReport load def
+} bd
+/WriteRetreat {
+	Retreat begin Write end
+} bd
+/FinishRetreatReport {
+	Retreat begin Finish end
+} bd
+/Order <<
+	/Steps [
+		{ /Count 0 def /Y 563.46 def false true } bind
+		{
+			Count 52 ge { false true } {
+				54 SplitString
+				/Count Count 1 add def /Y Y 7 sub def
+				545.1 Y m h
+				true false
+			} ifelse
+		} bind
+		{
+			54 SplitString [ exch {
+				545.1 192.46 m h
+			} /exec load ] cvx /Finish xd
+			true true
+		} bind
+		{
+			/Count 1 def /Finish {
+				545.1 192.46 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
+			} bd false true
+		} bind
+		{ /Count Count 1 add def 54 SplitString pop true false } bind
+	]
+	/Start {
+		TextFixedFont 7 y z
+		/StepIndex 0 def
+		/Step Steps 0 get def
+		/Finish { } def
+	} bind
+	/Write {
+		(  ) {
+			Step {
+				/StepIndex StepIndex 1 add def
+				/Step Steps StepIndex get def
+			} if { not { exit } if () } if
+		} loop
+	} bind
+>> def
+/OrderReport {
+	SwitchToTextMode
+	Order begin Start end
+	/FinishReport /FinishOrderReport load def
+} bd
+/WriteOrder {
+	Order begin Write end
+} bd
+/FinishOrderReport {
+	Order begin Finish end
+} bd
+/DrawTitle {
+	SwitchToTextMode
+	TextTitleFont 14 y z
+	(Diplomacy)
+	545.1 579.42 m h
+	TextTitleFont 14 y z
+	dup stringwidth pop dup 226.8 gt {
+		545.1 561.5 m
+		226.8 exch div dup 1 x exch
+		0 3.92 rmoveto h
+		1 exch div 1 x
+	} {
+		pop 545.1 565.42 m h
+	} ifelse
+} bd
+/SwitchToTextMode {
+	InTextMode {
+		FinishReport /FinishReport { } def
+	} {
+		r /InTextMode true def
+	} ifelse
+} bd
+/SwitchToMapMode {
+	InTextMode {
+		FinishReport /FinishReport { } def
+		/InTextMode false def
+		s
+		.4599 .4599 x 52.36 205.48 t ClipMap
+		ArrowColor
+		OkOrder
+	} if
+} bd
+/FrameMap {
+	s
+	/fk {
+		p
+		s 17.4 w Black k r
+		clipsave clip k cliprestore
+	} bd
+	.4599 .4599 x 52.36 205.48 t
+	4.35 w LandBrown
+	ShapeSides
+	r
+} bd
+/PaintMap {
+	SwitchToMapMode
+	s
+	SeaBlue clippath fill
+	IncludeSeaBorder
+	IncludeContinent
+	IncludeIsland
+	IncludeIsletBorder
+	IncludeIslet
+	IncludeLandBorder
+	IncludeCountryBorder
+	IncludeLake
+	IncludeLakeBorder
+	IncludeCanal
+	IncludeStrait
+	IncludeCrossings
+	r
+} bd
+/DrawMap {
+	PageSetup
+	PaintMap
+	DrawSupplies
+} bd
+/DrawSupplies {
+	SwitchToMapMode
+	UNOWNEDCENTER
+	{ supply pop } bind
+	VisitSupplies
+} bd
+/DrawAliases {
+	NameTerritories
+} bd
+/NameTerritories {
+	SwitchToMapMode
+	s
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ White 3 2 roll DrawAlias } bind
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ pop pop pop } bind
+	VisitTerritories
+	r
+} bd
+/ClipMap {
+	/fk { p } bd
+	ShapeSides
+	clip n
+} bd
+/IncludeSeaBorder {
+	s
+	.1667 .1667 x
+	/fk { k } bd
+	6 w [ 36 12 ] 18 d BorderBlack
+	OutlineBorderBlue
+	r
+} bd
+/IncludeContinent {
+	s
+	.1667 .1667 x
+	/fk {
+		p
+		s LandBrown f r
+		k
+	} bd
+	12 w BorderBlack
+	OutlineContinentBlack
+	r
+} bd
+/IncludeIsland {
+	s
+	.1667 .1667 x
+	/fk {
+		p
+		s LandBrown f r
+		k
+	} bd
+	6 w BorderBlack
+	OutlineContinentTeal
+	r
+} bd
+/IncludeIsletBorder {
+	s
+	.1667 .1667 x
+	/fk { k } bd
+	25.2 w 1 setlinecap BorderBlack
+	OutlineContinentMagenta
+	r
+} bd
+/IncludeIslet {
+	s
+	.1667 .1667 x
+	/fk { k } bd
+	13.2 w 1 setlinecap LandBrown
+	OutlineContinentMagenta
+	r
+} bd
+/IncludeLandBorder {
+	s
+	.1667 .1667 x
+	/fk { k } bd
+	6 w [ 36 12 ] 18 d BorderBlack
+	OutlineConnectionMaroon
+	r
+} bd
+/IncludeCountryBorder {
+	s
+	.1667 .1667 x
+	/fk { k } bd
+	12 w BorderBlack
+	OutlineBorderOlive
+	r
+} bd
+/IncludeLake {
+	s
+	.1667 .1667 x
+	/fk {
+		p
+		s SeaBlue f r
+		k
+	} bd
+	12 w BorderBlack
+	OutlineContinentNavy
+	r
+} bd
+/IncludeLakeBorder {
+	s
+	.1667 .1667 x
+	/fk { k } bd
+	6 w [ 36 12 ] 18 d BorderBlack
+	OutlineBorderPurple
+	r
+} bd
+/IncludeCanal {
+	s
+	.1667 .1667 x
+	/fk {
+		s 24 w 0 setlinecap BorderBlack k r
+		k
+	} bd
+	12 w 2 setlinecap SeaBlue
+	OutlineBorderGrey
+	r
+} bd
+/IncludeStrait {
+	s
+	.1667 .1667 x
+	/fk {
+		s 24 w 0 setlinecap BorderBlack k r
+		k
+	} bd
+	6 w 2 setlinecap SeaBlue
+	OutlineBorderLightgrey
+	r
+} bd
+/IncludeCrossings {
+	s
+	/fk { k } bd
+	3 w 1 setlinecap Red
+	ShapeBridges
+	ShapeHops
+	r
+} bd
+/OutlineBorderBlue {
+	3048 5922 m
+	3062 6006 3183 6054 3252 6072 c
+	3464 6125 3681 6062 3834 5910 c
+	fk
+	2682 6042 m
+	2724 5976 l
+	fk
+	2196 4908 m
+	1938 5208 l
+	1848 5322 l
+	1878 5340 l
+	1986 5394 l
+	2346 5574 l
+	2466 5634 l
+	2544 5544 l
+	fk
+	1008 4896 m
+	1152 4776 l
+	1206 4734 l
+	1194 4698 l
+	1158 4566 l
+	1026 4080 l
+	990 3948 l
+	966 3888 l
+	906 3906 l
+	756 3930 l
+	804 4122 l
+	924 4590 l
+	978 4806 l
+	996 4890 l
+	1062 4932 l
+	1206 5004 l
+	1638 5220 l
+	1848 5322 l
+	fk
+	1206 4734 m
+	1512 4482 l
+	1680 4344 l
+	fk
+	2022 4464 m
+	1728 4314 l
+	fk
+	5106 4368 m
+	5118 4242 l
+	fk
+	750 3924 m
+	720 3810 l
+	660 3570 l
+	468 2796 l
+	396 2514 l
+	378 2406 l
+	465 2449 583 2478 678 2502 c
+	706 2509 770 2512 786 2544 c
+	804 2580 805 2635 816 2676 c
+	832 2743 859 2812 876 2880 c
+	884 2914 886 2952 906 2982 c
+	1092 2946 l
+	1266 2910 l
+	1230 2730 l
+	1212 2652 l
+	1266 2580 l
+	1392 2394 l
+	fk
+	972 3894 m
+	1134 3846 l
+	1104 3786 1096 3707 1080 3642 c
+	1049 3521 1014 3403 984 3282 c
+	960 3187 906 3082 906 2982 c
+	fk
+	1134 3846 m
+	1482 3768 l
+	fk
+	5592 3768 m
+	5874 3834 l
+	fk
+	2100 3576 m
+	2016 3354 l
+	fk
+	1440 3570 m
+	1380 3330 l
+	1272 2916 l
+	fk
+	1656 3360 m
+	1542 2898 l
+	1512 2778 l
+	1500 2730 l
+	1638 2514 l
+	fk
+	5658 3288 m
+	5700 3245 5724 3177 5742 3126 c
+	fk
+	1872 3222 m
+	1887 3191 1961 3200 1986 3192 c
+	2070 3163 2180 3143 2274 3120 c
+	2306 3111 2338 3118 2370 3108 c
+	2386 3102 2448 3074 2466 3084 c
+	2489 3097 2478 3167 2478 3192 c
+	fk
+	2280 3120 m
+	2262 3054 l
+	fk
+	2472 3090 m
+	2503 3063 2544 3074 2580 3060 c
+	2651 3030 2700 2945 2772 2916 c
+	2834 2889 2942 2900 3006 2916 c
+	3056 2928 3119 2919 3168 2940 c
+	3217 2960 3275 2994 3318 3030 c
+	fk
+	786 2538 m
+	918 2568 l
+	990 2472 l
+	1236 2166 l
+	fk
+	6108 2556 m
+	6144 2298 l
+	6156 2214 l
+	6126 2190 l
+	6036 2076 l
+	5754 1710 l
+	5640 1548 l
+	fk
+	2508 2532 m
+	2538 2511 2575 2522 2610 2514 c
+	2670 2498 2750 2482 2802 2448 c
+	2845 2418 2900 2362 2916 2316 c
+	2925 2288 2916 2238 2910 2214 c
+	2901 2178 2918 2135 2910 2100 c
+	2897 2050 2898 1980 2898 1926 c
+	fk
+	378 2406 m
+	420 2346 l
+	498 2238 l
+	798 1848 l
+	894 1722 l
+	930 1674 l
+	1038 1734 l
+	fk
+	3054 1836 m
+	3128 1910 3211 2005 3282 2100 c
+	3317 2147 3361 2223 3414 2250 c
+	fk
+	3786 2238 m
+	3740 2192 3697 2138 3660 2088 c
+	3635 2055 3591 2028 3576 1992 c
+	3563 1961 3610 1912 3624 1890 c
+	3672 1807 3749 1711 3780 1620 c
+	fk
+	1908 1734 m
+	2106 1482 l
+	2184 1380 l
+	2292 1380 l
+	2580 1380 l
+	fk
+	2820 1566 m
+	2748 1488 l
+	fk
+	1224 1524 m
+	1698 900 l
+	1950 594 l
+	2154 336 l
+	2238 234 l
+	2376 234 l
+	2784 222 l
+	2778 162 l
+	fk
+	3402 1410 m
+	3564 1404 l
+	fk
+	2730 1224 m
+	2874 1206 l
+	fk
+	2898 1074 m
+	2922 978 l
+	fk
+	2586 654 m
+	2563 786 2607 901 2718 984 c
+	2749 1007 2788 1043 2826 1050 c
+	fk
+	2796 282 m
+	2790 228 l
+	fk
+} bd
+/OutlineContinentBlack {
+	5910 2820 m
+	5910 2832 5914 2858 5934 2850 c
+	5958 2838 5962 2796 5976 2778 c
+	6016 2724 6046 2671 6084 2622 c
+	6099 2601 6121 2592 6126 2568 c
+	6094 2546 6058 2582 6036 2610 c
+	6011 2581 6036 2535 6030 2496 c
+	6023 2454 6003 2420 5994 2382 c
+	5989 2365 6005 2356 6000 2340 c
+	5972 2256 5916 2178 5868 2106 c
+	5854 2086 5834 2089 5820 2070 c
+	5797 2040 5791 1993 5760 1968 c
+	5749 1959 5735 1967 5724 1962 c
+	5682 1941 5668 1881 5634 1854 c
+	5585 1814 5524 1786 5472 1752 c
+	5410 1711 5377 1644 5304 1620 c
+	5264 1606 5194 1633 5154 1620 c
+	5106 1604 5076 1558 5034 1530 c
+	5001 1508 4940 1481 4920 1440 c
+	4915 1430 4919 1413 4914 1404 c
+	4889 1362 4833 1336 4806 1302 c
+	4769 1256 4777 1179 4752 1128 c
+	4727 1079 4680 1047 4650 1002 c
+	4631 974 4623 940 4602 912 c
+	4571 871 4510 836 4488 792 c
+	4471 758 4415 703 4374 690 c
+	4348 681 4315 696 4290 690 c
+	4230 675 4159 682 4098 672 c
+	4064 666 4021 682 3990 672 c
+	3950 658 3967 606 3930 594 c
+	3889 580 3846 586 3804 576 c
+	3760 565 3716 545 3672 534 c
+	3638 525 3582 540 3552 516 c
+	3515 486 3520 409 3474 384 c
+	3445 368 3402 372 3372 360 c
+	3345 349 3301 310 3270 318 c
+	3194 336 3082 370 2994 348 c
+	2951 337 2909 331 2868 318 c
+	2850 312 2819 282 2802 282 c
+	2775 282 2748 328 2718 336 c
+	2676 346 2636 308 2598 312 c
+	2585 313 2573 331 2562 336 c
+	2535 346 2508 317 2490 354 c
+	2471 391 2491 461 2484 504 c
+	2481 521 2460 569 2472 588 c
+	2478 599 2513 650 2526 654 c
+	2579 667 2666 646 2724 642 c
+	2745 640 2829 633 2850 642 c
+	2868 649 2884 662 2904 666 c
+	2944 672 2993 661 3036 672 c
+	3078 682 3136 672 3180 672 c
+	3197 672 3224 665 3234 684 c
+	3253 720 3238 748 3228 780 c
+	3199 864 3106 906 3018 906 c
+	2992 906 2896 913 2916 960 c
+	2939 1016 3087 962 3138 990 c
+	3167 1006 3142 1072 3186 1092 c
+	3207 1101 3223 1029 3258 1044 c
+	3272 1049 3281 1071 3294 1080 c
+	3328 1102 3378 1110 3414 1134 c
+	3470 1171 3421 1221 3444 1266 c
+	3457 1292 3474 1275 3492 1284 c
+	3510 1293 3539 1345 3552 1362 c
+	3566 1381 3563 1417 3576 1440 c
+	3597 1476 3634 1513 3648 1554 c
+	3657 1582 3642 1612 3660 1638 c
+	3704 1704 3714 1530 3780 1620 c
+	3833 1693 3718 1737 3762 1806 c
+	3770 1820 3788 1821 3798 1836 c
+	3817 1865 3821 1912 3840 1944 c
+	3856 1972 3892 1978 3912 2004 c
+	3924 2020 3921 2040 3930 2058 c
+	3951 2101 4024 2104 4032 2148 c
+	4003 2162 3961 2120 3936 2136 c
+	3922 2144 3918 2165 3900 2172 c
+	3886 2176 3872 2163 3864 2166 c
+	3842 2173 3831 2213 3810 2226 c
+	3794 2235 3773 2232 3768 2256 c
+	3763 2274 3788 2295 3798 2310 c
+	3820 2344 3842 2428 3882 2448 c
+	3907 2460 3939 2415 3960 2424 c
+	3992 2437 4003 2542 3978 2556 c
+	3951 2570 3916 2554 3888 2562 c
+	3863 2568 3838 2558 3816 2562 c
+	3805 2563 3779 2578 3768 2574 c
+	3753 2568 3716 2503 3714 2490 c
+	3712 2479 3726 2467 3720 2454 c
+	3712 2439 3694 2432 3690 2418 c
+	3676 2378 3696 2317 3678 2280 c
+	3659 2243 3620 2253 3594 2238 c
+	3567 2222 3509 2137 3468 2160 c
+	3443 2173 3467 2197 3456 2214 c
+	3447 2226 3430 2216 3420 2232 c
+	3405 2251 3407 2287 3396 2310 c
+	3385 2330 3340 2341 3348 2370 c
+	3349 2376 3363 2381 3366 2388 c
+	3374 2407 3367 2435 3378 2454 c
+	3386 2469 3406 2469 3414 2484 c
+	3435 2524 3425 2577 3438 2616 c
+	3448 2646 3477 2683 3492 2712 c
+	3496 2720 3513 2734 3504 2748 c
+	3493 2764 3466 2743 3456 2760 c
+	3445 2775 3456 2813 3450 2832 c
+	3435 2874 3400 2931 3378 2970 c
+	3331 3049 3245 3105 3192 3186 c
+	3165 3226 3146 3252 3126 3294 c
+	3120 3304 3104 3326 3114 3342 c
+	3140 3386 3242 3368 3252 3426 c
+	3213 3445 3161 3407 3126 3396 c
+	3109 3390 3088 3400 3072 3396 c
+	3056 3392 3014 3385 3000 3378 c
+	2981 3368 2979 3344 2964 3336 c
+	2955 3331 2942 3336 2934 3330 c
+	2914 3314 2897 3280 2892 3258 c
+	2887 3241 2903 3222 2898 3210 c
+	2883 3176 2852 3204 2832 3192 c
+	2793 3168 2782 3101 2730 3084 c
+	2717 3102 2722 3130 2700 3144 c
+	2639 3179 2567 3170 2502 3192 c
+	2464 3204 2419 3178 2388 3204 c
+	2378 3211 2359 3240 2376 3252 c
+	2377 3253 2398 3253 2400 3252 c
+	2425 3235 2457 3216 2490 3234 c
+	2504 3241 2507 3265 2496 3276 c
+	2488 3282 2475 3286 2466 3294 c
+	2466 3300 l
+	2508 3342 l
+	2487 3352 2435 3377 2412 3372 c
+	2389 3366 2366 3333 2340 3342 c
+	2325 3346 2317 3363 2304 3372 c
+	2261 3400 2201 3420 2166 3468 c
+	2131 3514 2083 3589 2094 3654 c
+	2100 3695 2190 3718 2160 3780 c
+	2149 3800 2127 3816 2124 3840 c
+	2121 3856 2137 3869 2124 3888 c
+	2103 3916 2059 3917 2034 3936 c
+	2019 3946 2017 3968 2004 3978 c
+	1991 3986 1971 3980 1956 3984 c
+	1932 3989 1898 4012 1878 4026 c
+	1848 4045 1838 4084 1812 4098 c
+	1789 4070 1781 4031 1764 4002 c
+	1753 3984 1731 3972 1722 3954 c
+	1715 3940 1724 3919 1716 3906 c
+	1695 3873 1630 3899 1644 3846 c
+	1655 3800 1716 3784 1716 3732 c
+	1716 3690 1643 3667 1668 3630 c
+	1696 3586 1743 3568 1776 3540 c
+	1786 3530 1776 3518 1788 3510 c
+	1799 3501 1823 3505 1836 3498 c
+	1845 3492 1842 3480 1854 3474 c
+	1864 3468 1913 3461 1926 3468 c
+	1935 3472 1946 3496 1962 3486 c
+	1981 3473 1987 3399 1998 3378 c
+	2001 3370 2018 3356 2016 3348 c
+	2009 3323 1959 3331 1944 3318 c
+	1923 3299 1924 3262 1908 3246 c
+	1861 3199 1764 3223 1740 3282 c
+	1723 3321 1798 3374 1764 3390 c
+	1746 3397 1734 3366 1722 3360 c
+	1706 3352 1642 3355 1626 3360 c
+	1559 3376 1531 3462 1500 3516 c
+	1486 3539 1451 3547 1440 3570 c
+	1428 3592 1456 3602 1464 3618 c
+	1478 3647 1456 3686 1470 3720 c
+	1480 3745 1503 3765 1512 3792 c
+	1520 3817 1488 3821 1482 3840 c
+	1475 3860 1479 3930 1488 3948 c
+	1505 3983 1541 3946 1560 3984 c
+	1565 3995 1553 4012 1554 4020 c
+	1556 4044 1585 4031 1596 4050 c
+	1601 4059 1591 4076 1596 4086 c
+	1608 4111 1643 4106 1650 4134 c
+	1656 4161 1622 4161 1614 4182 c
+	1609 4193 1623 4214 1626 4224 c
+	1631 4245 1619 4259 1626 4278 c
+	1634 4303 1662 4296 1674 4320 c
+	1678 4328 1675 4340 1680 4350 c
+	1758 4284 l
+	1872 4230 l
+	1892 4240 1910 4264 1932 4272 c
+	1961 4281 1977 4251 1998 4236 c
+	2013 4224 2033 4218 2046 4200 c
+	2063 4174 2062 4134 2082 4110 c
+	2098 4089 2137 4088 2154 4068 c
+	2179 4036 2154 3994 2208 3972 c
+	2261 3949 2261 4044 2298 4044 c
+	2324 4044 2322 3972 2352 3990 c
+	2375 4003 2353 4032 2364 4050 c
+	2376 4070 2430 4090 2412 4128 c
+	2406 4139 2325 4185 2316 4182 c
+	2291 4171 2260 4138 2232 4158 c
+	2154 4209 2240 4292 2202 4362 c
+	2190 4383 2161 4379 2142 4386 c
+	2120 4393 2106 4419 2088 4434 c
+	2068 4448 2020 4456 2010 4482 c
+	1998 4510 2060 4524 2052 4548 c
+	2042 4572 2010 4554 1998 4548 c
+	1980 4582 2064 4668 2082 4704 c
+	2093 4727 2097 4759 2112 4782 c
+	2124 4801 2146 4814 2154 4836 c
+	2158 4849 2152 4865 2160 4878 c
+	2176 4906 2210 4909 2232 4926 c
+	2260 4947 2257 4973 2274 4998 c
+	2286 5016 2310 5031 2322 5046 c
+	2345 5075 2376 5098 2406 5118 c
+	2424 5130 2459 5134 2472 5160 c
+	2482 5181 2458 5216 2484 5232 c
+	2513 5249 2509 5198 2538 5208 c
+	2578 5221 2677 5284 2688 5328 c
+	2697 5366 2610 5420 2580 5418 c
+	2519 5412 2522 5498 2538 5544 c
+	2554 5594 2610 5611 2646 5640 c
+	2671 5660 2755 5773 2796 5712 c
+	2800 5705 2795 5685 2796 5682 c
+	2859 5713 2917 5689 2982 5706 c
+	3026 5717 3087 5833 3030 5862 c
+	2990 5881 2946 5908 2898 5892 c
+	2866 5881 2849 5857 2808 5868 c
+	2782 5874 2766 5901 2742 5910 c
+	2718 5917 2708 5904 2688 5922 c
+	2738 5997 2778 5981 2862 5988 c
+	2876 5989 2905 6002 2922 5994 c
+	2960 5973 2962 5934 3012 5922 c
+	3039 5915 3089 5908 3120 5916 c
+	3128 5918 3151 5929 3162 5922 c
+	3175 5912 3162 5897 3168 5886 c
+	3174 5872 3202 5848 3216 5844 c
+	3249 5832 3285 5873 3318 5856 c
+	3343 5842 3328 5811 3336 5790 c
+	3350 5747 3437 5693 3486 5706 c
+	3521 5714 3538 5735 3570 5754 c
+	3623 5785 3694 5786 3750 5814 c
+	3803 5840 3824 5916 3882 5940 c
+	3896 5945 3974 5928 3984 5916 c
+	3998 5895 3984 5880 3978 5862 c
+	3968 5832 4000 5814 3990 5784 c
+	3983 5765 3970 5749 3966 5730 c
+	3962 5714 3974 5708 3972 5694 c
+	3968 5671 3951 5649 3948 5628 c
+	3943 5599 3958 5558 3948 5532 c
+	3929 5488 3927 5408 3948 5358 c
+	3984 5269 4073 5313 4140 5286 c
+	4177 5270 4238 5215 4254 5178 c
+	4263 5155 4238 5131 4248 5112 c
+	4257 5092 4310 5053 4332 5064 c
+	4348 5072 4357 5100 4350 5118 c
+	4332 5159 4327 5191 4314 5232 c
+	4306 5253 4321 5290 4296 5304 c
+	4270 5317 4252 5273 4224 5292 c
+	4202 5306 4143 5346 4158 5376 c
+	4174 5408 4214 5387 4242 5394 c
+	4291 5406 4341 5411 4392 5424 c
+	4428 5433 4473 5474 4518 5460 c
+	4542 5451 4586 5431 4614 5436 c
+	4646 5441 4717 5475 4758 5454 c
+	4776 5443 4770 5416 4776 5400 c
+	4784 5373 4799 5334 4812 5310 c
+	4839 5254 4876 5208 4908 5154 c
+	4922 5129 4925 5100 4944 5076 c
+	4964 5048 5008 5037 5022 5010 c
+	5037 4978 4964 4988 4986 4956 c
+	4995 4941 5017 4953 5028 4956 c
+	5061 4964 5122 5034 5160 5016 c
+	5207 4992 5235 4930 5280 4908 c
+	5304 4957 5201 5040 5166 5076 c
+	5136 5105 5111 5148 5076 5172 c
+	5033 5200 4999 5195 4968 5250 c
+	4925 5323 4890 5405 4830 5466 c
+	4815 5480 4799 5511 4782 5520 c
+	4760 5530 4739 5506 4722 5508 c
+	4677 5511 4610 5541 4566 5538 c
+	4529 5534 4505 5485 4476 5544 c
+	4525 5576 4573 5576 4626 5598 c
+	4650 5608 4667 5627 4692 5640 c
+	4710 5649 4728 5630 4746 5640 c
+	4765 5651 4770 5699 4794 5694 c
+	4818 5687 4842 5663 4866 5652 c
+	4934 5617 5002 5583 5070 5544 c
+	5258 5433 5462 5348 5652 5238 c
+	5729 5192 5813 5157 5892 5112 c
+	5918 5096 5968 5088 5988 5064 c
+	5998 5050 5995 5021 6000 5004 c
+	6014 4947 6021 4888 6036 4830 c
+	6094 4596 6133 4355 6192 4122 c
+	6304 3673 6361 3214 6474 2766 c
+	6506 2636 6525 2501 6558 2370 c
+	6566 2337 6596 2267 6582 2232 c
+	6563 2187 6509 2151 6480 2112 c
+	6395 1999 6290 1895 6204 1788 c
+	5990 1520 5746 1261 5538 984 c
+	5430 840 5297 719 5190 576 c
+	5082 432 4950 306 4842 162 c
+	4816 128 4767 43 4728 30 c
+	4697 19 4646 30 4614 30 c
+	4344 30 l
+	3456 30 l
+	2790 30 l
+	2718 30 2582 4 2520 36 c
+	2529 95 2607 82 2646 102 c
+	2680 119 2729 146 2766 156 c
+	2786 161 2804 144 2820 138 c
+	2838 130 2860 138 2880 132 c
+	2899 125 2913 107 2934 102 c
+	2964 94 2999 109 3030 102 c
+	3070 91 3132 91 3174 102 c
+	3266 125 3367 138 3462 162 c
+	3481 166 3542 165 3558 162 c
+	3573 158 3585 143 3606 150 c
+	3663 169 3721 196 3780 216 c
+	3811 226 3855 210 3882 204 c
+	3909 197 3968 198 3996 198 c
+	4103 198 4218 186 4314 210 c
+	4346 218 4376 195 4410 204 c
+	4447 213 4485 230 4524 240 c
+	4570 251 4625 248 4668 270 c
+	4697 284 4688 322 4716 336 c
+	4730 343 4745 339 4758 354 c
+	4772 369 4773 394 4794 408 c
+	4849 444 4907 503 4938 564 c
+	4944 576 4931 599 4938 612 c
+	4951 639 4994 627 5016 642 c
+	5047 662 5057 696 5076 720 c
+	5086 733 5106 732 5118 750 c
+	5139 781 5177 844 5190 882 c
+	5193 891 5184 909 5190 918 c
+	5213 956 5276 984 5304 1026 c
+	5316 1044 5309 1073 5322 1092 c
+	5345 1127 5370 1146 5394 1176 c
+	5419 1207 5465 1252 5484 1290 c
+	5495 1312 5472 1339 5502 1356 c
+	5513 1362 5539 1347 5550 1344 c
+	5538 1404 l
+	5580 1434 l
+	5640 1542 l
+	5649 1523 5637 1516 5640 1500 c
+	5642 1486 5726 1408 5742 1416 c
+	5807 1448 5845 1529 5886 1584 c
+	5921 1630 5962 1663 5988 1710 c
+	5999 1731 6032 1735 6048 1758 c
+	6070 1792 6060 1837 6078 1872 c
+	6092 1900 6127 1897 6144 1920 c
+	6160 1943 6174 1974 6192 1998 c
+	6204 2014 6230 2027 6240 2046 c
+	6253 2072 6254 2105 6276 2130 c
+	6293 2149 6315 2159 6330 2184 c
+	6341 2202 6331 2239 6342 2256 c
+	6348 2265 6363 2262 6372 2268 c
+	6392 2281 6418 2329 6426 2352 c
+	6436 2383 6410 2405 6402 2430 c
+	6394 2452 6403 2479 6396 2502 c
+	6384 2537 6350 2568 6342 2604 c
+	6334 2632 6349 2665 6342 2694 c
+	6330 2739 6323 2783 6306 2826 c
+	6299 2840 6309 2862 6312 2874 c
+	6319 2902 6309 2983 6300 3012 c
+	6292 3034 6249 3058 6252 3084 c
+	6259 3172 6290 3277 6246 3366 c
+	6230 3396 6193 3436 6162 3444 c
+	6122 3453 6083 3415 6048 3444 c
+	6031 3457 6030 3487 6018 3504 c
+	5954 3588 5912 3689 5880 3786 c
+	5873 3805 5847 3909 5856 3924 c
+	5862 3934 5879 3931 5886 3942 c
+	5908 3979 5880 4082 5880 4122 c
+	5880 4150 5900 4180 5892 4206 c
+	5873 4260 5886 4329 5868 4386 c
+	5861 4405 5837 4416 5826 4434 c
+	5802 4468 5767 4509 5748 4548 c
+	5730 4582 5726 4621 5706 4656 c
+	5662 4730 5563 4735 5496 4758 c
+	5476 4764 5460 4744 5442 4752 c
+	5410 4765 5354 4776 5328 4794 c
+	5312 4804 5302 4826 5286 4836 c
+	5256 4852 5221 4843 5190 4854 c
+	5098 4884 4986 4880 4890 4872 c
+	4870 4870 4868 4844 4854 4836 c
+	4841 4829 4819 4840 4806 4836 c
+	4793 4831 4739 4798 4734 4788 c
+	4722 4765 4771 4762 4782 4758 c
+	4800 4750 4817 4735 4836 4728 c
+	4868 4714 4915 4724 4950 4716 c
+	4991 4705 5035 4713 5070 4686 c
+	5112 4651 5136 4580 5190 4554 c
+	5213 4542 5244 4557 5268 4542 c
+	5315 4510 5312 4456 5328 4410 c
+	5335 4388 5367 4372 5358 4344 c
+	5349 4317 5320 4264 5304 4242 c
+	5275 4202 5238 4283 5214 4302 c
+	5134 4361 5030 4433 4932 4458 c
+	4913 4462 4890 4451 4872 4458 c
+	4836 4469 4800 4484 4764 4494 c
+	4739 4500 4697 4480 4680 4488 c
+	4563 4536 4455 4613 4332 4644 c
+	4281 4656 4215 4645 4170 4626 c
+	4152 4618 4133 4624 4122 4602 c
+	4109 4577 4093 4520 4104 4488 c
+	4112 4462 4162 4428 4140 4392 c
+	4131 4378 4104 4376 4092 4368 c
+	4056 4344 4025 4328 3990 4308 c
+	3976 4300 3940 4283 3960 4266 c
+	3979 4248 4032 4275 4062 4266 c
+	4111 4249 4154 4260 4212 4260 c
+	4227 4260 4259 4253 4266 4272 c
+	4265 4269 4270 4341 4272 4338 c
+	4265 4352 4244 4357 4236 4374 c
+	4265 4398 4274 4369 4302 4374 c
+	4326 4378 4356 4409 4386 4386 c
+	4400 4374 4384 4356 4392 4344 c
+	4400 4329 4424 4332 4434 4314 c
+	4448 4284 4393 4278 4380 4272 c
+	4440 4248 l
+	4476 4230 l
+	4512 4248 l
+	4704 4236 l
+	4794 4254 l
+	4962 4182 l
+	5040 4188 l
+	5112 4242 l
+	5208 4164 l
+	5244 4146 l
+	5262 4074 l
+	5322 3942 l
+	5424 3816 l
+	5448 3702 l
+	5460 3702 l
+	5472 3864 l
+	5544 3774 l
+	5556 3864 l
+	5616 3823 5583 3734 5604 3672 c
+	5609 3656 5644 3617 5634 3600 c
+	5623 3582 5616 3593 5604 3600 c
+	5582 3557 5627 3500 5640 3462 c
+	5652 3424 5620 3395 5628 3366 c
+	5633 3345 5651 3326 5658 3306 c
+	5671 3264 5629 3286 5616 3270 c
+	5590 3237 5562 3194 5562 3150 c
+	5562 3104 5569 3054 5580 3012 c
+	5596 2946 5561 2880 5592 2820 c
+	5626 2751 5668 2692 5646 2604 c
+	5637 2568 5630 2489 5610 2460 c
+	5602 2448 5581 2445 5574 2430 c
+	5564 2410 5580 2382 5568 2364 c
+	5528 2305 5436 2317 5400 2244 c
+	5380 2205 5311 2091 5400 2106 c
+	5408 2107 5421 2102 5430 2106 c
+	5475 2125 5497 2161 5532 2190 c
+	5550 2205 5575 2207 5592 2232 c
+	5603 2248 5604 2275 5616 2292 c
+	5632 2317 5661 2318 5682 2334 c
+	5718 2361 5715 2394 5730 2430 c
+	5739 2453 5765 2470 5772 2496 c
+	5782 2538 5751 2581 5760 2616 c
+	5769 2652 5823 2634 5808 2682 c
+	5803 2694 5790 2700 5784 2712 c
+	5771 2734 5784 2764 5778 2790 c
+	5756 2874 5724 2929 5754 3018 c
+	5764 3048 5715 3104 5748 3126 c
+	5776 3144 5809 3089 5814 3072 c
+	5827 3016 5807 2960 5826 2904 c
+	5840 2859 5890 2834 5910 2796 c
+	fk
+	1482 474 m
+	978 1116 l
+	1004 1138 1069 1121 1086 1152 c
+	1107 1190 1025 1208 1038 1260 c
+	1043 1283 1045 1316 1056 1338 c
+	1063 1353 1083 1372 1080 1392 c
+	1074 1424 1032 1473 1038 1506 c
+	1045 1550 1075 1594 1080 1644 c
+	1082 1671 1021 1745 1038 1770 c
+	1047 1784 1074 1777 1086 1800 c
+	1108 1845 1126 1900 1152 1944 c
+	1166 1969 1191 1991 1176 2022 c
+	1038 1866 l
+	1025 1890 1050 1915 1062 1938 c
+	1073 1961 1083 2001 1098 2022 c
+	1129 2064 1201 2083 1230 2124 c
+	1237 2135 1231 2153 1236 2166 c
+	1246 2197 1263 2238 1278 2268 c
+	1294 2300 1342 2321 1368 2340 c
+	1397 2362 1408 2400 1440 2424 c
+	1495 2465 1574 2487 1638 2514 c
+	1690 2535 1735 2576 1788 2598 c
+	1811 2607 1842 2604 1866 2616 c
+	1952 2659 2016 2728 2100 2784 c
+	2116 2795 2142 2790 2160 2802 c
+	2204 2831 2249 2895 2262 2946 c
+	2266 2962 2284 2990 2274 3012 c
+	2267 3025 2258 3025 2256 3042 c
+	2298 3063 2332 3012 2370 3000 c
+	2404 2988 2441 3023 2484 3006 c
+	2504 2997 2517 2970 2538 2964 c
+	2567 2954 2592 2975 2604 2928 c
+	2607 2912 2590 2904 2586 2892 c
+	2580 2876 2599 2864 2592 2850 c
+	2582 2831 2556 2837 2550 2820 c
+	2542 2798 2586 2781 2598 2772 c
+	2564 2721 2501 2663 2448 2628 c
+	2427 2614 2395 2623 2376 2610 c
+	2354 2595 2356 2571 2334 2556 c
+	2311 2541 2265 2523 2250 2502 c
+	2233 2479 2249 2452 2238 2430 c
+	2216 2386 2169 2355 2136 2322 c
+	2125 2311 2095 2298 2106 2280 c
+	2113 2266 2166 2256 2178 2250 c
+	2238 2346 l
+	2352 2424 l
+	2394 2526 l
+	2442 2544 l
+	2520 2604 l
+	2540 2562 2493 2522 2472 2490 c
+	2514 2468 2478 2420 2466 2382 c
+	2459 2361 2436 2361 2424 2346 c
+	2413 2333 2414 2311 2406 2298 c
+	2370 2244 2331 2191 2316 2130 c
+	2299 2065 2311 1951 2232 1932 c
+	2194 1922 2143 1976 2112 1956 c
+	2088 1940 2127 1920 2118 1902 c
+	2103 1872 2072 1839 2070 1806 c
+	2068 1790 2096 1776 2076 1758 c
+	2047 1732 1939 1740 1902 1734 c
+	1883 1730 1870 1754 1854 1746 c
+	1822 1728 1860 1696 1830 1680 c
+	1810 1669 1795 1697 1782 1704 c
+	1762 1713 1713 1686 1698 1680 c
+	1667 1667 1660 1634 1632 1620 c
+	1620 1614 1612 1625 1602 1614 c
+	1592 1603 1602 1580 1590 1572 c
+	1553 1547 1475 1568 1434 1548 c
+	1414 1538 1383 1483 1362 1494 c
+	1320 1514 1379 1554 1362 1590 c
+	1355 1603 1346 1654 1338 1662 c
+	1323 1674 1297 1660 1284 1674 c
+	1258 1699 1258 1768 1200 1734 c
+	1173 1718 1140 1652 1158 1620 c
+	1169 1599 1248 1579 1230 1536 c
+	1216 1504 1168 1511 1158 1488 c
+	1149 1469 1188 1395 1194 1374 c
+	1199 1353 1182 1347 1176 1332 c
+	1168 1314 1173 1249 1182 1236 c
+	1187 1227 1202 1229 1206 1218 c
+	1215 1190 1209 1163 1230 1140 c
+	1246 1121 1282 1133 1290 1104 c
+	1296 1078 1244 1058 1230 1044 c
+	1271 1002 1274 1053 1308 1038 c
+	1331 1027 1319 996 1326 978 c
+	1333 955 1350 914 1362 894 c
+	1372 875 1400 865 1410 846 c
+	1415 834 1406 815 1410 804 c
+	1420 772 1457 725 1440 684 c
+	1433 667 1420 652 1428 630 c
+	1441 590 1474 555 1488 516 c
+	1499 482 1487 467 1512 438 c
+	fk
+	6036 2622 m
+	6036 2610 l
+	fk
+	2940 1182 m
+	2874 1212 l
+	2906 1277 2989 1292 3024 1362 c
+	3040 1395 3004 1416 2988 1434 c
+	2975 1448 2978 1471 2958 1482 c
+	2927 1497 2883 1468 2862 1458 c
+	2850 1578 l
+	2820 1566 l
+	2801 1603 2841 1625 2838 1662 c
+	2833 1714 2795 1778 2826 1830 c
+	2832 1840 2844 1840 2850 1854 c
+	2857 1872 2864 1914 2886 1920 c
+	2897 1922 2960 1922 2970 1908 c
+	2985 1885 2921 1862 2952 1842 c
+	2977 1824 3027 1869 3042 1848 c
+	3082 1787 2949 1743 3036 1686 c
+	3056 1672 3087 1675 3108 1662 c
+	3121 1653 3129 1636 3144 1632 c
+	3162 1625 3181 1636 3198 1626 c
+	3216 1613 3219 1588 3240 1578 c
+	3251 1572 3267 1580 3276 1566 c
+	3283 1553 3267 1533 3282 1524 c
+	3305 1508 3363 1557 3396 1536 c
+	3453 1497 3410 1433 3390 1392 c
+	3377 1366 3420 1368 3414 1344 c
+	3391 1255 3261 1258 3198 1224 c
+	3177 1212 3180 1186 3156 1176 c
+	3117 1159 3058 1163 3024 1140 c
+	2998 1122 2974 1083 2946 1074 c
+	2904 1060 2865 1069 2826 1050 c
+	2792 1116 2886 1125 2922 1146 c
+	2940 1156 2953 1180 2970 1194 c
+	fk
+	2706 1488 m
+	2761 1515 2798 1435 2802 1398 c
+	2805 1358 2770 1311 2754 1278 c
+	2737 1245 2747 1214 2706 1194 c
+	2686 1184 2654 1202 2634 1194 c
+	2598 1179 2569 1158 2550 1206 c
+	2545 1215 2525 1235 2532 1248 c
+	2544 1273 2596 1287 2610 1314 c
+	2623 1341 2564 1357 2580 1386 c
+	2598 1420 2644 1412 2670 1428 c
+	2691 1441 2681 1475 2706 1488 c
+	fk
+	966 1128 m
+	978 1116 l
+	fk
+} bd
+/OutlineContinentTeal {
+	1002 2682 m
+	1027 2673 1044 2664 1044 2634 c
+	1008 2628 1011 2637 990 2670 c
+	1002 2682 l
+	fk
+	798 2298 m
+	760 2266 762 2279 732 2310 c
+	761 2324 778 2327 798 2298 c
+	fk
+} bd
+/OutlineContinentMagenta {
+	1374 4542 m
+	1394 4525 1400 4503 1422 4518 c
+	fk
+	1410 4500 m
+	1422 4488 l
+	fk
+	1500 4428 m
+	1518 4428 l
+	fk
+	1548 4398 m
+	1566 4374 l
+	fk
+	846 4074 m
+	828 4056 l
+	fk
+	816 4026 m
+	810 4014 l
+	fk
+	798 3984 m
+	792 3978 l
+	fk
+	858 2514 m
+	858 2508 l
+	fk
+	870 2484 m
+	876 2478 l
+	fk
+	858 2430 m
+	846 2412 l
+	fk
+	798 2400 m
+	804 2400 l
+	fk
+	834 2394 m
+	828 2382 l
+	fk
+	792 2376 m
+	792 2370 l
+	fk
+	810 2358 m
+	810 2328 l
+	fk
+} bd
+/OutlineConnectionMaroon {
+	3168 5880 m
+	3141 5848 3187 5774 3168 5736 c
+	3132 5664 3064 5618 3024 5550 c
+	3009 5524 2978 5509 2994 5478 c
+	fk
+	3396 5724 m
+	3330 5658 l
+	3264 5526 l
+	3234 5448 l
+	3078 5430 l
+	fk
+	3252 5448 m
+	3341 5448 3443 5538 3546 5496 c
+	3622 5464 3682 5385 3708 5310 c
+	3720 5272 3710 5229 3720 5190 c
+	3724 5172 3734 5135 3732 5118 c
+	3720 5046 3631 4963 3660 4878 c
+	3668 4853 3700 4819 3720 4800 c
+	fk
+	3102 5352 m
+	3074 5318 3026 5291 3006 5250 c
+	2998 5234 3002 5210 2994 5196 c
+	2982 5175 2960 5163 2952 5142 c
+	2944 5123 2953 5101 2946 5088 c
+	2917 5039 2830 5043 2784 5028 c
+	2748 5016 2652 4960 2634 4926 c
+	2622 4904 2629 4879 2628 4860 c
+	2626 4841 2599 4810 2604 4794 c
+	2615 4748 2668 4717 2694 4680 c
+	2713 4650 2738 4639 2754 4608 c
+	2758 4598 2756 4576 2772 4572 c
+	2779 4569 2800 4587 2808 4590 c
+	2847 4603 2900 4620 2934 4644 c
+	2951 4656 2964 4686 2988 4698 c
+	3005 4706 3029 4702 3048 4710 c
+	3069 4719 3087 4740 3108 4752 c
+	3127 4763 3153 4761 3174 4770 c
+	3199 4780 3219 4809 3246 4818 c
+	3266 4824 3285 4823 3306 4830 c
+	3347 4843 3379 4871 3432 4854 c
+	3454 4846 3449 4830 3456 4812 c
+	3466 4780 3491 4722 3516 4698 c
+	fk
+	3966 5322 m
+	3953 5283 3918 5243 3930 5196 c
+	3936 5169 3956 5094 3948 5070 c
+	3923 4997 3865 4967 3822 4902 c
+	3806 4878 3817 4847 3798 4824 c
+	fk
+	4998 4950 m
+	4984 4923 4952 4903 4968 4872 c
+	fk
+	4302 4878 m
+	4200 4776 l
+	4164 4710 l
+	fk
+	2214 4302 m
+	2269 4320 2336 4379 2352 4440 c
+	2363 4485 2349 4539 2364 4584 c
+	2376 4621 2437 4622 2454 4656 c
+	2483 4714 2522 4806 2604 4806 c
+	fk
+	2772 4572 m
+	2766 4506 l
+	2742 4410 l
+	2778 4380 l
+	2796 4284 l
+	2760 4206 l
+	2760 4170 l
+	2724 4116 l
+	2718 4062 l
+	2694 4038 l
+	2670 3948 l
+	2670 3888 l
+	2592 3840 l
+	2586 3786 l
+	2562 3768 l
+	2550 3678 l
+	2490 3576 l
+	fk
+	3000 3378 m
+	2993 3391 2964 3481 2970 3492 c
+	2982 3515 3060 3514 3084 3522 c
+	3099 3527 3110 3545 3126 3552 c
+	3146 3560 3172 3546 3192 3558 c
+	3336 3642 l
+	3354 3652 3386 3644 3402 3660 c
+	3444 3702 3388 3762 3414 3810 c
+	3427 3835 3450 3827 3450 3864 c
+	3450 3888 3420 3925 3432 3948 c
+	3448 3981 3496 4013 3528 4026 c
+	3551 4035 3595 4036 3612 4056 c
+	3619 4064 3613 4104 3618 4116 c
+	3639 4168 3649 4228 3678 4278 c
+	3689 4296 3706 4292 3720 4302 c
+	3763 4331 3789 4367 3840 4380 c
+	3859 4384 3882 4375 3900 4386 c
+	3921 4398 3972 4437 3984 4458 c
+	3990 4469 3991 4485 4008 4494 c
+	4029 4504 4085 4482 4110 4482 c
+	fk
+	3294 4338 m
+	3349 4291 3379 4338 3438 4338 c
+	3482 4338 3496 4311 3534 4302 c
+	3590 4287 3624 4316 3678 4272 c
+	fk
+	4968 4182 m
+	4968 4112 4995 4080 5028 4032 c
+	5044 4007 5086 4003 5094 3972 c
+	5096 3962 5081 3949 5088 3936 c
+	5104 3902 5136 3874 5148 3840 c
+	5155 3817 5143 3783 5154 3762 c
+	5158 3752 5185 3737 5184 3726 c
+	5177 3686 5088 3654 5064 3630 c
+	5172 3552 l
+	5160 3510 l
+	5130 3408 l
+	5178 3330 l
+	5184 3288 l
+	5220 3240 l
+	5220 3156 l
+	5274 3024 l
+	5274 2970 l
+	5322 2856 l
+	fk
+	1626 4098 m
+	1752 3996 l
+	fk
+	3612 4056 m
+	3639 4037 3665 4054 3696 4062 c
+	3736 4072 3773 4061 3804 4056 c
+	3825 4052 3849 4065 3870 4062 c
+	3931 4051 3972 4027 4032 4032 c
+	4080 4036 4118 4093 4176 4074 c
+	4237 4053 4252 3962 4338 3984 c
+	4420 4004 4486 4038 4578 4038 c
+	fk
+	4572 3900 m
+	4644 3876 l
+	4656 3840 l
+	4698 3828 l
+	4728 3756 l
+	fk
+	3420 3750 m
+	3452 3750 3512 3767 3540 3756 c
+	3562 3746 3575 3723 3594 3714 c
+	3607 3707 3645 3726 3666 3720 c
+	3682 3714 3691 3694 3714 3702 c
+	3729 3707 3747 3722 3768 3714 c
+	3781 3708 3796 3687 3810 3684 c
+	3841 3676 3881 3693 3894 3642 c
+	3896 3630 3888 3614 3888 3600 c
+	fk
+	5130 2958 m
+	5113 3008 5082 3057 5070 3108 c
+	5065 3124 5084 3139 5076 3156 c
+	5063 3180 5034 3171 5022 3192 c
+	5001 3223 4985 3253 4968 3288 c
+	4925 3373 4833 3424 4764 3342 c
+	4744 3380 4711 3426 4698 3468 c
+	4691 3488 4705 3501 4710 3516 c
+	4723 3557 4705 3610 4716 3654 c
+	4722 3681 4698 3738 4728 3756 c
+	fk
+	4740 3750 m
+	4756 3730 4767 3690 4788 3678 c
+	4864 3629 4966 3630 5064 3630 c
+	fk
+	5190 3714 m
+	5235 3714 5254 3693 5292 3684 c
+	5337 3672 5369 3694 5406 3648 c
+	5421 3628 5414 3585 5430 3564 c
+	5442 3546 5484 3522 5472 3492 c
+	5456 3455 5417 3485 5400 3456 c
+	5388 3436 5416 3412 5418 3396 c
+	5418 3385 5412 3340 5418 3330 c
+	5426 3312 5459 3317 5472 3300 c
+	5486 3280 5477 3256 5484 3240 c
+	5492 3219 5550 3194 5568 3186 c
+	fk
+	3984 3630 m
+	3996 3617 4002 3596 4014 3588 c
+	4026 3578 4047 3586 4062 3582 c
+	4122 3561 4213 3542 4236 3474 c
+	fk
+	1482 3534 m
+	1495 3550 1498 3567 1518 3582 c
+	1620 3658 1669 3509 1752 3468 c
+	1782 3510 l
+	fk
+	2634 3510 m
+	2682 3486 l
+	2742 3432 l
+	2721 3411 2689 3384 2664 3372 c
+	2626 3353 2504 3438 2490 3354 c
+	fk
+	2742 3432 m
+	2778 3432 2838 3444 2868 3462 c
+	2900 3480 2932 3517 2970 3486 c
+	fk
+	1746 3468 m
+	1746 3396 l
+	fk
+	4764 3342 m
+	4764 3303 4793 3293 4764 3258 c
+	fk
+	3834 2568 m
+	3834 2585 3847 2619 3840 2634 c
+	3808 2697 3695 2688 3666 2748 c
+	3656 2767 3678 2807 3666 2832 c
+	3637 2889 3583 2846 3540 2868 c
+	3516 2879 3491 2931 3480 2952 c
+	3469 2969 3449 2971 3438 2988 c
+	3426 3005 3418 3030 3408 3048 c
+	3384 3085 3321 3112 3300 3156 c
+	3292 3170 3297 3183 3288 3198 c
+	3348 3204 l
+	3504 3258 l
+	fk
+	3198 3180 m
+	3225 3202 3252 3198 3288 3198 c
+	fk
+	4410 3048 m
+	4332 2988 l
+	fk
+	1518 2454 m
+	1518 2397 1511 2335 1530 2280 c
+	1549 2222 1584 2168 1608 2112 c
+	1626 2068 1602 1982 1656 1956 c
+	1709 1929 1775 1984 1824 1968 c
+	fk
+	5370 2436 m
+	5389 2432 5400 2400 5424 2412 c
+	5487 2443 5509 2453 5580 2430 c
+	fk
+	4224 2370 m
+	4308 2226 l
+	4320 2178 l
+	4374 2196 l
+	4464 2250 l
+	4518 2274 l
+	4560 2352 l
+	4704 2304 l
+	4764 2322 l
+	fk
+	4092 2364 m
+	4044 2250 l
+	3924 2166 l
+	fk
+	5028 2358 m
+	5059 2320 5048 2249 5028 2208 c
+	5018 2189 4988 2180 4980 2166 c
+	4975 2158 4983 2143 4980 2136 c
+	4959 2095 4907 2075 4884 2046 c
+	4868 2026 4838 1975 4830 1950 c
+	4825 1936 4831 1919 4824 1908 c
+	4812 1889 4781 1882 4770 1860 c
+	4763 1847 4770 1814 4770 1800 c
+	fk
+	5646 2310 m
+	5654 2284 5676 2284 5688 2262 c
+	5720 2197 5654 2088 5622 2040 c
+	5604 2013 5572 2015 5550 1998 c
+	5457 1928 5346 1842 5442 1728 c
+	fk
+	4320 2178 m
+	4320 2130 4325 2069 4308 2028 c
+	4286 1976 4215 1943 4176 1914 c
+	4135 1883 4093 1829 4062 1794 c
+	4019 1746 4078 1671 4020 1632 c
+	4092 1590 l
+	4158 1590 l
+	4254 1518 l
+	fk
+	1644 1962 m
+	1622 1940 1578 1921 1578 1890 c
+	1578 1846 1630 1868 1656 1860 c
+	1705 1843 1807 1836 1836 1794 c
+	1843 1782 1841 1764 1848 1752 c
+	fk
+	4998 1956 m
+	5035 1931 5005 1916 5022 1884 c
+	5042 1843 5095 1784 5136 1764 c
+	5170 1746 5207 1781 5232 1794 c
+	5271 1813 5324 1810 5364 1830 c
+	5382 1839 5384 1856 5406 1860 c
+	fk
+	1236 1932 m
+	1314 1938 l
+	1398 1896 l
+	1578 1890 l
+	fk
+	4878 1776 m
+	4878 1733 4842 1729 4830 1692 c
+	4823 1671 4832 1652 4812 1638 c
+	4788 1621 4722 1607 4710 1578 c
+	4700 1554 4729 1531 4710 1500 c
+	4685 1461 4659 1529 4638 1494 c
+	4627 1475 4626 1446 4614 1428 c
+	4592 1395 4555 1370 4536 1332 c
+	4525 1310 4557 1301 4542 1278 c
+	4512 1233 4480 1224 4464 1176 c
+	fk
+	3066 1668 m
+	2988 1578 l
+	2970 1470 l
+	fk
+	3912 1632 m
+	4020 1632 l
+	fk
+	2994 1584 m
+	3028 1555 3086 1533 3108 1482 c
+	3117 1458 3096 1417 3096 1392 c
+	3096 1327 3102 1235 3132 1176 c
+	fk
+	3840 1284 m
+	3840 1245 3862 1167 3846 1134 c
+	3823 1088 3725 1026 3684 1002 c
+	3666 991 3643 963 3624 960 c
+	3548 947 3438 992 3360 966 c
+	3289 942 3193 917 3132 876 c
+	fk
+	1080 1152 m
+	1129 1110 1176 1128 1230 1146 c
+	fk
+	4284 1110 m
+	4277 1096 4280 1074 4272 1062 c
+	4259 1043 4233 1048 4218 1038 c
+	4194 1022 4186 998 4164 984 c
+	4123 956 4051 960 4002 948 c
+	3979 942 3963 917 3942 912 c
+	3928 908 3900 920 3888 924 c
+	3845 934 3814 900 3780 900 c
+	3766 900 3759 910 3744 900 c
+	3653 839 3706 715 3624 660 c
+	fk
+	3624 954 m
+	3702 852 l
+	fk
+	2718 342 m
+	2727 397 2812 435 2862 402 c
+	2890 383 2897 349 2910 324 c
+	fk
+} bd
+/OutlineBorderOlive {
+	2616 5256 m
+	2679 5213 2747 5217 2814 5256 c
+	2836 5269 2838 5294 2862 5310 c
+	2888 5327 2937 5342 2958 5370 c
+	2990 5414 2952 5468 3018 5496 c
+	3074 5519 3087 5454 3084 5412 c
+	3083 5401 3072 5386 3078 5376 c
+	3082 5367 3110 5338 3120 5334 c
+	3145 5321 3187 5334 3216 5334 c
+	3242 5334 3273 5309 3300 5316 c
+	3329 5323 3397 5375 3432 5358 c
+	3443 5352 3449 5338 3462 5334 c
+	3497 5322 3540 5322 3564 5286 c
+	3577 5264 3619 5218 3624 5190 c
+	3626 5173 3607 5155 3612 5136 c
+	3619 5105 3627 5077 3612 5046 c
+	3594 5010 3520 4948 3540 4902 c
+	3552 4872 3561 4816 3582 4794 c
+	3591 4783 3624 4760 3618 4740 c
+	3605 4701 3528 4712 3504 4680 c
+	3478 4645 3475 4589 3450 4554 c
+	3435 4534 3406 4531 3390 4518 c
+	3375 4506 3370 4478 3360 4464 c
+	3350 4450 3333 4448 3324 4434 c
+	3311 4415 3327 4387 3318 4368 c
+	3298 4328 3258 4296 3234 4260 c
+	3224 4246 3209 4209 3204 4194 c
+	3200 4182 3210 4162 3204 4152 c
+	3183 4117 3146 4079 3126 4038 c
+	3118 4023 3135 4011 3132 3996 c
+	3126 3972 3118 3939 3108 3918 c
+	3091 3885 3029 3887 3006 3852 c
+	2993 3832 2991 3805 2982 3786 c
+	2971 3764 2940 3759 2928 3738 c
+	2919 3722 2922 3709 2904 3696 c
+	2874 3673 2856 3714 2820 3702 c
+	2799 3695 2771 3677 2754 3666 c
+	2726 3647 2684 3622 2670 3594 c
+	2657 3568 2669 3527 2634 3516 c
+	2591 3501 2598 3527 2574 3546 c
+	2531 3577 2491 3570 2442 3570 c
+	2422 3570 2402 3583 2382 3570 c
+	2354 3551 2333 3471 2292 3492 c
+	2234 3520 2233 3634 2220 3690 c
+	2216 3704 2228 3738 2220 3750 c
+	2213 3758 2171 3762 2160 3762 c
+	fk
+	4326 5058 m
+	4328 5041 4343 5014 4338 4998 c
+	4323 4955 4281 4918 4308 4866 c
+	4349 4879 4411 4843 4452 4830 c
+	4495 4815 4543 4843 4584 4830 c
+	4633 4813 4684 4798 4734 4782 c
+	fk
+	3624 4728 m
+	3683 4708 3710 4817 3762 4830 c
+	3814 4843 3813 4781 3858 4770 c
+	3900 4759 3956 4801 3996 4788 c
+	4016 4781 4016 4757 4032 4746 c
+	4063 4723 4148 4743 4170 4704 c
+	4175 4693 4161 4685 4164 4674 c
+	4168 4657 4184 4650 4188 4632 c
+	fk
+	5886 4356 m
+	5958 4380 l
+	6024 4380 l
+	6114 4404 l
+	fk
+	4710 4236 m
+	4710 4169 4649 4180 4626 4134 c
+	4608 4098 4607 4076 4584 4044 c
+	4568 4022 4596 4007 4590 3990 c
+	4584 3975 4565 3976 4560 3960 c
+	4553 3940 4575 3927 4578 3912 c
+	4580 3898 4549 3842 4536 3834 c
+	4503 3812 4464 3816 4428 3804 c
+	4401 3795 4376 3776 4350 3768 c
+	4330 3761 4306 3783 4284 3774 c
+	4253 3761 4225 3730 4194 3720 c
+	4181 3715 4163 3719 4152 3714 c
+	4137 3706 4130 3688 4116 3684 c
+	4101 3679 4075 3685 4062 3678 c
+	4047 3669 4048 3654 4032 3648 c
+	4002 3635 3959 3645 3936 3636 c
+	3919 3628 3910 3602 3894 3594 c
+	3881 3587 3858 3600 3846 3594 c
+	3817 3579 3803 3549 3786 3528 c
+	fk
+	2232 3966 m
+	2232 3906 2262 3800 2220 3750 c
+	fk
+	3126 3336 m
+	3246 3336 3359 3379 3456 3444 c
+	3495 3470 3512 3531 3546 3558 c
+	3584 3588 3648 3570 3690 3564 c
+	fk
+	4140 3312 m
+	4140 3336 4130 3376 4140 3396 c
+	4148 3412 4221 3462 4242 3456 c
+	4272 3445 4303 3397 4320 3378 c
+	4332 3362 4350 3368 4362 3354 c
+	4408 3295 4429 3180 4356 3144 c
+	4367 3126 4358 3106 4368 3090 c
+	4394 3041 4473 3028 4500 2982 c
+	4527 2934 4545 2842 4608 2832 c
+	4652 2824 4632 2906 4638 2922 c
+	4644 2940 4638 2974 4644 2988 c
+	4653 3010 4689 3030 4680 3060 c
+	4676 3071 4651 3078 4650 3090 c
+	4651 3083 4653 3163 4650 3156 c
+	4681 3231 4766 3289 4812 3198 c
+	4827 3166 4793 3123 4812 3090 c
+	4821 3072 4844 3070 4848 3048 c
+	4859 2980 4848 2913 4854 2844 c
+	4855 2822 4883 2795 4872 2772 c
+	4863 2755 4838 2746 4830 2730 c
+	4819 2709 4822 2679 4812 2658 c
+	4801 2636 4781 2620 4770 2598 c
+	4755 2568 4791 2532 4794 2508 c
+	4800 2433 4733 2366 4788 2298 c
+	4794 2290 4790 2274 4800 2268 c
+	4814 2258 4837 2277 4848 2280 c
+	4897 2292 4902 2325 4944 2346 c
+	4962 2355 4991 2347 5010 2358 c
+	5030 2369 5024 2401 5034 2418 c
+	5046 2438 5072 2436 5082 2454 c
+	5102 2492 5084 2528 5094 2568 c
+	5103 2605 5133 2646 5118 2694 c
+	5113 2706 5099 2712 5094 2724 c
+	5072 2766 5086 2871 5106 2910 c
+	5109 2916 5129 2949 5136 2952 c
+	5148 2956 5191 2929 5202 2922 c
+	5247 2891 5309 2884 5340 2832 c
+	5351 2811 5364 2764 5370 2742 c
+	5374 2724 5353 2696 5364 2676 c
+	5376 2650 5407 2592 5400 2562 c
+	5393 2535 5366 2498 5364 2472 c
+	5363 2465 5376 2442 5376 2436 c
+	5373 2402 5325 2370 5310 2340 c
+	5305 2330 5314 2313 5310 2304 c
+	5294 2273 5247 2263 5226 2232 c
+	5211 2210 5202 2181 5190 2160 c
+	5173 2131 5133 2109 5112 2088 c
+	5103 2079 5101 2061 5094 2052 c
+	5073 2024 5033 2007 5010 1986 c
+	4960 1941 4936 1872 4896 1824 c
+	4887 1814 4878 1779 4866 1776 c
+	4838 1768 4791 1807 4770 1800 c
+	4753 1794 4739 1774 4722 1770 c
+	4698 1764 4670 1779 4644 1764 c
+	4598 1737 4552 1692 4512 1662 c
+	4456 1620 4447 1571 4416 1518 c
+	4391 1476 4326 1471 4308 1434 c
+	4288 1394 4316 1343 4302 1308 c
+	4283 1263 4231 1145 4290 1116 c
+	4302 1194 l
+	4362 1182 l
+	4446 1188 l
+	4566 1086 l
+	4722 1104 l
+	fk
+	1986 2688 m
+	1988 2684 2001 2664 2004 2664 c
+	2013 2662 2094 2681 2106 2688 c
+	2130 2701 2128 2738 2172 2724 c
+	2235 2702 2314 2653 2370 2616 c
+	fk
+	1866 2604 m
+	1866 2558 1901 2544 1920 2508 c
+	1933 2481 1920 2445 1932 2418 c
+	1950 2374 1997 2285 1980 2232 c
+	1964 2186 1935 2131 1914 2088 c
+	1899 2058 1866 2039 1854 2010 c
+	1847 1995 1814 1975 1824 1956 c
+	1835 1932 1852 1942 1872 1938 c
+	1917 1926 1950 1923 1992 1920 c
+	2008 1918 2019 1945 2034 1920 c
+	2041 1906 2025 1893 2022 1884 c
+	2015 1865 2024 1834 2016 1818 c
+	2000 1786 1979 1789 1992 1752 c
+	fk
+	1212 2100 m
+	1231 2040 1260 1962 1242 1890 c
+	1228 1834 1169 1800 1200 1740 c
+	fk
+	3810 1836 m
+	3840 1805 3832 1779 3852 1752 c
+	3863 1736 3877 1746 3888 1734 c
+	3899 1721 3912 1672 3918 1656 c
+	3933 1608 3892 1600 3876 1572 c
+	3867 1557 3884 1540 3888 1530 c
+	3902 1485 3914 1399 3966 1374 c
+	3975 1369 4016 1344 4026 1344 c
+	4035 1343 4052 1364 4062 1368 c
+	4102 1381 4131 1407 4164 1440 c
+	4189 1465 4234 1532 4278 1518 c
+	4303 1509 4295 1461 4314 1440 c
+	fk
+	4026 1344 m
+	4013 1268 3912 1284 3858 1284 c
+	3831 1284 3803 1281 3780 1272 c
+	3768 1267 3759 1247 3744 1254 c
+	3730 1259 3722 1274 3708 1278 c
+	3682 1284 3651 1264 3630 1272 c
+	3621 1274 3615 1287 3606 1290 c
+	3592 1293 3578 1275 3564 1284 c
+	3548 1293 3551 1310 3528 1314 c
+	fk
+	5154 816 m
+	5232 732 l
+	5292 714 l
+	fk
+	3240 678 m
+	3274 666 3318 653 3354 648 c
+	3380 643 3418 659 3450 654 c
+	3468 650 3481 636 3504 642 c
+	3528 648 3576 666 3600 666 c
+	3618 666 3633 637 3654 636 c
+	3742 628 3852 673 3906 594 c
+	fk
+} bd
+/OutlineContinentNavy {
+	3708 3600 m
+	3780 3522 l
+	3822 3480 l
+	3846 3414 l
+	3868 3436 3874 3463 3906 3474 c
+	3928 3481 3994 3455 3978 3426 c
+	3961 3395 3834 3399 3912 3342 c
+	3986 3286 4038 3332 4122 3312 c
+	4155 3303 4200 3268 4224 3240 c
+	4252 3205 4220 3158 4236 3120 c
+	4244 3098 4270 3085 4284 3066 c
+	4293 3052 4286 3031 4296 3018 c
+	4312 2993 4344 2983 4362 2958 c
+	4381 2928 4401 2884 4410 2850 c
+	4428 2775 4412 2746 4386 2682 c
+	4375 2655 4377 2621 4362 2598 c
+	4339 2564 4321 2588 4296 2574 c
+	4282 2566 4263 2533 4254 2520 c
+	4237 2495 4234 2446 4230 2418 c
+	4227 2403 4234 2373 4212 2370 c
+	4204 2368 4174 2388 4164 2388 c
+	4138 2388 4115 2365 4092 2358 c
+	4054 2414 4114 2492 4134 2550 c
+	4138 2562 4132 2574 4140 2586 c
+	4149 2599 4182 2617 4182 2634 c
+	4182 2652 4122 2668 4140 2694 c
+	4148 2707 4165 2695 4176 2712 c
+	4185 2727 4203 2806 4194 2826 c
+	4178 2856 4091 2930 4062 2940 c
+	4041 2946 4017 2934 4002 2952 c
+	3958 3001 3976 3106 3900 3132 c
+	3814 3160 3768 3033 3702 3078 c
+	3657 3107 3640 3163 3606 3192 c
+	3580 3212 3513 3234 3498 3258 c
+	3490 3268 3493 3323 3498 3330 c
+	3516 3359 3551 3327 3570 3318 c
+	3639 3283 3679 3274 3756 3294 c
+	3781 3300 3796 3286 3804 3318 c
+	3819 3378 3776 3372 3750 3402 c
+	3715 3440 3682 3548 3708 3600 c
+	fk
+} bd
+/OutlineBorderPurple {
+	3924 3114 m
+	4242 3114 l
+	fk
+} bd
+/OutlineBorderGrey {
+	5274 4920 m
+	5274 4836 l
+	fk
+	4110 2370 m
+	4116 2220 l
+	4014 2142 l
+	fk
+	1044 1320 m
+	1176 1320 l
+	fk
+	5142 504 m
+	5130 492 l
+	fk
+	5076 426 m
+	5070 420 l
+	fk
+} bd
+/OutlineBorderLightgrey {
+	1866 4242 m
+	1818 4092 l
+	fk
+	3978 2544 m
+	4122 2520 l
+	fk
+} bd
+/ShapeSides {
+	572 1069 m
+	999 845 l
+	1098 373 l
+	789 5 l
+	305 5 l
+	6 386 l
+	123 854 l
+	p
+	fk
+} bd
+/ShapeBridges {
+	478 50 t -90 o 20 .5 m 4 .5 l 4 4 l 0 0 l 4 -4 l 4 -.5 l 20 -.5 l 20 -4 l 24 0 l 20 4 l p 90 o -478 -50 t
+	fk
+} bd
+/ShapeHops {
+	264 726 t -42.88 o 19.1 .5 m 0 .5 l 0 -.5 l 19.1 -.5 l p 42.88 o -264 -726 t
+	196 719 t -152.59 o 30.41 .5 m 0 .5 l 0 -.5 l 30.41 -.5 l p 152.59 o -196 -719 t
+	243 718 t -64.86 o 54.13 .5 m 0 .5 l 0 -.5 l 54.13 -.5 l p 64.86 o -243 -718 t
+	179 433 t -49.67 o 69.53 .5 m 0 .5 l 0 -.5 l 69.53 -.5 l p 49.67 o -179 -433 t
+	162 438 t -126.87 o 20 .5 m 0 .5 l 0 -.5 l 20 -.5 l p 126.87 o -162 -438 t
+	166 378 t -28.07 o 51 .5 m 0 .5 l 0 -.5 l 51 -.5 l p 28.07 o -166 -378 t
+	156 369 t -41.53 o 46.75 .5 m 0 .5 l 0 -.5 l 46.75 -.5 l p 41.53 o -156 -369 t
+	fk
+} bd
+{
+	currentdict end 3 1 roll [ exch /setgray load ] cvx def begin
+}{
+	currentdict end 5 1 roll [ 4 1 roll /setrgbcolor load ] cvx def begin
+}{
+	currentdict end 6 1 roll [ 5 1 roll /setcmykcolor load ] cvx def begin
+} bind VisitColors
+s
+MapUnitLetterFont z
+{
+	exch load exch load
+	2 index [ exch n 0 0 m true charpath pathbbox 3 2 roll add -2 div 3 1 roll add -2 div exch ] 3 1 roll
+	4 dict begin /Contrast xd /Paint xd /Offset xd /Letter xd currentdict end
+	[ /Power 3 2 roll { dup /Controlled ChangeController put ChangeController { dup /Outer Power /Paint get put /ChangeController false def } if } /exec load /def load ] cvx
+	currentdict end 3 1 roll def begin
+} VisitPowers
+r
+/ChangeController false def
+/BRITAINCENTER /BRITAIN ld
+/CHINACENTER /CHINA ld
+/FRANCECENTER /FRANCE ld
+/GERMANYCENTER /GERMANY ld
+/JAPANCENTER /JAPAN ld
+/USACENTER /USA ld
+/USSRCENTER /USSR ld
+/INDIACENTER /INDIA ld
+/UNOWNEDCENTER /UNOWNED ld
+{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind
+VisitSupplies
+%%EndSetup

@@ -25,6 +25,7 @@ class Power:
 			text += '\nINHABITS ' + ' '.join(self.homes)
 		if self.centers: text += '\nOWNS ' + ' '.join(self.centers)
 		if self.sees: text += '\nSEES ' + ' '.join(self.sees)
+		if self.hides: text += '\nHIDES ' + ', '.join(self.hides)
 		if self.balance != None: self.funds['$'] = self.balance
 		if self.funds:
 			text += '\nFUNDS'
@@ -57,7 +58,7 @@ class Power:
 			wait = balance = homes = vote = None
 			held = adjusted = goner = 0
 			centers, units, adjust, ceo = [], [], [], []
-			retreats, funds, sees = {}, {}, []
+			retreats, funds, sees, hides = {}, {}, [], []
 		vars(self).update(locals())
 	#	----------------------------------------------------------------------
 	def compare(self, other):

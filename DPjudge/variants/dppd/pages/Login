@@ -58,10 +58,12 @@ if 'newGame' in vars(page):
 		email = page.dppd.db.fetchone()['address']
 	else: email = page.email
 	back = 'window.history.back();'
-	text = Status().createGame(email, page.newGame, page.newPass, page.newVariant)
+	text = Status().createGame(email, 
+		page.newGame, page.newPass, page.newVariant)
 	if not text:
 		text = 'Your game has been created.'
-		updateText = 'JUDGE:USDP|GAME:%s|ZONE:GMT|' % page.newGame + \
+		updateText = 'JUDGE:%s|GAME:%s|ZONE:GMT|' % (
+			host.dpjudgeID, page.newGame) + \
 			'STATUS:%s:PREPARATION|MASTER:%s:#%s' % (
 			page.newVariant, page.newPass, id)
 		page.dppd.updateGame(updateText)
