@@ -87,7 +87,7 @@ class Page:
 						  .replace('<ID>',		host.dpjudgeID)
 						  .replace('<MAIL>',	host.dpjudge)
 						  .replace('<PKG>',		host.packageDir)
-						  .replace('<DPPD>',	host.dppdURL)
+						  .replace('<DPPD>',	host.dppdURL or '')
 						  .replace('<POUCH>',	'http://www.diplom.org'))
 			inCode = not inCode
 			if inCode: self.write(stuff)

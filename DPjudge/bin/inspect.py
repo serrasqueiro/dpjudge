@@ -23,10 +23,10 @@ class Inspect:
 			will make maps for the game "denarius" and will NOT leave
 			you in the Python interpreter
 		inspect denarius "denarius.makeMaps()"
-			will make maps for the game "denarius" and WILL NOT leave you
+			will make maps for the game "denarius" and WILL leave you
 			in the Python interpreter for further commands
 		inspect denarius. "self.makeMaps()"
-			will make maps for the game "denarius" and WILL leave you
+			will make maps for the game "denarius" and WILL NOT leave you
 			in the Python interpreter for further commands
 		inspect . host.dpjudge
 			will print the dpjudge address and WILL NOT leave you
@@ -35,36 +35,29 @@ class Inspect:
 			will print the dpjudge address and WILL leave you
 			in the Python interpreter for further commands
 	"""
-	command, interp = ['from DPjudge import *'], 'i'
+	interp, command  = 'i', [
+		'import sys', "sys.argv[:0] = ['%s']" % sys.argv[0],
+		'from DPjudge.bin.inspector import *', 'inspect = Inspector()'
+		]
 	if len(sys.argv) > 1:
 		arg1 = sys.argv[1]
-		game = arg1.split('.')[0].split('@')[0]
-		interp = interp * ('.' not in arg1 and len(sys.argv) == 2)
-		if game:
-			gameVar = game
-			if game[0].isdigit():
-				gameVar = 'G' + gameVar
-				sys.argv = [x.replace(game, gameVar) for x in sys.argv]
+		gameName = arg1.split('.')[0].split('@')[0]
+		interp = interp * ('.' not in arg1)
+		if gameName:
 			command.extend([
-				'import re',
-				'%s = self = Status().load(%s)' % (gameVar, `game`),
-				"_x_ = locals().update(dict([['%s%s' % ("
-				"'P'*_x_.name[0].isdigit(), re.sub("
-				"r'\W', '_', _x_.name.lower())), _x_"
-				"] for _x_ in self and self.powers or []]))",
-				"del locals()['_x_']",
-				"print '\n'.join(self and self.error or [])",
-				"print 'Loaded', ('game %s','no game')[not self]" % gameVar])
+				"inspect.load('%s')" % gameName])
 		command.extend([
-			'print ' + ' '.join(sys.argv[(
-			'.' not in arg1 or not arg1.split('.')[1]) + 1:])])
+			'print ' + ' '.join([
+			"inspect.eval('%s')" % x for x in sys.argv[(
+			'.' not in arg1 or not arg1.split('.')[1]) + 1:]])])
 	os.system("%sPYTHONPATH=%s %s python -%sOc %s" %
 		('set '*(os.name == 'nt'), os.path.dirname(host.packageDir),
 		('/usr/bin/env', '&')[os.name == 'nt'], interp,
 		'"' + `';'.join(command)`[1:-1] + '"'))
-	raise SystemExit
+	os._exit(os.EX_OK)
 
 #	-----------------------
 #	Examine/Update any game
 #	-----------------------
-Inspect()
+if __name__ == '__main__':
+	Inspect()

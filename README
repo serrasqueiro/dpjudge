@@ -1,0 +1,4 @@
+See the explanation in DPjudge/setup/ukdp.py for a description of the
+installation of a DPjudge, in particular the UKDP.
+The files mentioned there are in the same setup folder, with names
+that include the path where these files were installed.

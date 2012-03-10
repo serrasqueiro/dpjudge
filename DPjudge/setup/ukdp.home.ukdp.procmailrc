@@ -1,0 +1,74 @@
+#   =======================================================================
+#   This file must have permissions 644, and $HOME (probably) must have 755
+#   -----------------------------------------------------------------------
+SHELL=/bin/sh
+PATH=.:/home/ukdp/bin:/bin:/usr/bin:/usr/local/bin:/usr/sbin:/usr/lib
+LOGFILE=/home/ukdp/ukdp/log/procmail.log
+#LOGFILE=/dev/null
+VERBOSE=on
+MAIL=/var/mail/ukdp
+
+#   =====================================================================
+#	Any bounces that come back to us are bouncing like crazy.  Stop them.
+#   ---------------------------------------------------------------------
+
+# too many messages JOL game list, added on Feb 13 2008
+# removed on Mar 3rd
+#:0
+#* ^From opening@diplom.org
+#/dev/null
+
+# inversed test so I don't duplicate the action: a or b = not (not a and not b) 
+
+:0
+* ! ^Subject: DPjudge e-mail bounce!!
+* ! ^X-Loop
+* ! ^X-Mailing-List
+* ! *Predecence: list
+* ! ^Predecence: bulk
+* ! ^X-NJudge: YES
+{ }
+
+:0 E
+| (cat >> /home/ukdp/ukdp/log/pm-loops.log)
+
+#   =====================================================================
+#   First, catch all responses from the mailer daemon (bad addresses) and
+#   stick them in the mail folder (maybe forward them to the judgekeeper)
+#   ---------------------------------------------------------------------
+:0
+* ^From .*MAILER-DAEMON
+#/dev/null
+/home/ukdp/ukdp/log/daemon.log
+
+
+# We shouldn't be getting mail from ourselves
+:0
+* ^From: .*ukdp@
+/dev/null
+
+
+#   ===================================================================
+#   Send everything else to the dpjudge for handling.  This will parse
+#   Ken Lowe judge results when they come in, updating game status file
+#   accordingly, and handle all mail that is sent to the dpjudge e-mail
+#   address (press messages and other directives).
+#   -------------------------------------------------------------------
+
+# note to manus: don't remove locks without another locking mechanism
+# note to alain: I know 300 seconds seems too long, but sometimes making
+# all the player-specific maps for an imperial (chaos, void, etc.) blind
+# game takes longer than a minute
+:0 H: /tmp/ukdp.lock
+* ^To:.*(ukdp|judge|dppd)@
+|(cd /home/ukdp/ukdp; /usr/bin/timelimit -t 300 bin/mail > output.email 2>&1)
+
+#   =======================================================================
+
+#   ----------------------------------
+#   Everything else goes to my mailbox
+#   ----------------------------------
+:0
+#! "manus@diplom.org"
+#/dev/null
+/home/ukdp/ukdp/log/pm-incoming_errors

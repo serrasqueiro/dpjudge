@@ -1,0 +1,43 @@
+#	--------------------------------------------------------------
+#	After any modification, run "sudo /etc/init.d/apache2 restart"
+#	to get Apache to restart gracefully and read this in.
+#	--------------------------------------------------------------
+
+<VirtualHost *:80>
+	ServerAdmin webmaster@localhost
+
+	DocumentRoot /home/ukdp/ukdp/web
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride None
+	</Directory>
+	Alias /maps /home/ukdp/ukdp/web/maps
+	#Alias /docs /home/ukdp/ukdp/web/docs
+	Alias /images /home/ukdp/ukdp/web/images
+	<Directory /home/ukdp/ukdp/web/>
+		DirectoryIndex index.cgi index.html
+		Options Indexes FollowSymLinks MultiViews ExecCGI
+		AddHandler cgi-script .cgi
+		AllowOverride None
+		Order allow,deny
+		allow from all
+	</Directory>
+
+	ErrorLog /home/ukdp/ukdp/log/apache2error.log
+
+	# Possible values include: debug, info, notice, warn, error, crit,
+	# alert, emerg.
+	LogLevel warn
+
+	CustomLog /home/ukdp/ukdp/log/apache2access.log combined
+
+    Alias /doc/ "/usr/share/doc/"
+    <Directory "/usr/share/doc/">
+        Options Indexes MultiViews FollowSymLinks
+        AllowOverride None
+        Order deny,allow
+        Deny from all
+        Allow from 127.0.0.0/255.0.0.0 ::1/128
+    </Directory>
+
+</VirtualHost>
