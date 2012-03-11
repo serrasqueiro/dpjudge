@@ -34,7 +34,8 @@ class Check(DPjudge.Status):
 				elif game.error:
 					print game.name, 'has ERRORS ... notifying the Master'
 					for addr in game.master[1].split(','):
-						mail = Mail(addr, 'Diplomacy ERRORS (%s)' % game.name)
+						mail = DPjudge.Mail(addr,
+							'Diplomacy ERRORS (%s)' % game.name)
 						mail.write('The game %s on %s has the following errors '
 							'in its status file:\n\n%s\n\nLog in at\n'
 							'   %s?game=%s\nto correct the errors!\n\n'
@@ -48,7 +49,7 @@ class Check(DPjudge.Status):
 					print game.name, 'is in the %s state' % state,
 					print '... reminding the Master'
 					for addr in game.master[1].split(','):
-						mail = Mail(addr,
+						mail = DPjudge.Mail(addr,
 							'Diplomacy game reminder (%s)' % game.name)
 						mail.write('GameMaster:\n\nThe game %s on %s is '
 							'still in the %s state.\n\nVisit the game at\n'
@@ -91,7 +92,7 @@ class Check(DPjudge.Status):
 				try: game.process(now = 1)
 				except: pass
 				if game.await:
-					mail = Mail(host.judgekeeper,
+					mail = DPjudge.Mail(host.judgekeeper,
 						'Diplomacy adjudication error! (%s)' % game.name)
 					mail.write('JudgeKeeper:\n\nThe game %s on %s\n'
 						'encountered an error during adjudication\n'
