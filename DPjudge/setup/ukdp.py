@@ -14,19 +14,92 @@ clone, go back to the home directory and tell clone to rename dpjudge to
 site-packages:
 > cd ~
 > hg clone https://woelpad@code.google.com/p/dpjudge/ site-packages
+This would also be a good time to identify ourselves to Mercurial. Next time
+we commit something it will know who the author is. To do this, I added the
+following to site-packages/.hg/hgrc:
+---
+[ui]
+username = ukdp <ukdp@uk.diplom.org>
+---
+There, source downloaded and ready to edit. Now let's set up the judge proper.
 
-After following my own instructions in the first mail, I copied the inspect 
-script in $JDG/bin to check, mail and reopen (I wonder why usdp renamed the 
-latter to "reOpen") and altered the last word in each ("inspect") to the 
-respective script names. I changed the path name in $JDG/web/index.cgi and 
-then edited $JDG/host.py, replacing path names, urls and mail addresses as I 
-saw fit. A .vimrc that ensures that tab stops are 4 spaces was added.
+Let's start with the structure of the judge folder (that what is not part
+of the project). BTW, to distinguish the source and the judge, we use two
+environment variables: PKG pointing to the DPjudge source folder (e.g.
+~/site-packages/DPjudge, meaning you unpacked the project in a folder
+called site-packages), and JDG pointing to the judge root folder (e.g.
+~/usdp).
+
+After creating the judge root folder ($JDG), you put in there the following
+subfolders:
+  bin games log web
+and the host.py file, an example of which I'm attaching here. Note that
+both dppd and smtpmail are set to None, and that tester is set to '@' to
+generate no mail. You will probably want to change that to None and set
+smtpmail correctly.
+
+In bin you can put a few simple scripts that call the python files in
+$PKG/bin. I'm attaching the most useful one, inspect, for reference. The
+rest all follow the same pattern. You will need to make these files
+executable.
+
+The games folder simply can start empty. It will be populated by game
+folders and a status file when you create games. That status file, which
+should be distinguished from the status file inside a particular game
+folder, lists every available game, its variant, its status (forming,
+active, completed, etc.) and optionally whether it's a private game. A few
+lines in the status file for DPFG (our test judge on floc.net):
+  pawn standard active
+  ae090802 payola completed private
+This status file is managed by Status.py.
+
+A typical game folder contains the following files:
+  access press results status
+and a list of saved status files, one per processed phase that have the
+phase attached at the end (e.g. status.S1901M). These are used to rollback
+the game, should the necessity arise. Very useful for testing, as you can
+now rollback and roll forward any game, diffing the results to see if any
+code changes resulted in unexpected differences in the results file. I
+think the other file names are pretty self-explanatory: access stores all
+logins to the game page, press keeps a copy of all press between the
+players, results contains the judge results, and status has the current
+game status. It's the status file that you will be most concerned about.
+
+The log folder also starts out empty and will contain various error logs,
+which may be of some help, though I mostly ignore them. A useful one is
+smtperror.log in case you use smtpmail and are having mail problems.
+
+The web folder contains the following folders:
+  images maps
+and the file index.cgi, attached here. You will need to replace the path
+given in there with the parent folder of $PKG. Note that images can simply
+be a soft link to $PKG/web/images. The maps folder will contain all your
+game maps (gif, ps, pdf).
+
+If all went well, you should now be able to run inspect. Run
+  cd $JDG/bin
+  inspect
+
+Now you are in a Python shell with the DPjudge preloaded.
+>>>> self = Status().createGame('john@doe.edu', 'testgame', 'test')
+should create a game called testgame with the given email address as master
+and test as password.
+
+[Continued]
+
+After following my own instructions spelled out above, I copied the inspect 
+script in $JDG/bin to check, mail and reopen and altered the last word in
+each ("inspect") to the respective script names. I changed the path name in
+$JDG/web/index.cgi and then edited $JDG/host.py, replacing path names, urls
+and mail addresses as I saw fit. A .vimrc that ensures that tab stops are 4
+spaces was added.
 
 Script files in $JDG/bin need to be executable, hence "chmod a+x *". inspect 
 turned out to have dos line endings, messing up with the python shebang. Load 
 in vi, type ":set ff=unix", then save and quit and repeat that for each script 
 file. I ran inspect, and created the test game with the Status.createGame() 
-call. So far, so good.
+call. So far, so good. Let's not forget to make $JDG/web/index.cgi executable,
+otherwise we may run into deep troubles.
 
 I added "umask 002" and PKG and JDG environment variables to .bashrc. I should 
 have done that earlier, as now I had to go back and do a "chmod g+w" on all 
@@ -59,24 +132,6 @@ To check that ukdp is now running on apache, we start python:
 >>> import urllib
 >>> response = urllib.urlopen('http://localhost/ukdp')
 >>> response.read()
-'<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">\n<html><head>\n<title>500 Internal Server Error</title>\n</head><body>\n<h1>Internal Server Error</h1>\n<p>The server encountered an internal error or\nmisconfiguration and was unable to complete\nyour request.</p>\n<p>Please contact the server administrator,\n webmaster@localhost and inform them of the time the error occurred,\nand anything you might have done that may have\ncaused the error.</p>\n<p>More information about this error may be available\nin the server error log.</p>\n<hr>\n<address>Apache/2.2.14 (Ubuntu) Server at localhost Port 80</address>\n</body></html>\n'
->>> 
-
-Something wrong? Let's check the error log, set in apache's main configuration 
-file by the ErrorLog parameter:
-> grep ErrorLog /etc/apache2/apache2.conf
-... # ErrorLog: The location of the error log file.
-... # If you do not specify an ErrorLog directive within a <VirtualHost>
-... ErrorLog /var/log/apache2/error.log
-> tail /var/log/apache2/error.log
-[<timestamp>] [error] (13)Permission denied: exec of '/home/ukdp/ukdp/web/index.cgi' failed
-[<timestamp>] [error] [client ::1] Premature end of script headers: index.cgi
-I see, index.cgi needs to be executable:
-> chmod a+x $JDG/web/index.cgi
-
-Second try:
->>> response = urllib.urlopen('http://localhost/ukdp')
->>> response.read()
 '\n\n\t\t\t<H3>DPjudge Error</H3><p class=bodycopy>\n\t\t\tPlease <a href=mailto:woelpad@gmail.com>e-mail the judgekeeper</a>\n\t\t\tand report how you got this error.  Thank you.\n\t\t\t<!--\n\t\t\t\n  File "/home/ukdp/site-packages/DPjudge/web/index.py", line 5, in handle\n    try: DPjudge.Page(form)\n  File "/home/ukdp/site-packages/DPjudge/Page.py", line 51, in __init__\n    if self.include(): raise SystemExit\n  File "/home/ukdp/site-packages/DPjudge/Page.py", line 90, in include\n    .replace(\'<DPPD>\',\thost.dppdURL)\nTraceback (most recent call last):\n  File "/home/ukdp/site-packages/DPjudge/web/index.py", line 5, in handle\n    try: DPjudge.Page(form)\n  File "/home/ukdp/site-packages/DPjudge/Page.py", line 51, in __init__\n    if self.include(): raise SystemExit\n  File "/home/ukdp/site-packages/DPjudge/Page.py", line 90, in include\n    .replace(\'<DPPD>\',\thost.dppdURL)\nTypeError: expected a character buffer object\n-->\n'
 >>>
 Right, it doesn't like it that we didn't assign a dppd in host.py. Let's 
@@ -84,8 +139,6 @@ change that:
 > vi $JDG/host.py
 ~ dppd            =   'dppd@diplom.org'
 ~ dppdURL         =   'http://www.floc.net/dpjudge?variant=dppd'
-(Note: The host.py that I sent had dpforge in the url, not dpjudge. Check that 
-it's the latter.)
 
 After this little upheaval, we repeat the urllib sequence and, behold, we get 
 the DPjudge home page in the response! Let's see if the outside world can 

@@ -1,0 +1,7 @@
+#!/usr/bin/python -Oi
+
+import os
+os.sys.path[:0] = [os.path.dirname(os.path.abspath(os.sys.argv[0])) + '/..']
+import host
+
+import DPjudge.bin.inspect
