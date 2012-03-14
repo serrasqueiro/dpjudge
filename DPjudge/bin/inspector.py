@@ -17,21 +17,21 @@ class Inspector:
 		for power in game.powers or []:
 			self.vars[self.makeVar(power.name, 'P')] = power
 		print 'Loaded', ('game %s' % gameName, 'no game')[not game]
-		self.makeGlob(self.vars)
+		self.makeGlob(self.vars, 2)
 	def loadDb(self):
 		dppd = DPPD()
 		db = dppd.db
-		self.makeGlob(locals())
-	def eval(self, expr):
+		self.makeGlob(locals(), 2)
+	def eval(self, expr, depth = 1):
 		for name, var in self.varNames.items():
 			expr = re.sub(r'\b%s\b' % re.escape(name), var, expr)
-		return `expr`
+		return eval(expr, sys._getframe(depth).f_globals)
 	def makeVar(self, name, initial):
 		var = initial * name[0].isdigit() + re.sub(
 			r'\W', '_', name.lower())
 		if var != name: self.varNames[name] = var
 		return var
-	def makeGlob(self, vars, depth = 2):
+	def makeGlob(self, vars, depth = 1):
 		#	-------------------------------------------------------------
 		#	The function globals() would just return this module's global
 		#	variables. To change the globals in the interpreter, we need
