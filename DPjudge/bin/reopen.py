@@ -11,12 +11,16 @@ class Reopen(Status):
 	"""
 	#	----------------------------------------------------------------------
 	def __init__(self):
-		Status.__init__(self)
-		self.list('openings@diplom.org')
-		print '-' * 52
-		print 'The Diplomatic Pouch Openings List has been e-mailed'
-		print 'announcing the availability of the %s DPjudge.' % host.dpjudgeID
-		print '-' * 52
+		if host.openingsList:
+			Status.__init__(self)
+			self.list(host.openingsList)
+		print '-' * 56
+		print(('The Diplomatic Pouch Openings List has been e-mailed\n'
+			'announcing the availability of the %s DPjudge.',
+			'No openings list address given. Make sure the %s judge\n'
+			'is registered with the Diplomatic Pouch Openings List.')
+			[not host.openingsList] % host.dpjudgeID)
+		print '-' * 56
 	#	----------------------------------------------------------------------
 
 #	----------------------------------

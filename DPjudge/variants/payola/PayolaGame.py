@@ -789,14 +789,6 @@ class PayolaGame(Game):
 		if self.rotate: self.error += ['CONTROL ROTATION IS INVALID IN PAYOLA']
 		self.error += [rule + ' RULE IS INVALID IN PAYOLA'
 			for rule in ('PROXY_OK', 'NO_CHECK') if rule in self.rules]
-		for apple, orange in	(	('ZERO_FOREIGN',	'BLIND'),
-									('PUBLIC_TOTALS',	'BLIND'),
-									('REMOTE_BRIBE',	'TOUCH_BRIBE'),
-									('REMOTE_BRIBE',	'PAY_DUMMIES'),
-									('TOUCH_BRIBE',		'PAY_DUMMIES'),
-								):
-			if apple in self.rules and orange in self.rules:
-				self.error += ['INCOMPATIBLE RULES: %s/' % apple + orange]
 		for power in self.powers:
 			if power.centers:
 				if type(power.accept) not in (str, unicode): power.initAccept()

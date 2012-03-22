@@ -1,0 +1,7 @@
+<:
+page.include('dppd')
+
+#try:
+page.dppd.deleteGame(page.name, page.judge)
+#except: print 'FAILED!'
+:>

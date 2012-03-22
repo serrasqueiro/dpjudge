@@ -56,7 +56,7 @@ def header():
 					<tr>
 						<td class="bodycopy" align=center>
 	""")
-	page.dppd.db.execute('select id, url from Judge order by id')
+	page.dppd.db.execute('select id, url from Judge where url is not null order by id')
 	judges = ['<a href=%(url)s>%(id)s</a>' % judge
 				for judge in page.dppd.db.fetchall()]
 	page.write("<b>The DPjudges: %s" % '&nbsp;|&nbsp;'.join(judges))

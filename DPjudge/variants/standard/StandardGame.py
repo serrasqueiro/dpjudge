@@ -1,3 +1,5 @@
+import random
+
 from DPjudge import Game
 
 from StandardPower import StandardPower
@@ -90,19 +92,13 @@ class StandardGame(Game):
 				#	Non-NO_CHECK.  Validate the order and report all errors
 				#	-------------------------------------------------------
 				else: self.validOrder(power, unit, order)
-		#	-----------------------------------------------------
-		#	Ensure that any CD_SUPPORTS rule has a CD rule to use
-		#	-----------------------------------------------------
-		if ('CIVIL_DISORDER' not in self.rules
-		and 'CD_DUMMIES' not in self.rules and 'CD_SUPPORTS' in self.rules):
-			self.metaRules += ['CIVIL_DISORDER']
-			self.rules += ['CIVIL_DISORDER']
 		#	-------------------------------------------------------------
 		#	Go validate the rest of the data read in from the status file
 		#	-------------------------------------------------------------
 		Game.validateStatus(self)
 	#	----------------------------------------------------------------------
 	def defaultOrders(self, power):
+		if not power.units: return
 		hold = ('CD_SUPPORTS' not in self.rules or not power.isCD()
 		or [x for x in power.units if self.orders.get(x)])
 		for unit in power.units: self.orders.setdefault(unit, 'H')
@@ -148,9 +144,9 @@ class StandardGame(Game):
 						((other[2:5] in self.map.scs) - (has >= needs),
 						needs - has, needs, other))
 			sups.sort()
-			import random
 			if sups: self.orders[unit] = 'S ' + random.choice([x[-1]
 				for x in sups if x[:-1] == sups[-1][:-1]])
+		for unit in power.units: power.orders[unit] = self.orders[unit]
 	#	----------------------------------------------------------------------
 	def determineOrders(self):
 		#	----------------------------------
@@ -187,6 +183,7 @@ class StandardGame(Game):
 		#	to whom it was proxied, it will be caught here.
 		#	------------------------------------------------
 		for power in self.powers: self.defaultOrders(power)
+		self.save(1)
 		#	-------------------------------------
 		#	In NO_CHECK games, ensure that orders
 		#	to other player's units are reported

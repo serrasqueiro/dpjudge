@@ -17,7 +17,7 @@ for (var, value) in [
 ('dpjudgeSubDir', 'web'),
 ('gameMapSubDir', 'maps'),
 ('zoneFileName', 'zone.tab'),
-('bannerHtml', ''), ('tester', ''),
+('bannerHtml', ''), ('tester', ''), ('openingsList', ''),
 ('copy', 0), ('notify', 0)]:
 	vars(host).setdefault(var, value)
 

@@ -244,6 +244,7 @@ class Procmail:
 		#	---------------------------
 		#	Handle newly joining player
 		#	---------------------------
+		print('%s|%s' % (self.email,joiner))
 		if joiner: self.updatePlayer(power, password, joiner, word)
 		#	---------------------
 		#	Handle player message
@@ -268,9 +269,9 @@ class Procmail:
 		query = '?&'['?' in host.dppdURL]
 		page = urllib.urlopen(host.dppdURL + query +
 			'page=whois&email=' + urllib.quote(self.email, '@'))
-		self.dppd = unicode(page.read(), 'latin-1').strip().split()
+		response = unicode(page.read(), 'latin-1')
 		page.close()
-		self.ip, self.dppd = self.email, '|'.join(self.dppd)
+		self.ip, self.dppd = self.email, '|'.join(response.strip().split())
 		if self.dppd[:1] != '#': self.respond(
 			'Your e-mail address (%s) is\nnot registered with the DPPD, '
 			'or your DPPD status does\nnot allow you to use the %s command.'
@@ -693,7 +694,7 @@ class Procmail:
 						if param in ('RESTORE', 'RECOVER'): flags |= 1
 						elif param == 'FULL': flags |= 2
 						else: phase = param
-					game.rollback(phase, flags)
+					game.rollback(flags, phase)
 					self.response += ['Game rolled back to ' + game.phase]
 				except RollbackGameInactive:
 					self.respond('ROLLBACK can only occur on an active game')
@@ -711,7 +712,7 @@ class Procmail:
 						if param in ('RESTORE', 'RECOVER'): flags |= 1
 						elif param == 'FULL': flags |= 2
 						else: phase = param
-					game.rollforward(phase, flags)
+					game.rollforward(flags, phase)
 					self.response += ['Game rolled forward to ' + game.phase]
 				except RollforwardGameInactive:
 					self.respond('ROLLFORWARD can only occur on an active game')

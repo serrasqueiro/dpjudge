@@ -121,6 +121,7 @@ page.include('functions')
 onchange=document.location.replace('#'+document.find.rule.options[document.find.rule.selectedIndex].value);document.find.rule.selectedIndex=0>
 <option>Look Up A Rule...
 <optgroup label="Rules for All Variants">
+<option value=ALWAYS_CONFIRM>ALWAYS_CONFIRM
 <option value=ALWAYS_WAIT>ALWAYS_WAIT
 <option value=BACKSEAT_PRESS>BACKSEAT_PRESS
 <option value=FLEX_SETUP>BLANK_BOARD
@@ -202,6 +203,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=SILENT_ABSENCES>SILENT_ABSENCES
 <option value=SHOW_PHANTOM>SHOW_PHANTOM
 <option value=SMART_CD>SMART_CD
+<option value=TORN_ALLEGIANCE>TORN_ALLEGIANCE
 <option value=TOUCH_PRESS>TOUCH_PRESS
 <option value=TROJAN>TROJAN (BLIND)
 <option value=UNITS_ADAPT>UNITS_ADAPT
@@ -321,7 +323,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 
 <a name=PUBLIC_PRESS></a><p><dt><b><tt>PUBLIC_PRESS</tt> -or-
 	<br><tt>NO_PARTIAL</tt></b><dd>
-<!-- RULE PUBLIC_PRESS -NO_PRESS -TOUCH_PRESS -REMOTE_PRESS !NO_LATE_RECEIVE -->
+<!-- RULE PUBLIC_PRESS -NO_PRESS !NO_LATE_RECEIVE -->
     Press is only allowed to and from the Master, and broadcast.
     (See the descriptions of the
 	<tt>TOUCH_PRESS</tt> and <tt>REMOTE_PRESS</tt> rules for other
@@ -385,7 +387,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE END -->
 
 <a name=TOUCH_PRESS></a><p><dt><b><tt>TOUCH_PRESS</tt></b><dd>
-<!-- RULE TOUCH_PRESS -NO_PRESS -PUBLIC_PRESS !REMOTE_PRESS !BACKSEAT_PRESS -->
+<!-- RULE TOUCH_PRESS -NO_PRESS !REMOTE_PRESS !BACKSEAT_PRESS -->
 	Private press is only allowed to the Master and to players owning
 	units that the press-sending power could support to hold, or units
 	that could support a hold order of any unit of the press-sending
@@ -399,7 +401,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE END -->
 
 <a name=REMOTE_PRESS></a><p><dt><b><tt>REMOTE_PRESS</tt></b><dd>
-<!-- RULE REMOTE_PRESS -NO_PRESS -PUBLIC_PRESS !TOUCH_PRESS !BACKSEAT_PRESS -->
+<!-- RULE REMOTE_PRESS -NO_PRESS !TOUCH_PRESS !BACKSEAT_PRESS -->
 	Private press is only allowed to the Master and to players owning
 	<b>no</b> units that the press-sending power could support to hold,
 	<b>nor</b> any units that could support a hold order of any unit of the
@@ -454,6 +456,14 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <p><HR><br><dt><b>1.3 Movement Orders</b>
 <!-- RULE GROUP 3 Movement Order -->
 <dl>
+<a name=ALWAYS_CONFIRM></a><p><dt><b><tt>ALWAYS_CONFIRM</tt></b><dd>
+<!-- RULE ALWAYS_CONFIRM -->
+	Always send a confirmation message after each order update, and copy the
+	GM on it. This will remove the e-mail receipt flag on the order page.
+	Useful for investigating or discouraging claims of corrupted order entry,
+	e.g. when a password became exposed.
+<!-- RULE END -->
+
 <a name=FICTIONAL_OK></a><p><dt><b><tt>FICTIONAL_OK</tt></b><dd>
 <!-- RULE FICTIONAL_OK -->
     Players may submit orders to and involving units that do not exist.
@@ -764,7 +774,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <dd><p>
 <dl>
 <a name=BLIND></a><p><dt><b><tt>BLIND</tt></b><dd>
-<!-- RULE BLIND !NO_DIAS +FICTIONAL_OK +HIDE_ABSENTEES +HIDE_LATE_POWERS +SHOW_PHANTOM -->
+<!-- RULE BLIND !NO_DIAS +FICTIONAL_OK +HIDE_ABSENTEES +HIDE_LATE_POWERS +SHOW_PHANTOM !ZERO_FOREIGN !PUBLIC_TOTALS !PUBLIC_LISTS !LIMIT_LISTS -->
     In a <tt>BLIND</tt> game, each player receives individually tailored
 	movement, retreat, and adjustment phase
 	results and sees a map made from these tailored results.  Each player's
@@ -891,7 +901,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	and supply centers do not provide information on adjacent foreign units.
 <!-- RULE END -->
 
-<a name=MYOPIC></a><p><dt><b><tt>MYOPIC</tt></b (<tt>BLIND</tt> modifier)<dd>
+<a name=MYOPIC></a><p><dt><b><tt>MYOPIC</tt></b> (<tt>BLIND</tt> modifier)<dd>
 <!-- RULE MYOPIC !OWN_SCS_SEE +SEE_NO_SCS +SEE_NO_UNITS +NO_UNITS_SEE +NO_SCS_SEE +BLIND -->
 	A <tt>MYOPIC</tt> game is a <tt>BLIND</tt> game in which players
 	<i>never</i> see any units other than their own and are never
@@ -900,19 +910,19 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	or for both <tt>NO_UNITS_SEE</tt> and <tt>NO_SCS_SEE</tt>.)
 <!-- RULE END -->
 
-<a name=VENETIAN></a><p><dt><b><tt>VENETIAN</tt></b (<tt>BLIND</tt> modifier)<dd>
+<a name=VENETIAN></a><p><dt><b><tt>VENETIAN</tt></b> (<tt>BLIND</tt> modifier)<dd>
 <!-- RULE VENETIAN +OWN_SCS_SEE +SEE_NO_SCS +BLIND -->
 	A <tt>VENETIAN</tt> game is a <tt>BLIND</tt> mixture, in which owned (as opposed
 	to home) units have "visibility" and foreign supply center ownership is not revealed.
 <!-- RULE END -->
 
-<a name=GREEK></a><p><dt><b><tt>GREEK</tt></b (<tt>BLIND</tt> modifier)<dd>
+<a name=GREEK></a><p><dt><b><tt>GREEK</tt></b> (<tt>BLIND</tt> modifier)<dd>
 <!-- RULE GREEK +UNITS_SEE_SAME +NO_SCS_SEE !OWN_SCS_SEE +BLIND -->
 	A <tt>GREEK</tt> game is a <tt>BLIND</tt> mixture in which units only "see" units of
 	the same type (army or fleet) and supply centers do not report information.
 <!-- RULE END -->
 
-<a name=TROJAN></a><p><dt><b><tt>GREEK</tt></b (<tt>BLIND</tt> modifier)<dd>
+<a name=TROJAN></a><p><dt><b><tt>TROJAN</tt></b> (<tt>BLIND</tt> modifier)<dd>
 <!-- RULE TROJAN +UNITS_SEE_OTHER +NO_SCS_SEE !OWN_UNITS_SEE +BLIND -->
 	A <tt>TROJAN</tt> game is a <tt>BLIND</tt> mixture in which units only "see" units of
 	the opposite type (army or fleet) and supply centers do not report information.
@@ -981,7 +991,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE GROUP 7 Late and Vacant Power Handling -->
 <dl>
 <a name=CIVIL_DISORDER></a><p><dt><b><tt>CIVIL_DISORDER</tt></b><dd>
-<!-- RULE CIVIL_DISORDER !CIVIL_PREVIEW !CD_DUMMIES -LATE_CHANGES =NO_LATE_CHANGES -->
+<!-- RULE CIVIL_DISORDER !CIVIL_PREVIEW !CD_DUMMIES =NO_LATE_CHANGES -->
 	Any power that has not submitted orders:
 	<ol type=a>
 	<li>when the game's Master submits a <tt>PROCESS</tt> command,
@@ -1228,6 +1238,14 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	Note also that the <tt>VASSAL_DUMMIES</tt> rule may have some further
 	effects if used in different rule variants (such as Payola&nbsp;&#8212;
 	<a href=#VASSAL_TRANSFERS>see below</a>).
+<!-- RULE END -->
+
+<a name=TORN_ALLEGIANCE></a><p><dt><b><tt>TORN_ALLEGIANCE</tt></b><dd>
+<!-- RULE TORN_ALLEGIANCE +VASSAL_DUMMIES -->
+	This rule dictates that any vassal unit that is standing on an SC that does
+	not belong to his controlling power or one of that power's vassals after
+	the new vassal status has been determined (usually at the end of Fall
+	Retreats), is automatically destroyed.
 <!-- RULE END -->
 
 <a name=HIDE_DUMMIES></a><p><dt><b><tt>HIDE_DUMMIES</tt></b><dd>
@@ -1492,7 +1510,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE GROUP 7 Late and Vacant Power Handling -->
 <dl>
 <a name=CD_SUPPORTS></a><p><dt><b><tt>CD_SUPPORTS</tt></b><dd>
-<!-- RULE CD_SUPPORTS -->
+<!-- RULE CD_SUPPORTS =CIVIL_DISORDER -->
 	This rule causes powers that are in civil disorder in movement phases to
 	issue "sensible support" orders rather than <tt>HOLD</tt> orders.
 	The power's units will receive orders to support each other,
@@ -1645,7 +1663,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	support a non-existent unit) are allowed [the <tt>SHOW_PHANTOM</tt>
 	rule], but will be silently ignored at
 	processing time.  This rule is incompatible with the <tt>ZERO_FOREIGN</tt>
-	rule.
+	and <tt>PUBLIC_TOTALS</tt> rules.
 	<i>Blind Payola is known as "Tin Cup" Diplomacy.</i>
 
 <a name=EBAYOLA></a><p><dt><b><tt>EBAYOLA</tt></b><dd>
@@ -1680,12 +1698,13 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE END -->
 
 <a name=PUBLIC_TOTALS></a><p><dt><b><tt>PUBLIC_TOTALS</tt></b><dd>
-<!-- RULE PUBLIC_TOTALS -->
+<!-- RULE PUBLIC_TOTALS !BLIND -->
     The total bribe amount paid to each unit is made available to all
 	players on the Web, and is kept at the Website for perpetual reference
     (no data on the source of funds is made public, however).  This rule
 	causes a change in the behavior of the <tt>EBAYOLA</tt> rule,
-	described in the discussion of that rule.
+	described in the discussion of that rule.  [This rule cannot be used with
+	<tt>BLIND</tt>.]
 <!-- RULE END -->
 
 <a name=NO_LEDGERS></a><p><dt><b><tt>NO_LEDGERS</tt></b><dd>
@@ -1734,7 +1753,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE END -->
 
 <a name=PAYOLA_CLASSIC></a><p><dt><b><tt>PAYOLA_CLASSIC</tt></b><dd>
-<!-- RULE PAYOLA_CLASSIC +FLAT_TAX +NO_SAVINGS +DIRECT_ONLY +ZERO_FOREIGN !BLIND -->
+<!-- RULE PAYOLA_CLASSIC =FLAT_TAX =NO_SAVINGS =DIRECT_ONLY =ZERO_FOREIGN -->
 	This rule indicates that the game is played using the original
 	rules of the Payola variant.  It includes all of the following:
 	<tt>NO_SAVINGS</tt>, <tt>DIRECT_ONLY</tt>, <tt>FLAT_TAX</tt>,
@@ -1776,7 +1795,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	without regard to adjacency.
 
 <a name=ZERO_FOREIGN></a><p><dt><b><tt>ZERO_FOREIGN</tt></b><dd>
-<!-- RULE ZERO_FOREIGN -->
+<!-- RULE ZERO_FOREIGN !BLIND -->
     Players are permitted to offer bribes having a 0 AgP amount to foreign
     units (units not their own).  [This rule cannot be used with
 	<tt>BLIND</tt>.]
@@ -1821,21 +1840,22 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <dl>
 <!-- RULE GROUP 6V2 Order List Secrecy -->
 <a name=PUBLIC_LISTS></a><p><dt><b><tt>PUBLIC_LISTS</tt></b><dd>
-<!-- RULE PUBLIC_LISTS -->
+<!-- RULE PUBLIC_LISTS !BLIND -->
     The order lists of all the players are broadcast with each move
     submission and made available on the Web pages.  Without this rule,
     each power may only see his own order lists until the end of the
     game.  (This rule is pretty much <i>de rigeur</i> for
-	<tt>NO_PRESS</tt> Crystal Ball games.)
+	<tt>NO_PRESS</tt> Crystal Ball games.)  [This rule cannot be used with
+	<tt>BLIND</tt>.]
 <!-- RULE END -->
 <P>
 <a name=LIMIT_LISTS></a><p><dt><b><tt>LIMIT_LISTS</tt></b><dd>
-<!-- RULE LIMIT_LISTS -->
+<!-- RULE LIMIT_LISTS !BLIND -->
 	This rule is identical to <tt>PUBLIC_LISTS</tt> (above), except
 	that the maximum number of each power's written orders that will
 	be revealed is the number of supply centers controlled by the
 	largest player on the board. The <tt>LIMIT_LISTS</tt> rule supercedes
-	<tt>PUBLIC_LISTS</tt>.
+	<tt>PUBLIC_LISTS</tt>.  [This rule cannot be used with <tt>BLIND</tt>.]
 <!-- RULE END -->
 </dl>
 </dl>

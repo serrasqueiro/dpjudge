@@ -66,9 +66,10 @@ class Power:
 	#	----------------------------------------------------------------------
 	def initialize(self, game):
 		self.game = game
-		if self.homes is None:
-			self.homes = game.map.homes.get(self.name, self.type and None or [])
 		if self.type: return
+		if self.homes is None:
+			if game.map.homeYears: self.homes = []
+			else: self.homes = game.map.homes.get(self.name, [])
 		if 'MOBILIZE' in game.rules: self.centers = ['SC!']
 		elif 'BLANK_BOARD' in game.rules:
 			if not self.centers:
@@ -81,7 +82,7 @@ class Power:
 	def resign(self, byMaster = 0):
 		for num, power in enumerate(self.game.powers):
 			if power.name == self.name: break
-		if self.type:
+		if self.type or self.game.status[1] == 'forming':
 			if (self.game.status[1] in ('forming', 'active', 'waiting')
 			and self.type != 'MONITOR'):  # maybe should be "if self.centers"?
 				#	Tell at least the GM about the resignation
@@ -104,8 +105,9 @@ class Power:
 				self.game.delay = None
 				self.game.changeStatus('waiting')
 			when = self.game.phaseAbbr()
-			if self.player[1:2] != [when]:
-				if when[0] == '?': when = self.game.outcome[0]
+			if when[0] == '?':
+				when = self.game.outcome and self.game.outcome[0] or ''
+			if when and self.player[1:2] != [when]:
 				if self.player and self.address:
 					try:
 						player = self.player[0].split('|')
@@ -127,13 +129,25 @@ class Power:
 					% (self.game.anglify(self.name), self.game.name))
 				self.game.mail.close()
 			self.message, self.pressSent = [], 1
-			self.game.mailPress(None, ['All!'],
-				(("The Master has resigned %s from game '%s'.",
-				"%s has resigned from game '%s'.")[not byMaster])
-				% (self.game.anglify(self.name), self.game.name) +
-				('', '\nThe deadline for orders is now %s.\n' %
-				self.game.timeFormat())[not self.game.avail],
-				subject = 'Diplomacy resignation notice')
+			if self.units or self.centers:
+				self.game.mailPress(None, ['All!'],
+					(("The Master has resigned %s from game '%s'.",
+					"%s has resigned from game '%s'.")[not byMaster])
+					% (self.game.anglify(self.name), self.game.name) +
+					('', '\nThe deadline for orders is now %s.\n' %
+					self.game.timeFormat())[not self.game.avail],
+					subject = 'Diplomacy resignation notice')
+			else:
+				#	Tell at least the GM about the resignation
+				self.game.openMail('Diplomacy resignation notice',
+					mailTo = self.game.master[1], mailAs = host.dpjudge)
+				self.game.mail.write(
+					(("You have resigned %s from game '%s'.\n",
+					"%s has resigned from game '%s'.\n")[not byMaster])
+					% (self.game.anglify(self.name), self.game.name))
+				self.game.mail.write(
+					'\n(This notice is sent ONLY to the GameMaster.)')
+				self.game.mail.close()
 		self.address = None
 		self.game.save()
 	#	----------------------------------------------------------------------
@@ -221,25 +235,35 @@ class Power:
 	def isDummy(self):
 		return self.player[:1] == ['DUMMY']
 	#	----------------------------------------------------------------------
-	def isCD(self):
+	def isCD(self, after = 0):
 		#	-----------------------------------
+		#	Set after to 1 to reveal what will happen after the grace expires.
 		#	A power is CD...
 		#	if	a CIVIL_DISORDER rule is on
 		#		and the player has not RESIGNED
 		#		and the deadline has passed,
 		#	or	it is an unCONTROLled DUMMY
-		#		and the CD_DUMMIES rule is on.
+		#		and the CD_DUMMIES rule is on,
+		#	or	it is an CONTROLled DUMMY
+		#		and the CD_DUMMIES rule is on
+		#		and the grace period has expired.
 		#	-----------------------------------
 		game = self.game
 		return not self.type and self.player and (
-			self.isDummy() and not self.ceo and (
-				'CD_DUMMIES' in game.rules or
-				game.deadline <= game.Time() and
-				{'M': 'CD_SUPPORTS', 'R': 'CD_RETREATS', 'A': 'CD_BUILDS'}
-				.get(game.phaseType) in game.rules
+			self.isDummy() and (
+				not self.ceo and 'CD_DUMMIES' in game.rules or (
+					after or game.deadline <= game.Time() and (
+						not self.ceo or game.graceExpired()
+					)
+				) and (
+					self.ceo and 'CD_DUMMIES' in game.rules or
+					{'M': 'CD_SUPPORTS', 'R': 'CD_RETREATS', 'A': 'CD_BUILDS'}
+					.get(game.phaseType) in game.rules
+				)
 			) or
-			not self.isResigned() and
-			game.deadline <= game.Time() and game.graceExpired() and
+			not self.isResigned() and (
+				after or game.deadline <= game.Time() and game.graceExpired()
+			) and
 			'CIVIL_DISORDER' in game.rules and
 			{'M': 'CD_SUPPORTS', 'R': 'CD_RETREATS', 'A': 'CD_BUILDS'}
 			.get(game.phaseType) in game.rules

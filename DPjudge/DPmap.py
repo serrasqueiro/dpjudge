@@ -14,9 +14,13 @@ class PostScriptMap:
 	#		 3: Display retreat and adjustment on separate pages
 	#	----------------------------------------------------------------------
 	def __init__(self, mapFile, inFile = 0, outFile = 0, viewer = 0, split = 1):
-		try: input = (inFile and open(inFile) or sys.stdin).readlines()
+		try: 
+			if inFile:
+				input = open(inFile, 'r', 'latin-1')
+				lines = input.readlines()
+				input.close()
+			else: lines = [unicode(x, 'latin-1') for x in sys.stdin.readlines()]
 		except: raise CannotOpenResultsFile
-		lines = [unicode(x, 'latin-1') for x in input]
 		self.outFileName = outFile
 		try: self.outFile = outFile and open(outFile, 'w') or sys.stdout
 		except: raise CannotOpenOutputFile
@@ -27,7 +31,7 @@ class PostScriptMap:
 		self.map, self.lang, self.LANG = [], dict(), dict()
 		self.orders, self.retreats, self.ownerOrder = [], [], []
 		self.owner, self.adj, self.units, self.discoveries = {}, {}, {}, {}
-		self.vassals = {}
+		self.vassals, self.error, self.errorPhase = {}, [], None
 		self.startDoc(mapFile)
 		for line in lines:
 			word = line.upper().split()
@@ -87,8 +91,12 @@ class PostScriptMap:
 						if year == 'of': year = lowWord[where + 3]
 						year = int(float(year))  # "year" has a period at end
 						if lowWord[-1][0] == '(' and lowWord[-1][-1] == ')':
-							title += season + ' Retreat' * (split > 1
-								and section == 'R') + ' ' + `year`
+							title += season + (' ' + self.translate(
+								'Retreat', 1)) * (split > 1 and
+								section == 'R') + ' ' + `year`
+							self.errorPhase = lowWord[-1][1:-1].split('.')[-1]
+							if viewer:
+								self.errorPhase = viewer + '.' + self.errorPhase
 				#	------------
 				#	Prepare page
 				#	------------
@@ -190,10 +198,13 @@ class PostScriptMap:
 					where = self.lookup(loc)
 					torn = 'ALLEGIANCE' in word[upto:]
 					for pow in self.units:
-						piece = self.findUnit(pow, where, torn, 'D' * (not torn))
+						piece = self.findUnit(pow, where, torn,
+							'D' * (not torn))
 						if piece:
 							piece['state'] = 'X'; break
-					else: raise NoUnitToDestroy
+					else:
+						self.addError('NO UNIT TO DESTROY IN ' + where['name'])
+						continue
 					if 'line' in piece:
 						idx, res = piece['line'], ('DESTROYED', 'TORN')[torn]
 						if piece['phase'] in 'MP':
@@ -232,7 +243,9 @@ class PostScriptMap:
 				if word[1][0] != 'B':
 					piece, draw = self.findUnit(power, where, 1 - split % 2), 0
 					if piece: 
-						if piece['type'] != unit: raise UnitMismatch
+						if piece['type'] != unit:
+							self.addError('UNIT MISMATCH: %s %s %s BECAME %s' %
+								(power, piece['type'], where['name'], unit))
 					else:
 						piece, draw = self.addUnit(power, unit, where, 'A'), 1
 				else:
@@ -291,19 +304,6 @@ class PostScriptMap:
 			#	---------------------------------
 			draw, state, submsg = 0, 'H', ''
 			phase = section == 'R' and 'R' or 'M'
-			if split > 1 and section == 'R':
-				piece, draw = self.addUnit(power, unit, si, 'R'), -1
-			else:
-				piece = self.findUnit(power, si)
-				if piece: 
-					if piece['type'] != unit:
-						print(power + ': ' + `piece`); raise UnitMismatch
-					elif piece['state'] not in 'HD':
-						print(power + ': ' + `piece`); raise UnitMoved
-					if piece['phase'] != phase: 
-						piece['phase'] = phase; del piece['line'] 
-				else:
-					piece, draw = self.addUnit(power, unit, si, phase), 1
 			if order[0] in 'DL': state = 'X'
 			elif order[0] == 'A': di, si, state = si, None, 'A'
 			elif order[0] != '-': di = si
@@ -313,9 +313,27 @@ class PostScriptMap:
 					try: where += word[where:].index('->') + 1
 					except: break
 				di = self.lookup(' '.join(word[where:]))
-				if not msg: piece['dest'], state = di, 'M' 
+				if not msg: state = 'M' 
 			if 'DISLODGED' in msg: msg, state = 'DISLODGED', 'D'
-			piece['state'] = state
+			if not si:
+				piece, draw = self.addUnit(power, unit, None, phase, state), 0
+			elif split > 1 and section == 'R':
+				piece, draw = self.addUnit(power, unit, si, 'R', state), -1
+			else:
+				piece = self.findUnit(power, si)
+				if piece: 
+					if piece['type'] != unit:
+						self.addError('UNIT MISMATCH: %s %s %s BECAME %s' %
+							(power, piece['type'], si['name'], unit))
+					if piece['state'] not in 'HD':
+						self.addError('UNIT MOVED: %s %s %s WAS %s' %
+							(power, unit, si['name'], piece['state']))
+					piece['state'] = state
+					if piece['phase'] != phase: 
+						piece['phase'] = phase; del piece['line'] 
+				else:
+					piece, draw = self.addUnit(power, unit, si, phase, state), 1
+			if state in 'MA': piece['dest'] = di
 
 			#	-------------
 			#	Draw the unit
@@ -391,13 +409,13 @@ class PostScriptMap:
 			#	-------
 			elif order[0] == 'A':
 				order = '- %.3s' % (di or si)['nick']
-				graph = 'Arrow' + (section == 'R' and 'Retreat' or '') + 'Arrive'
+				graph = 'Arrow' + 'Retreat' * (section == 'R') + 'Arrive'
 			#	-------
 			#	Departs
 			#	-------
 			elif order[:2] == 'DE':
 				order = '- ???'
-				graph = 'Arrow' + (section == 'R' and 'Retreat' or '') + 'Depart'
+				graph = 'Arrow' + 'Retreat' * (section == 'R') + 'Depart'
 				
 			#	-----
 			#	Found
@@ -471,10 +489,9 @@ class PostScriptMap:
 	#	----------------------------------------------------------------------
 	def findUnit(self, power, where, after = 0, state = None):
 		for piece in self.units.get(power, [])[:]:
-			if (after and piece.get('dest')
-				 or piece['loc'])['nick'] == where['nick'] and (not state
-				 or state == piece['state']):
-				return piece
+			loc = after and piece.get('dest') or piece.get('loc')
+			if loc and loc['nick'] == where['nick'] and (not state
+				or state == piece['state']): return piece
 		else: return None
 	#	----------------------------------------------------------------------
 	def reportSCOwner(self):
@@ -694,7 +711,7 @@ class PostScriptMap:
 		for power, units in self.units.items():
 			units = [x for x in units if x['state'] not in 'XD']
 			for piece in units:
-				if piece['state'] == 'M':
+				if piece['state'] in 'MA':
 					piece['loc'] = piece['dest']
 					del piece['dest']
 				piece['state'] = 'H'
@@ -778,10 +795,12 @@ class PostScriptMap:
 		altLen = 0
 		if alternatives:
 			altLen = max(map(lambda x: len(self.translate(x, case)), alternatives))
-		if case:
-			return ('%-' + str(altLen) + 's') % (self.lang.get(term, term))
-		else:
-			return ('%-' + str(altLen) + 's') % (self.LANG.get(term.upper(), term.upper()))
+		if case: return ('%-' + str(altLen) + 's') % (self.lang.get(term, term))
+		else: return ('%-' + str(altLen) + 's') % (self.LANG.get(term.upper(),
+			term.upper()))
+	#	----------------------------------------------------------------------
+	def addError(self, err):
+		self.error.append('%s: %s' % (self.errorPhase, err))
 	#	----------------------------------------------------------------------
 	def positions(self, name = None, season = None, year = None):
 		complete = not self.started
@@ -818,5 +837,7 @@ if __name__ == '__main__':
 			' < resultsFile > outputPSfile\n' %
 			os.path.basename(sys.argv[0]))
 		sys.stderr.write(temp.encode('latin-1'))
-	else: PostScriptMap(sys.argv[1],
-		 sys.argv[4], sys.argv[5], sys.argv[2], int(sys.argv[3]))
+	else:
+		map = PostScriptMap(sys.argv[1],
+			sys.argv[4], sys.argv[5], sys.argv[2], int(sys.argv[3]))
+		if map.error: sys.stderr.write('\n'.join(map.error).encode('latin-1'))

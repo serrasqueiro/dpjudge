@@ -137,10 +137,16 @@ class PayolaPower(Power):
 	#	----------------------------------------------------------------------
 	def movesSubmitted(self):
 		if self.game.phaseType == 'M':
-			return self.offers or not self.units or not (self.balance
-			or 'ZERO_FOREIGN' in self.game.rules
-			or 'PAY_DUMMIES' in self.game.rules
-			and ('VASSAL_DUMMIES' not in self.game.rules or not self.isDummy()))
+			rules, ceo = self.game.rules, None
+			try:
+				if self.ceo: ceo = [x for x in self.game.powers
+					if x.name == self.ceo[0]][0]
+			except: pass
+			return (self.offers
+				or self.isDummy() and not ceo and 'CD_DUMMIES' in rules
+				or not self.units and (not self.centers
+				or not self.balance and not 'ZERO_FOREIGN' in rules and (
+				not ceo or ceo.offers or not ceo.balance)))
 		#	------------------------------------------------
 		#	For non-dividend phases, call everyone submitted
 		#	------------------------------------------------

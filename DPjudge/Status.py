@@ -1,4 +1,4 @@
-import os, sys, urllib
+import os, sys, urllib, shutil
 from codecs import open
 
 import host, Game, Mail
@@ -124,4 +124,47 @@ class Status:
 				(gameName, host.dpjudgeURL, '/index.cgi' * (os.name == 'nt'),
 				gameName))
 			mail.close()
+		return error
+	#	----------------------------------------------------------------------
+	def purgeGame(self, gameName, forced = 0, gamePass = None):
+		error = []
+		if gameName not in self.dict:
+			return ['No such game exists on this judge.']
+		game = Game.Game(gameName)
+		if not forced:
+			status = self.dict[gameName][1]
+			if status == 'preparation': pass
+			elif status == 'forming':
+				if [1 for x in game.powers if not x.isDummy()]:
+					error += ['Please inform your players and make them resign '
+						'first.']
+			else: error += ['Please contact the judgekeeper to purge a game '
+				'that has already started.']
+			if not gamePass or game.password != gamePass:
+				error += ['No match with the master password.']
+			if error: return error
+		# Remove game dir
+		if not os.path.exists(game.gameDir) or not os.path.isdir(game.gameDir):
+			error += ['No game directory found.']
+		else:
+			try: shutil.rmtree(game.gameDir)
+			except: error += ['Failed to remove the game directory.']
+		# Purge from dppd
+		dict = urllib.urlencode({'judge': host.dpjudgeID.encode('latin-1'),
+			'name': gameName.encode('latin-1')})
+		query = '?&'['?' in host.dppdURL]
+		page = urllib.urlopen(host.dppdURL + query + 'page=delete&' + dict)
+		#   --------------------------------------------------------------------
+		#   Check for an error report and raise an exception if that's the case.
+		#   --------------------------------------------------------------------
+		lines = page.readlines()
+		page.close()
+		if [1 for x in lines if 'DPjudge Error' in x]:
+			if [1 for x in lines if 'NoGameToDelete' in x]:
+				error += ['No game records found on the DPPD.'] 
+			else:
+				error += ['Failed to delete the game records from the DPPD.'] 
+		# Purge from status
+		del self.dict[gameName]
+		self.save()
 		return error

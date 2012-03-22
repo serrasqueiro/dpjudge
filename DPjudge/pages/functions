@@ -148,6 +148,10 @@ def showMapButtons():
 			""" % (height, width, host.gameMapURL, file, "_"[gif != 2:], noCache, label))
 		if pdf or ps: page.write('<tr><td></td>')
 	if pdf:
+		#	--------------------------------------------------------------
+		#	Add a timestamp to force a refresh even when the browser cache
+		#	is set to never check for updates.
+		#	--------------------------------------------------------------
 		page.write(
 			"""
 			<script>function showPdf(url){if(navigator.appName!="Netscape"
@@ -157,10 +161,11 @@ def showMapButtons():
 			win.focus();}else window.location=url;return false;}</script>
 			<form>
 			<td class="bodycopy" align=right nowrap>By Season (PDF)</td>
-			<td><input type=button onClick=showPdf("%s/%s.pdf");
+			<td><input type=button onClick=showPdf("%s/%s.pdf?t=%d");
 			class="inputSubmit" value='View'></td>
 			</tr></form>
-			""" % (game.name, host.gameMapURL, file))
+			""" % (game.name, host.gameMapURL, file,
+				int(os.path.getmtime(map + '.pdf'))))
 		if ps: page.write('<tr><td></td>')
 	if ps: page.write(
 			"""
@@ -759,11 +764,12 @@ def showWaitNotice():
 		""" % phase.split()[-1])
 #	----------------------------------------------------------------------
 def showReceiptFlag():
-	if page.power.address: page.write(
-		"""
-		<tr><td class=bodycopy align=center>
-		<input type=checkbox name=receipt> Issue an e-mail receipt</td></tr>
-		""")
+	if page.power.address and 'ALWAYS_CONFIRM' not in page.game.rules:
+		page.write(
+			"""
+			<tr><td class=bodycopy align=center>
+			<input type=checkbox name=receipt> Issue an e-mail receipt</td></tr>
+			""")
 #	----------------------------------------------------------------------
 def showWaitFlag():
 	if page.pwdFlag != 1: return
@@ -956,7 +962,8 @@ def sendPress():
 		""" * (type(socket.gethostname) is not type(len))))
 #	----------------------------------------------------------------------
 def finished(header = 'Update Made'):
-	if 'receipt' in vars(page): page.game.reportOrders(page.power)
+	if 'receipt' in vars(page) or 'ALWAYS_CONFIRM' in page.game.rules:
+		page.game.reportOrders(page.power)
 	page.write(
 		"""
 		<tr valign=top bgcolor="#CCCCCC">

@@ -29,14 +29,20 @@ class Mail:
 				self.mail.connect(host.smtpService)
 			elif host.sendmailDir:
 				self.mail = os.popen(host.sendmailDir + '/sendmail -t', 'w')
-		self.write('To: %s\nFrom: %s\nReply-To: %s\nDate: %s\n'
+		#	---------------------------------------------------------------
+		#	Not able to use charset "iso-8859-1" (latin-1), as some special
+		#	glhetg characters, like the tg used in Tgivereu (Winter), are
+		#	sometimes displayed as different characters in at least gmail.
+		#	---------------------------------------------------------------
+		self.write('Content-Type: text/plain; charset="utf-8"\n'
+			'To: %s\nFrom: %s\nReply-To: %s\nDate: %s\n'
 			'Subject: %s\n%s\n\n' % (sendTo, self.mailAs, self.mailAs,
 			self.logTimeFormat(), subject, header), 0)
 	#	----------------------------------------------------------------------
 	def write(self, text, addToCopy = 1):
 		if self.mailTo:
 			if host.smtpService is not None: self.msg += text
-			elif host.sendmailDir: self.mail.write(text.encode('latin-1'))
+			elif host.sendmailDir: self.mail.write(text.encode('utf-8'))
 		if addToCopy and self.copy: self.copy.write(text.encode('latin-1'))
 	#	----------------------------------------------------------------------
 	def close(self):
@@ -44,7 +50,7 @@ class Mail:
 			if host.smtpService is not None:
 				logtext = 0
 				try: self.mail.sendmail(self.mailAs, self.mailTo,
-					self.msg.encode('latin-1'))
+					self.msg.encode('utf-8'))
 				except SMTPServerDisconnected:
 					logtext  = '{ERROR: Server Disconnected|\n'
 				except SMTPResponseException, exception: 

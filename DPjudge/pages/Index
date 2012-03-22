@@ -142,7 +142,8 @@ for dir in dirs:
 <!--DPJUDGE INFORMATION BEGINS HERE-->		
 	<li>Check the
 		<a href="<POUCH>/openings/openings.html#<ID>">current
-		openings on this DPjudge</a>.
+		openings on <ID></a>.
+	<!--
 	<li><a href="http://groups.yahoo.com/group/dpjudge"><b>Discussion</b></a>
 		of the DPjudge Diplomacy Web/Email interface is on the
 		<a href="http://groups.yahoo.com/group/dpjudge"><b>DPjudge Mailing
@@ -150,10 +151,16 @@ for dir in dirs:
 	<li><a href="http://groups.yahoo.com/group/dpjgames"><b>Game
 		announcements</b></a> and other game-related discussion is on
 		the DPJgames mailing list.
-	<li><a href="http://groups.yahoo.com/group/dpjudge/join">Join the DPjudge
-		Mailing List</a> or the
-		<a href="http://groups.yahoo.com/group/dpjgames/join">DPJgames
-		mailing list</a> to keep abreast of the latest happenings.
+	-->
+	<li><a href="http://groups.yahoo.com/group/dpjudge/join">Join</a> the
+		<a href="http://groups.yahoo.com/group/dpjudge">DPjudge Mailing List</a>
+		<!--
+		or <a href="http://groups.yahoo.com/group/dpjgames/join">join</a> the
+		<a href="http://groups.yahoo.com/group/dpjgames">DPJgames mailing
+		list</a>
+		-->
+		to keep abreast of the latest happenings, discussions and game
+		announcements.
 	<!--
 	<li>Catch up by reading
 		<a href="http://groups.yahoo.com/group/dpjudge/archive">the mailing
@@ -164,6 +171,7 @@ for dir in dirs:
 	<li>Read the
 		<a href="<POUCH>/Zine/F1999R/Hand/dpjudge.html">history
 		of the DPjudge</a> (as of Fall, 1999).
+	<li>Contact the <a href="mailto:<KEEPER>"><ID> judgekeeper</a>.
 	</td>
 	</tr>
 	</table>

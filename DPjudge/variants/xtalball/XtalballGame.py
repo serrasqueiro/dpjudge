@@ -68,10 +68,6 @@ class XtalballGame(Game):
 		for rule in ['NO_CHECK']:
 			if rule in self.rules:
 				self.error += [rule + ' RULE IS INVALID IN CRYSTAL BALL']
-		for apple, orange in	(	('PUBLIC_LISTS',	'BLIND'),
-								):
-			if apple in self.rules and orange in self.rules:
-				self.error += ['INCOMPATIBLE RULES: %s/' % apple + orange]
 		Game.validateStatus(self)
 	#	----------------------------------------------------------------------
 	def determineOrders(self, singlePower = None, processing = 1):

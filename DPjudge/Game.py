@@ -1,4 +1,4 @@
-import os, time, random, socket, textwrap, urllib, glob, re, string
+import os, time, random, socket, textwrap, urllib, glob, re
 from codecs import open
 
 import host
@@ -988,9 +988,6 @@ class Game:
 		self.mode = self.modeRequiresEnd = None
 	#	----------------------------------------------------------------------
 	def validateStatus(self):
-		for power in self.powers:
-			if power.homes is None:
-				power.homes = self.map.homes.get(power.name, [])
 		#	-----------------------------------------
 		#	Make sure the game has a map and a master
 		#	-----------------------------------------
@@ -1066,21 +1063,26 @@ class Game:
 						if (int(val[:-1]) < (key not in ('WARN', 'GRACE'))
 						or	val[-1] not in 'MHDW'): raise
 			except: error += ['BAD %s IN TIMING: ' % key + val]
-		#	-------------------
-		#	Validate power data
-		#	-------------------
+		#	---------------------
+		#	Initialize power data
+		#	---------------------
 		for power in self.powers:
 			#	--------------------------
 			#	Initialize homes if needed
 			#	--------------------------
-			if power.homes is None:
-				power.homes = self.map.homes.get(power.name, [])
+			if not power.type and power.homes is None:
+				if self.map.homeYears: power.homes = []
+				else: power.homes = self.map.homes.get(power.name, [])
 			#	------------------------------------------
 			#	Set default player vote (solo for himself)
 			#	------------------------------------------
 			if not power.centers: power.vote = None
 			elif power.vote is None and 'PROPOSE_DIAS' not in rules:
 				power.vote = '1'
+		#	-------------------
+		#	Validate power data
+		#	-------------------
+		for power in self.powers:
 			#	--------------------
 			#	Validate controllers
 			#	--------------------
@@ -1136,30 +1138,52 @@ class Game:
 	#	----------------------------------------------------------------------
 	def validateRules(self):
 		ruleData, rulesForced, rulesDenied = self.loadRules()
-		rules, rulesAdded = self.rules[:], []
+		okrules, norules, ifrules = [], self.norules[:], []
+		rules = [x for x in self.rules if x not in norules]
+		metaRules = [x for x in self.metaRules if x not in norules]
 		while 1:
-			addCopy, rulesAdded = rulesAdded[:], []
-			for each in addCopy or rules:
-				if each not in rules: continue
-				if each not in ruleData:
-					self.error += ['NO SUCH RULE: ' + each]
-					continue
-				if ruleData[each]['variant'] not in ('', self.status[0]):
-					self.error += ['%sRULE %s REQUIRES %s VARIANT' %
-						('MAP ' * (each in self.metaRules), each,
-						ruleData[each]['variant'].upper())]
-				for force in (ruleData[each].get('+', []) +
-							  ruleData[each].get('=', [])):
-					if (ruleData[force]['variant'] in ('', self.status[0])
-					and force not in rules):
-						rules.append(force)
-						rulesAdded += [force]
-						self.metaRules += [force]
-				for deny in (ruleData[each].get('-', []) +
-							 ruleData[each].get('!', [])):
-					if deny in rules: rules.remove(deny)
-			if not rulesAdded: break
-		self.rules = [x for x in rules if x not in self.norules]
+			if not rules:
+				for rule, cond in ifrules[:]:
+					ifrules.pop(0)
+					if rule in okrules and cond not in norules + okrules:
+						rules = [cond]
+						if cond not in metaRules: metaRules += [cond]
+						break
+				else: break
+			rule = rules.pop(0)
+			if rule in okrules: continue
+			if rule in norules: norules.remove(rule)
+			if rule not in ruleData:
+				self.error += ['NO SUCH RULE: ' + rule]
+				if rule in metaRules: metaRules.remove(rule)
+				continue
+			if ruleData[rule]['variant'] not in ('', self.status[0]):
+				self.error += ['%sRULE %s REQUIRES %s VARIANT' %
+					(rule in self.metaRules and 'MAP ' or
+					 rule in metaRules and 'DERIVED ' or '', rule,
+					ruleData[rule]['variant'].upper())]
+				if rule in metaRules: metaRules.remove(rule)
+				continue
+			okrules += [rule]
+			for deny in (ruleData[rule].get('-', []) +
+						 ruleData[rule].get('!', [])):
+				if deny in norules: continue
+				norules += [deny]
+				if deny in okrules:
+					okrules.remove(deny)
+					if deny in metaRules: metaRules.remove(deny)
+			for force in ruleData[rule].get('+', []):
+				if (ruleData[force]['variant'] in ('', self.status[0])
+					 and force not in okrules):
+					rules[:0] = [force]
+					if force not in metaRules: metaRules += [force]
+			for cond in ruleData[rule].get('=', []):
+				if (ruleData[cond]['variant'] in ('', self.status[0])
+					 and cond not in rules):
+					ifrules += [(rule, cond)]
+		self.rules = okrules
+		self.metaRules = metaRules
+		self.norules = [x for x in self.norules if x in norules]
 	#	----------------------------------------------------------------------
 	def parseUnit(self, power, unit, retreats):
 		#	-------------------------
@@ -1201,7 +1225,8 @@ class Game:
 		words = subject.split()
 		if (self.name and self.name not in words
 		and '(%s)' % self.name not in words): subject += ' (%s)' % self.name
-		if self.tester:
+		if not mailTo: mailTo = host.dpjudge
+		elif mailTo != host.dpjudge and self.tester:
 			mailTo = (self.tester, self.tester[:-1])[self.tester[-1] == '!']
 			mailTo = mailTo * (len(mailTo) > 2 and '@' in mailTo)
 		else: mailTo = mailTo or host.dpjudge
@@ -1278,10 +1303,11 @@ class Game:
 		for ext in ['.ps', '.pdf', '.gif', '_.gif', '_.pdf']:
 			try: os.unlink(fileName + ext)
 			except: pass
-		DPmap.PostScriptMap(host.packageDir + '/' + self.map.rootMapDir + '/' +
-			self.map.rootMap, self.file('results'),
+		map = DPmap.PostScriptMap(host.packageDir + '/' +
+			self.map.rootMapDir + '/' + self.map.rootMap, self.file('results'),
 			host.gameMapDir + '/' + self.name + password + '.ps', viewer)
 		os.chmod(fileName + '.ps', 0666)
+		self.error += map.error
 	#	----------------------------------------------------------------------
 	def makeGifMaps(self, password = ''):
 		#	--------------------------------------------
@@ -1508,10 +1534,16 @@ class Game:
 			error = 'DATA FOR NON-POWER: %s' % power.name
 			if error not in self.error: self.error += [error]
 			return
-		if 'SC?' in power.centers or 'SC!' in power.centers: return homes
-		if ('BUILD_ANY' in self.rules or 'REMOTE_BUILDS' in self.rules
+		if 'SC?' in power.centers or 'SC!' in power.centers:
+			if (not homes and self.map.homeYears
+			and not [x for x in self.powers if x.homes]):
+				return self.map.homes.get(power.name, [])
+			else: return homes
+		if (not homes and self.map.homeYears
+		and not [x for x in self.powers if x.homes]
+		or 'BUILD_ANY' in self.rules or 'REMOTE_BUILDS' in self.rules
 		or '&SC' in homes): homes = power.centers
-		if 'HOME_BUILDS' in self.rules:
+		elif 'HOME_BUILDS' in self.rules:
 			homes = [x for y in self.powers for x in y.homes]
 		if 'REMOTE_BUILDS' in self.rules:
 			if not [1 for x in orig if x in power.centers]: return []
@@ -1549,8 +1581,8 @@ class Game:
 			if self.phaseType != 'A':
 				self.phase = self.findPreviousPhase('A')
 				self.phaseType = 'A'
-		self.avail, avail = [], self.map.powers[:]
-		map(avail.remove, self.map.dummies)
+		self.avail, avail = [], [x for x in self.map.powers
+			if x not in self.map.dummies]
 		self.win = self.map.victory[0]
 		self.setDeadline(firstPhase = 1)
 		for starter in [x for x in self.powers if x.name in avail]:
@@ -1726,7 +1758,7 @@ class Game:
 		self.includeOwnership = None
 		rules = self.rules
 		if unowned is None:
-			homes = [x for y in self.powers for x in y.homes]
+			homes = [x for y in self.powers for x in y.homes or []]
 			unowned = [x for x in self.map.scs if x not in homes]
 		if self.phase != self.map.phase:
 			for power in self.powers:
@@ -1962,6 +1994,7 @@ class Game:
 			#	Now send the message to each destination
 			#	----------------------------------------
 			for reader in self.powers + ['MASTER'] + ['JUDGEKEEPER']:
+				fromSender = 0
 				#	----------------------------------
 				#	Get the recipient's e-mail address
 				#	----------------------------------
@@ -1971,7 +2004,7 @@ class Game:
 					power, email = reader, self.master[1]
 				elif reader == 'JUDGEKEEPER':
 					if readers in (['All'], ['All!']): continue
-					power, email = reader, host.judgekeeper
+					power, email, fromSender = reader, host.judgekeeper, 1
 				else:
 					if reader.type == 'MONITOR' and readers != ['All!']: continue
 					power = reader.name
@@ -1992,7 +2025,7 @@ class Game:
 				#	-------------------------
 				if email not in sentTo:
 					self.deliverPress(sender, power, email, readers, message,
-									  claimFrom, claimTo, subject = subject)
+									  claimFrom, claimTo, subject, fromSender)
 					sentTo += [email]
 		if not sender: return
 		press = self.file('press')
@@ -2010,7 +2043,7 @@ class Game:
 		except: pass
 		if not self.tester and 'suspect' in self.status and host.judgekeeper not in sentTo:
 			self.deliverPress(sender, 'MASTER', host.judgekeeper,
-				readers, message, claimFrom, claimTo, subject = subject)
+				readers, message, claimFrom, claimTo, subject, 1)
 	#	---------------------------------------------------------------------
 	def pressHeader(self, power, whoTo, reader, sender = 0, recipient = 0):
 		text = ('Message', 'Broadcast message')[whoTo == ['All']]
@@ -2037,13 +2070,14 @@ class Game:
 		return ' to ' + ', '[len(who) < 3:].join(who)
 	#	----------------------------------------------------------------------
 	def deliverPress(self, sender, reader, email, recipient, message,
-					 claimFrom, claimTo, subject = None):
+					 claimFrom, claimTo, subject = None, fromSender = 0):
 		#	------------------------------------------------------
 		#	If email is not None, the press is going to a specific
 		#	private e-mail address, so it will look like it came
-		#	from the host.dpjudge address.
+		#	from the host.dpjudge address, unless fromSender is explicitly
+		#	set to 1.
 		#	------------------------------------------------------
-		if email: mailAs = host.dpjudge
+		if email and not fromSender: mailAs = host.dpjudge
 		elif sender.name == 'MASTER': mailAs = self.master[1]
 		else: mailAs = sender.address[0].split(',')[0]
 		#	--------------
@@ -2199,13 +2233,12 @@ class Game:
 				#	-----------------------------------------
 				#	No deadline.  Process right away.
 				#	Lock the game status file against changes
-				#	and mail OURSELF to ask for processing.
+				#	and recursively call process with now
+				#	augmented to 1.
 				#	-----------------------------------------
 				self.save(asBackup = 1)
-				self.openMail('Process phase', mailTo = host.dpjudge)
-				self.mail.write('PROCESS\nSIGNOFF\n')
-				self.mail.close()
-				self.mail = self.skip = None
+				self.skip = None
+				self.process(1, email, roll)
 				return
 			#	---------------------------------------------
 			#	We have received a PROCESS command via e-mail
@@ -2236,7 +2269,7 @@ class Game:
 		#	---------------------------
 		if not self.preview: self.save()
 	#	---------------------------------------------------------------------
-	def rollback(self, phase = None, includeFlags = 0):
+	def rollback(self, includeFlags = 0, phase = None):
 		#	---------------------------------------------------------------
 		#	Rolls back to the specified phase, or to the previous phase if
 		#	none is specified.
@@ -2309,7 +2342,7 @@ class Game:
 			self.mailPress(None, ['All!'],
 				"Diplomacy game '%s' has been reset to the forming state,\n"
 				'but the players retain their assigned power.\n'
-				"The Master will have to either set the game in 'active' mode\n"
+				"The Master will have to either set the game to 'active' mode\n"
 				'or roll forward.\n' % self.name)
 			try: os.unlink(self.file('results'))
 			except: pass
@@ -2335,7 +2368,8 @@ class Game:
 				"Diplomacy game '%s' has been rolled back to %s\n"
 				'and all orders have been %s.\n\n'
 				'The new deadline is %s.\n' %
-				(self.name, self.phaseName(form = 2), includeFlags & 1 and 'restored' or 'cleared', self.timeFormat()),
+				(self.name, self.phaseName(form = 2), includeFlags & 1 and
+				'restored' or 'cleared', self.timeFormat()),
 				subject = 'Diplomacy rollback notice')
 			# Remake the maps
 			if phase != outphase:
@@ -2353,7 +2387,7 @@ class Game:
 				self.makeMaps()
 		if self.error: return self.error
 	#	---------------------------------------------------------------------
-	def rollforward(self, phase = None, includeFlags = 4):
+	def rollforward(self, includeFlags = 4, phase = None):
 		#	---------------------------------------------------------------
 		#	Rolls forward to the specified phase, or to the next phase if
 		#	none is specified.
@@ -3080,7 +3114,7 @@ class Game:
 						and not ('VASSAL_DUMMIES' in self.rules
 							and (owner.ceo == power.ceo
 								or power.ceo == [owner.name],
-								owner.ceo == [power.name])[not power.ceo])  
+								owner.ceo == [power.name])[not power.ceo])
 						and center in [x[2:5] for x in owner.units]):
 						self.transferCenter(power, owner, center)
 						if not power: unowned.remove(center)
@@ -3121,44 +3155,19 @@ class Game:
 		#	Determine vassal states (DUMMY powers whose homes are
 		#	all controlled by a single great power or its vassals)
 		#	------------------------------------------------------
-		more, list, repeat = 0, [], 1
-		while repeat:
-			was, run, repeat = {}, {}, 0
-			for power in [x for x in self.powers if x.isDummy()]:
-				was[power], run[power] = power.ceo[:], []
-				for home in power.homes:
-					owners = [y for y in self.powers if home in y.centers]
-					if owners:
-						run[power] += (owners[0].ceo + [owners[0].name])[:1]
-			for power, runners in run.items():
-				if (runners and runners[0] != power.name
-				and runners == runners[:1] * len(runners)):
-					del run[power]
-					ceo = [x for x in self.powers if x.name == runners[0]]
-					power.ceo = runners[:not ceo[0].isDummy()]
-					if was[power] or not power.ceo: continue
-					for guy in [x for x in run if power.name in run[x]]:
-						run[guy], repeat = [(z, power.ceo[0])[z == power.name]
-							for z in run[guy]], 1
-		#	---------------------------------------------------------
-		#	Determine torn allegiance destructions (vassal units on
-		#	SC's now controlled by a different great power than they)
-		#	---------------------------------------------------------
-		while not repeat:
-			repeat = 1
-			for power in [x for x in self.powers if x.isDummy() and x.ceo]:
-				for unit in power.units[:]:
-					other = [z for z in self.powers
-							if unit[2:5] in z.centers and z != power
-							and [z.name] != power.ceo and z.ceo != power.ceo]
-					if other:
-						if not other[0].isDummy() or other[0].ceo:
-							power.units.remove(unit)
-							list += ['The %s %s '
-									'with torn allegiance was destroyed.' %
-									(self.anglify(self.map.ownWord[power.name]),
-									self.anglify(unit, retreating=1))]
-						else: repeat, other[0].ceo, more = 0, power.ceo, 1
+		was, run = {}, {}
+		for power in [x for x in self.powers if x.isDummy()]:
+			was[power], run[power] = power.ceo[:], []
+			for home in power.homes:
+				owners = [y for y in self.powers if home in y.centers]
+				if owners:
+					run[power] += (owners[0].ceo + [owners[0].name])[:1]
+		for power, runners in run.items():
+			if (runners and runners[0] != power.name
+			and runners == runners[:1] * len(runners)):
+				del run[power]
+				ceo = [x for x in self.powers if x.name == runners[0]]
+				power.ceo = runners[:not ceo[0].isDummy()]
 		#	-----------------------------------------
 		#	Return supply centers to and from vassals
 		#	-----------------------------------------
@@ -3177,7 +3186,24 @@ class Game:
 				ceo = [y for y in self.powers if y.name == power.ceo[0]][0]
 				[self.transferCenter(power, ceo, y)
 					for y in power.centers if y in ceo.homes]
-		if more: list += self.vassalship()
+		#	---------------------------------------------------------
+		#	Determine torn allegiance destructions (vassal units on
+		#	SC's now controlled by a different great power than they)
+		#	---------------------------------------------------------
+		if 'TORN_ALLEGIANCE' not in self.rules: return []
+		list = []
+		for power in [x for x in self.powers if x.isDummy() and x.ceo]:
+			for unit in power.units[:]:
+				other = [z for z in self.powers
+						if unit[2:5] in z.centers and z != power
+						and [z.name] != power.ceo and z.ceo != power.ceo]
+				if other:
+					if not other[0].isDummy() or other[0].ceo:
+						power.units.remove(unit)
+						list += ['The %s %s '
+								'with torn allegiance was destroyed.' %
+								(self.anglify(self.map.ownWord[power.name]),
+								self.anglify(unit, retreating=1))]
 		return list
 	#	----------------------------------------------------------------------
 	def powerSizes(self, victor, func = None):
@@ -3311,10 +3337,11 @@ class Game:
 						if word[3][0] == '-' and word[2] not in self.popped:
 							after += [word[-1]]
 				elif self.phaseType == 'A':
-					after = [x for x in before if x not in
-					[y.split()[2] for y in seer.adjust]] + [x[1] for x in
+					after = [z for z in before if z not in
+					[x[1] for x in [y.split()[1:] for y in seer.adjust]
+					if len(x) > 1]] + [x[1] for x in
 					[y.split()[1:] for y in seer.adjust if y[0] == 'B']
-					if not spotters or x[0][0] in spotters]
+					if len(x) > 1 and (not spotters or x[0][0] in spotters)]
 			#	------------------------------------------------
 			#	Get the list of the "seer"s sighted scs (if any)
 			#	------------------------------------------------
@@ -3551,93 +3578,94 @@ class Game:
 	def otherResults(self):
 		conflicts, self.popped, owner, list = {}, [], 0, ['%s orders for ' %
 			self.phase.split()[2][:-1].title() + self.phaseName(), '']
+		#	---------------------------------------------------
+		#	Supply CIVIL_DISORDER retreat and adjustment orders
+		#	---------------------------------------------------
+		for power in [x for x in self.powers if not x.adjust]:
+			if self.phaseType == 'A':
+				diff = len(power.units) - len(power.centers)
+				if [x for x in power.centers
+					if x in power.homes]:
+					diff -= (self.map.reserves.count(power.name) +
+						min(self.map.militia.count(power.name),
+						len([0 for x in power.units
+							if x[2:5] in power.homes])))
+				if diff > 0:
+					pref = []
+					for own, sc, home in (
+						(0,0,0), (1,1,0), (1,1,1), (0,1,0), (0,1,1)):
+						for kind in 'FA': pref.append(
+							[x for x in power.units if x[0] == kind
+							and (x[2:5] in self.map.scs) == sc
+							and (x[2:5] in power.centers) == own])
+					for unit in range(diff):
+						pref = filter(None, pref)
+						goner = random.choice(pref[0])
+						pref[0].remove(goner)
+						power.adjust += ['REMOVE ' + goner]
+				elif diff:
+					sites = self.buildSites(power)
+					need = min(self.buildLimit(power, sites), -diff)
+					power.adjust = ['BUILD WAIVED'] * need
+					if 'CD_BUILDS' in self.rules:
+						options = []
+						for site in [x.upper() for x in self.map.locType]:
+							if site[:3] in sites: options += filter(
+								self.map.isValidUnit,
+								('A ' + site, 'F ' + site))
+						alternatives = []
+						for limits in self.map.alternative.get(
+							power.name, []):
+							if limits[0] not in sites: continue
+							if len(limits) == 1: limits = limits[:] + [
+								x for x in power.homes if x in sites and
+								x not in [y[0] for y in 
+								self.map.alternative[power.name]]]
+							else: limits = limits[:1] + [
+								x for x in limits[1:] if x in sites]
+							if len(limits) > 1: alternatives += [limits]
+						for build in range(need):
+							if not options: break
+							unit = random.choice(options)
+							site = unit[2:5]
+							power.adjust[build] = ('BUILD ' + unit +
+								' HIDDEN' * ('HIDE_BUILDS' in self.rules or 
+								site in self.map.hidden.get(power.name, [])))
+							removals = [site]
+							while removals:
+								site, removals = removals[0], removals[1:]
+								options = [x for x in options
+									if x[2:5] != site]
+								for limits in alternatives:
+									if site not in limits: continue
+									limits.remove(site)
+									if len(limits) > 1: continue
+									removals.append(limits[0])
+									alternatives.remove(limits)
+			elif 'CD_RETREATS' in self.rules:
+				taken = []
+				for unit in power.retreats:
+					sites = [x for x in power.retreats[unit]
+						if x not in taken]
+					for own, his in ((0,1), (0,0), (1,1), (1,0)):
+						options = [x for x in sites
+							if x[:3] in self.map.scs
+							and (x[:3] in power.homes) == his
+							and (x[:3] in power.centers) == own]
+						if options: break
+					else: options = sites
+					if options:
+						where = random.choice(options)
+						taken.append(where)
+						power.adjust += ['RETREAT %s - ' % unit + where]
+					else: power.adjust += ['RETREAT %s DISBAND' % unit]
+			else: power.adjust = [
+				'RETREAT %s DISBAND' % x for x in power.retreats]
+		self.save(1)
+		#	-------------------------------------------------
+		#	Determine multiple retreats to the same location.
+		#	-------------------------------------------------
 		for power in self.powers:
-			#	---------------------------------------------------
-			#	Supply CIVIL_DISORDER retreat and adjustment orders
-			#	---------------------------------------------------
-			if not power.adjust:
-				if self.phaseType == 'A':
-					diff = len(power.units) - len(power.centers)
-					if [x for x in power.centers
-						if x in power.homes]:
-						diff -= (self.map.reserves.count(power.name) +
-							min(self.map.militia.count(power.name),
-							len([0 for x in power.units
-								if x[2:5] in power.homes])))
-					if diff > 0:
-						pref = []
-						for own, sc, home in (
-							(0,0,0), (1,1,0), (1,1,1), (0,1,0), (0,1,1)):
-							for kind in 'FA': pref.append(
-								[x for x in power.units if x[0] == kind
-								and (x[2:5] in self.map.scs) == sc
-								and (x[2:5] in power.centers) == own])
-						for unit in range(diff):
-							pref = filter(None, pref)
-							goner = random.choice(pref[0])
-							pref[0].remove(goner)
-							power.adjust += ['REMOVE ' + goner]
-					elif diff:
-						sites = self.buildSites(power)
-						need = min(self.buildLimit(power, sites), -diff)
-						power.adjust = ['BUILD WAIVED'] * need
-						if 'CD_BUILDS' in self.rules:
-							options = []
-							for site in [x.upper() for x in self.map.locType]:
-								if site[:3] in sites: options += filter(
-									self.map.isValidUnit,
-									('A ' + site, 'F ' + site))
-							alternatives = []
-							for limits in self.map.alternative.get(
-								power.name, []):
-								if limits[0] not in sites: continue
-								if len(limits) == 1: limits = limits[:] + [
-									x for x in power.homes if x in sites and
-									x not in [y[0] for y in 
-									self.map.alternative[power.name]]]
-								else: limits = limits[:1] + [
-									x for x in limits[1:] if x in sites]
-								if len(limits) > 1: alternatives += [limits]
-							for build in range(need):
-								if not options: break
-								unit = random.choice(options)
-								site = unit[2:5]
-								power.adjust[build] = ('BUILD ' + unit +
-									' HIDDEN' * ('HIDE_BUILDS' in self.rules or 
-									site in self.map.hidden.get(power.name, [])))
-								removals = [site]
-								while removals:
-									site, removals = removals[0], removals[1:]
-									options = [x for x in options
-										if x[2:5] != site]
-									for limits in alternatives:
-										if site not in limits: continue
-										limits.remove(site)
-										if len(limits) > 1: continue
-										removals.append(limits[0])
-										alternatives.remove(limits)
-				elif 'CD_RETREATS' in self.rules:
-					taken = []
-					for unit in power.retreats:
-						sites = [x for x in power.retreats[unit]
-							if x not in taken]
-						for own, his in ((0,1), (0,0), (1,1), (1,0)):
-							options = [x for x in sites
-								if x[:3] in self.map.scs
-								and (x[:3] in power.homes) == his
-								and (x[:3] in power.centers) == own]
-							if options: break
-						else: options = sites
-						if options:
-							where = random.choice(options)
-							taken.append(where)
-							power.adjust += ['RETREAT %s - ' % unit + where]
-						else: power.adjust += ['RETREAT %s DISBAND' % unit]
-				else: power.adjust = [
-					'RETREAT %s DISBAND' % x for x in power.retreats]
-			#	-------------------------------------------------
-			#	Determine multiple retreats to the same location.
-			#	-------------------------------------------------
 			for order in power.adjust or []:
 				word = order.split()
 				if len(word) == 5:
@@ -4320,13 +4348,21 @@ class Game:
 		#	consequences of continuing tardiness.
 		#	-------------------------------------
 		if late and self.timing.get('GRACE'):
+			cd = len([1 for x in self.powers if x.name in late and x.isCD(1)])
+			resign, cd = len(late) - cd > 0, cd > 0
+			all = ([1 for x in self.powers if x.name in late
+				and not x.isDummy()] and 'Powers'
+				or 'VASSAL_DUMMIES' in self.rules
+				and not [1 for x in self.powers if x.name in late
+				and not x.ceo] and 'Vassals'
+				or 'Dummies')
 			count = int(self.timing['GRACE'][:-1])
-			penalty = ('\n\nPowers who are still late %d %s%s after the\n'
-				'deadline above will be %s.' % (count,
+			penalty = ('\n\n%s who are still late %d %s%s after the\n'
+				'deadline above will be %s.' % (all, count,
 				{'H': 'hour', 'D': 'day', 'M': 'minute', 'W': 'week'}.
 				get(self.timing['GRACE'][-1], 'second'), 's'[count == 1:],
-				('summarily dismissed', 'declared in civil disorder')
-				['CIVIL_DISORDER' in self.rules]))
+				'either ' * resign * cd + 'summarily dismissed' * resign +
+				'\nor ' * resign * cd + 'declared in civil disorder' * cd))
 		else: penalty = ''
 		#	-----------------------------------
 		#	Send late notice.  If it's the same
@@ -4383,8 +4419,9 @@ class Game:
 	#	----------------------------------------------------------------------
 	def reportOrders(self, power, email = None):
 		whoTo = email = email or power.address[0]
-		if (power.address
-		and email.upper() not in power.address[0].upper().split(',')):
+		if power.address and not [
+			1 for x in email.upper().split(',')
+			if x in power.address[0].upper().split(',')]:
 			whoTo += ',' + power.address[0]
 		self.openMail('Diplomacy orders', mailTo = whoTo, mailAs = host.dpjudge)
 		self.mail.write(self.powerOrders(power))
@@ -4534,11 +4571,14 @@ class Game:
 		page = urllib.urlopen(host.dppdURL + query + 'page=update&' + dict)
 		#   --------------------------------------------------------------------
 		#   Check for an error report and raise an exception if that's the case.
+		#	Double check the DPPD code for any print statements, as it may
+		#	 reveal the whole game status info to the unsuspecting player.
 		#   --------------------------------------------------------------------
 		lines = page.readlines()
 		page.close()
 		if [1 for x in lines if 'DPjudge Error' in x]:
-			print(''.join(lines))
+			#	Make absolutely sure it doesn't print the game status!!
+			print '\n'.join(lines) 
 			raise DPPDStatusUpdateFailed
 	#	----------------------------------------------------------------------
 	def changeStatus(self, status):

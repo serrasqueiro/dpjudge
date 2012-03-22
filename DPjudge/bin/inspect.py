@@ -48,7 +48,7 @@ class Inspect:
 				"inspect.load('%s')" % gameName])
 		command.extend([
 			'print ' + ' '.join([
-			"inspect.eval('%s')" % x for x in sys.argv[(
+			"inspect.eval('%s')" % x.replace("'", "\\'") for x in sys.argv[(
 			'.' not in arg1 or not arg1.split('.')[1]) + 1:]])])
 	os.system("%sPYTHONPATH=%s %s python -%sOc %s" %
 		('set '*(os.name == 'nt'), os.path.dirname(host.packageDir),
