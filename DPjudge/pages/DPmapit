@@ -66,7 +66,7 @@ class GameMap(Game):
 	def __init__(self, results, map, trial):
 		self.gameDir = host.gameMapDir
 		self.name, self.rules, self.map = name, [], Map(map, trial)
-		self.phase = self.map.phase
+		self.phase, self.error  = self.map.phase, []
 		#	Since it's being put into a <td>, not a decorated pop-up window
 		#	(which eats some of the pixels) the width is reduced by 10 pixels
 		#	to make the map fit really nicely on the page.

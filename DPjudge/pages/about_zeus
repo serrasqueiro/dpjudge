@@ -61,7 +61,7 @@ page.include('functions')
 		<input type=hidden name=page value=DPmapit>
 		<input type=hidden name=map value=zeus>
 		<input type=hidden name=make value=1>
-		<input type=hidden name=trial value=1>
+		<input type=hidden name=trial value=0>
 		<input type=submit class=inputSubmit value="Variant Map">
 		</form>
 	</td>

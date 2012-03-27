@@ -123,6 +123,8 @@ Next, we add apache_configuration.conf. I don't know how Alain made sure that
 this file got loaded. I simply wrote in httpd.conf to load the file.
 > sudo vi /etc/apache2/httpd.conf
 ~ Include /home/ukdp/apache_configuration.conf
+We now add the apache user to group ukdp:
+> sudo usermod -a -G ukdp www-data
 The "sudo apachectl graceful" given in the comments there must have applied to 
 an older apache installation. Nowadays you restart apache2 as follows:
 > sudo /etc/init.d/apache2 restart

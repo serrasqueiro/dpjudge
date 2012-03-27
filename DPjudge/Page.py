@@ -13,8 +13,7 @@ class Page:
 		for key in form.keys():
 			if type(form) is dict or type(form[key]) != list:
 				vars(self)[key] = unicode(form.get(key), 'latin-1')
-			else: vars(self)[key] = [unicode(x.value, 'latin-1')
-				for x in form[key]]
+			else: vars(self)[key] = unicode(form[key][0].value, 'latin-1')
 		self.wireless = 'UPG1' in os.environ.get('HTTP_USER_AGENT', '')
 		#	Add banner message if one is provided.
 		#	NOTE: if testing a new DPPD, though, you don't want this text to
