@@ -496,7 +496,7 @@ def powerHeader():
 #	----------------------------------------------------------------------
 def showProposal():
 	game, power = page.game, page.power
-	if 'NO_DRAW' in game.rules or not power.centers: return
+	if 'NO_DRAW' in game.rules or not power.canVote(): return
 	#	------------------------------------------------------------
 	#	In non PROPOSE_DIAS games, each player selects a single game
 	#	result and if they all match, so be it.  NO_DIAS is the same
@@ -506,7 +506,7 @@ def showProposal():
 	if 'PROPOSE_DIAS' not in game.rules:
 		powerName = game.anglify(power.name)
 		power.vote = power.vote or '1'
-		dias = len([1 for x in game.powers if x.centers])
+		dias = len([1 for x in game.powers if x.canVote()])
 		vote = min(int(power.vote), dias)
 		options = (2, dias)['NO_DIAS' in game.rules]
 		now = (min(vote, options) - 1, options)[vote == 0]
@@ -593,7 +593,7 @@ def showProposal():
 			""" % ((game.name,) * 2))
 		[page.write("win.document.write('<option value=%s>"
 			"a concession to %s');" % (who.name, game.anglify(who.name)))
-			for who in game.powers if who.centers]
+			for who in game.powers if who.canVote()]
 		page.write(
 			"""
 			win.document.write('</select></form>');win.document.close();}
@@ -646,7 +646,8 @@ def showControlInfo():
 			<select class=inputBox
 			name=power onChange=document.ceoForm.submit()>
 			""" % (page.game.name, page.password))
-		for country in headsUp: page.write('<option>' + country)
+		for country in headsUp: page.write('<option value="%s">%s' %
+			(country, page.game.anglify(country)))
 		page.write(
 			"""
 			</select></td>
@@ -764,7 +765,13 @@ def showWaitNotice():
 		""" % phase.split()[-1])
 #	----------------------------------------------------------------------
 def showReceiptFlag():
-	if page.power.address and 'ALWAYS_CONFIRM' not in page.game.rules:
+	if not page.power.address: return
+	if 'ALWAYS_CONFIRM' in page.game.rules:
+		page.write(
+			"""
+			<input type=hidden name=receipt value=1>
+			""")
+	else:
 		page.write(
 			"""
 			<tr><td class=bodycopy align=center>
@@ -962,7 +969,7 @@ def sendPress():
 		""" * (type(socket.gethostname) is not type(len))))
 #	----------------------------------------------------------------------
 def finished(header = 'Update Made'):
-	if 'receipt' in vars(page) or 'ALWAYS_CONFIRM' in page.game.rules:
+	if 'receipt' in vars(page):
 		page.game.reportOrders(page.power)
 	page.write(
 		"""
@@ -1117,7 +1124,8 @@ def updateOffPhases():
 	page.game.updateOffPhases(page.power, page.adjust)
 #	----------------------------------------------------------------------
 def checkPassword():
-	page.pwdFlag = page.power.isValidPassword(page.password)
+	page.pwdFlag = (isinstance(page.power, Power) and
+		page.power.isValidPassword(page.password))
 	if page.pwdFlag: return
 	page.write(
 		"""
@@ -1144,7 +1152,8 @@ def loadGame():
 			</script>
 			""" % host.dpjudgeURL)
 		raise SystemExit
-	try: page.power = [x for x in page.game.powers if page.power == x.name][0]
+	try: page.power = [x for x in page.game.powers if x.name in (page.power,
+		'_' + page.power)][0]
 	except: 
 		if page.power == 'MASTER': page.power = Power(page.game, 'MASTER')
 #	----------------------------------------------------------------------
@@ -1167,7 +1176,7 @@ def checkProposal():
 	#	-------------------------------------------------------------
 	viable, mod = 0, 'proposal' in vars(page) or 'vote' in vars(page)
 	for power in game.powers:
-		if power.centers: viable += 1
+		if power.canVote(): viable += 1
 		elif game.proposal and game.proposal[0] == power.name:
 			game.proposal, mod = None, 1
 			for clear in game.powers: clear.vote = None
@@ -1187,7 +1196,7 @@ def checkProposal():
 		#	------------------------------------------------
 		else:
 			if page.proposal == '-1':
-				page.proposal = `len([1 for x in game.powers if x.centers])`
+				page.proposal = `len([1 for x in game.powers if x.canVote()])`
 			page.power.vote = page.proposal
 			game.checkVotes()
 	#	--------------------------------------------
@@ -1196,7 +1205,7 @@ def checkProposal():
 	elif 'vote' in vars(page) and game.proposal:
 		if page.vote == 'YES':
 			page.power.vote = page.vote
-			if not [1 for x in game.powers if x.centers and not x.vote]:
+			if not [1 for x in game.powers if x.canVote() and not x.vote]:
 				game.endByAgreement()
 		else:
 			#	Should broadcast to everyone that the vote has failed?

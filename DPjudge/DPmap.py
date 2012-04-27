@@ -637,7 +637,7 @@ class PostScriptMap:
 				if word[0][0] == '/': 
 					power = word[0][1:]
 					if power == power.upper(): self.ownerOrder.append(power)
-				elif word[0][0] == '}': visit == 0
+				elif word[0][0] == '}': visit = 0
 				self.outFile.write(line.encode('latin-1'))
 			elif not word:
 				if endSetup: endSetup += '\n'

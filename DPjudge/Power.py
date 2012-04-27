@@ -274,7 +274,7 @@ class Power:
 		#	If power is run by controller, password is in the controller's data
 		#	-------------------------------------------------------------------
 		if self.ceo:
-			ceo = [x for x in self.powers if x.name == power.ceo[0]][0]
+			ceo = [x for x in self.game.powers if x.name == self.ceo[0]][0]
 			return ceo.isValidPassword(password)
 		#	---------------------------
 		#	Determine password validity
@@ -304,4 +304,8 @@ class Power:
 	def movesSubmitted(self):
 		#	Each variant had pretty much better override this guy!  :-)
 		return False
+	#	----------------------------------------------------------------------
+	def canVote(self):
+		return not self.ceo and (self.centers or [1 for x in self.game.powers
+				if x.ceo and x.ceo[0] == self.name and x.centers])
 	#	----------------------------------------------------------------------

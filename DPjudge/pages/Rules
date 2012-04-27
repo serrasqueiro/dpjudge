@@ -43,7 +43,7 @@ page.include('functions')
 </tr>
 <tr valign=top bgcolor="#CCCCCC">
 <td align=center class="grey"><b>Rule Topics</b></td>
-<td align=center class="grey"><a name="1"></a><b>1. Rules Affecting All Games</b></td>
+<td align=center class="grey"><a name="1."></a><b>1. Rules Affecting All Games</b></td>
 </tr>
 <tr valign=top>
 <td rowspan=7>
@@ -51,70 +51,73 @@ page.include('functions')
 	<tr valign=top>
 	<td nowrap class="bodycopy">
 		<!--QUESTIONS LIST BEGINS HERE-->
-		<b>&middot;</b>&nbsp;<a href="#1">Rules Affecting All Games</a><br>
+		<b>&middot;</b>&nbsp;<a href="#1.">Rules Affecting All Games</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#1">Game Start Rules</a><br>
+		<b>&middot;</b><a href="#1.1">Game Start Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#2">Press Rules</a><br>
+		<b>&middot;</b><a href="#1.2">Press Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#3">Movement Order Rules</a><br>
+		<b>&middot;</b><a href="#1.3">Movement Order Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#4">Convoy Order Rules</a><br>
+		<b>&middot;</b><a href="#1.4">Convoy Order Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#5">Retreat and Adjustment Rules</a><br>
+		<b>&middot;</b><a href="#1.5">Retreat and Adjustment Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#6">Secrecy Rules</a><br>
+		<b>&middot;</b><a href="#1.6">Secrecy Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#7">Late and Vacant Power Rules</a><br>
+		<b>&middot;</b><a href="#1.7">Late and Vacant Power Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#8">Deadline Handling Rules</a><br>
+		<b>&middot;</b><a href="#1.8">Power Control Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#9">Game Conclusion Rules</a><hr>
+		<b>&middot;</b><a href="#1.9">Deadline Handling Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#1.10">Game Conclusion Rules</a><hr>
 
-		<b>&middot;</b>&nbsp;<a href="#10">Standard Game Rules</a><br>
+		<b>&middot;</b>&nbsp;<a href="#2.">Standard Game Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#10">Ignored Rules</a><br>
+		<b>&middot;</b><a href="#2.1">Ignored Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#11">Unit Order Rules</a><br>
+		<b>&middot;</b><a href="#2.2">Unit Order Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#111">Late and Vacant Power Rules</a><hr>
+		<b>&middot;</b><a href="#2.3">Late and Vacant Power Rules</a><hr>
 
-		<b>&middot;</b>&nbsp;<a href="#12">Payola Game Rules</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3.">Payola Game Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#12">Included and Forbidden Rules</a><br>
+		<b>&middot;</b><a href="#3.1">Included and Forbidden Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#13">Funds Transfer Rules</a><br>
+		<b>&middot;</b><a href="#3.2">Funds Transfer Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#14">Income Rules</a><br>
+		<b>&middot;</b><a href="#3.3">Income Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#15">Secrecy Rules</a><br>
+		<b>&middot;</b><a href="#3.4">Secrecy Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#16">Bribe Offer Rules</a><hr>
+		<b>&middot;</b><a href="#3.5">Bribe Offer Rules</a><hr>
 
-		<b>&middot;</b>&nbsp;<a href="#17">Crystal Ball Game Rules</a><br>
+		<b>&middot;</b>&nbsp;<a href="#4.">Crystal Ball Game Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#17">Included and Forbidden Rules</a><br>
+		<b>&middot;</b><a href="#4.1">Included and Forbidden Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#18">Secrecy Rules</a><hr>
+		<b>&middot;</b><a href="#4.2">Secrecy Rules</a><hr>
 <center>
 <form name=find>
 <select class=inputBox name=rule
@@ -262,6 +265,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	<td class="bodycopy">
 		<!--BODYCOPY BEGINS HERE-->
 		<dl>
+		<a name="1.1"></a>
 <p><dt><b>1.1 Game Start</b>
 <dl>
 <!-- RULE GROUP 0 Game Start -->
@@ -309,7 +313,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 -->
 </dl>
 
-		<a name=2></a>
+		<a name="1.2"></a>
 <!-- RULE GROUP 2 Player Press -->
 <p><HR><br><dt><b>1.2 Press</b>
 <dl>
@@ -452,7 +456,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 
 </dl>
 
-		<a name=3></a>
+		<a name="1.3"></a>
 <p><HR><br><dt><b>1.3 Movement Orders</b>
 <!-- RULE GROUP 3 Movement Order -->
 <dl>
@@ -606,7 +610,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	All such units may only be ordered to hold, support, or convoy.
 <!-- RULE END -->
 </dl>
-		<a name=4></a>
+		<a name="1.4"></a>
 <!-- RULE GROUP 4 Convoy -->
 <p><HR><br><dt><b>1.4 Convoys</b>
 <dl>
@@ -680,10 +684,9 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 </dl>
 
 
-		<a name=5></a>
+		<a name="1.5"></a>
 <p><HR><br><dt><b>1.5 Retreat and Adjustment Orders</b>
 <!-- RULE GROUP 5 Retreat and Adjustment Order -->
-<dd><p>
 <dl>
 <a name=NO_RETREAT></a><p><dt><b><tt>NO_RETREAT</tt></b><dd>
 <!-- RULE NO_RETREAT -->
@@ -767,14 +770,12 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE END -->
 
 </dl>
-</dl>
-		<a name=6></a>
+		<a name="1.6"></a>
 <p><HR><br><dl><dt><b>1.6 Secrecy</b>
 <!-- RULE GROUP 6 Secrecy -->
-<dd><p>
 <dl>
 <a name=BLIND></a><p><dt><b><tt>BLIND</tt></b><dd>
-<!-- RULE BLIND !NO_DIAS +FICTIONAL_OK +HIDE_ABSENTEES +HIDE_LATE_POWERS +SHOW_PHANTOM !ZERO_FOREIGN !PUBLIC_TOTALS !PUBLIC_LISTS !LIMIT_LISTS -->
+<!-- RULE BLIND !NO_DIAS +FICTIONAL_OK +HIDE_ABSENTEES +HIDE_LATE_POWERS +SHOW_PHANTOM !ZERO_FOREIGN !PUBLIC_TOTALS !PUBLIC_LISTS !LIMIT_LISTS =HIDE_DUMMIES -->
     In a <tt>BLIND</tt> game, each player receives individually tailored
 	movement, retreat, and adjustment phase
 	results and sees a map made from these tailored results.  Each player's
@@ -824,6 +825,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	in the results with the <tt>(*no&nbsp;convoy*)</tt> annotation.</li>
 	<li>The <tt>FICTIONAL_OK</tt> rule is in effect.</li>
 	<li>The <tt>HIDE_ABSENTEES</tt> rule is in effect.</li>
+	<li>The <tt>HIDE_DUMMIES</tt> rule is in effect, unless explicitly disabled.</li>
 	<li>The <tt>HIDE_LATE_POWERS</tt> rule is in effect.</li>
 	<li>The <tt>SHOW_PHANTOM</tt> rule is in effect.</li>
 	<li>The <tt>SILENT_ABSENCES</tt> rule is in effect.</li>
@@ -942,6 +944,22 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	individual home centers by using the appropriate map syntax. 
 <!-- RULE END -->
 
+<a name=HIDE_DUMMIES></a><p><dt><b><tt>HIDE_DUMMIES</tt></b><dd>
+<!-- RULE HIDE_DUMMIES -->
+	If this rule is in use, any <tt>DUMMY</tt> powers will be listed
+	on the game's main Webpage as powers that can be logged in and will
+	be listed as available to receive press messages sent to them.  This
+	rule can be used to keep secret from the players which of the powers
+	are <tt>DUMMY</tt> powers, and/or to provide the Master with access
+	to the power's data entry Webpage.  (However, if a particular <i>player</i>
+	is to be allowed access to any <tt>DUMMY</tt> power pages, this should
+	be done with a <tt>CONTROL</tt> directive in the dummy power's stanza
+	of the game <a href=<URL>?page=Status>status file</a>.)
+	This rule also completely suppresses the display of controller
+	information for any and all powers under the <tt>CONTROL</tt> of another
+	player, such that the power in control is not listed publicly.
+<!-- RULE END -->
+
 <a name=HIDE_EXTENDERS></a><p><dt><b><tt>HIDE_EXTENDERS</tt></b><dd>
 <!-- RULE HIDE_EXTENDERS -->
 	The power-identity of a player who extends the deadline using
@@ -984,9 +1002,8 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	(This rule automatically includes the <tt>HIDE_ABSENTEES</tt> rule.)
 <!-- RULE END -->
 </dl>
-</dl>
 
-		<a name=7></a>
+		<a name="1.7"></a>
 <p><HR><br><dl><dt><b>1.7 Late and Vacant Power Handling</b>
 <!-- RULE GROUP 7 Late and Vacant Power Handling -->
 <dl>
@@ -1203,7 +1220,12 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	(Payola, Crystal Ball) variant games
 -->
 <!-- RULE END -->
+</dl>
 
+		<a name="1.8"></a>
+<p><HR><br><dt><b>1.8 Power Control</b>
+<!-- RULE GROUP 8 Power Control -->
+<dl>
 <a name=VASSAL_DUMMIES></a><p><dt><b><tt>VASSAL_DUMMIES</tt></b><dd>
 <!-- RULE VASSAL_DUMMIES +CD_DUMMIES +CD_BUILDS -->
 	With this rule in use, all <tt>DUMMY</tt> powers are eligible to become
@@ -1213,17 +1235,20 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	the beginning of an adjustment phase, it remains owned by the <tt>DUMMY</tt>
 	power.  Instead of losing its home center(s) to an occupying power,
 	the <tt>DUMMY</tt> power becomes a controlled "vassal state" of that power
-	if every one of its home centers is occupied forces controlled by the
+	if every one of its home centers is occupied by forces controlled by the
 	same foreign power.  Powers receive <tt>CONTROL</tt> of their vassal states
 	(and are thus able to log in and issue orders for them).  This control
 	continues unless and until the home center(s) of the vassal are (all) 
 	occupied by forces controlled by some other power at the beginning of an
-	adjustment phase.  Victory condition is calculated based on the total
+	adjustment phase.
+	<p>
+	Victory condition is calculated based on the total
 	number of centers owned by a power and all of its vassals.  Vassal states
 	cannot own the supply centers of their own controlling powers, meaning that
 	before adjustments, all home centers of a Great Power that are owned
 	and/or occupied by units of one of its own vassals immediately revert to
 	ownership of the controlling Great Power.
+	<p>
 	Before an autonomous state has been made a vassal, any units that it owns
 	will behave according to <tt>CD_BUILDS</tt> and whatever other rules are in
 	place governing <tt>DUMMY</tt> powers.  Such uncontrolled autonomous
@@ -1231,10 +1256,13 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	to gain supply centers by occupying home centers of the Great Powers or
 	neutral centers, but can never take possession of the home center of
 	another <tt>DUMMY</tt> power, nor can an autonomous or vassal state become
-	a vassal of another.  If a power that controls one or more vassals
+	a vassal of another.
+	<p>
+	If a power that controls one or more vassals
 	loses ownership of all of its own centers, that player may continue in
 	the game, still controlling the vassals owned by his (otherwise eliminated)
 	power, and remains eligible to win the game if the victory condition is met.
+	<p>
 	Note also that the <tt>VASSAL_DUMMIES</tt> rule may have some further
 	effects if used in different rule variants (such as Payola&nbsp;&#8212;
 	<a href=#VASSAL_TRANSFERS>see below</a>).
@@ -1247,27 +1275,11 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	the new vassal status has been determined (usually at the end of Fall
 	Retreats), is automatically destroyed.
 <!-- RULE END -->
-
-<a name=HIDE_DUMMIES></a><p><dt><b><tt>HIDE_DUMMIES</tt></b><dd>
-<!-- RULE HIDE_DUMMIES -->
-	If this rule is in use, any <tt>DUMMY</tt> powers will be listed
-	on the game's main Webpage as powers that can be logged in and will
-	be listed as available to receive press messages sent to them.  This
-	rule can be used to keep secret from the players which of the powers
-	are <tt>DUMMY</tt> powers, and/or to provide the Master with access
-	to the power's data entry Webpage.  (However, if a particular <i>player</i>
-	is to be allowed access to any <tt>DUMMY</tt> power pages, this should
-	be done with a <tt>CONTROL</tt> directive in the dummy power's stanza
-	of the game <a href=<URL>?page=Status>status file</a>.)
-	This rule also completely suppresses the display of controller
-	information for any and all powers under the <tt>CONTROL</tt> of another
-	player, such that the power in control is not listed publicly.
-<!-- RULE END -->
 </dl>
 
-		<a name=8></a>
-<p><HR><br><dt><b>1.8 Deadline Handling and Phase Processing</b>
-<!-- RULE GROUP 8 Deadline Handling and Phase Processing -->
+		<a name="1.9"></a>
+<p><HR><br><dt><b>1.9 Deadline Handling and Phase Processing</b>
+<!-- RULE GROUP 9 Deadline Handling and Phase Processing -->
 <dl>
 <a name=NO_QUARTER></a><p><dt><b><tt>NO_QUARTER</tt></b><dd>
 <!-- RULE NO_QUARTER +NO_RETREAT +NO_DRAW -->
@@ -1369,9 +1381,9 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE END -->
 </dl>
 
-		<a name=9></a>
-<p><HR><br><dt><b>1.9 Game Conclusion</b>
-<!-- RULE GROUP 9 Game Conclusion -->
+		<a name="1.10"></a>
+<p><HR><br><dt><b>1.10 Game Conclusion</b>
+<!-- RULE GROUP 10 Game Conclusion -->
 <dl>
 <a name=NO_DRAW></a><p><dt><b><tt>NO_DRAW</tt></b><dd>
 <!-- RULE NO_DRAW -->
@@ -1447,7 +1459,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 </td>
 </tr>
 <tr valign=top bgcolor="#CCCCCC">
-<td align=center class="grey"><a name="10"></a><b>2. Rules Affecting Only Standard Games</b></td>
+<td align=center class="grey"><a name="2."></a><b>2. Rules Affecting Only Standard Games</b></td>
 <!-- RULE VARIANT standard -->
 </tr>
 <tr valign=top>
@@ -1458,12 +1470,12 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	<td class="bodycopy">
 		<!--BODYCOPY BEGINS HERE-->
 		<dl>
-		<a name=10></a>
+		<a name="2.1"></a>
 <p><dt><b>2.1 Ignored Rules</b>
 <dd><p>Any rules that are specific to any other variant (that is, any
     rules that are listed in section 3 or later, below) are silently ignored.
 </dl>
-		<a name=11></a>
+		<a name="2.2"></a>
 <a name=no_check></a>
 <p><HR><br><dl><dt><b>2.2 Orders</b>
 <dl>
@@ -1505,7 +1517,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 </dl>
 </dl>
 
-		<a name=111></a>
+		<a name="2.3"></a>
 <p><HR><br><dl><dt><b>2.3 Late and Vacant Power Handling</b>
 <!-- RULE GROUP 7 Late and Vacant Power Handling -->
 <dl>
@@ -1537,9 +1549,8 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	
 </td>
 </tr>
-		<a name=12></a>
 <tr valign=top bgcolor="#CCCCCC">
-<td align=center class="grey"><a name="12"></a></a><b>3. Rules Affecting Only Payola Games</b></td>
+<td align=center class="grey"><a name="3."></a></a><b>3. Rules Affecting Only Payola Games</b></td>
 <!-- RULE VARIANT payola +ORDER_ANY !PROXY_OK -->
 </tr>
 <tr valign=top>
@@ -1550,7 +1561,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	<td class="bodycopy">
 		<!--BODYCOPY BEGINS HERE-->
 		<dl>
-		<a name=12></a>
+		<a name="3.1"></a>
 <p><dt><b>3.1 Included, Forbidden, and Ignored Rules</b>
 <p><dd>Payola games always use the <tt>ORDER_ANY</tt> rule.
 	<p>The <tt>PROXY_OK</tt> and <tt>FICTIONAL_OK</tt> rules are not allowed.
@@ -1567,7 +1578,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	silently ignored.
 
 </dl>
-		<a name=13></a>
+		<a name="3.2"></a>
 <p><HR><br><dl><dt><b>3.2 Funds Transfers</b>
 <!-- RULE GROUP V2 Funds Transfer -->
 <dl>
@@ -1607,7 +1618,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	Power's treasury.
 </dl>
 
-		<a name=14></a>
+		<a name="3.3"></a>
 <p><HR><br><dt><b>3.3 Income</b>
 <!-- RULE GROUP V3 Payola Income -->
 <dl>
@@ -1649,7 +1660,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 </dl>
 </dl>
 
-		<a name=15></a>
+		<a name="3.4"></a>
 <p><HR><br><dl><dt><b>3.4 Secrecy</b>
 <!-- RULE GROUP 6V4 Bribe Secrecy -->
 <dl>
@@ -1713,7 +1724,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE END -->
 </dl>
 
-		<a name=16></a>
+		<a name="3.5"></a>
 <p><HR><br><dt><b>3.5 Offers</b>
 <!-- RULE GROUP V5 Bribe Offer -->
 <dl>
@@ -1810,9 +1821,8 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	
 </td>
 </tr>
-		<a name=17></a>
 <tr valign=top bgcolor="#CCCCCC">
-<td align=center class="grey"><a name="17"></a></a><b>4. Rules Affecting Only Crystal Ball Games</b></td>
+<td align=center class="grey"><a name="4."></a></a><b>4. Rules Affecting Only Crystal Ball Games</b></td>
 <!-- RULE VARIANT xtalball +FICTIONAL_OK +PROXY_OK +DEFAULT_UNORDERED -->
 </tr>
 <tr valign=top>
@@ -1823,7 +1833,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	<td class="bodycopy">
 		<!--BODYCOPY BEGINS HERE-->
 		<dl>
-		<a name=17></a>
+		<a name="4.1"></a>
 <p><dt><b>4.1 Included, Forbidden, and Ignored Rules</b>
 <p><dd>
 	Crystal Ball games always include <tt>FICTIONAL_OK</tt>
@@ -1835,7 +1845,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	specific to standard games) -- are either not allowed or are
 	silently ignored.
 </dl>
-		<a name=18></a>
+		<a name="4.2"></a>
 <p><HR><br><dl><dt><b>4.2 Secrecy</b>
 <dl>
 <!-- RULE GROUP 6V2 Order List Secrecy -->

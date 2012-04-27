@@ -144,7 +144,7 @@ class Procmail:
 				elif list(word[1]).count('@') == 1:
 					power, game = word[1].split('@')
 				else: power, game = word[1][0], word[1][1:]
-				power, game = power.upper(), game.lower()
+				power, game = power[power[0] == '_':].upper(), game.lower()
 				try: password = word[2]
 				except: password = ''
 				if upword == 'TAKEOVER':
@@ -193,7 +193,7 @@ class Procmail:
 					power, game = word[1].split('@')
 				elif joiner == 'JOIN': power, game = 'POWER', word[1]
 				if game:
-					power, game = power.upper(), game.lower()
+					power, game = power[power[0] == '_':].upper(), game.lower()
 					password = word[2]
 					if '<' in password or '>' in password:
 						self.respond('Password cannot contain < or >')
@@ -244,7 +244,6 @@ class Procmail:
 		#	---------------------------
 		#	Handle newly joining player
 		#	---------------------------
-		print('%s|%s' % (self.email,joiner))
 		if joiner: self.updatePlayer(power, password, joiner, word)
 		#	---------------------
 		#	Handle player message
@@ -301,9 +300,9 @@ class Procmail:
 				power += '#' + `count`
 			elif 'POWER_CHOICE' not in game.rules:
 				self.respond('Power selection is not allowed')
-			elif power not in game.map.powers:
+			elif power not in [x[x[0] == '_':] for x in game.map.powers]:
 				self.respond("No power '%s' in game '%s'" % (power, game.name))
-			elif power in game.map.dummies:
+			elif power in [x[x[0] == '_':] for x in game.map.dummies]:
 				self.respond("Power '%s' cannot be played" % power)
 			elif power in [x.name for x in game.powers]: self.respond(
 				'Power %s is already being played' % game.anglify(power))
@@ -356,7 +355,8 @@ class Procmail:
 		#	-----------------------------------
 		for num, existing in enumerate(game.powers):
 			existing = game.powers[num]
-			if ((command, power) == ('RESIGN', existing.name)
+			if ((command, power) == ('RESIGN',
+			existing.name[existing.name[0] == '_':])
 			or existing.address and self.email == existing.address[0]
 			or self.dppd and self.dppd[0] != '|' and existing.player
 			and self.dppd.split('|')[0] == existing.player[0].split('|')[0]):
@@ -455,7 +455,8 @@ class Procmail:
 		if abbrev in ('M', 'MASTER'): return 'MASTER'
 		for who in self.game.powers:
 			if (abbrev in
-				(who.name, self.game.map.abbrev.get(who.name, who.name[0]))
+				(who.name, who.name[who.name[0] == '-':],
+				self.game.map.abbrev.get(who.name, who.name[0]))
 			or who.type == 'POWER' and abbrev == who.name.split('#')[-1]):
 				return asName and who.name or who
 	#	----------------------------------------------------------------------
@@ -501,7 +502,7 @@ class Procmail:
 				self.respond('Invalid Master password specified')
 		else:
 			try: power = [x for x in self.game.powers
-				if x.name.replace('+', '') == powerName
+				if x.name[x.name[0] == '_':].replace('+', '') == powerName
 				and (newPass or x.isValidPassword(password))][0]
 			except:
 				if mustBe: self.respond('Invalid power or password specified')

@@ -109,7 +109,7 @@ class Game:
 			end = phase = ''
 			mail = proposal = season = year = phaseType = None
 			mode = preview = deadline = delay = win = await = skip = None
-			modeRequiresEnd = includeOwnership = None
+			modeRequiresEnd, includeOwnership = None, -1
 
 		vars(self).update(locals())
 		for power in self.powers: power.reinit(includeFlags)
@@ -676,11 +676,12 @@ class Game:
 		if includeFlags & 4:
 			found = 1
 			if upword in ('AWAIT', 'PHASE', 'SKIP'):
-				if self.phase: error += ['TWO AWAIT/PHASE/SKIP STATEMENTS']
-				elif len(word) > 1:
-					self.phase = ' '.join(word[1:]).upper()
-					self.await = upword == 'AWAIT'
-					self.skip = upword == 'SKIP'
+				self.await = upword == 'AWAIT'
+				self.skip = upword == 'SKIP'
+				if len(word) > 1 and word[1].upper() != 'COMPLETED':
+					if self.phase:
+						error += ['TWO AWAIT/PHASE/SKIP STATEMENTS']
+					else: self.phase = ' '.join(word[1:]).upper()
 			elif upword == 'DEADLINE':
 				if self.deadline: error += ['TWO DEADLINES']
 				elif (len(word) == 2 and word[1].isdigit()
@@ -694,8 +695,22 @@ class Game:
 						self.delay = int(word[1])
 						if not (0 < self.delay < 73): raise
 					except: error += ['BAD DELAY COUNT: ' + word[1]]
-			elif upword == 'RESULT':
-				if len(word) > 1: self.outcome += word[1:]
+			else:
+				found = 0
+				if upword == 'RESULT':
+					if len(word) > 1:
+						if self.phase:
+							error += ['RESULT WHILE PHASE NOT COMPLETED YET']
+						else: self.phase = self.phaseLong(word[1])
+		#	----------------------------------
+		#	Game-specific information (orders)
+		#	----------------------------------
+		if not found and includeFlags & 1:
+			found = 1
+			if upword == 'RESULT':
+				if len(word) > 1:
+					self.outcome += word[1:]
+					self.phase = 'COMPLETED'
 			elif upword == 'FINISH':
 				if self.end: error += ['TWO FINISH STATEMENTS']
 				elif len(word) > 1: self.end = ' '.join(word[1:])
@@ -720,7 +735,8 @@ class Game:
 				elif self.password: error += ['TWO MASTER PASSWORDS']
 				else: self.password = word[1]
 			elif upword == 'TESTER':
-				if self.tester and self.tester[-1] == '!': error += ['TWO TESTER STATEMENTS']
+				if self.tester and self.tester[-1] == '!':
+					error += ['TWO TESTER STATEMENTS']
 				elif len(word) == 1: self.tester = '!'
 				else: self.tester = word[1] + '!'
 			elif upword == 'DESC':
@@ -901,7 +917,8 @@ class Game:
 					if sc in self.map.scs: power.sees += [sc]
 					else: error += ['BAD SEEN CENTER: ' + sc]
 			elif upword == 'HIDES':
-				power.hides += [x.strip() for x in ' '.join(word[1:]).upper().split(',')]
+				power.hides += [x.strip() for x in
+					' '.join(word[1:]).upper().split(',')]
 			else: found = 0
 		#	--------------------------------
 		#	Power-specific data (persistent)
@@ -958,7 +975,13 @@ class Game:
 				power.wait = 1
 			elif upword == 'MSG':
 				power.msg += [' '.join(word[1:])]
-			elif upword == 'VOTE':
+			else: found = 0
+		#	----------------------------
+		#	Power-specific data (orders)
+		#	----------------------------
+		if not found and includeFlags & 1:
+			found = 1
+			if upword == 'VOTE':
 				if power.vote: error += ['TWO VOTES FOR ' + power.name]
 				else:
 					try:
@@ -994,7 +1017,8 @@ class Game:
 		if not self.master: raise GameHasNoMaster
 		if not self.map: self.loadMap()
 		if self.phase == 'FORMING': self.avail = [`len(self.map.powers) -
-			len([1 for x in self.powers if x.type == 'POWER']) -
+			len([1 for x in self.powers
+			if x.type == 'POWER' and x.name not in self.map.dummies]) -
 			len(self.map.dummies)`]
 		rules, error = self.rules, self.error
 		if self.phase not in ('FORMING', 'COMPLETED') and not self.deadline:
@@ -1076,7 +1100,7 @@ class Game:
 			#	------------------------------------------
 			#	Set default player vote (solo for himself)
 			#	------------------------------------------
-			if not power.centers: power.vote = None
+			if not power.canVote(): power.vote = None
 			elif power.vote is None and 'PROPOSE_DIAS' not in rules:
 				power.vote = '1'
 		#	-------------------
@@ -1534,23 +1558,24 @@ class Game:
 			error = 'DATA FOR NON-POWER: %s' % power.name
 			if error not in self.error: self.error += [error]
 			return
+		powers = [x for x in self.powers if not x.type]
 		if 'SC?' in power.centers or 'SC!' in power.centers:
 			if (not homes and self.map.homeYears
-			and not [x for x in self.powers if x.homes]):
+			and not [x for x in powers if x.homes]):
 				return self.map.homes.get(power.name, [])
 			else: return homes
 		if (not homes and self.map.homeYears
-		and not [x for x in self.powers if x.homes]
+		and not [x for x in powers if x.homes]
 		or 'BUILD_ANY' in self.rules or 'REMOTE_BUILDS' in self.rules
 		or '&SC' in homes): homes = power.centers
 		elif 'HOME_BUILDS' in self.rules:
-			homes = [x for y in self.powers for x in y.homes]
+			homes = [x for y in powers for x in y.homes]
 		if 'REMOTE_BUILDS' in self.rules:
 			if not [1 for x in orig if x in power.centers]: return []
-		revert = [y for x in self.powers for y in x.homes
+		revert = [y for x in powers for y in x.homes
 			if 'SC?' in x.centers or 'SC!' in x.centers]
 		homes = [x for x in homes if x in power.centers and x not in
-			[y[2:5] for z in self.powers for y in z.units] + revert]
+			[y[2:5] for z in powers for y in z.units] + revert]
 		for alternative in [x[0] for x in self.map.alternative.get(
 			power.name, [])
 			if x[0] in homes and not [1 for y in x[1:] or power.homes
@@ -1558,7 +1583,7 @@ class Game:
 		return (homes + [x for x in (self.map.factory.get(power.name, []) *
 				('NO_FACTORIES' not in self.rules) +
 			self.map.partisan.get(power.name, []) * ('SC*' in power.centers))
-			if x[:3] not in [z[2:5] for y in self.powers for z in y.units]])
+			if x[:3] not in [z[2:5] for y in powers for z in y.units]])
 	#	----------------------------------------------------------------------
 	def buildLimit(self, power, sites = None):
 		if sites is None: sites = self.buildSites(power)
@@ -1585,6 +1610,8 @@ class Game:
 			if x not in self.map.dummies]
 		self.win = self.map.victory[0]
 		self.setDeadline(firstPhase = 1)
+		for starter in [x for x in self.powers if x.name in self.map.dummies]:
+			starter.type = None
 		for starter in [x for x in self.powers if x.name in avail]:
 			starter.type = None
 			avail.remove(starter.name)
@@ -1697,8 +1724,8 @@ class Game:
 						(option and (' can retreat to ' +
 						' or '.join(map(self.anglify, option))) or '') + '.']
 				if 'BLIND' in self.rules and not playing: lines += ['SHOW']
-		if 'active' in self.status or 'waiting' in self.status: lines += (
-			self.ownership(playing = (None, playing)['BLIND' in self.rules]))
+		if 'active' in self.status or 'waiting' in self.status:
+			lines += self.ownership(playing = (None, playing)['BLIND' in self.rules])
 		if not email: return lines
 		phase = self.phase.title().split()
 		if len(phase) > 1:
@@ -1755,7 +1782,7 @@ class Game:
 		self.mail.close()
 	#	----------------------------------------------------------------------
 	def ownership(self, unowned = None, playing = None):
-		self.includeOwnership = None
+		self.includeOwnership = 0
 		rules = self.rules
 		if unowned is None:
 			homes = [x for y in self.powers for x in y.homes or []]
@@ -1772,23 +1799,33 @@ class Game:
 				and not [0 for x in self.powers for y in x.units
 					if x is not power and y[2:5] in homes]):
 						power.centers = ['SC?'] * (len(power.units) + 1)
-				if 'NO_PARTISANS' not in self.rules:
+				if 'NO_PARTISANS' not in rules:
 					held = len([x for x in homes if x not in power.centers])
 					if 0 < held < len(homes): power.centers += (['SC*'] *
 						len(self.map.partisan.get(power.name, [])))
 		lines = ['']
-		if 'VASSAL_DUMMIES' in rules:
+		blind = 'BLIND' in rules
+		hidden = 'HIDE_DUMMIES' in rules
+		if blind: omnis = ['MASTER'] + [x.name for x in self.powers if x.omniscient]
+		if 'VASSAL_DUMMIES' in rules and (blind or not hidden):
 			lines += ['Vassal status of minor powers:', '']
-			lines += ['%s is a vassal of %s.' %
-				(self.anglify(x.name), self.anglify(x.ceo[0]))
-				for x in self.powers if x.ceo]
-			lines += [self.anglify(x.name) + ' is independent.'
-				for x in self.powers if x.isDummy() and not x.ceo]
-		blind = ('BLIND' in rules and not playing
-				 and 'SEE_ALL_SCS' not in rules) 
+			if blind and hidden and playing and playing.name not in omnis:
+				lines += ['%s is a vassal of %s.' %
+					(self.anglify(x.name), self.anglify(playing.name))
+					for x in self.powers if x.ceo and x.ceo[0] == playing.name]
+			else:
+				showing = blind and hidden and not playing
+				for dummy in [x for x in self.powers if x.isDummy()]:
+					if showing: lines += ['SHOW ' + ' '.join(omnis + (dummy.ceo and
+						[x for x in dummy.ceo if x not in omnis] or []))]
+					lines += [self.anglify(dummy.name) + (dummy.ceo and
+						' is a vassal of %s.' % self.anglify(dummy.ceo[0]) or
+						' is independent.')]
+				if showing: lines += ['SHOW']
+		showing = blind and not playing and 'SEE_ALL_SCS' not in rules
 		lines += ['\nOwnership of supply centers:\n']
 		for power in self.powers + ['UNOWNED']:
-			if playing and playing.name not in ('MASTER', power.name):
+			if playing and playing.name not in omnis + [power.name]:
 				continue
 			if power != 'UNOWNED':
 				powerName, centers = power.name, power.centers
@@ -1801,22 +1838,21 @@ class Game:
 				if who is power:
 					seen = [(x, 'Undetermined Home SC')[x == 'SC!']
 						for x in centers if x[-1] not in '?*']
-				elif (blind and who != 'UNOWNED'
+				elif (showing and who != 'UNOWNED'
 				and not who.omniscient and [who.name] != ceo):
 					who.sees += [x for x in centers
 						if x not in who.sees and self.visible(power, x)[who.name] & 2]
 					seen = [x for x in centers if x in who.sees]
 				if not seen: continue
-				if blind:
-					if who is power: lines += ['SHOW MASTER ' +
-						' '.join([x.name for x in self.powers
-						if x is power or x.omniscient or [x.name] == ceo])]
+				if showing:
+					if who is power: lines += ['SHOW ' +
+						' '.join(omnis + [power.name] + ceo)]
 					else: lines += ['SHOW ' + who.name]
 				lines += [y.replace('\0377', '-') for y in textwrap.wrap(
 					('%-11s %s.' % (powerName,
 					', '.join(map(self.anglify, sorted(seen)))))
 					.replace('-', '\0377'), 75, subsequent_indent = ' ' * 12)]
-		if blind: lines += ['SHOW']
+		if showing: lines += ['SHOW']
 		return lines + ['']
 	#	----------------------------------------------------------------------
 	def mailResults(self, body, subject):
@@ -2280,10 +2316,9 @@ class Game:
 		#	Tip: During tests or debugging, use self.tester to send mail to
 		#	yourself only or, if you specify an invalid address like '@', to
 		#	no one in particular. With self.tester, a completed game will
-		#	not be sent to the hall of fame, but on the other hand it's
-		#	possible to roll back a complete game.
+		#	not be sent to the hall of fame.
 		#	----------------------------------------------------------------
-		complete = includeFlags & 16 and self.tester and self.phase == 'COMPLETED'
+		complete = includeFlags & 16 and self.phase == 'COMPLETED'
 		if not complete and self.status[1] != 'active': raise RollbackGameInactive
 		lines, outphase = [], complete and self.outcome[0] or (
 			self.map.phaseAbbr(self.phase, self.phase))
@@ -2358,7 +2393,6 @@ class Game:
 					self.file('status.' + phase + '.0'))
 			# Load the phase.
 			self.load('status.' + phase + '.0', includeFlags | 4)
-			self.loadMap(self.map.name, self.map.trial)
 			self.await = self.skip = None
 			self.changeStatus('active')
 			self.setDeadline()
@@ -2420,7 +2454,6 @@ class Game:
 				while phase != unphase:
 					# Load the phase, including orders.
 					self.load('status.' + unphase + '.0', includeFlags | 1)
-					self.loadMap(self.map.name, self.map.trial)
 					# Process the phase, suppressing any mail
 					self.process(now = 2, roll = includeFlags & 4 and 2 or 1)
 					try: os.unlink(self.file('status.' + unphase + '.0'))
@@ -2441,7 +2474,6 @@ class Game:
 				raise RollforwardPhaseInvalid
 			# Load the phase, including orders.
 			self.load('status.' + outphase + '.0', includeFlags | 1)
-			self.loadMap(self.map.name, self.map.trial)
 			# Process the phase, suppressing any mail
 			self.process(now = 2, roll = includeFlags & 4 and 2 or 1)
 			self.makeMaps()
@@ -2457,7 +2489,6 @@ class Game:
 		# Load the last phase
 		prephase = self.phase
 		self.load('status.' + unphase + '.0', includeFlags)
-		self.loadMap(self.map.name, self.map.trial)
 		self.await = self.skip = None
 		if self.phase != 'COMPLETED':
 			self.changeStatus('active')
@@ -3050,10 +3081,11 @@ class Game:
 	def checkPhase(self, text):
 		if self.phase in (None, 'FORMING', 'COMPLETED'): return
 		if self.phaseType == 'M': 
-			if ((self.includeOwnership or
+			if (self.includeOwnership > 0 or self.includeOwnership < 0 and
 				('BLIND' in self.rules) > ('NO_UNITS_SEE' in self.rules)
-				+ ('SEE_NO_SCS' in self.rules) + ('SEE_ALL_SCS' in self.rules))):
+				+ ('SEE_NO_SCS' in self.rules) + ('SEE_ALL_SCS' in self.rules)):
 				text += self.ownership()
+			self.includeOwnership = -1
 			return
 		if self.phaseType == 'R':
 			if [1 for x in self.powers if x.retreats]: return
@@ -3110,11 +3142,11 @@ class Game:
 			else: centers = unowned
 			for center in centers[:]:
 				for owner in self.powers:
-					if (owner is not power
+					if ((not power or owner is not power
 						and not ('VASSAL_DUMMIES' in self.rules
 							and (owner.ceo == power.ceo
 								or power.ceo == [owner.name],
-								owner.ceo == [power.name])[not power.ceo])
+								owner.ceo == [power.name])[not power.ceo]))
 						and center in [x[2:5] for x in owner.units]):
 						self.transferCenter(power, owner, center)
 						if not power: unowned.remove(center)
@@ -3825,7 +3857,7 @@ class Game:
 		if 'PROPOSE_DIAS' in self.rules: return []
 		votes = []
 		for power in self.powers:
-			try: power.centers and votes.append(int(power.vote))
+			try: power.canVote() and votes.append(int(power.vote))
 			except: return []
 		votes = filter(None, votes)
 		if not votes or len(votes) > min(votes): return []
@@ -3840,7 +3872,7 @@ class Game:
 		result = self.proposal[0]
 		if result in ('DIAS', 'NO_DIAS'):
 			victors = sorted([x.name for x in self.powers
-				if (x.vote > '0', x.centers)[result == 'DIAS']])
+				if (x.vote > '0', x.canVote())[result == 'DIAS']])
 		else: victors = [result]
 		drawers = map(self.anglify, victors)
 		drawers[-1] += '.'
