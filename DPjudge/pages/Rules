@@ -206,6 +206,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=SILENT_ABSENCES>SILENT_ABSENCES
 <option value=SHOW_PHANTOM>SHOW_PHANTOM
 <option value=SMART_CD>SMART_CD
+<option value=TEAM_VICTORY>TEAM_VICTORY
 <option value=TORN_ALLEGIANCE>TORN_ALLEGIANCE
 <option value=TOUCH_PRESS>TOUCH_PRESS
 <option value=TROJAN>TROJAN (BLIND)
@@ -704,8 +705,17 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <a name=HOME_BUILDS></a><p><dt><b><tt>HOME_BUILDS</tt></b><dd>
 <!-- RULE HOME_BUILDS !BUILD_ANY -->
     If this rule is used, players may build in any owned center that
-	was an original home center for any of the powers in the game.
-	Note that this rule may be restricted by the addition of
+	was an <i>original</i> home center for any of the powers in the game.
+	Note that a power may capture and build in a home center of another
+	power even if that other power has never owned that home center.
+	This could be the case in games that use e.g. the
+	<a href=#MOBILIZE>MOBILIZE</a> rule or where the starting positions
+	are shifted. In games where home centers get reassigned, such as on
+	maps that have a <a href=<PAGE>Map#NEWHOMES>NEWHOMES</a> directive,
+	the <i>original</i> home centers are not necessarily the ones the power had
+	at the start of the game, but rather those from the last reassignment
+	prior to the current phase.
+	Note also that this rule may be restricted by the addition of
 	<tt>REMOTE_BUILDS</tt> and the operation of the <tt>GARRISON</tt> rule,
 	both described below.
 <!-- RULE END -->
@@ -1226,8 +1236,13 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <p><HR><br><dt><b>1.8 Power Control</b>
 <!-- RULE GROUP 8 Power Control -->
 <dl>
+Control over a dummy power, as is the case in Missing Man variants, is usually
+established by adding a <a href="<PAGE>Status#CONTROL"><tt>CONTROL</tt></a>
+line to the controlled power data before the start of the game. Below is
+described a mechanism to gain (and lose) control of a dummy power <i>during</i>
+the course of the game.
 <a name=VASSAL_DUMMIES></a><p><dt><b><tt>VASSAL_DUMMIES</tt></b><dd>
-<!-- RULE VASSAL_DUMMIES +CD_DUMMIES +CD_BUILDS -->
+<!-- RULE VASSAL_DUMMIES +CD_DUMMIES +CD_BUILDS +TEAM_VICTORY -->
 	With this rule in use, all <tt>DUMMY</tt> powers are eligible to become
 	vassals of the other powers.  This means that the <tt>DUMMY</tt> power will
 	never lose ownership of its home center(s).  That is, even though the home
@@ -1242,8 +1257,9 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	occupied by forces controlled by some other power at the beginning of an
 	adjustment phase.
 	<p>
-	Victory condition is calculated based on the total
-	number of centers owned by a power and all of its vassals.  Vassal states
+	Victory condition is calculated based on the total number of centers owned
+	by a power and all of its vassals.  This is accomplished by the automatic
+	inclusion of the <a href=#TEAM_VICTORY>TEAM_VICTORY</a> rule.  Vassal states
 	cannot own the supply centers of their own controlling powers, meaning that
 	before adjustments, all home centers of a Great Power that are owned
 	and/or occupied by units of one of its own vassals immediately revert to
@@ -1439,6 +1455,12 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE HOLD_WIN -->
 	To win a game using this rule, a player must achieve the winning condition
 	two game-years in a row.
+<!-- RULE END -->
+
+<a name=TEAM_VICTORY></a><p><dt><b><tt>TEAM_VICTORY</tt></b><dd>
+<!-- RULE TEAM_VICTORY -->
+	With this rule the victory condition is calculated based on the total
+	number of centers owned by a power and all of the dummy powers it controls.
 <!-- RULE END -->
 
 <a name=NO_EOG></a><p><dt><b><tt>NO_EOG</tt></b><dd>

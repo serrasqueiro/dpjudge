@@ -1,21 +1,14 @@
 import os
 
-#	-------------------------------------------------------
-#	Set "testing" to None to use the production package.
-#	Otherwise, set it to the directory holding the package.
-#	Also set up a banner message to display on every page.
-#	-------------------------------------------------------
+#	-----------------------------------------------------------------------------
+#	Add the directory holding the package to the start of the module search path.
+#	-----------------------------------------------------------------------------
 os.sys.path.insert(0, '/home/ukdp/site-packages')
-testing			=	 None
-if testing:
-	bannerHtml = """
-		<p align=center><font color=red><b>
-		
-		WARNING: THIS DPJUDGE SITE IS PRE-RELEASE!
-		<br>
-		<a href=http://www.floc.net/dpjudge><u>-- CLICK HERE FOR THE PRODUCTION DPJUDGE --
-		</u></a></b></font></p>
-		"""
+
+#	--------------------------------------------------------------
+#	If required, set up a banner message to display on every page.
+#	--------------------------------------------------------------
+#bannerHtml = ''
 
 #	--------------------------------------------------------
 #	Give "tester" an e-mail address to redirect all (?) mail

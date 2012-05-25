@@ -7,12 +7,12 @@ class Map:
 	#	----------------------------------------------------------------------
 	def __init__(self, name = 'standard', trial = 0):
 		victory = phase = validated = textOnly = None
-		rootMap = rootMapDir = flagDir = None
+		rootMap = rootMapDir = None
 		homes, locName, locType, locAbut, abutRules = {}, {}, {}, {}, {}
 		ownWord, abbrev, centers, units, powName, flag = {}, {}, {}, {}, {}, {}
 		rules, files, powers, scs, owns, inhabits = [], [], [], [], [], []
 		flow, unclear, size, homeYears, dummies, locs = [], [], [], [], [], []
-		reserves, militia = [], []
+		reserves, militia, flagDirs = [], [], []
 		dynamic, factory, partisan, alternative, hidden = {}, {}, {}, {}, {}
 		leagues, directives, phaseAbbrev, error, notify = {}, {}, {}, [], []
 		if host.notify and host.judgekeeper and (trial or host.notify > 1):
@@ -313,18 +313,22 @@ class Map:
 		else: return error.append(err)
 	#	----------------------------------------------------------------------
 	def load(self, fileName = 0):
-		error = self.error
+		error, flagDirsLen = self.error, len(self.flagDirs)
 		if type(fileName) is not list:
 			fileName, power = fileName or (self.name + '.map'), 0
+			mapName = fileName.split('.')[0]
 			for mapDir in ['trials', 'maps'][not self.trial:]:
 				try: file = open(host.packageDir + '/' + mapDir + '/' +
 					fileName, encoding = 'latin-1')
 				except: continue
-				if fileName.split('.')[0] == (self.rootMap or self.name):
+				if mapName == (self.rootMap or self.name):
 					self.rootMapDir = mapDir
 				break
 			else: return error.append('MAP FILE NOT FOUND: ' + fileName)
 			self.files += [fileName]
+			if mapName not in self.flagDirs and os.path.isdir(
+				host.dpjudgeDir + '/images/flags/' + mapName):
+				self.flagDirs += [mapName]
 		else: file = fileName
 		phase = variant = 0
 		for line in file:
@@ -385,9 +389,11 @@ class Map:
 			#	FLAGS directory for this map
 			#	----------------------------
 			elif upword == 'FLAGS':
-				if len(word) != 2: error += ['BAD FLAGS']
-				elif self.flagDir: error += ['TWO FLAGS']
-				else: self.flagDir = word[1]
+				self.flagDirs = self.flagDirs[:flagDirsLen]
+				for mapName in word[1:]:
+					if mapName not in self.flagDirs and os.path.isdir(
+						host.dpjudgeDir + '/images/flags/' + mapName):
+						self.flagDirs += [mapName]
 			#	----------------------------
 			#	Game phase FLOW for this map
 			#	----------------------------
@@ -785,6 +791,11 @@ class Map:
 				data[new] = data[old]
 				del data[old]
 			except: pass
+		for data in (self.flag, ):
+			try:
+				data[new] = data[old]
+				del data[old]
+			except: data[new] = old
 		for data in (self.militia, self.reserves, self.powers, self.dummies):
 			try:
 				data.remove(old)

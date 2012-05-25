@@ -549,7 +549,14 @@ page.include('functions')
 	&nbsp;&nbsp;&nbsp;&nbsp;
 	POWER GERMANY<br>
 	&nbsp;&nbsp;&nbsp;&nbsp;
-	CONTROL TURKEY AUSTRIA ENGLAND FRANCE RUSSIA</tt>
+	CONTROL TURKEY AUSTRIA ENGLAND FRANCE RUSSIA</tt><br>
+	You could also let a single player control the same power the whole game,
+	thereby effectively allowing him to play two powers. If everyone is given
+	a second power (on maps with an even number of powers), the game would only
+	need half the normal number of players. In such a case it makes sense to
+	add the <a href="<PAGE>Rules#TEAM_VICTORY">TEAM_VICTORY</a> rule, so that
+	the combined SC total of the powers a player controls determines his victory
+	score.
 
 <a name=VOTE></a>
 <p><dt><b><tt>VOTE YES</tt> -or-<br>

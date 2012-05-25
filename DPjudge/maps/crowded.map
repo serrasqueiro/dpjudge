@@ -1,12 +1,15 @@
 USE		standard.map
+FLAGS	standard minorpower
 
 BALKAN				SER RUM GRE BUL
+FLAG	GREECE
 F GRE
 F RUM
 A BUL
 A SER
 
 LOWLAND				RUH BEL HOL
+FLAG	BELGIUM
 F BEL
 A HOL
 A RUH

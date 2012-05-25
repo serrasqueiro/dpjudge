@@ -1,4 +1,5 @@
 USE standard.geography
+FLAGS
 
 #	Powers & Units
 Adriatic+Sea (Adriatic:A)

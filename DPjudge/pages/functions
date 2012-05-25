@@ -478,16 +478,19 @@ def powerHeader():
 		<table border=0 cellpadding=0 cellspacing=0>
 		<tr valign=middle>
 		""")
-	flagFile = ('/images/flags/' + (game.map.flagDir or game.map.rootMap) +
-				'/' + game.map.flag.get(power.name, power.name) + '.gif')
-	if game.map and os.path.exists(('<WEB>' + flagFile).encode('latin-1')):
-		page.write(
-			"""
-			<td width=91><img width=75 hspace=10 vspace=10 src=%s%s></td>
-			<td width=10><!--SPACER--></td>
-			""" % (host.dpjudgeURL, flagFile))
-	page.write('<th class="bodycopy"><font size=+1>%s</font>' %
-		game.anglify(power.name))
+	if game.map and game.map.flagDirs:
+		for flagDir in game.map.flagDirs:
+			flagFile = ('/images/flags/' + flagDir + '/' +
+				game.map.flag.get(power.name, power.name) + '.gif')
+			if os.path.exists(('<WEB>' + flagFile).encode('latin-1')):
+				page.write(
+					"""
+					<td width=91><img width=75 hspace=10 vspace=10 src=%s%s></td>
+					<td width=10><!--SPACER--></td>
+					""" % (host.dpjudgeURL, flagFile))
+				break
+		page.write('<th class="bodycopy"><font size=+1>%s</font>' %
+			game.anglify(power.name))
 	if power.name == 'MASTER': name = game.master[2]
 	elif power.player: name = power.player[0]
 	else: name = 0

@@ -1,4 +1,5 @@
 USE standard.map
+FLAGS standard minorpower
 
 Arctic Ocean        = arc arctic
 Catalonia           = cat

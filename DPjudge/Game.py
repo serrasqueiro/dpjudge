@@ -3161,11 +3161,11 @@ class Game:
 		#	criteria (adapted from David Norman's "variable length" system).
 		#	----------------------------------------------------------------
 		victor, thisYear = None, [sum(map(len, [y.centers for y in self.powers
-			if 'VASSAL_DUMMIES' in self.rules and y.ceo == [x.name]]),
+			if 'TEAM_VICTORY' in self.rules and y.ceo == [x.name]]),
 			len(x.centers)) for x in self.powers]
 		for power in self.powers:
 			centers = sum(map(len, [x.centers for x in self.powers
-				if 'VASSAL_DUMMIES' in self.rules and x.ceo == [power.name]]),
+				if 'TEAM_VICTORY' in self.rules and x.ceo == [power.name]]),
 				len([x for x in power.centers if x != 'SC*']))
 			#	FIRST, YOU MUST HAVE ENOUGH CENTERS TO WIN
 			if	(centers >= self.win

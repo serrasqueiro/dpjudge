@@ -34,7 +34,11 @@ class Mail:
 		#	glhetg characters, like the tg used in Tgivereu (Winter), are
 		#	sometimes displayed as different characters in at least gmail.
 		#	---------------------------------------------------------------
-		self.write('Content-Type: text/plain; charset="utf-8"\n'
+		if not [1 for x in header.split('\n')
+			if x.split(':')[0] == 'Content-Type']:
+			header = 'Content-Type: text/plain; charset="utf-8"' + (
+				header and '\n' + header or '')
+		self.write(
 			'To: %s\nFrom: %s\nReply-To: %s\nDate: %s\n'
 			'Subject: %s\n%s\n\n' % (sendTo, self.mailAs, self.mailAs,
 			self.logTimeFormat(), subject, header), 0)

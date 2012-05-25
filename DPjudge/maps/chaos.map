@@ -1,41 +1,64 @@
 USE standard.geography
+FLAGS minorpower standard
 
 # POLITICS
 # Powers & Centers
 Ankara			(Ankaran:A)			ANK
+FLAG TURKEY
 Belgium			(Belgian:B)			BEL
 Berlin			(Berliner:C)		BER
+FLAG GERMANY
 Brest			(Breton:D)			BRE
+FLAG FRANCE
 Budapest		(Hungarian:E)		BUD
+FLAG AUSTRIA
 Bulgaria		(Bulgarian:F)		BUL
 Constantinople	(Byzantine:G)		CON
+FLAG TURKEY
 Denmark			(Danish:H)			DEN
 Edinburgh		(Scottish:I)		EDI
+FLAG ENGLAND
 Greece			(Greek:J)			GRE
 Holland			(Dutch:K)			HOL
 Kiel			(Schleswiger:L)		KIE
+FLAG GERMANY
 Liverpool		(Liverpudlian:N)	LVP
+FLAG ENGLAND
 London			(Cockney:P)			LON
+FLAG ENGLAND
 Marseilles		(Marsellais:Q)		MAR
+FLAG FRANCE
 Moscow			(Muscovite:R)		MOS
+FLAG RUSSIA
 Munich			(Bavarian:S)		MUN
+FLAG GERMANY
 Naples			(Neapolitan:T)		NAP
+FLAG ITALY
 Norway			(Norwegian:U)		NWY
 Paris			(Parisian:V)		PAR
+FLAG FRANCE
 Portugal		(Portuguese:W)		POR
 Rome			(Roman:X)			ROM
+FLAG ITALY
 Rumania			(Rumanian:Y)		RUM
 Serbia			(Serbian:Z)			SER
 Sevastopol		(Crimean:0)			SEV
+FLAG RUSSIA
 Smyrna			(Smyrnan:1)			SMY
+FLAG TURKEY
 Spain			(Spanish:2)			SPA
 St+Petersburg	(St+Petersburger:3)	STP
+FLAG RUSSIA
 Sweden			(Swedish:4)			SWE
 Trieste			(Carinthian:5)		TRI
+FLAG AUSTRIA
 Tunis			(Tunisian:6)		TUN
 Venice			(Venetian:7)		VEN
+FLAG ITALY
 Vienna			(Viennese:8)		VIE
+FLAG AUSTRIA
 Warsaw			(Polish:9)			WAR
+FLAG RUSSIA
 
 # I've taken Mario's suggestion for STP's adjective.  The adjective for
 # Trieste seems accurate according to all the maps I can find.  All other

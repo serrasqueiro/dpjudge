@@ -374,7 +374,7 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	<td class="bodycopy">
 		<!--BODYCOPY BEGINS HERE-->
 		<dl>
-<p><dt><b><tt><i>powerName</i> [([<i>ownWord</i>][:[<i>abbrev</i>]])]
+<p><dt><b><tt>[<i>oldName</i> ->] <i>powerName</i> [([<i>ownWord</i>][:[<i>abbrev</i>]])]
 	[<i>center...</i>]</tt>
 </b><dd>
 	This type of line is used to specify a power name, its "ownership word" and
@@ -395,6 +395,10 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	indicates that the next character in the name is to be displayed in
 	upper-case.  Any plus-sign appearing in the <tt><i>ownWord</i></tt> will
 	be displayed as a space.
+	<P>
+	If preceded by <tt><i>oldName</i></tt>, which must be the name of a previously
+	defined power, followed by an arrow, that power gets renamed to the new
+	power name.
 	<p><a name=CLAIM></a>
 	<u><b>Claiming New Home Centers</b></u><br>
 	One or more <tt><i>center</i></tt> may be specified as <tt>&SC</tt> and
@@ -480,6 +484,7 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	(see the description of the <tt>ROTATE</tt> and <tt>CONTROL</tt>
 	directives used in the game <a href=<URL>?page=Status>status file</a>).
 
+<a name=NEWHOMES></a>
 <p><dt><b><tt>NEWHOMES <i>year...</i></tt></b><dd>
 	This command will cause home supply centers to be completely reassigned to
 	all players during the adjustment phase of the specified game-year(s).
@@ -513,6 +518,28 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	Note that league settings are ignored in any game with the
 	<a href=PAGE:Rules#FICTIONAL_OK><tt>FICTIONAL_OK</tt></a> rule
 	enabled (including all Crystal Ball Diplomacy variant games).
+
+<a name=FLAGS></a>
+<p><dt><b><tt>FLAGS <i>mapName...</i></tt></b><dd>
+	Lists the maps from where the flags are borrowed. If the same power is present
+	in more than one map, the first one listed takes precedence.
+	Flag icons are stored in web accessible directories, under
+	<tt>.../web/images/flags/&lt;mapName&gt;</tt>. 
+	If this option is not specified, the list consists of the current map name
+	(if the directory exists), followed by the <tt>FLAGS</tt> list of any map it
+	inherits from (see <tt>USE</tt> and variants), which in turn may have been set
+	implicitly or explicitly.
+	Note that when defined explicitly, you need to list all maps that have
+	directories to pick from, including the current map, unless it doesn't exist
+	or you want it ignored. Without any map names after the keyword, no flags
+	will appear for any power.
+
+<p><dt><b><tt>FLAG <i>powerName</i></tt></b><dd>
+	This line makes the current power borrow the flag from the specified power.
+	Flag icons are gif-files with the file name in uppercase, usually
+	corresponding to the name of one power.
+	Note that any renamed power inherits initially the flag of the original power.
+
 </dl>
 		<!--BODYCOPY ENDS HERE-->
 	</td>
