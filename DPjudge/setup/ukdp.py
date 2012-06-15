@@ -341,4 +341,6 @@ every 20 minutes) we receive a late notice for game testing!
 
 That's enough for now. Let's go out and announce the resurrection of UKDP to 
 the rest of the world.
+
+One problem that came up. Some mail programs insist on being able to do reverse DNS lookup. To accomplish that, you need to add PTR records. Check the net on how to do that.
 """

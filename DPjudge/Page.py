@@ -6,13 +6,23 @@ from Map import Map
 class Page:
 	#	----------------------------------------------------------------------
 	def __init__(self, form = {}):
+		#	---------------------------------------------------------------
 		#	The pwdFlag is 0 or None if bad password, 1 if good (incl. GM),
 		#	and 2 if good enough to provide read-only access (omniscient).
+		#	---------------------------------------------------------------
 		self.pwdFlag = None
+		#	---------------------------------------------------
+		#	Parameters that may appear in the url (as GET).
+		#	If they also appear in the form (as POST),
+		#	they end up as a list of 2 nearly identical values,
+		#	which is undesirable.
+		#	---------------------------------------------------
 		self.variant = self.game = self.power = self.password = self.page = ''
 		for key in form.keys():
 			if type(form) is dict or type(form[key]) != list:
 				vars(self)[key] = unicode(form.get(key), 'latin-1')
+			elif key in vars(self) and type(vars(self)[key]) == str:
+				vars(self)[key] = unicode(form[key][0].value, 'latin-1')
 			else: vars(self)[key] = [unicode(x.value, 'latin-1')
 				for x in form[key]]
 		self.wireless = 'UPG1' in os.environ.get('HTTP_USER_AGENT', '')
@@ -27,11 +37,6 @@ class Page:
 		if not self.page or self.page[0].lower() != self.page[0]:
 			print host.bannerHtml or ''
 		if self.game:
-			#	-------------------------------------------------------------
-			#	If this parameter is both in the url (as GET) and in the form
-			#	(as POST), it ends up as a list of 2 nearly identical values.
-			#	-------------------------------------------------------------
-			if type(self.game) is list: self.game = self.game[0]
 			game = self.game.lower().replace('%23', '#')
 			self.game = Status().load(game)
 			if self.game and not self.game.name: self.game = None

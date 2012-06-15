@@ -588,31 +588,37 @@ class Game:
 					elif blockMode == 3:
 						self.finishPowerData(power)
 						blockMode = 2
+					elif blockMode < 0:
+						blockMode += 4
 				continue
 			upword = word[0].upper()
 			if blockMode == 0:
 				# Start of first block, the game data
 				if upword != 'GAME':
-					error += ['OTHER DATA PRECEDING GAME DECLARATION: ' + ' '.join(word)]
+					error += ['NOT A GAME DECLARATION: ' + ' '.join(word)]
+					blockMode -= 4
 				else: 
 					if word[1:] != [self.name]: error += ['GAME NAME MISMATCH']
 					blockMode = 1
 					self.mode = self.modeRequiresEnd = None
 			elif blockMode == 1:
 				# Game data
-				if self.mode and upword == 'END' and len(word) == 2 and word[1].upper() == self.mode:
+				if (self.mode and upword == 'END' and len(word) == 2
+					and word[1].upper() == self.mode):
 					self.mode = self.modeRequiresEnd = None
-				elif not self.parseGameData(word, includeFlags) and includeFlags & 6 == 6:
+				elif (not self.parseGameData(word, includeFlags)
+					and includeFlags & 6 == 6):
 					error += ['UNRECOGNIZED GAME DATA: ' + ' '.join(word)]
 			elif blockMode == 2:
 				# Power (or observer, etc.)
 				power = self.determinePower(word)
 				if not power:
 					error += ['NOT A POWER DECLARATION: ' + ' '.join(word)]
+					blockMode -= 4
 				else:
 					blockMode = 3
 					self.mode = self.modeRequiresEnd = None
-			else:
+			elif blockMode == 3:
 				# Power data
 				if self.mode and upword == 'END' and len(word) == 2 and word[1].upper() == self.mode:
 					self.mode = self.modeRequiresEnd = None
@@ -835,7 +841,7 @@ class Game:
 			else:
 				if self.phase == 'FORMING':
 					if len(word) == 1: word += ['POWER']
-					elif word[-1] == 'POWER': del word[-1]
+				elif word[-1] == 'POWER': del word[-1]
 				word = [self] + [x.upper() for x in word]
 				try: power = self.powerType(*word)
 				except:

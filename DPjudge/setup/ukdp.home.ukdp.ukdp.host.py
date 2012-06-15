@@ -9,6 +9,15 @@ os.sys.path.insert(0, '/home/ukdp/site-packages')
 #	If required, set up a banner message to display on every page.
 #	--------------------------------------------------------------
 #bannerHtml = ''
+if 1:
+	bannerHtml = """
+		<p align=center><font color=red><b>
+		
+		WARNING: THIS DPJUDGE SITE IS PRE-RELEASE!
+		<br>
+		<a href=http://www.floc.net/dpjudge><u>-- CLICK HERE FOR THE PRODUCTION DPJUDGE --
+		</u></a></b></font></p>
+		"""
 
 #	--------------------------------------------------------
 #	Give "tester" an e-mail address to redirect all (?) mail

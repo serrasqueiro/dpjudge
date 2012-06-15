@@ -231,7 +231,7 @@ class Procmail:
 			if host.dppd:
 				dppdUser, dppdDomain = host.dppd.split('@')
 				dppdDomain = '.'.join(dppdDomain.split('.')[-2:])
-				if (user, domain) == (dppdUser, dppdDomain): raiseSystemExit
+				if (user, domain) == (dppdUser, dppdDomain): os._exit(os.EX_OK)
 			self.respond(('Expected SIGNON, JOIN, CREATE, RESIGN, TAKEOVER, '
 				'SUMMARY, HISTORY, or LIST,\nor a valid non-map-power join '
 				'command (e.g., OBSERVE playerName@gameName)', 'No playerName '
@@ -491,7 +491,7 @@ class Procmail:
 				mail.write('Unprocessed portion of message follows:\n\n' +
 					'\n'.join(self.message))
 			mail.close()
-		raise SystemExit
+		os._exit(os.EX_OK)
 	#	----------------------------------------------------------------------
 	def locatePower(self, powerName, password, mustBe = 1, newPass = 0):
 		if ' ' in password: self.respond('Multiple passwords given')
