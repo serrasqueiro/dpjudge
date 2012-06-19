@@ -634,6 +634,8 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	Note that a fleet that is portaged through an army that is
 	adjacent to a multi-coast province may end its move on <i>any</i>
 	coast of that province.
+	It's perfectly valid to convoy a fleet from one coast to another coast
+	of the same province using an army stationed in any adjacent province.
 	Just as with orders that <i>support</i> fleets moving to
 	multi-coast provinces, (portage) convoy orders given to armies
 	may <i>not</i> specify any destination coast for the fleet being moved.

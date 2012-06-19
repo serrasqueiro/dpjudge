@@ -5,7 +5,8 @@ class Mail:
 	def __init__(self):
 		mime = self.email = self.boundary = self.ip = None
 		self.response, self.dppd, lineNo = [], [], 0
-		self.message, msg, inBody = [unicode(x, 'latin-1') for x in sys.stdin.readlines()], [], 0
+		self.message = [unicode(x, 'latin-1') for x in sys.stdin.readlines()]
+		msg, inBody = [], 0
 		self.message = [x for x in self.message if x.strip()[:2] != '//']
 		#	----------------------------------------
 		#	Alternate line ending character (mostly
@@ -102,7 +103,7 @@ class Mail:
 			#	data that was sent (and, I guess, just not respond
 			#	to the mail).
 			dppd.updateGame(data)
-			raise SystemExit
+			os._exit(os.EX_OK)
 		#	-------------------------------------------------------
 		#	self.dppd[0] is an e-mail address that a DPjudge wants
 		#	us to check (and the message body is the message sent
@@ -125,7 +126,7 @@ class Mail:
 			header = 'DPPD: ' + response)
 		msg.write(''.join(self.message))
 		msg.close()
-		raise SystemExit
+		os._exit(os.EX_OK)
 	#	----------------------------------------------------------------------
 
 #	=========================================================================

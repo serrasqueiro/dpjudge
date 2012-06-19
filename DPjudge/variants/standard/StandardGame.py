@@ -99,8 +99,8 @@ class StandardGame(Game):
 	#	----------------------------------------------------------------------
 	def defaultOrders(self, power):
 		if not power.units: return
-		hold = ('CD_SUPPORTS' not in self.rules or not power.isCD()
-		or [x for x in power.units if self.orders.get(x)])
+		if not [x for x in power.units if self.orders.get(x)]: power.cd = 1
+		hold = 'CD_SUPPORTS' not in self.rules or not power.isCD() or not power.cd
 		for unit in power.units: self.orders.setdefault(unit, 'H')
 		if hold: return
 		#	------------------------------------------------------
@@ -198,7 +198,7 @@ class StandardGame(Game):
 						power.orders['INVALID %d' % len(power.orders)] = order
 	#	----------------------------------------------------------------------
 	def postMoveUpdate(self):
-		for power in self.powers: power.orders = {}
+		for power in self.powers: power.orders, power.cd = {}, 0
 		return Game.postMoveUpdate(self)
 	#	----------------------------------------------------------------------
 	def addOrder(self, power, word):
@@ -220,6 +220,7 @@ class StandardGame(Game):
 			#	This is okay in a NO_CHECK game, and we HOLD the unit.
 			#	If not, pack it back into the power's order list.
 			#	------------------------------------------------------
+			power.cd = 0
 			if unit not in power.orders: power.orders[unit] = order
 			elif 'NO_CHECK' in self.rules:
 				count = len(power.orders)
@@ -240,10 +241,11 @@ class StandardGame(Game):
 		if ('NO_CHECK' in self.rules and self.phaseType == 'M' and now
 		and (self.preview or self.ready(now))):
 			for power in self.powers:
-				orders, power.orders = power.orders, {}
+				orders, power.orders, cd = power.orders, {}, power.cd
 				for status, order in orders.items():
 					if status[:5] != 'ORDER': power.orders[status] = order
 					else: self.addOrder(power, order.split())
+				power.cd = cd
 		return Game.process(self, now, email, roll)
 	#	----------------------------------------------------------------------
 	def updateOrders(self, power, orders):
@@ -281,7 +283,7 @@ class StandardGame(Game):
 					if len(data) < 3 and (len(data) == 1 or data[1] != 'H'):
 						return self.error.append('BAD ORDER: ' + line.upper())
 					newPower.orders['ORDER %d' %
-						(len(newPower.orders) + 1)] = ' '.join(word)
+						(len(newPower.orders) + 1)], newPower.cd = ' '.join(word), 0
 				else: self.addOrder(newPower, word)
 			else: curPower = newPower
 		if self.canChangeOrders(hadOrders, power.orders):

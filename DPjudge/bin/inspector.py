@@ -1,5 +1,6 @@
 import re, sys, urllib
 from DPjudge import *
+from DPjudge.bin.check import *
 from DPjudge.variants.dppd import *
 
 class Inspector:
@@ -19,6 +20,9 @@ class Inspector:
 			self.vars[self.makeVar(power.name, 'P')] = power
 		print 'Loaded', ('game %s' % gameName, 'no game')[not self.game]
 		self.makeGlob(self.vars, 2)
+	def check(self, gameNames = None):
+		if gameNames is None and self.game: gameNames = [self.game.name]
+		Check(gameNames)
 	def connect(self):
 		dppd = DPPD()
 		db = dppd.db

@@ -17,6 +17,7 @@ class Power:
 		elif self.password: text += '\nPASSWORD ' + self.password
 		if self.omniscient: text += '\nOMNISCIENT!'[:10 + self.omniscient]
 		if self.wait: text += '\nWAIT'
+		if self.cd: text += '\nCD'
 		if self.vote: text += ('\nVOTE ' +
 			{'0': 'LOSS', '1': 'SOLO', 'YES': 'YES'}.get(self.vote,
 			self.vote + 'WAY'))
@@ -56,7 +57,7 @@ class Power:
 		#	-----------------------------------
 		if includeFlags & 4:
 			wait = balance = homes = vote = None
-			held = adjusted = goner = 0
+			held = adjusted = goner = cd = 0
 			centers, units, adjust, ceo = [], [], [], []
 			retreats, funds, sees, hides = {}, {}, [], []
 		vars(self).update(locals())
@@ -172,18 +173,22 @@ class Power:
 		if self.player and (not dppd or
 			self.player[0].split('|')[0] == dppd.split('|')[0]): revived = 1
 		else: self.player[:0] = [dppd, phase]
-		self.address = [self.player[0].split('|')[1]]
-		if email and email != self.address[0]:
-			self.address[:0] = [email]
-		self.password = password
-		self.game.openMail('Diplomacy takeover notice',
-			mailTo = self.name, mailAs = host.dpjudge)
-		self.game.mail.write(
-			"You are %s %s in game '%s'.\n" %
-			(('now', 'again')[revived], self.game.anglify(self.name), self.game.name) +
-			("Your password is '%s'.\n" % password) * (generated or byMaster) +
-			"Welcome %sto the DPjudge.\n" % ('back ' * revived))
-		self.game.mail.close()
+		if self.isDummy():
+			self.address = self.password = None
+		else:
+			self.address = [self.player[0].split('|')[1]]
+			if email and email != self.address[0]:
+				self.address[:0] = [email]
+			self.password = password
+			self.game.openMail('Diplomacy takeover notice',
+				mailTo = self.name, mailAs = host.dpjudge)
+			self.game.mail.write(
+				"You are %s %s in game '%s'.\n" %
+				(('now', 'again')[revived],
+				self.game.anglify(self.name), self.game.name) +
+				("Your password is '%s'.\n" % password) * (generated or byMaster) +
+				"Welcome %sto the DPjudge.\n" % ('back ' * revived))
+			self.game.mail.close()
 		if resigned: self.game.avail = [x for x in self.game.avail
 			if not x.startswith(self.name + '-')]
 		if not self.game.avail:
@@ -237,7 +242,8 @@ class Power:
 	#	----------------------------------------------------------------------
 	def isCD(self, after = 0):
 		#	-----------------------------------
-		#	Set after to 1 to reveal what will happen after the grace expires.
+		#	Set after to 1 to reveal what will happen after the grace expires,
+		#   or to -1 to know the status before any deadline expires.
 		#	A power is CD...
 		#	if	a CIVIL_DISORDER rule is on
 		#		and the player has not RESIGNED
@@ -252,7 +258,7 @@ class Power:
 		return not self.type and self.player and (
 			self.isDummy() and (
 				not self.ceo and 'CD_DUMMIES' in game.rules or (
-					after or game.deadline <= game.Time() and (
+					after > 0 or after == 0 and game.deadline <= game.Time() and (
 						not self.ceo or game.graceExpired()
 					)
 				) and (
@@ -262,7 +268,8 @@ class Power:
 				)
 			) or
 			not self.isResigned() and (
-				after or game.deadline <= game.Time() and game.graceExpired()
+				after > 0 or after == 0 and game.deadline <= game.Time() and
+				game.graceExpired()
 			) and
 			'CIVIL_DISORDER' in game.rules and
 			{'M': 'CD_SUPPORTS', 'R': 'CD_RETREATS', 'A': 'CD_BUILDS'}

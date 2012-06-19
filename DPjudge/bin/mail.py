@@ -559,10 +559,10 @@ class Procmail:
 					if ('MUST_ORDER' in game.rules
 					and power.name in late and readers != ['MASTER']):
 						self.respond('Press disallowed before order submission')
-					if ('TOUCH_PRESS' in rules and 'PUBLIC_PRESS' not in rules
-					and readers == ['All']):
-						self.respond('Broadcast press not allowed')
-					if ('PUBLIC_PRESS' in rules
+					if 'TOUCH_PRESS' in rules or 'REMOTE_PRESS' in rules:
+						if 'PUBLIC_PRESS' not in rules and readers == ['All']:
+							self.respond('Broadcast press not allowed')
+					elif ('PUBLIC_PRESS' in rules
 					and (claimTo or readers not in (['All'], ['MASTER']))):
 						self.respond('Private press not allowed')
 					if 'NO_PRESS' in rules and readers != ['MASTER']:

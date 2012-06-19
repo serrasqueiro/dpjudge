@@ -171,8 +171,10 @@ class XtalballGame(Game):
 		#	---------------------------
 		#	Move the order sheets ahead
 		#	---------------------------
-		for power in self.powers: power.list = {'SOONER': power.list['LATER']
+		for power in self.powers:
+			power.list = {'SOONER': power.list['LATER']
 			or (power.units and [power.units[0] + ' H']) or []}
+			if power.list['SOONER'] and not power.list['LATER']: power.cd = 1
 		return Game.preMoveUpdate(self)
 	#	----------------------------------------------------------------------
 	def otherResults(self):
@@ -228,7 +230,7 @@ class XtalballGame(Game):
 		#	Empty the order list and then stick each
 		#	order (if any) into it, if it is valid.
 		#	----------------------------------------
-		hadOrders, power.list[which] = power.list[which], []
+		hadOrders, power.list[which], power.cd = power.list[which], [], 0
 		for line in [x.strip() for x in orders]:
 			word = line.split()
 			if not word: continue

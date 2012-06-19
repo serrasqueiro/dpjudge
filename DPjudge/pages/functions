@@ -489,8 +489,8 @@ def powerHeader():
 					<td width=10><!--SPACER--></td>
 					""" % (host.dpjudgeURL, flagFile))
 				break
-		page.write('<th class="bodycopy"><font size=+1>%s</font>' %
-			game.anglify(power.name))
+	page.write('<th class="bodycopy"><font size=+1>%s</font>' %
+		game.anglify(power.name))
 	if power.name == 'MASTER': name = game.master[2]
 	elif power.player: name = power.player[0]
 	else: name = 0

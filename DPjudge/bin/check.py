@@ -1,4 +1,5 @@
 import os, time
+import host
 
 import DPjudge
 
@@ -9,13 +10,14 @@ class Check(DPjudge.Status):
 	and handle each when and as necessary.
 	"""
 	#	----------------------------------------------------------------------
-	def __init__(self):
+	def __init__(self, gameList = None):
 		DPjudge.Status.__init__(self)
 		os.putenv('TZ', 'GMT')
 		now = DPjudge.Game.Time()
 		print 'Checking deadlines at %s GMT' % time.ctime()
 		for gameName, data in self.dict.items():
 			if 'completed' in data or 'held' in data: continue
+			if gameList and gameName not in gameList: continue
 			try: game = self.load(gameName)
 			except:
 				print gameName, 'DOES NOT EXIST!'
@@ -130,4 +132,5 @@ class Check(DPjudge.Status):
 #	---------------
 #	Check all games
 #	---------------
-Check()
+if __name__ == '__main__':
+	Check()

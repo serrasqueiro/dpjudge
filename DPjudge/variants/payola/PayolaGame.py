@@ -749,7 +749,9 @@ class PayolaGame(Game):
 		#	----------------------
 		#	Empty the offer sheets
 		#	----------------------
-		for power in self.powers: power.sheet = power.offers = []
+		for power in self.powers:
+			if not power.offers and (power.units or power.centers): power.cd = 1
+			power.sheet = power.offers = []
 		return Game.preMoveUpdate(self)
 	#	----------------------------------------------------------------------
 	def postMoveUpdate(self):
@@ -771,7 +773,7 @@ class PayolaGame(Game):
 		self.map = self.map or Map.Map()
 		#	-------------------------------------------------
 		#	If the map's flow already holds any INCOME phase,
-		#	leacve it alone.  Otherwise, add a single INCOME
+		#	leave it alone.  Otherwise, add a single INCOME
 		#	phase into the flow after the first ADJUSTMENTS.
 		#	-------------------------------------------------
 		if self.map.flow:
@@ -910,7 +912,7 @@ class PayolaGame(Game):
 	#	----------------------------------------------------------------------
 	def updateOrders(self, power, offers):
 		hadOffers = power.offers
-		power.offers, power.sheet = [], []
+		power.offers, power.sheet, power.cd = [], [], 0
 		for line in filter(None, offers):
 			offer = self.parseOffer(power, line)
 			if offer: power.sheet += [offer]

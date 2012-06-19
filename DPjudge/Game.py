@@ -977,8 +977,6 @@ class Game:
 			elif upword in ('OMNISCIENT', 'OMNISCIENT!'):
 				if power.omniscient: error += ['DOUBLE OMNISCIENT?']
 				else: power.omniscient = 1 + (upword[-1] == '!')
-			elif upword == 'WAIT':
-				power.wait = 1
 			elif upword == 'MSG':
 				power.msg += [' '.join(word[1:])]
 			else: found = 0
@@ -1000,6 +998,10 @@ class Game:
 						else: power.vote = {'LOSS': '0', 'SOLO': '1',
 							'YES': 'YES'}[power.vote]
 					except: error += ['BAD VOTE FOR ' + power.name]
+			elif upword == 'WAIT':
+				power.wait = 1
+			elif upword == 'CD':
+				power.cd = 1
 			#	------------------------------------------
 			#	Every other line (orders, offers, etc.) is
 			#	handled by the variant-specific parsePowerData(),
@@ -1851,7 +1853,8 @@ class Game:
 					seen = [x for x in centers if x in who.sees]
 				if not seen: continue
 				if showing:
-					if who is power: lines += ['SHOW ' +
+					if who == 'UNOWNED': lines += ['SHOW ' + ' '.join(omnis)]
+					elif who is power: lines += ['SHOW ' +
 						' '.join(omnis + [power.name] + ceo)]
 					else: lines += ['SHOW ' + who.name]
 				lines += [y.replace('\0377', '-') for y in textwrap.wrap(
@@ -2202,7 +2205,7 @@ class Game:
 					if not x.goner and y in retreats[x]]:
 					power.goner = done = 0
 	#	----------------------------------------------------------------------
-	def latePowers(self):
+	def latePowers(self, after = 0):
 		lateList = []
 		#	----------------------------------------------------
 		#	Determine if any power's retreats would be fruitless
@@ -2211,8 +2214,8 @@ class Game:
 		#	------------------------------
 		#	See who is late and who is not
 		#	------------------------------
-		for power in [x for x in self.powers if not x.type]:
-			cd = power.isCD()
+		for power in [x for x in self.powers if not x.type and not x.cd]:
+			cd = power.isCD(after)
 			if self.phaseType == 'A':
 				if power.adjust: continue
 				units, centers = len(power.units), len(power.centers)
@@ -2230,8 +2233,8 @@ class Game:
 				#	-----------------------------------------------------
 				if cd or power.goner:
 					if 'CD_RETREATS' not in self.rules or power.goner:
-						power.adjust = ['RETREAT %s DISBAND' % x
-							for x in power.retreats]
+						power.adjust, power.cd = ['RETREAT %s DISBAND' % x
+							for x in power.retreats], 1
 					continue
 			elif power.movesSubmitted() or cd: continue
 			lateList += [power.name]
@@ -2285,6 +2288,7 @@ class Game:
 			#	---------------------------------------------
 			#	We have received a PROCESS command via e-mail
 			#	---------------------------------------------
+			if not self.preview: self.lateNotice(-1)
 			if self.deadline and not self.preview: self.save(asBackup = 1)
 			self.delay = None
 			if self.phaseType == 'M':
@@ -3095,7 +3099,7 @@ class Game:
 			return
 		if self.phaseType == 'R':
 			if [1 for x in self.powers if x.retreats]: return
-			for power in self.powers: power.retreats, power.adjust = {}, []
+			for power in self.powers: power.retreats, power.adjust, power.cd = {}, [], 0
 			return 1
 		if self.phaseType == 'A':
 			text += self.captureCenters()
@@ -3619,8 +3623,8 @@ class Game:
 		#	---------------------------------------------------
 		#	Supply CIVIL_DISORDER retreat and adjustment orders
 		#	---------------------------------------------------
-		for power in [x for x in self.powers if not x.adjust]:
-			if self.phaseType == 'A':
+		if self.phaseType == 'A':
+			for power in [x for x in self.powers if not x.adjust]:
 				diff = len(power.units) - len(power.centers)
 				if [x for x in power.centers
 					if x in power.homes]:
@@ -3628,6 +3632,8 @@ class Game:
 						min(self.map.militia.count(power.name),
 						len([0 for x in power.units
 							if x[2:5] in power.homes])))
+				if not diff: continue
+				power.cd = 1
 				if diff > 0:
 					pref = []
 					for own, sc, home in (
@@ -3641,7 +3647,7 @@ class Game:
 						goner = random.choice(pref[0])
 						pref[0].remove(goner)
 						power.adjust += ['REMOVE ' + goner]
-				elif diff:
+				else:
 					sites = self.buildSites(power)
 					need = min(self.buildLimit(power, sites), -diff)
 					power.adjust = ['BUILD WAIVED'] * need
@@ -3680,7 +3686,13 @@ class Game:
 									if len(limits) > 1: continue
 									removals.append(limits[0])
 									alternatives.remove(limits)
-			elif 'CD_RETREATS' in self.rules:
+		elif self.phaseType == 'R':
+			for power in [x for x in self.powers if x.retreats and not x.adjust]:
+				power.cd = 1
+				if 'CD_RETREATS' not in self.rules:
+					power.adjust = [
+						'RETREAT %s DISBAND' % x for x in power.retreats]
+					continue
 				taken = []
 				for unit in power.retreats:
 					sites = [x for x in power.retreats[unit]
@@ -3697,8 +3709,6 @@ class Game:
 						taken.append(where)
 						power.adjust += ['RETREAT %s - ' % unit + where]
 					else: power.adjust += ['RETREAT %s DISBAND' % unit]
-			else: power.adjust = [
-				'RETREAT %s DISBAND' % x for x in power.retreats]
 		self.save(1)
 		#	-------------------------------------------------
 		#	Determine multiple retreats to the same location.
@@ -3776,7 +3786,7 @@ class Game:
 						's'[count == 1:])]
 				while 'SC?' in power.centers: power.centers.remove('SC?')
 				while 'SC*' in power.centers: power.centers.remove('SC*')
-			power.adjust, power.retreats = [], {}
+			power.adjust, power.retreats, power.cd = [], {}, 0
 		if 'BLIND' in self.rules: list += ['SHOW']
 		return list + ['']
 	#	----------------------------------------------------------------------
@@ -3901,7 +3911,7 @@ class Game:
 		self.end = self.end[self.end[0] == '0':]
 		self.outcome = [self.phaseAbbr()] + victors
 		self.proposal, self.phase = None, 'COMPLETED'
-		for power in self.powers: power.retreats, power.adjust = {}, []
+		for power in self.powers: power.retreats, power.adjust, power.cd = {}, [], 0
 		self.changeStatus('completed')
 		self.save()
 		if 'BLIND' in self.rules:
@@ -4060,9 +4070,11 @@ class Game:
 		if not self.canChangeOrders(power.adjust, adjust): return
 		if not adjust:
 			power.adjust = []
+			power.cd = 0
 			return self.save()
 ###		if 'NO_CHECK' in self.rules:
 ###			power.adjust = power.adjusted = self.adjust
+###			power.cd = 0
 ###			return self.process()
 		orders = []
 		#	------------------------------------------------------------------
@@ -4081,6 +4093,7 @@ class Game:
 		#	-----------------------------------------
 		if not self.error:
 			power.adjust = power.adjusted = adjust
+			power.cd = 0
 			self.process()
 	#	----------------------------------------------------------------------
 	def history(self, email, power = None):
@@ -4240,7 +4253,7 @@ class Game:
 		return results + '\n'
 	#	----------------------------------------------------------------------
 	def updateAdjustOrders(self, power, orders):
-		power.adjust, places = [], []
+		power.adjust, power.cd, places = [], 0, []
 		if not orders: return
 		need = len(power.centers) - len(power.units)
 		if [x for x in power.centers if x in power.homes]:
@@ -4307,7 +4320,7 @@ class Game:
 		else: self.error += ['ADJUSTMENT ORDERS IGNORED (MISCOUNTED)']
 	#	----------------------------------------------------------------------
 	def updateRetreatOrders(self, power, orders):
-		power.adjust, retreated = [], []
+		power.adjust, power.cd, retreated = [], 0, []
 		if not orders: return
 		for order in orders:
 			word = self.addUnitTypes(self.expandOrder([order]))
@@ -4336,12 +4349,23 @@ class Game:
 		return ('Current orders for %s:\n\n%s\n\nEnd of orders.\n' %
 			(self.anglify(power.name), orders or '(NMR)'))
 	#	----------------------------------------------------------------------
-	def lateNotice(self):
-		late, now = self.latePowers(), self.Time()
+	def lateNotice(self, after = 0):
+		#	----------------------------------------------------------------------
+		#	Set after to 1 to force a late notice as if the grace expired,
+		#   or to -1 to get a notice of the powers in CD who were expected to have
+		#	orders in (so not the trivial cases, such as uncontrolled dummies or
+		#	virtually eliminated powers).
+		#	----------------------------------------------------------------------
+		late, now = self.latePowers(after), self.Time()
+		text = ('Diplomacy Game:   %s (%s)\n'
+				'Current Phase:    %s\n' %
+				(self.name, host.dpjudgeID, self.phaseName(form = 2)))
 		#	-----------------------------
 		#	Pre-deadline warning messages
 		#	-----------------------------
-		if not self.deadlineExpired():
+		if after > 0 or self.deadlineExpired():
+			text += 'Missed Deadline:  %s\n' % self.timeFormat()
+		elif after == 0:
 			for power in late: self.mailPress(None, [power],
 				"%s\n\nThe deadline for '%s' is approaching and\n"
 				'orders for %s have not yet been submitted.\n\n'
@@ -4350,17 +4374,24 @@ class Game:
 				self.name, self.anglify(power), self.timeFormat()),
 				subject = 'Diplomacy deadline reminder')
 			return
-		#	-------------------------------------
-		#	Other notices (late and beyond grace)
-		#	-------------------------------------
-		text = ('Diplomacy Game:   %s (%s)\n'
-				'Current Phase:    %s\n'
-				'Missed Deadline:  %s\n' %
-				(self.name, host.dpjudgeID, self.phaseName(form = 2),
-				self.timeFormat()))
+		#	-----------------------------------------
+		#	Other notices (late, beyond grace and cd)
+		#	-----------------------------------------
+		if not late and after < 0: return
 		receivers, who = ['MASTER'], '\n'.join(textwrap.wrap(
 			', '.join(map(self.anglify, late or ['MASTER'])), 70,
 			subsequent_indent = ' ' * 18))
+		#	----------------------------
+		#	Turn is processing -- notify
+		#	the master of those in cd
+		#	----------------------------
+		if after < 0:
+			self.mailPress(None, ['MASTER'], '%s%-17s%s\n' %
+				(text, 'Power%-20s ' % 's in CD:'[len(late) == 1:], who)
+				+ '\n\n(This notice is sent ONLY to the GameMaster '
+				+ 'and any omniscient observer.)',
+				subject = 'Diplomacy CD notice')
+			return
 		#	----------------------------
 		#	Past grace -- resign anyone
 		#	who is still late and say so
