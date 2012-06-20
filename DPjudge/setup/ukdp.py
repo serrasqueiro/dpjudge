@@ -342,5 +342,31 @@ every 20 minutes) we receive a late notice for game testing!
 That's enough for now. Let's go out and announce the resurrection of UKDP to 
 the rest of the world.
 
-One problem that came up. Some mail programs insist on being able to do reverse DNS lookup. To accomplish that, you need to add PTR records. Check the net on how to do that.
+[Continued]
+
+Problems that came up later.
+
+Some mail programs insist on being able to do reverse DNS lookup. To accomplish that, you need to add PTR records. Check the net on how to do that.
+
+After a few players joined the first games, I started receiving "Suspicious activity" emails. This was not because they were on the same network, but because they, and even I, the master, were routed through home.spikings.com when accessing the web page at uk.diplom.org. I decided to create a publicDomains host parameter, move the problematic .aol.com domain names in there, and add .spikings.com to that list. Not entirely satisfactory, so let's look for a real solution.
+
+Game.logAccess() gets its host url from an environment variable called REMOTE_ADDR that Apache fills in. But with a reverse proxy the host gets in the way. To resolve that we need to install a package called mod_rpaf.
+> sudo apt-get install libapache2-mod-rpaf
+> sudo /etc/init.d/apache2 restart
+Log in to a game as GM and check the access file (link at the bottom of the page, above the Submit button).
+Still home.spikings.com. Hmm. Right, we need to add the host ip to rpaf's config parameters. To find the ip, we comment out the socket.gethostbyaddr() lines in Game.logAccess() and log in to the web page again. The top of the access log (or bottom of the access file) now shows:
+---
+Wed Jun 20 01:09:14 2012 2a01:348:1f1:10::1 MASTER     !-MASTER-!
+---
+Let's add that ip address (never mind that it's in IPv6 format) to the proxy list of rpaf:
+> sudo vi /etc/apache2/mods-enabled/rpaf.conf
+---
+<IfModule mod_rpaf.c>
+RPAFenable On
+RPAFsethostname On
+RPAFproxy_ips 127.0.0.1 2a01:348:1f1:10::1
+</IfModule>
+---
+Restart apache, log in to a game page, check the access log, and presto: The correct host name appears.
+
 """

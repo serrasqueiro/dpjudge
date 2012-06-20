@@ -4533,8 +4533,7 @@ class Game:
 		if ([power, pwd.upper()] in ['MASTER', self.password.upper()] + powers
 		and not self.private
 		and origin != 'unknown'
-		and '.proxy.aol.com' not in origin
-		and '.mx.aol.com' not in origin):
+		and not [1 for x in host.publicDomains if x in origin]):
 			try: lines = open(access, encoding='latin-1').readlines()
 			except: lines = []
 			for line in lines:

@@ -52,6 +52,11 @@ needIndexWWW	=	False
 dppd			=	'dppd@diplom.org'
 dppdURL			=	'http://www.floc.net/dpjudge?variant=dppd'
 
+#	-----------------------------------------------------------------------
+#	Domains that are exempt from suspicious activity checks in public games
+#	-----------------------------------------------------------------------
+publicDomains	=	['.proxy.aol.com', '.mx.aol.com', '.spikings.com']
+
 #	------------------------------
 #	Database connection parameters
 #	------------------------------

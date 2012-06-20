@@ -18,6 +18,7 @@ for (var, value) in [
 ('gameMapSubDir', 'maps'),
 ('zoneFileName', 'zone.tab'),
 ('bannerHtml', ''), ('tester', ''), ('openingsList', ''),
+('publicDomains', []),
 ('copy', 0), ('notify', 0)]:
 	vars(host).setdefault(var, value)
 
