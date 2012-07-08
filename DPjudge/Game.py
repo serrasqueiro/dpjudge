@@ -4255,7 +4255,7 @@ class Game:
 	def updateAdjustOrders(self, power, orders):
 		power.adjust, power.cd, places = [], 0, []
 		if not orders: return
-		need = len(power.centers) - len(power.units)
+		need, sites = len(power.centers) - len(power.units), 0
 		if [x for x in power.centers if x in power.homes]:
 			need += (self.map.reserves.count(power.name) +
 				min(self.map.militia.count(power.name),

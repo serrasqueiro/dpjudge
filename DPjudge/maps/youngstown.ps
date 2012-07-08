@@ -124,18 +124,18 @@
 %  294  835 NTH    North Sea
 %  408  865 NWG    Norwegian Sea
 %  341  829 NWY    Norway
-%  326  887 OBA    Off Board A
-%  145  887 OBB    Off Board B
-%   26  887 OBC    Off Board C
-%   26  805 OBD    Off Board D
-%   26  721 OBE    Off Board E
-%   26  349 OBF    Off Board F
-%   26  141 OBG    Off Board G
-%  142   26 OBH    Off Board H
-%  424   26 OBI    Off Board I
-% 1007   26 OBJ    Off Board J
-% 1007  220 OBK    Off Board K
-% 1007  800 OBL    Off Board L
+%  326  885 OBA    Off Board A
+%  145  885 OBB    Off Board B
+%   28  885 OBC    Off Board C
+%   28  805 OBD    Off Board D
+%   28  721 OBE    Off Board E
+%   28  349 OBF    Off Board F
+%   28  141 OBG    Off Board G
+%  142   28 OBH    Off Board H
+%  424   28 OBI    Off Board I
+% 1005   28 OBJ    Off Board J
+% 1005  220 OBK    Off Board K
+% 1005  800 OBL    Off Board L
 %  949  669 OKH    Sea of Okhotsk
 %  737  507 OMO    Outer Mongolia
 %  572  638 OMS    Omsk
@@ -273,8 +273,8 @@
 	/IceGrey .9 g
 	/ArrowBlack 0 g
 	/ArrowWhite .9 g
-	/White .9 g
 	/Black 0 g
+	/White .9 g
 	/Grey .7 g
 	/LandBrown .8 .7 .4 r
 	/SeaBlue .1 .4 .6 r
@@ -664,18 +664,18 @@
 	/d xd
 	/f xd
 	/h xd
-	(OBC) (BDHIJK) 26 887 h
-	(OBB) (ACKL) 145 887 h
-	(OBA) (BL) 326 887 h
-	(OBL) (ABK) 1007 800 h
-	(OBK) (BCJL) 1007 220 h
-	(OBH) (CGI) 142 26 h
-	(OBI) (CH) 424 26 h
-	(OBJ) (CK) 1007 26 h
-	(OBD) (CEFG) 26 805 f
-	(OBG) (DEFH) 26 141 f
-	(OBE) (DG) 26 721 d
-	(OBF) (DG) 26 349 d
+	(OBC) (BDHIJK) 28 885 h
+	(OBB) (ACKL) 145 885 h
+	(OBA) (BL) 326 885 h
+	(OBL) (ABK) 1005 800 h
+	(OBK) (BCJL) 1005 220 h
+	(OBH) (CGI) 142 28 h
+	(OBI) (CH) 424 28 h
+	(OBJ) (CK) 1005 28 h
+	(OBD) (CEFG) 28 805 f
+	(OBG) (DEFH) 28 141 f
+	(OBE) (DG) 28 721 d
+	(OBF) (DG) 28 349 d
 	end
 } def
 /SetArrowStateOk {
@@ -3268,7 +3268,9 @@
 	fk
 } bd
 /ShapeArrows {
-	307 902 t -176.63 o 5.03 1.5 m 0 1.5 l 0 -1.5 l 5.03 -1.5 l 5.03 5 l 17.03 0 l 5.03 -5 l p 176.63 o -307 -902 t
+	307 898 t 180 o
+	5 1.5 m 0 1.5 l 0 -1.5 l 5 -1.5 l 5 -5 l 17 0 l 5 5 l p
+	-180 o -307 -898 t
 	fk
 } bd
 {

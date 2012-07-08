@@ -15,7 +15,7 @@
 % INFO
 %  948  474 ADR    Adriatic Sea
 %  395  470 ALA    Alaska
-%  764   32 ALG    Algiers
+%  765   32 ALG    Algiers
 %  404  580 AMU    Amursk
 %  505  433 ARC    Arctic Ocean
 %  867  403 AUS    Austria
@@ -120,7 +120,7 @@
 %  817  761 TUR    Turkey
 %  869  323 VEN    Venice
 %  246  279 WAS    Washington
-%  476  219 WBR    Western Britain
+%  486  219 WBR    Western Britain
 %  797  135 WES    Western Mediterranean Sea
 %  341  725 YEL    Yellow Sea
 %  899  524 YUG    Yugoslavia
@@ -186,8 +186,8 @@
 	/IceGrey .9 g
 	/ArrowBlack 0 g
 	/ArrowWhite .9 g
-	/White .9 g
 	/Black 0 g
+	/White .9 g
 	/Grey .7 g
 	/LandBrown .8 .7 .4 r
 	/SeaBlue .1 .4 .6 r
@@ -196,7 +196,7 @@
 	/DarkGreen 0 .4 0 r
 	/Red 1 0 0 r
 	/Blue 0 0 1 r
-	/Orange 1 .6 0 r
+	/Yellow 1 1 0 r
 	/Turquoise .2 .7 .7 r
 	/Mauve 1 0 1 r
 	/@LimeGreen .196 .804 .196 r
@@ -207,7 +207,7 @@
 	1 dict begin
 	/p xd
 	/BRITAIN (B) /Blue /White p
-	/CHINA (C) /Orange /White p
+	/CHINA (C) /Yellow /Black p
 	/FRANCE (F) /Turquoise /Black p
 	/GERMANY (G) /Black /White p
 	/JAPAN (J) /Grey /Black p
@@ -217,9 +217,6 @@
 	/UNOWNED (?) /Brown /White p
 	end
 } def
-/Controls {
-	/ChangeController true def
-} bd
 /DrawFleet {
 	SwitchToMapMode
 	Power begin
@@ -280,9 +277,10 @@
 	pop pop pop
 } bd
 /VisitTerritories {
-	5 dict begin
+	6 dict begin
 	/b xd
 	/g xd
+	/p xd
 	/w xd
 	/l xd
 	/c xd
@@ -294,11 +292,9 @@
 	(EGY) 953 802 c
 	(KAZ) 646 766 c
 	(TUR) 817 761 c
-	(OKI) 218 727 c
 	(PEK) 417 707 c
 	(KYU) 288 694 c
 	(STA) 719 698 c
-	(SOL) 154 687 c
 	(KOR) 348 666 c
 	(RUM) 815 655 c
 	(GRE) 881 641 c
@@ -312,13 +308,11 @@
 	(YUG) 899 524 c
 	(SWE) 645 476 c
 	(ALA) 395 470 c
-	(MID) 177 460 c
 	(ROM) 980 415 c
 	(NWY) 591 411 c
 	(BER) 735 402 c
 	(ORE) 291 393 c
 	(DEN) 652 386 c
-	(HAW) 134 375 c
 	(CAL) 243 345 c
 	(HAM) 685 337 c
 	(VEN) 869 323 c
@@ -329,12 +323,12 @@
 	(PAN) 189 263 c
 	(LON) 541 249 c
 	(LOW) 625 236 c
-	(WBR) 476 219 c
+	(WBR) 486 219 c
 	(PAR) 600 201 c
 	(GAS) 565 135 c
 	(MAR) 690 130 c
 	(GIB) 468 59 c
-	(ALG) 764 32 c
+	(ALG) 765 32 c
 	(NEP) 585 905 l
 	(CHU) 520 828 l
 	(SIN) 502 714 l
@@ -376,6 +370,10 @@
 	(WES) 797 135 w
 	(BIS) 475 131 w
 	(SAO) 301 73 w
+	(OKI) 218 727 p
+	(SOL) 154 687 p
+	(MID) 177 460 p
+	(HAW) 134 375 p
 	(MDE) 769 853 g
 	(TOK) 276 630 g
 	(LEN) 561 591 g
@@ -430,7 +428,7 @@
 	/BER 751 429 s
 	/DEN 676 410 s
 	/HAW 117 398 s
-	/HAM 687 370 s
+	/HAM 693 370 s
 	/CAL 220 366 s
 	/VEN 886 347 s
 	/ROM 954 339 s
@@ -761,6 +759,9 @@
 	4 -7 8 -7 12 -4 c
 	k
 	r
+} bd
+/Controls {
+	/ChangeController true def
 } bd
 /SplitString {
 	7 dict begin
@@ -1116,6 +1117,7 @@
 	s
 	{ DarkGreen 3 2 roll DrawAlias } bind
 	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ White 3 2 roll DrawAlias } bind
 	{ White 3 2 roll DrawAlias } bind
 	{ DarkGreen 3 2 roll DrawAlias } bind
 	{ pop pop pop } bind
@@ -2739,17 +2741,33 @@
 	fk
 } bd
 /ShapeBridges {
-	478 50 t -90 o 20 .5 m 4 .5 l 4 4 l 0 0 l 4 -4 l 4 -.5 l 20 -.5 l 20 -4 l 24 0 l 20 4 l p 90 o -478 -50 t
+	478 50 t -90 o
+	20 .5 m 4 .5 l 4 4 l 0 0 l 4 -4 l 4 -.5 l 20 -.5 l 20 -4 l 24 0 l 20 4 l p
+	90 o -478 -50 t
 	fk
 } bd
 /ShapeHops {
-	264 726 t -42.88 o 19.1 .5 m 0 .5 l 0 -.5 l 19.1 -.5 l p 42.88 o -264 -726 t
-	196 719 t -152.59 o 30.41 .5 m 0 .5 l 0 -.5 l 30.41 -.5 l p 152.59 o -196 -719 t
-	243 718 t -64.86 o 54.13 .5 m 0 .5 l 0 -.5 l 54.13 -.5 l p 64.86 o -243 -718 t
-	179 433 t -49.67 o 69.53 .5 m 0 .5 l 0 -.5 l 69.53 -.5 l p 49.67 o -179 -433 t
-	162 438 t -126.87 o 20 .5 m 0 .5 l 0 -.5 l 20 -.5 l p 126.87 o -162 -438 t
-	166 378 t -28.07 o 51 .5 m 0 .5 l 0 -.5 l 51 -.5 l p 28.07 o -166 -378 t
-	156 369 t -41.53 o 46.75 .5 m 0 .5 l 0 -.5 l 46.75 -.5 l p 41.53 o -156 -369 t
+	264 726 t -42.88 o
+	19.1 .5 m 0 .5 l 0 -.5 l 19.1 -.5 l p
+	42.88 o -264 -726 t
+	196 719 t -152.59 o
+	30.41 .5 m 0 .5 l 0 -.5 l 30.41 -.5 l p
+	152.59 o -196 -719 t
+	243 718 t -64.86 o
+	54.13 .5 m 0 .5 l 0 -.5 l 54.13 -.5 l p
+	64.86 o -243 -718 t
+	179 433 t -49.67 o
+	69.53 .5 m 0 .5 l 0 -.5 l 69.53 -.5 l p
+	49.67 o -179 -433 t
+	162 438 t -126.87 o
+	20 .5 m 0 .5 l 0 -.5 l 20 -.5 l p
+	126.87 o -162 -438 t
+	166 378 t -28.07 o
+	51 .5 m 0 .5 l 0 -.5 l 51 -.5 l p
+	28.07 o -166 -378 t
+	156 369 t -41.53 o
+	46.75 .5 m 0 .5 l 0 -.5 l 46.75 -.5 l p
+	41.53 o -156 -369 t
 	fk
 } bd
 {
