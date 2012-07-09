@@ -271,9 +271,9 @@ UNOWNED DEN FIN GRE INC KOR LOW MID NWY OKI POL
 UNOWNED ROM RUM SOL SPA TUR VEN YUG
 
 # ---------------------------------------------------
-# Game starts in Winter 1930 to build in home centers
+# Game starts in Winter 1939 to build in home centers
 # ---------------------------------------------------
-BEGIN WINTER 1930 ADJUSTMENTS
+BEGIN WINTER 1939 ADJUSTMENTS
 
 # ---------------------
 # Twenty centers to win 
@@ -288,9 +288,9 @@ RULE CD_BUILDS
 RULE IMMOBILE_DUMMIES
 
 # ----------------------------------------------------------------------------
-# In Winter 1930 CAL is an alternative for NYO only, and both hide their build
+# In Winter 1939 CAL is an alternative for NYO only, and both hide their build
 # ----------------------------------------------------------------------------
-IN W1930A
+IN W1939A
 U+S+A
 HOMES ~@CAL(NYO) HAW ~NYO WAS
 

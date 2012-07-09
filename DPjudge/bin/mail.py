@@ -69,72 +69,80 @@ class Procmail:
 				lineNo = 0
 				continue
 			upword = word[0].upper()
-			#	----------------------------
-			#	Detect game creation message
-			#	----------------------------
-			if upword == 'CREATE':
-				if len(word) < 2: self.respond('No game name to CREATE')
+			#	----------------------------------------
+			#	Detect game creation or deletion message
+			#	----------------------------------------
+			if upword in ('CREATE', 'PURGE'):
+				if len(word) < 2: self.respond('No game name to %s' % upword)
 				if len(word) < 3: self.respond('No Master password given')
-				if len(word) > 4: self.respond('Unrecognized CREATE data')
+				if len(word) > 4: self.respond('Unrecognized %s data' % upword)
 				game, password = ' '.join(word[1:3]).lower().split()
 				for ch in game:
 					if not (ch.islower() or ch == '_' or ch.isdigit()):
 						self.respond('Game name cannot contain ' + `ch`)
 				if '<' in password or '>' in password:
 					self.respond('Password cannot contain < or >')
-				games, mode, unlisted = Status(), 'preparation', 0
-				#if len([1 for x in games.dict.values()
-				#	if 'forming' in x or 'preparation' in x]) > 20:
-				#	self.respond('CREATE is disabled -- '
-				#		'too many games currently need players')
-				if game in games.dict:
-					self.respond("Game name '%s' already used" % game)
-				if len(word) == 3: variant = 'standard'
-				else: variant = word[3].lower()
-				try: desc = __import__('DPjudge.variants.' + variant, globals(),
-					locals(), `variant`).VARIANT
-				except: self.respond('Unrecognized rule variant: ' + variant)
-				self.dppdMandate(upword)
-				dir, onmap = host.gameDir + '/' + game, ''
-				os.mkdir(dir)
-				os.chmod(dir, 0777)
-				file = open(dir + '/status', 'w')
-				temp = ('GAME %s\nPHASE FORMING\nMASTER %s\n' +
-					'PASSWORD %s\n') % (game, self.dppd, word[2].lower())
-				file.write(temp.encode('latin-1'))
-				for info in self.message[1:]:
-					word = ''.join(info.upper().split()[:1])
-					if word == 'DESC': break
-					if word in ('MAP', 'TRIAL'): onmap = ' on the %s%s map' % (
-						''.join(info.split()[1:2]).title(),
-						('', ' trial')[word == 'TRIAL'])
+				if upword[0] == 'P':
+					response = Status().purgeGame(game, 0, password)
+					if not response: 
+						del self.message[:lineNo - 1]
+						response = ['Game %s purged from this DPjudge' % game]
+					self.response += response
+					self.respond()
 				else:
-					temp = 'DESC A %s game%s.\n' % (desc, onmap)
+					games, mode, unlisted = Status(), 'preparation', 0
+					#if len([1 for x in games.dict.values()
+					#	if 'forming' in x or 'preparation' in x]) > 20:
+					#	self.respond('CREATE is disabled -- '
+					#		'too many games currently need players')
+					if game in games.dict:
+						self.respond("Game name '%s' already used" % game)
+					if len(word) == 3: variant = 'standard'
+					else: variant = word[3].lower()
+					try: desc = __import__('DPjudge.variants.' + variant, globals(),
+						locals(), `variant`).VARIANT
+					except: self.respond('Unrecognized rule variant: ' + variant)
+					self.dppdMandate(upword)
+					dir, onmap = host.gameDir + '/' + game, ''
+					os.mkdir(dir)
+					os.chmod(dir, 0777)
+					file = open(dir + '/status', 'w')
+					temp = ('GAME %s\nPHASE FORMING\nMASTER %s\n' +
+						'PASSWORD %s\n') % (game, self.dppd, word[2].lower())
 					file.write(temp.encode('latin-1'))
-				for info in self.message[1:]:
-					word = ''.join(info.upper().split()[:1])
-					if word == 'SIGNOFF': break
-					if word in ('GAME', 'PHASE', 'MASTER'): pass
-					elif word == 'FORM': mode = 'forming'
-					# elif word == 'UNLISTED': unlisted = 1
-					else: file.write((info + '\n').encode('latin-1'))
-				file.close()
-				os.chmod(file.name, 0666)
-				games.dict[game] = [variant, mode]
-				if unlisted: games.dict[game] += ['unlisted']
-				games.save()
-				self.game, self.message = Game(game), []
-				if self.game.private:
-					games.dict[game] += ['private']
+					for info in self.message[1:]:
+						word = ''.join(info.upper().split()[:1])
+						if word == 'DESC': break
+						if word in ('MAP', 'TRIAL'): onmap = ' on the %s%s map' % (
+							''.join(info.split()[1:2]).title(),
+							('', ' trial')[word == 'TRIAL'])
+					else:
+						temp = 'DESC A %s game%s.\n' % (desc, onmap)
+						file.write(temp.encode('latin-1'))
+					for info in self.message[1:]:
+						word = ''.join(info.upper().split()[:1])
+						if word == 'SIGNOFF': break
+						if word in ('GAME', 'PHASE', 'MASTER'): pass
+						elif word == 'FORM': mode = 'forming'
+						# elif word == 'UNLISTED': unlisted = 1
+						else: file.write((info + '\n').encode('latin-1'))
+					file.close()
+					os.chmod(file.name, 0666)
+					games.dict[game] = [variant, mode]
+					if unlisted: games.dict[game] += ['unlisted']
 					games.save()
-				observers = host.observers
-				if type(observers) is not list: observers = [observers]
-				self.respond("Game '%s' has been created.  %s at:\n"
-					'   %s%s?game=%s\n\nWelcome to the DPjudge' %
-					(game, ('Finish preparation', 'Game is now forming')
-					[mode == 'forming'], host.dpjudgeURL,
-					'/index.cgi' * (os.name == 'nt'), game),
-					copyTo = observers + self.game.map.notify)
+					self.game, self.message = Game(game), []
+					if self.game.private:
+						games.dict[game] += ['private']
+						games.save()
+					observers = host.observers
+					if type(observers) is not list: observers = [observers]
+					self.respond("Game '%s' has been created.  %s at:\n"
+						'   %s%s?game=%s\n\nWelcome to the DPjudge' %
+						(game, ('Finish preparation', 'Game is now forming')
+						[mode == 'forming'], host.dpjudgeURL,
+						'/index.cgi' * (os.name == 'nt'), game),
+						copyTo = observers + self.game.map.notify)
 			#	---------------------------------------------------
 			#	Detect player message (SIGNON, RESIGN, or TAKEOVER)
 			#	---------------------------------------------------

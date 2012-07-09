@@ -817,8 +817,10 @@ def showAdjustList():
 	if count > 0:
 		action, list = 'BUILD', ['WAIVED']
 		for site in sorted([x.upper() for x in game.map.locType]):
-			if site[:3] in buildable: list += filter(
-				game.map.isValidUnit, ('A ' + site, 'F ' + site))
+			if site[:3] in buildable: list += [x + ' HIDDEN' * (
+				'HIDE_BUILDS' in game.rules or 
+				site[:3] in game.map.hidden.get(power.name, [])
+				) for x in ('A ' + site, 'F ' + site) if game.map.isValidUnit(x)]
 	elif count: action, list = 'REMOVE', sorted(power.units)
 	else: return
 	#	----------------------

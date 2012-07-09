@@ -630,7 +630,7 @@ class Game:
 		elif blockMode == 3:
 			self.finishPowerData(power)
 		self.validateStatus()
-		self.setState()
+		self.collectState()
 	#	----------------------------------------------------------------------
 	def loadDirectives(self, directives):
 		#	---------------------------------------------
@@ -2388,7 +2388,8 @@ class Game:
 				"Diplomacy game '%s' has been reset to the forming state,\n"
 				'but the players retain their assigned power.\n'
 				"The Master will have to either set the game to 'active' mode\n"
-				'or roll forward.\n' % self.name)
+				'or roll forward.\n' % self.name,
+				subject = 'Diplomacy rollback notice')
 			try: os.unlink(self.file('results'))
 			except: pass
 			name = self.name.encode('latin-1')
@@ -4273,11 +4274,12 @@ class Game:
 					x not in [y[0] for y in 
 					self.map.alternative[power.name]]]
 				else: limits = limits[:1] + [
-				x for x in limits[1:] if x in sites]
+					x for x in limits[1:] if x in sites]
 				if len(limits) > 1: alternatives += [limits]
 		for order in orders:
 			word = self.addUnitTypes(self.expandOrder([order]))
 			if word[0] != orderType: word[:0] = [orderType]
+			if len(word) == 4 and word[3] == 'HIDDEN': word = word[:-1]
 			order = ' '.join(word)
 			if need < 0:
 				if len(word) == 3:
@@ -4601,7 +4603,7 @@ class Game:
 		mail.close()
 		return 1
 	#	-------------------------------------------------------
-	def setState(self):
+	def collectState(self):
 		if self.status[1] == 'preparation': return
 		if self.error and self.status[1] not in ('completed', 'terminated'):
 			self.status[1] = 'error'
@@ -4626,7 +4628,7 @@ class Game:
 	def updateState(self):
 		# return # TEMP! BUT AS OF NEW YEARS MOMENT 2007, APACHE SEEMS WAY SICK
 		if not host.dppdURL: return
-		self.setState()
+		self.collectState()
 		header = '|'.join([x + ':' + (y or '') for x,y in self.state.items()])
 		if self.outcome: result = '|RESULT:' + ':'.join(self.outcome)
 		else: result = ''
@@ -4652,6 +4654,9 @@ class Game:
 	def changeStatus(self, status):
 		self.status[1] = status
 		Status().changeStatus(self.name, status)
+	#	----------------------------------------------------------------------
+	def setState(self, status):
+		self.changeStatus(status)
 	#	----------------------------------------------------------------------
 	def loadRules(self):
 		rule = group = variant = ''
