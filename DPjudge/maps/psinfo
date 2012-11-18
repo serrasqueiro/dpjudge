@@ -30,14 +30,14 @@ ancmed 21,50,584,474
 ambition 30,22,539,478
 classical 17,75,583,461
 hundred 21,24,396,528
-modern 72,41,573,524
+modern 20,22,495,485
 
 # Asia
 canton 21,22,584,454
 sengoku 21,22,574,502
 
 # America
-empire 12,272,461,756 _ 0
+empire 21,22,454,494
 
 # World
 imperial 10,12,1179,607
