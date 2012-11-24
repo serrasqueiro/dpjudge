@@ -174,13 +174,12 @@
 	/IceGrey .9 g
 	/ArrowBlack 0 g
 	/ArrowWhite .9 g
-	/White .9 g
 	/Black 0 g
+	/White .9 g
 	/LandBrown .8 .7 .4 r
 	/SeaBlue .1 .4 .6 r
 	/ArrowRed 1 0 0 r
 	/ArrowBlue .529 .808 .922 r
-	/DarkGreen 0 .4 0 r
 	/Red 1 0 0 r
 	/Blue 0 0 1 r
 	/@Purple .502 0 .502 r
@@ -193,6 +192,7 @@
 	/@Gold 1 .843 0 r
 	/@Green 0 .502 0 r
 	/Brown .6 .45 .2 r
+	/DarkGreen 0 .4 0 r
 	end
 } def
 /VisitPowers {
@@ -215,9 +215,6 @@
 	/UNOWNED (?) /Brown /White () p
 	end
 } def
-/Controls {
-	/ChangeController true def
-} bd
 /DrawFleet {
 	SwitchToMapMode
 	Power begin
@@ -760,6 +757,47 @@
 	k
 	r
 } bd
+/PaintMap {
+	SwitchToMapMode
+	s
+	SeaBlue 0 0 680 611 rectfill
+	IncludeSeaBorders
+	IncludeLand
+	IncludeInternalBorders
+	IncludeBorders
+	IncludeMountain
+	IncludeLake
+	IncludeCrossings
+	r
+} bd
+/DrawMap {
+	PageSetup
+	PaintMap
+	DrawSupplies
+} bd
+/DrawSupplies {
+	SwitchToMapMode
+	UNOWNEDCENTER
+	{ supply pop } bind
+	VisitSupplies
+} bd
+/DrawAliases {
+	NameTerritories
+} bd
+/NameTerritories {
+	SwitchToMapMode
+	s
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ White 3 2 roll DrawAlias } bind
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ pop pop pop } bind
+	VisitTerritories
+	r
+} bd
+/Controls {
+	/ChangeController true def
+} bd
 /SplitString {
 	7 dict begin
 	/nrChars xd
@@ -1106,44 +1144,6 @@
 	p
 	s 8 w Black k r
 	clipsave clip k cliprestore
-	r
-} bd
-/PaintMap {
-	SwitchToMapMode
-	s
-	SeaBlue 0 0 680 611 rectfill
-	IncludeSeaBorders
-	IncludeLand
-	IncludeInternalBorders
-	IncludeBorders
-	IncludeMountain
-	IncludeLake
-	IncludeCrossings
-	r
-} bd
-/DrawMap {
-	PageSetup
-	PaintMap
-	DrawSupplies
-} bd
-/DrawSupplies {
-	SwitchToMapMode
-	UNOWNEDCENTER
-	{ supply pop } bind
-	VisitSupplies
-} bd
-/DrawAliases {
-	NameTerritories
-} bd
-/NameTerritories {
-	SwitchToMapMode
-	s
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ White 3 2 roll DrawAlias } bind
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ pop pop pop } bind
-	VisitTerritories
 	r
 } bd
 /IncludeSeaBorders {
@@ -2924,9 +2924,15 @@
 	fk
 } bd
 /ShapeBridges {
-	164 356 t 0 o 14.75 .38 m 2.25 .38 l 2.25 1.5 l 0 0 l 2.25 -1.5 l 2.25 -.38 l 14.75 -.38 l 14.75 -1.5 l 17 0 l 14.75 1.5 l p 0 o -164 -356 t
-	325 340 t 0 o 6.75 .38 m 2.25 .38 l 2.25 1.5 l 0 0 l 2.25 -1.5 l 2.25 -.38 l 6.75 -.38 l 6.75 -1.5 l 9 0 l 6.75 1.5 l p 0 o -325 -340 t
-	488 108 t -90 o 11.75 .38 m 2.25 .38 l 2.25 1.5 l 0 0 l 2.25 -1.5 l 2.25 -.38 l 11.75 -.38 l 11.75 -1.5 l 14 0 l 11.75 1.5 l p 90 o -488 -108 t
+	164 356 t
+	14.75 .38 m 2.25 .38 l 2.25 1.5 l 0 0 l 2.25 -1.5 l 2.25 -.38 l 14.75 -.38 l 14.75 -1.5 l 17 0 l 14.75 1.5 l p
+	-164 -356 t
+	325 340 t
+	6.75 .38 m 2.25 .38 l 2.25 1.5 l 0 0 l 2.25 -1.5 l 2.25 -.38 l 6.75 -.38 l 6.75 -1.5 l 9 0 l 6.75 1.5 l p
+	-325 -340 t
+	488 108 t -90 o
+	11.75 .38 m 2.25 .38 l 2.25 1.5 l 0 0 l 2.25 -1.5 l 2.25 -.38 l 11.75 -.38 l 11.75 -1.5 l 14 0 l 11.75 1.5 l p
+	90 o -488 -108 t
 	fk
 } bd
 {
@@ -2936,6 +2942,8 @@
 }{
 	currentdict end 6 1 roll [ 5 1 roll /setcmykcolor load ] cvx def begin
 } bind VisitColors
+{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind
+VisitSupplies
 s
 MapUnitLetterFont z
 {
@@ -2962,6 +2970,4 @@ r
 /PROTESTANTCENTER /PROTESTANT ld
 /MUSLIMCENTER /MUSLIM ld
 /UNOWNEDCENTER /UNOWNED ld
-{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind
-VisitSupplies
 %%EndSetup

@@ -280,7 +280,6 @@
 	/SeaBlue .1 .4 .6 r
 	/ArrowRed 1 0 0 r
 	/ArrowBlue .529 .808 .922 r
-	/DarkGreen 0 .4 0 r
 	/Red 1 0 0 r
 	/Orange 1 .6 0 r
 	/Blue 0 0 1 r
@@ -289,6 +288,7 @@
 	/Mauve 1 0 1 r
 	/Yellow 1 1 0 r
 	/Brown .6 .45 .2 r
+	/DarkGreen 0 .4 0 r
 	end
 } def
 /VisitPowers {
@@ -307,9 +307,6 @@
 	/UNOWNED (?) /Brown /White p
 	end
 } def
-/Controls {
-	/ChangeController true def
-} bd
 /DrawFleet {
 	SwitchToMapMode
 	Power begin
@@ -1041,6 +1038,83 @@
 	k
 	r
 } bd
+/PaintMap {
+	SwitchToMapMode
+	s
+	SeaBlue 0 0 1033 913 rectfill
+	IncludeIce
+	IncludeLand
+	IncludeLake
+	IncludeMountain
+	IncludeBorders
+	IncludeInternalBorders
+	IncludeSeaBorders
+	IncludeCanalBorders
+	IncludePointers
+	r
+} bd
+/DrawMap {
+	PageSetup
+	PaintMap
+	DrawSupplies
+	DrawOffBoardBoxes
+} bd
+/DrawSupplies {
+	SwitchToMapMode
+	UNOWNEDCENTER
+	{ supply pop } bind
+	VisitSupplies
+} bd
+/DrawOffBoard {
+	s
+	t
+	.5 .5 x
+	24.5 24.5 10.5 0 90 a
+	-24.5 24.5 10.5 90 180 a
+	-24.5 -24.5 10.5 180 270 a
+	24.5 -24.5 10.5 270 0 a
+	1 w BorderBlack
+	p
+	k
+	r
+} bd
+/DrawOffBoardBoxes {
+	SwitchToMapMode
+	s
+	{ DrawOffBoard pop pop } bind
+	{ DrawOffBoard pop pop } bind
+	{ DrawOffBoard pop pop } bind
+	VisitOffBoardBoxes
+	r
+} bd
+/DrawAliases {
+	NameTerritories
+	NameOffBoardBoxes
+} bd
+/NameTerritories {
+	SwitchToMapMode
+	s
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ White 3 2 roll DrawAlias } bind
+	{ pop pop pop } bind
+	{ pop pop pop } bind
+	{ pop pop pop } bind
+	VisitTerritories
+	r
+} bd
+/NameOffBoardBoxes {
+	SwitchToMapMode
+	s
+	{ White 2 copy 6 5 roll DrawAlias exch exch -7 add 3 2 roll DrawAlias } bind
+	{ DarkGreen 2 copy 6 5 roll DrawAlias exch exch -7 add 3 2 roll DrawAlias } bind
+	{ DarkGreen 2 copy 6 5 roll DrawAlias exch exch -7 add 3 2 roll DrawAlias } bind
+	VisitOffBoardBoxes
+	r
+} bd
+/Controls {
+	/ChangeController true def
+} bd
 /SplitString {
 	7 dict begin
 	/nrChars xd
@@ -1362,80 +1436,6 @@
 	p
 	s 8 w Black k r
 	clipsave clip k cliprestore
-	r
-} bd
-/PaintMap {
-	SwitchToMapMode
-	s
-	SeaBlue 0 0 1033 913 rectfill
-	IncludeIce
-	IncludeLand
-	IncludeLake
-	IncludeMountain
-	IncludeBorders
-	IncludeInternalBorders
-	IncludeSeaBorders
-	IncludeCanalBorders
-	IncludePointers
-	r
-} bd
-/DrawMap {
-	PageSetup
-	PaintMap
-	DrawSupplies
-	DrawOffBoardBoxes
-} bd
-/DrawSupplies {
-	SwitchToMapMode
-	UNOWNEDCENTER
-	{ supply pop } bind
-	VisitSupplies
-} bd
-/DrawOffBoard {
-	s
-	t
-	.5 .5 x
-	24.5 24.5 10.5 0 90 a
-	-24.5 24.5 10.5 90 180 a
-	-24.5 -24.5 10.5 180 270 a
-	24.5 -24.5 10.5 270 0 a
-	1 w BorderBlack
-	p
-	k
-	r
-} bd
-/DrawOffBoardBoxes {
-	SwitchToMapMode
-	s
-	{ DrawOffBoard pop pop } bind
-	{ DrawOffBoard pop pop } bind
-	{ DrawOffBoard pop pop } bind
-	VisitOffBoardBoxes
-	r
-} bd
-/DrawAliases {
-	NameTerritories
-	NameOffBoardBoxes
-} bd
-/NameTerritories {
-	SwitchToMapMode
-	s
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ White 3 2 roll DrawAlias } bind
-	{ pop pop pop } bind
-	{ pop pop pop } bind
-	{ pop pop pop } bind
-	VisitTerritories
-	r
-} bd
-/NameOffBoardBoxes {
-	SwitchToMapMode
-	s
-	{ White 2 copy 6 5 roll DrawAlias exch exch -7 add 3 2 roll DrawAlias } bind
-	{ DarkGreen 2 copy 6 5 roll DrawAlias exch exch -7 add 3 2 roll DrawAlias } bind
-	{ DarkGreen 2 copy 6 5 roll DrawAlias exch exch -7 add 3 2 roll DrawAlias } bind
-	VisitOffBoardBoxes
 	r
 } bd
 /IncludeIce {
@@ -3280,6 +3280,8 @@
 }{
 	currentdict end 6 1 roll [ 5 1 roll /setcmykcolor load ] cvx def begin
 } bind VisitColors
+{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind
+VisitSupplies
 s
 MapUnitLetterFont z
 {
@@ -3302,6 +3304,4 @@ r
 /RUSSIACENTER /RUSSIA ld
 /TURKEYCENTER /TURKEY ld
 /UNOWNEDCENTER /UNOWNED ld
-{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind
-VisitSupplies
 %%EndSetup

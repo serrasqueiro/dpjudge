@@ -259,31 +259,31 @@
 	/SeaBlue .1 .4 .6 r
 	/ArrowRed 1 0 0 r
 	/ArrowBlue .529 .808 .922 r
-	/Brown .6 .45 .2 r
 	/Purple .5 0 .5 r
+	/Red 1 0 0 r
 	/Orange 1 .6 0 r
+	/Yellow 1 1 0 r
 	/Green 0 .7 0 r
 	/Cyan 0 1 1 r
 	/Blue 0 0 1 r
-	/Red 1 0 0 r
-	/Yellow 1 1 0 r
+	/Brown .6 .45 .2 r
 	/DarkGreen 0 .4 0 r
 	end
 } def
 /VisitPowers {
 	1 dict begin
 	/p xd
-	/UNOWNED (?) /Brown /White p
 	/BC (B) /White /Black p
 	/CALIFORNIA (C) /Purple /White p
+	/CUBA (U) /Red /White p
 	/FLORIDA (F) /Orange /Black p
 	/HEARTLAND (H) /Black /White p
+	/MEXICO (X) /Yellow /Black p
 	/NEWYORK (N) /Green /Black p
 	/PERU (P) /Grey /Black p
 	/QUEBEC (Q) /Cyan /Black p
 	/TEXAS (T) /Blue /White p
-	/CUBA (U) /Red /White p
-	/MEXICO (X) /Yellow /Black p
+	/UNOWNED (?) /Brown /White p
 	end
 } def
 /DrawFleet {
@@ -613,10 +613,6 @@
 	r
 	end
 } bd
-/VisitOffBoardBoxes {
-	0 dict begin
-	end
-} def
 /SetArrowStateOk {
 	[] 0 d
 } bd
@@ -934,7 +930,6 @@
 	PageSetup
 	PaintMap
 	DrawSupplies
-	DrawOffBoardBoxes
 } bd
 /DrawSupplies {
 	SwitchToMapMode
@@ -942,28 +937,8 @@
 	{ supply pop } bind
 	VisitSupplies
 } bd
-/DrawOffBoard {
-	s
-	t
-	.35 .35 x
-	24.5 24.5 10.5 0 90 a
-	-24.5 24.5 10.5 90 180 a
-	-24.5 -24.5 10.5 180 270 a
-	24.5 -24.5 10.5 270 0 a
-	2 w BorderBlack
-	p
-	k
-	r
-} bd
-/DrawOffBoardBoxes {
-	SwitchToMapMode
-	s
-	VisitOffBoardBoxes
-	r
-} bd
 /DrawAliases {
 	NameTerritories
-	NameOffBoardBoxes
 } bd
 /NameTerritories {
 	SwitchToMapMode
@@ -976,12 +951,6 @@
 	{ Black 3 2 roll DrawAlias } bind
 	{ pop pop pop } bind
 	VisitTerritories
-	r
-} bd
-/NameOffBoardBoxes {
-	SwitchToMapMode
-	s
-	VisitOffBoardBoxes
 	r
 } bd
 /Controls {
@@ -1043,40 +1012,40 @@
 } bd
 /DrawLayoutBorders {
 	s
-	TextFixedFont 8 y z
+	TextFixedFont 7.5 y z
 	r
 } bd
 /Adjustment <<
 	/Steps [
-		{ /Count 0 def /Y 200.24 def false true } bind
+		{ /Count 0 def /Y 195.6 def false true } bind
 		{
-			Count 9 ge { false true } {
-				64 SplitString
-				/Count Count 1 add def /Y Y 8 sub def
-				463.2 Y m h
+			Count 10 ge { false true } {
+				66 SplitString
+				/Count Count 1 add def /Y Y 7.5 sub def
+				474.75 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			64 SplitString [ exch {
-				463.2 120.24 m h
+			66 SplitString [ exch {
+				474.75 113.1 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				463.2 120.24 m (... \() h
+				474.75 113.1 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 64 SplitString pop true false } bind
+		{ /Count Count 1 add def 66 SplitString pop true false } bind
 	]
 	/Start {
-		TextHeadingFont 8 y z
-		463.2 200.24 moveto
+		TextHeadingFont 7.5 y z
+		474.75 195.6 moveto
 		(Adjustments) h
-		TextFixedFont 8 y z
+		TextFixedFont 7.5 y z
 		/StepIndex 0 def
 		/Step Steps 0 get def
 		/Finish { } def
@@ -1103,35 +1072,35 @@
 } bd
 /Retreat <<
 	/Steps [
-		{ /Count 0 def /Y 272.24 def false true } bind
+		{ /Count 0 def /Y 278.1 def false true } bind
 		{
-			Count 7 ge { false true } {
-				64 SplitString
-				/Count Count 1 add def /Y Y 8 sub def
-				463.2 Y m h
+			Count 8 ge { false true } {
+				66 SplitString
+				/Count Count 1 add def /Y Y 7.5 sub def
+				474.75 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			64 SplitString [ exch {
-				463.2 208.24 m h
+			66 SplitString [ exch {
+				474.75 210.6 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				463.2 208.24 m (... \() h
+				474.75 210.6 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 64 SplitString pop true false } bind
+		{ /Count Count 1 add def 66 SplitString pop true false } bind
 	]
 	/Start {
-		TextHeadingFont 8 y z
-		463.2 272.24 moveto
+		TextHeadingFont 7.5 y z
+		474.75 278.1 moveto
 		(Retreats) h
-		TextFixedFont 8 y z
+		TextFixedFont 7.5 y z
 		/StepIndex 0 def
 		/Step Steps 0 get def
 		/Finish { } def
@@ -1158,41 +1127,41 @@
 } bd
 /Order <<
 	/Steps [
-		{ /Count 0 def /Y 552.24 def false true } bind
+		{ /Count 0 def /Y 548.1 def false true } bind
 		{
 			Count 34 ge { false true } {
-				31 SplitString
-				/Count Count 1 add def /Y Y 8 sub def
-				463.2 Y m h
+				32 SplitString
+				/Count Count 1 add def /Y Y 7.5 sub def
+				474.75 Y m h
 				true false
 			} ifelse
 		} bind
-		{ /Count 0 def /Y 552.24 def false true } bind
+		{ /Count 0 def /Y 548.1 def false true } bind
 		{
 			Count 33 ge { false true } {
-				31 SplitString
-				/Count Count 1 add def /Y Y 8 sub def
-				621.6 Y m h
+				32 SplitString
+				/Count Count 1 add def /Y Y 7.5 sub def
+				627.75 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			31 SplitString [ exch {
-				621.6 280.24 m h
+			32 SplitString [ exch {
+				627.75 293.1 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				621.6 280.24 m (... \() h
+				627.75 293.1 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 31 SplitString pop true false } bind
+		{ /Count Count 1 add def 32 SplitString pop true false } bind
 	]
 	/Start {
-		TextFixedFont 8 y z
+		TextFixedFont 7.5 y z
 		/StepIndex 0 def
 		/Step Steps 0 get def
 		/Finish { } def
@@ -1219,47 +1188,47 @@
 } bd
 /DrawTitle {
 	SwitchToTextMode
-	TextTitleFont 24 y z
+	TextTitleFont 22.5 y z
 	(Diplomacy)
-	463.2 572.72 m h
-	TextTitleFont 16 y z
-	dup stringwidth pop dup 307.2 gt {
-		463.2 550 m
-		307.2 exch div dup 1 x exch
-		0 4.48 rmoveto h
+	474.75 574.8 m h
+	TextTitleFont 15 y z
+	dup stringwidth pop dup 297 gt {
+		474.75 553.5 m
+		297 exch div dup 1 x exch
+		0 4.2 rmoveto h
 		1 exch div 1 x
 	} {
-		pop 463.2 554.48 m h
+		pop 474.75 557.7 m h
 	} ifelse
 } bd
 /Owner <<
 	/Steps [
-		{ /Count 0 def /Y 112.24 def false true } bind
+		{ /Count 0 def /Y 105.6 def false true } bind
 		{
 			Count 10 ge { false true } {
-				156 SplitString
-				/Count Count 1 add def /Y Y 8 sub def
-				21.6 Y m h
+				167 SplitString
+				/Count Count 1 add def /Y Y 7.5 sub def
+				20.25 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			156 SplitString [ exch {
-				21.6 24.24 m h
+			167 SplitString [ exch {
+				20.25 23.1 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				21.6 24.24 m (... \() h
+				20.25 23.1 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 156 SplitString pop true false } bind
+		{ /Count Count 1 add def 167 SplitString pop true false } bind
 	]
 	/Start {
-		TextFixedFont 8 y z
+		TextFixedFont 7.5 y z
 		/StepIndex 0 def
 		/Step Steps 0 get def
 		/Finish { } def
@@ -1296,7 +1265,7 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		27.6 124.62 420 458.77 rectclip .8623 .8623 x 28.53 144.51 t
+		26.25 117 433.5 468 rectclip .8897 .8897 x 26.13 128.53 t
 		ArrowColor
 		OkOrder
 	} if
@@ -1304,7 +1273,7 @@
 /FrameMap {
 	s
 	2 w LandBrown
-	24.6 124.62 m 450.6 124.62 l 450.6 583.38 l 24.6 583.38 l
+	23.25 114.35 m 462.75 114.35 l 462.75 587.65 l 23.25 587.65 l
 	p
 	s 8 w Black k r
 	clipsave clip k cliprestore
@@ -3177,15 +3146,15 @@ MapUnitLetterFont z
 } VisitPowers
 r
 /ChangeController false def
-/UNOWNEDCENTER /UNOWNED ld
 /BCCENTER /BC ld
 /CALIFORNIACENTER /CALIFORNIA ld
+/CUBACENTER /CUBA ld
 /FLORIDACENTER /FLORIDA ld
 /HEARTLANDCENTER /HEARTLAND ld
+/MEXICOCENTER /MEXICO ld
 /NEWYORKCENTER /NEWYORK ld
 /PERUCENTER /PERU ld
 /QUEBECCENTER /QUEBEC ld
 /TEXASCENTER /TEXAS ld
-/CUBACENTER /CUBA ld
-/MEXICOCENTER /MEXICO ld
+/UNOWNEDCENTER /UNOWNED ld
 %%EndSetup

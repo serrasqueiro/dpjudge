@@ -193,14 +193,14 @@
 	/SeaBlue .1 .4 .6 r
 	/ArrowRed 1 0 0 r
 	/ArrowBlue .529 .808 .922 r
-	/DarkGreen 0 .4 0 r
-	/Red 1 0 0 r
 	/Blue 0 0 1 r
 	/Yellow 1 1 0 r
 	/Turquoise .2 .7 .7 r
 	/Mauve 1 0 1 r
 	/@LimeGreen .196 .804 .196 r
 	/Brown .6 .45 .2 r
+	/DarkGreen 0 .4 0 r
+	/Red 1 0 0 r
 	end
 } def
 /VisitPowers {
@@ -760,6 +760,50 @@
 	k
 	r
 } bd
+/PaintMap {
+	SwitchToMapMode
+	s
+	SeaBlue clippath fill
+	IncludeSeaBorder
+	IncludeContinent
+	IncludeIsland
+	IncludeIsletBorder
+	IncludeIslet
+	IncludeLandBorder
+	IncludeCountryBorder
+	IncludeLake
+	IncludeLakeBorder
+	IncludeCanal
+	IncludeStrait
+	IncludeCrossings
+	r
+} bd
+/DrawMap {
+	PageSetup
+	PaintMap
+	DrawSupplies
+} bd
+/DrawSupplies {
+	SwitchToMapMode
+	UNOWNEDCENTER
+	{ supply pop } bind
+	VisitSupplies
+} bd
+/DrawAliases {
+	NameTerritories
+} bd
+/NameTerritories {
+	SwitchToMapMode
+	s
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ White 3 2 roll DrawAlias } bind
+	{ White 3 2 roll DrawAlias } bind
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ pop pop pop } bind
+	VisitTerritories
+	r
+} bd
 /Controls {
 	/ChangeController true def
 } bd
@@ -1078,50 +1122,6 @@
 	.4599 .4599 x 52.36 205.48 t
 	4.35 w LandBrown
 	ShapeSides
-	r
-} bd
-/PaintMap {
-	SwitchToMapMode
-	s
-	SeaBlue clippath fill
-	IncludeSeaBorder
-	IncludeContinent
-	IncludeIsland
-	IncludeIsletBorder
-	IncludeIslet
-	IncludeLandBorder
-	IncludeCountryBorder
-	IncludeLake
-	IncludeLakeBorder
-	IncludeCanal
-	IncludeStrait
-	IncludeCrossings
-	r
-} bd
-/DrawMap {
-	PageSetup
-	PaintMap
-	DrawSupplies
-} bd
-/DrawSupplies {
-	SwitchToMapMode
-	UNOWNEDCENTER
-	{ supply pop } bind
-	VisitSupplies
-} bd
-/DrawAliases {
-	NameTerritories
-} bd
-/NameTerritories {
-	SwitchToMapMode
-	s
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ White 3 2 roll DrawAlias } bind
-	{ White 3 2 roll DrawAlias } bind
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ pop pop pop } bind
-	VisitTerritories
 	r
 } bd
 /ClipMap {
@@ -2777,6 +2777,8 @@
 }{
 	currentdict end 6 1 roll [ 5 1 roll /setcmykcolor load ] cvx def begin
 } bind VisitColors
+{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind
+VisitSupplies
 s
 MapUnitLetterFont z
 {
@@ -2797,6 +2799,4 @@ r
 /USSRCENTER /USSR ld
 /INDIACENTER /INDIA ld
 /UNOWNEDCENTER /UNOWNED ld
-{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind
-VisitSupplies
 %%EndSetup

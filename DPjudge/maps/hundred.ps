@@ -120,32 +120,29 @@
 	/IceGrey .9 g
 	/ArrowBlack 0 g
 	/ArrowWhite .9 g
-	/White .9 g
 	/Black 0 g
+	/White .9 g
 	/LandBrown .8 .7 .4 r
 	/SeaBlue .1 .4 .6 r
 	/ArrowRed 1 0 0 r
 	/ArrowBlue .529 .808 .922 r
-	/DarkGreen 0 .4 0 r
-	/Red 1 0 0 r
+	/Brown .6 .45 .2 r
 	/Maroon .8 0 0 r
 	/Blue 0 0 1 r
 	/Green 0 .7 0 r
-	/Brown .6 .45 .2 r
+	/DarkGreen 0 .4 0 r
+	/Red 1 0 0 r
 	end
 } def
 /VisitPowers {
 	1 dict begin
 	/p xd
+	/UNOWNED (?) /Brown /White p
 	/BURGUNDY (B) /Maroon /White p
 	/ENGLAND (E) /Blue /White p
 	/FRANCE (F) /Green /Black p
-	/UNOWNED (?) /Brown /White p
 	end
 } def
-/Controls {
-	/ChangeController true def
-} bd
 /DrawFleet {
 	SwitchToMapMode
 	Power begin
@@ -607,6 +604,43 @@
 	k
 	r
 } bd
+/PaintMap {
+	SwitchToMapMode
+	s
+	SeaBlue clippath fill
+	IncludeIsland
+	IncludeInternalBorders
+	IncludeConnections
+	r
+} bd
+/DrawMap {
+	PageSetup
+	PaintMap
+	DrawSupplies
+} bd
+/DrawSupplies {
+	SwitchToMapMode
+	UNOWNEDCENTER
+	{ supply pop } bind
+	VisitSupplies
+} bd
+/DrawAliases {
+	NameTerritories
+} bd
+/NameTerritories {
+	SwitchToMapMode
+	s
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ White 3 2 roll DrawAlias } bind
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ pop pop pop } bind
+	VisitTerritories
+	r
+} bd
+/Controls {
+	/ChangeController true def
+} bd
 /SplitString {
 	7 dict begin
 	/nrChars xd
@@ -922,40 +956,6 @@
 	1.0272 1.0272 x -41.65 -270.45 t
 	.97 w LandBrown
 	OutlineChartBlue
-	r
-} bd
-/PaintMap {
-	SwitchToMapMode
-	s
-	SeaBlue clippath fill
-	IncludeIsland
-	IncludeInternalBorders
-	IncludeConnections
-	r
-} bd
-/DrawMap {
-	PageSetup
-	PaintMap
-	DrawSupplies
-} bd
-/DrawSupplies {
-	SwitchToMapMode
-	UNOWNEDCENTER
-	{ supply pop } bind
-	VisitSupplies
-} bd
-/DrawAliases {
-	NameTerritories
-} bd
-/NameTerritories {
-	SwitchToMapMode
-	s
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ White 3 2 roll DrawAlias } bind
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ pop pop pop } bind
-	VisitTerritories
 	r
 } bd
 /ClipMap {
@@ -1435,6 +1435,8 @@
 }{
 	currentdict end 6 1 roll [ 5 1 roll /setcmykcolor load ] cvx def begin
 } bind VisitColors
+{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind
+VisitSupplies
 s
 MapUnitLetterFont z
 {
@@ -1446,10 +1448,8 @@ MapUnitLetterFont z
 } VisitPowers
 r
 /ChangeController false def
+/UNOWNEDCENTER /UNOWNED ld
 /BURGUNDYCENTER /BURGUNDY ld
 /ENGLANDCENTER /ENGLAND ld
 /FRANCECENTER /FRANCE ld
-/UNOWNEDCENTER /UNOWNED ld
-{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind
-VisitSupplies
 %%EndSetup

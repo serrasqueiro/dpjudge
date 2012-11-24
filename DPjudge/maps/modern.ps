@@ -549,10 +549,6 @@
 	r
 	end
 } bd
-/VisitOffBoardBoxes {
-	0 dict begin
-	end
-} def
 /SetArrowStateOk {
 	[] 0 d
 } bd
@@ -867,7 +863,6 @@
 	PageSetup
 	PaintMap
 	DrawSupplies
-	DrawOffBoardBoxes
 } bd
 /DrawSupplies {
 	SwitchToMapMode
@@ -875,28 +870,8 @@
 	{ supply pop } bind
 	VisitSupplies
 } bd
-/DrawOffBoard {
-	s
-	t
-	.5 .5 x
-	24.5 24.5 10.5 0 90 a
-	-24.5 24.5 10.5 90 180 a
-	-24.5 -24.5 10.5 180 270 a
-	24.5 -24.5 10.5 270 0 a
-	2 w BorderBlack
-	p
-	k
-	r
-} bd
-/DrawOffBoardBoxes {
-	SwitchToMapMode
-	s
-	VisitOffBoardBoxes
-	r
-} bd
 /DrawAliases {
 	NameTerritories
-	NameOffBoardBoxes
 } bd
 /NameTerritories {
 	SwitchToMapMode
@@ -907,12 +882,6 @@
 	{ DarkGreen 3 2 roll DrawAlias } bind
 	{ pop pop pop } bind
 	VisitTerritories
-	r
-} bd
-/NameOffBoardBoxes {
-	SwitchToMapMode
-	s
-	VisitOffBoardBoxes
 	r
 } bd
 /Controls {
@@ -979,33 +948,33 @@
 } bd
 /Adjustment <<
 	/Steps [
-		{ /Count 0 def /Y 206.46 def false true } bind
+		{ /Count 0 def /Y 192.46 def false true } bind
 		{
-			Count 10 ge { false true } {
-				64 SplitString
+			Count 9 ge { false true } {
+				66 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
-				503.1 Y m h
+				494.7 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			64 SplitString [ exch {
-				503.1 129.46 m h
+			66 SplitString [ exch {
+				494.7 122.46 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				503.1 129.46 m (... \() h
+				494.7 122.46 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 64 SplitString pop true false } bind
+		{ /Count Count 1 add def 66 SplitString pop true false } bind
 	]
 	/Start {
 		TextHeadingFont 7 y z
-		503.1 206.46 moveto
+		494.7 192.46 moveto
 		(Adjustments) h
 		TextFixedFont 7 y z
 		/StepIndex 0 def
@@ -1034,33 +1003,33 @@
 } bd
 /Retreat <<
 	/Steps [
-		{ /Count 0 def /Y 290.46 def false true } bind
+		{ /Count 0 def /Y 276.46 def false true } bind
 		{
-			Count 10 ge { false true } {
-				64 SplitString
+			Count 9 ge { false true } {
+				66 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
-				503.1 Y m h
+				494.7 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			64 SplitString [ exch {
-				503.1 213.46 m h
+			66 SplitString [ exch {
+				494.7 206.46 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				503.1 213.46 m (... \() h
+				494.7 206.46 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 64 SplitString pop true false } bind
+		{ /Count Count 1 add def 66 SplitString pop true false } bind
 	]
 	/Start {
 		TextHeadingFont 7 y z
-		503.1 290.46 moveto
+		494.7 276.46 moveto
 		(Retreats) h
 		TextFixedFont 7 y z
 		/StepIndex 0 def
@@ -1089,38 +1058,38 @@
 } bd
 /Order <<
 	/Steps [
-		{ /Count 0 def /Y 556.46 def false true } bind
+		{ /Count 0 def /Y 549.46 def false true } bind
 		{
 			Count 37 ge { false true } {
-				31 SplitString
+				32 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
-				503.1 Y m h
+				494.7 Y m h
 				true false
 			} ifelse
 		} bind
-		{ /Count 0 def /Y 556.46 def false true } bind
+		{ /Count 0 def /Y 549.46 def false true } bind
 		{
 			Count 36 ge { false true } {
-				31 SplitString
+				32 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
-				641.7 Y m h
+				637.5 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			31 SplitString [ exch {
-				641.7 297.46 m h
+			32 SplitString [ exch {
+				637.5 290.46 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				641.7 297.46 m (... \() h
+				637.5 290.46 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 31 SplitString pop true false } bind
+		{ /Count Count 1 add def 32 SplitString pop true false } bind
 	]
 	/Start {
 		TextFixedFont 7 y z
@@ -1152,22 +1121,22 @@
 	SwitchToTextMode
 	TextTitleFont 21 y z
 	(Diplomacy)
-	503.1 574.38 m h
+	494.7 574.38 m h
 	TextTitleFont 14 y z
-	dup stringwidth pop dup 268.8 gt {
-		503.1 554.5 m
-		268.8 exch div dup 1 x exch
+	dup stringwidth pop dup 277.2 gt {
+		494.7 554.5 m
+		277.2 exch div dup 1 x exch
 		0 3.92 rmoveto h
 		1 exch div 1 x
 	} {
-		pop 503.1 558.42 m h
+		pop 494.7 558.42 m h
 	} ifelse
 } bd
 /Owner <<
 	/Steps [
-		{ /Count 0 def /Y 122.46 def false true } bind
+		{ /Count 0 def /Y 115.46 def false true } bind
 		{
-			Count 13 ge { false true } {
+			Count 12 ge { false true } {
 				179 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
 				20.1 Y m h
@@ -1227,7 +1196,7 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		26.1 133.63 462.6 449.73 rectclip .5622 .5622 x 72.87 337.71 t
+		26.1 134.18 454.2 441.64 rectclip .552 .552 x 73.66 343.06 t
 		ArrowColor
 		OkOrder
 	} if
@@ -1235,7 +1204,7 @@
 /FrameMap {
 	s
 	2 w LandBrown
-	23.1 130.63 m 491.7 130.63 l 491.7 586.37 l 23.1 586.37 l
+	23.1 131.18 m 483.3 131.18 l 483.3 578.82 l 23.1 578.82 l
 	p
 	s 8 w Black k r
 	clipsave clip k cliprestore

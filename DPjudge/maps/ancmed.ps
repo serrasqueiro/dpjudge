@@ -154,34 +154,31 @@
 	/IceGrey .9 g
 	/ArrowBlack 0 g
 	/ArrowWhite .9 g
-	/White .9 g
 	/Black 0 g
+	/White .9 g
 	/LandBrown .8 .7 .4 r
 	/SeaBlue .1 .4 .6 r
 	/ArrowRed 1 0 0 r
 	/ArrowBlue .529 .808 .922 r
-	/DarkGreen 0 .4 0 r
+	/Brown .6 .45 .2 r
 	/Blue 0 0 1 r
 	/Yellow 1 1 0 r
 	/Green 0 .7 0 r
 	/Red 1 0 0 r
-	/Brown .6 .45 .2 r
+	/DarkGreen 0 .4 0 r
 	end
 } def
 /VisitPowers {
 	1 dict begin
 	/p xd
-	/EGYPT (E) /Yellow /Black p
-	/CARTHAGE (C) /Blue /White p
-	/GREECE (G) /Green /Black p
-	/ROME (R) /Red /Black p
-	/PERSIA (P) /Black /White p
 	/UNOWNED (?) /Brown /White p
+	/CARTHAGE (C) /Blue /White p
+	/EGYPT (E) /Yellow /Black p
+	/GREECE (G) /Green /Black p
+	/PERSIA (P) /Black /White p
+	/ROME (R) /Red /Black p
 	end
 } def
-/Controls {
-	/ChangeController true def
-} bd
 /DrawFleet {
 	SwitchToMapMode
 	Power begin
@@ -694,6 +691,45 @@
 	k
 	r
 } bd
+/PaintMap {
+	SwitchToMapMode
+	s
+	LandBrown 14.57 12 882.86 662 rectfill
+	IncludeSeas
+	IncludeLands
+	IncludeBorders
+	IncludeRivers
+	IncludeArrows
+	r
+} bd
+/DrawMap {
+	PageSetup
+	PaintMap
+	DrawSupplies
+} bd
+/DrawSupplies {
+	SwitchToMapMode
+	UNOWNEDCENTER
+	{ supply pop } bind
+	VisitSupplies
+} bd
+/DrawAliases {
+	NameTerritories
+} bd
+/NameTerritories {
+	SwitchToMapMode
+	s
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ White 3 2 roll DrawAlias } bind
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ White 3 2 roll DrawAlias } bind
+	VisitTerritories
+	r
+} bd
+/Controls {
+	/ChangeController true def
+} bd
 /SplitString {
 	7 dict begin
 	/nrChars xd
@@ -1005,42 +1041,6 @@
 	clipsave clip k cliprestore
 	r
 } bd
-/PaintMap {
-	SwitchToMapMode
-	s
-	LandBrown 14.57 12 882.86 662 rectfill
-	IncludeSeas
-	IncludeLands
-	IncludeBorders
-	IncludeRivers
-	IncludeArrows
-	r
-} bd
-/DrawMap {
-	PageSetup
-	PaintMap
-	DrawSupplies
-} bd
-/DrawSupplies {
-	SwitchToMapMode
-	UNOWNEDCENTER
-	{ supply pop } bind
-	VisitSupplies
-} bd
-/DrawAliases {
-	NameTerritories
-} bd
-/NameTerritories {
-	SwitchToMapMode
-	s
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ White 3 2 roll DrawAlias } bind
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ White 3 2 roll DrawAlias } bind
-	VisitTerritories
-	r
-} bd
 /IncludeSeas {
 	s
 	.1429 .1429 x
@@ -1050,7 +1050,7 @@
 		k
 	} bd
 	7 w BorderBlack
-	OutlineAncmedSeawater
+	OutlineChartSeawater
 	r
 } bd
 /IncludeLands {
@@ -1062,7 +1062,7 @@
 		k
 	} bd
 	7 w BorderBlack
-	OutlineAncmedLandcolor
+	OutlineChartLandcolor
 	r
 } bd
 /IncludeBorders {
@@ -1070,7 +1070,7 @@
 	.1429 .1429 x
 	/fk { k } bd
 	7 w BorderBlack
-	OutlineAncmedBlack
+	OutlineChartBlack
 	r
 } bd
 /IncludeRivers {
@@ -1078,7 +1078,7 @@
 	.1429 .1429 x
 	/fk { k } bd
 	7 w Blue
-	OutlineAncmedRiverwater
+	OutlineChartRiverwater
 	r
 } bd
 /IncludeArrows {
@@ -1086,10 +1086,10 @@
 	.1429 .1429 x
 	/fk { f } bd
 	Black
-	OutlineAncmedArrowcolor
+	OutlineChartArrowcolor
 	r
 } bd
-/OutlineAncmedSeawater {
+/OutlineChartSeawater {
 	102 3584 m
 	102 3584 120 3584 144 3577 c
 	168 3570 192 3549 210 3549 c
@@ -1733,7 +1733,7 @@
 	2886 1113 2880 1120 2874 1127 c
 	fk
 } bd
-/OutlineAncmedLandcolor {
+/OutlineChartLandcolor {
 	2052 3353 m
 	2052 3346 2046 3325 2052 3311 c
 	2058 3276 2022 3290 2004 3283 c
@@ -1881,7 +1881,7 @@
 	5016 2065 5010 2051 5010 2051 c
 	fk
 } bd
-/OutlineAncmedBlack {
+/OutlineChartBlack {
 	4056 1393 m
 	4008 1253 4062 1330 4068 1225 c
 	4068 1197 4110 1169 4140 1169 c
@@ -2472,7 +2472,7 @@
 	2748 2555 2778 2583 2802 2583 c
 	fk
 } bd
-/OutlineAncmedRiverwater {
+/OutlineChartRiverwater {
 	5130 1456 m
 	5124 1456 5124 1456 5118 1449 c
 	5112 1449 5106 1435 5100 1428 c
@@ -2551,7 +2551,7 @@
 	5082 112 5088 98 5088 84 c
 	fk
 } bd
-/OutlineAncmedArrowcolor {
+/OutlineChartArrowcolor {
 	2136 3136 m
 	2100 3143 l
 	2118 3108 l
@@ -2710,6 +2710,8 @@
 }{
 	currentdict end 6 1 roll [ 5 1 roll /setcmykcolor load ] cvx def begin
 } bind VisitColors
+{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind
+VisitSupplies
 s
 MapUnitLetterFont z
 {
@@ -2721,12 +2723,10 @@ MapUnitLetterFont z
 } VisitPowers
 r
 /ChangeController false def
-/EGYPTCENTER /EGYPT ld
-/CARTHAGECENTER /CARTHAGE ld
-/GREECECENTER /GREECE ld
-/ROMECENTER /ROME ld
-/PERSIACENTER /PERSIA ld
 /UNOWNEDCENTER /UNOWNED ld
-{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind
-VisitSupplies
+/CARTHAGECENTER /CARTHAGE ld
+/EGYPTCENTER /EGYPT ld
+/GREECECENTER /GREECE ld
+/PERSIACENTER /PERSIA ld
+/ROMECENTER /ROME ld
 %%EndSetup
