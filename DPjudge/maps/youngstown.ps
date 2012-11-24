@@ -1174,87 +1174,44 @@
 	TextFixedFont 7 y z
 	r
 } bd
-/Owner <<
-	/Steps [
-		{ /Count 0 def /Y 110.46 def false true } bind
-		{
-			Count 10 ge { false true } {
-				121 SplitString
-				/Count Count 1 add def /Y Y 7 sub def
-				15.7 Y m h
-				true false
-			} ifelse
-		} bind
-		{
-			121 SplitString [ exch {
-				15.7 33.46 m h
-			} /exec load ] cvx /Finish xd
-			true true
-		} bind
-		{
-			/Count 1 def /Finish {
-				15.7 33.46 m (... \() h
-				Count dup 1 add log iceiling string cvs h
-				( more\)) h
-			} bd false true
-		} bind
-		{ /Count Count 1 add def 121 SplitString pop true false } bind
-	]
-	/Start {
-		TextFixedFont 7 y z
-		/StepIndex 0 def
-		/Step Steps 0 get def
-		/Finish { } def
-	} bind
-	/Write {
-		(  ) {
-			Step {
-				/StepIndex StepIndex 1 add def
-				/Step Steps StepIndex get def
-			} if { not { exit } if () } if
-		} loop
-	} bind
->> def
-/OwnerReport {
-	SwitchToTextMode
-	Owner begin Start end
-	/FinishReport /FinishOwnerReport load def
-} bd
-/WriteOwner {
-	Owner begin Write end
-} bd
-/FinishOwnerReport {
-	Owner begin Finish end
-} bd
 /Adjustment <<
 	/Steps [
-		{ /Count 0 def /Y 145.46 def false true } bind
+		{ /Count 0 def /Y 166.46 def false true } bind
 		{
-			Count 15 ge { false true } {
-				70 SplitString
+			Count 7 ge { false true } {
+				35 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
-				532.3 Y m h
+				523.9 Y m h
+				true false
+			} ifelse
+		} bind
+		{ /Count 0 def /Y 166.46 def false true } bind
+		{
+			Count 6 ge { false true } {
+				35 SplitString
+				/Count Count 1 add def /Y Y 7 sub def
+				679.3 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			70 SplitString [ exch {
-				532.3 33.46 m h
+			35 SplitString [ exch {
+				679.3 117.46 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				532.3 33.46 m (... \() h
+				679.3 117.46 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 70 SplitString pop true false } bind
+		{ /Count Count 1 add def 35 SplitString pop true false } bind
 	]
 	/Start {
 		TextHeadingFont 7 y z
-		532.3 145.46 moveto
+		523.9 166.46 moveto
 		(Adjustments) h
 		TextFixedFont 7 y z
 		/StepIndex 0 def
@@ -1283,33 +1240,42 @@
 } bd
 /Retreat <<
 	/Steps [
-		{ /Count 0 def /Y 229.46 def false true } bind
+		{ /Count 0 def /Y 222.46 def false true } bind
 		{
-			Count 10 ge { false true } {
-				70 SplitString
+			Count 7 ge { false true } {
+				35 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
-				532.3 Y m h
+				523.9 Y m h
+				true false
+			} ifelse
+		} bind
+		{ /Count 0 def /Y 222.46 def false true } bind
+		{
+			Count 6 ge { false true } {
+				35 SplitString
+				/Count Count 1 add def /Y Y 7 sub def
+				679.3 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			70 SplitString [ exch {
-				532.3 152.46 m h
+			35 SplitString [ exch {
+				679.3 173.46 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				532.3 152.46 m (... \() h
+				679.3 173.46 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 70 SplitString pop true false } bind
+		{ /Count Count 1 add def 35 SplitString pop true false } bind
 	]
 	/Start {
 		TextHeadingFont 7 y z
-		532.3 229.46 moveto
+		523.9 222.46 moveto
 		(Retreats) h
 		TextFixedFont 7 y z
 		/StepIndex 0 def
@@ -1340,36 +1306,36 @@
 	/Steps [
 		{ /Count 0 def /Y 537.46 def false true } bind
 		{
-			Count 42 ge { false true } {
-				34 SplitString
+			Count 43 ge { false true } {
+				35 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
-				532.3 Y m h
+				523.9 Y m h
 				true false
 			} ifelse
 		} bind
 		{ /Count 0 def /Y 537.46 def false true } bind
 		{
-			Count 41 ge { false true } {
-				34 SplitString
+			Count 42 ge { false true } {
+				35 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
-				683.5 Y m h
+				679.3 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			34 SplitString [ exch {
-				683.5 243.46 m h
+			35 SplitString [ exch {
+				679.3 236.46 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				683.5 243.46 m (... \() h
+				679.3 236.46 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 34 SplitString pop true false } bind
+		{ /Count Count 1 add def 35 SplitString pop true false } bind
 	]
 	/Start {
 		TextFixedFont 7 y z
@@ -1401,16 +1367,68 @@
 	SwitchToTextMode
 	TextTitleFont 14 y z
 	(Diplomacy)
-	532.3 553.42 m h
+	523.9 553.42 m h
 	TextTitleFont 14 y z
-	dup stringwidth pop dup 294 gt {
-		532.3 535.5 m
-		294 exch div dup 1 x exch
+	dup stringwidth pop dup 302.4 gt {
+		523.9 535.5 m
+		302.4 exch div dup 1 x exch
 		0 3.92 rmoveto h
 		1 exch div 1 x
 	} {
-		pop 532.3 539.42 m h
+		pop 523.9 539.42 m h
 	} ifelse
+} bd
+/Owner <<
+	/Steps [
+		{ /Count 0 def /Y 110.46 def false true } bind
+		{
+			Count 10 ge { false true } {
+				193 SplitString
+				/Count Count 1 add def /Y Y 7 sub def
+				15.7 Y m h
+				true false
+			} ifelse
+		} bind
+		{
+			193 SplitString [ exch {
+				15.7 33.46 m h
+			} /exec load ] cvx /Finish xd
+			true true
+		} bind
+		{
+			/Count 1 def /Finish {
+				15.7 33.46 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
+			} bd false true
+		} bind
+		{ /Count Count 1 add def 193 SplitString pop true false } bind
+	]
+	/Start {
+		TextFixedFont 7 y z
+		/StepIndex 0 def
+		/Step Steps 0 get def
+		/Finish { } def
+	} bind
+	/Write {
+		(  ) {
+			Step {
+				/StepIndex StepIndex 1 add def
+				/Step Steps StepIndex get def
+			} if { not { exit } if () } if
+		} loop
+	} bind
+>> def
+/OwnerReport {
+	SwitchToTextMode
+	Owner begin Start end
+	/FinishReport /FinishOwnerReport load def
+} bd
+/WriteOwner {
+	Owner begin Write end
+} bd
+/FinishOwnerReport {
+	Owner begin Finish end
 } bd
 /SwitchToTextMode {
 	InTextMode {
@@ -1424,7 +1442,7 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		19.7 119.5 500.2 440 rectclip .4863 .4863 x 38.29 241.62 t
+		19.7 120.4 491.8 438.2 rectclip .48 .48 x 36.88 250.85 t
 		ArrowColor
 		OkOrder
 	} if
@@ -1432,7 +1450,7 @@
 /FrameMap {
 	s
 	2 w LandBrown
-	18.62 117.5 m 520.98 117.5 l 520.98 561.5 l 18.62 561.5 l
+	17.7 120.4 m 513.5 120.4 l 513.5 558.6 l 17.7 558.6 l
 	p
 	s 8 w Black k r
 	clipsave clip k cliprestore
