@@ -43,7 +43,7 @@ class PostScriptMap:
 				word = line.upper().split()
 				lastLine = None
 			if word[0] == 'SHOW':
-				show = not (word[1:] and viewer) or viewer in word[1:]
+				show = not word[1:] or (viewer or 'MASTER') in word[1:]
 				continue
 			if not show: continue
 			copy = ' '.join(word)

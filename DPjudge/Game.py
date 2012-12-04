@@ -2119,8 +2119,8 @@ class Game:
 		#	------------------------------------------------------
 		#	If email is not None, the press is going to a specific
 		#	private e-mail address, so it will look like it came
-		#	from the host.dpjudge address, unless fromSender is explicitly
-		#	set to 1.
+		#	from the host.dpjudge address, unless fromSender is
+		#	explicitly set.
 		#	------------------------------------------------------
 		if email and not fromSender: mailAs = host.dpjudge
 		elif sender.name == 'MASTER': mailAs = self.master[1]
@@ -2313,7 +2313,9 @@ class Game:
 		#	---------------------------
 		#	Update the game status file
 		#	---------------------------
-		if not self.preview: self.save()
+		if not self.preview:
+			self.save()
+			if self.phase == 'COMPLETED': return 'Game completed'
 	#	---------------------------------------------------------------------
 	def rollback(self, includeFlags = 0, phase = None):
 		#	---------------------------------------------------------------
@@ -2329,7 +2331,8 @@ class Game:
 		#	not be sent to the hall of fame.
 		#	----------------------------------------------------------------
 		complete = includeFlags & 16 and self.phase == 'COMPLETED'
-		if not complete and self.status[1] != 'active': raise RollbackGameInactive
+		if not complete and self.status[1] != 'active':
+			return 'ROLLBACK can only occur on an active game'
 		lines, outphase = [], complete and self.outcome[0] or (
 			self.map.phaseAbbr(self.phase, self.phase))
 		if phase:
@@ -2339,7 +2342,7 @@ class Game:
 			if phase != outphase:
 				if ((self.map.comparePhases(phase, outphase) >= 0) or start and
 					not os.path.isfile(self.file('status.' + phase))):
-					raise RollbackPhaseInvalid
+					return 'Invalid ROLLBACK phase'
 				file = open(self.file('results'), 'r', 'latin-1')
 				lines = file.readlines()
 				file.close()
@@ -2349,7 +2352,7 @@ class Game:
 						if '%s ' % self.name + phase in text: break
 						if 'Diplomacy results' in text: start = 2
 					else:
-						raise RollbackPhaseInvalid
+						return 'Invalid ROLLBACK phase'
 				for text in lines[num + 1:]:
 					if 'Diplomacy results' not in text: continue
 					word = text.split()
@@ -2364,13 +2367,13 @@ class Game:
 			for nr, text in enumerate(lines):
 				if 'Diplomacy results' not in text: continue
 				word = text.split()
-				try: phase = word[word.index(self.name, word.index('results') + 1) + 1]
-				except: raise RollbackResultInvalid
+				phase = word[
+					word.index(self.name, word.index('results') + 1) + 1]
 				start = start and 2 or 1
 				num = nr 
 			if not start: phase = 'FORMING'
 			elif not os.path.isfile(self.file('status.' + phase)):
-				raise RollbackPhaseInvalid
+				return 'Invalid ROLLBACK phase'
 		if os.path.isfile(self.file('status.' + outphase + '.0')):
 			try: os.unlink(self.file('status.rollback'))
 			except: pass
@@ -2430,7 +2433,8 @@ class Game:
 						and x.endswith('_.gif')]
 					except: pass
 				self.makeMaps()
-		if self.error: return self.error
+		if self.error:
+			return 'Errors during ROLLBACK:\n' + '\n'.join(self.error)
 	#	---------------------------------------------------------------------
 	def rollforward(self, includeFlags = 4, phase = None):
 		#	---------------------------------------------------------------
@@ -2445,7 +2449,7 @@ class Game:
 		#	no one in particular.
 		#	----------------------------------------------------------------
 		if self.status[1] not in ('forming', 'active'):
-			raise RollforwardGameInactive
+			return 'ROLLFORWARD can only occur on an active game'
 		preview, self.preview = self.preview, 0
 		tester, self.tester = self.tester, '@'
 		if self.phase == 'FORMING':
@@ -2453,14 +2457,14 @@ class Game:
 			if not phase: phase = self.phase
 		unphase = outphase = self.map.phaseAbbr(self.phase, self.phase)
 		if not os.path.isfile(self.file('status.' + outphase + '.0')):
-			raise RollforwardPhaseInvalid
+			return 'Invalid ROLLFORWARD phase'
 		if phase:
 			phase = phase.upper()
 			if len(phase.split()) > 1: phase = self.phaseAbbr(phase)
 			if phase != outphase:
 				if (self.map.comparePhases(phase, outphase) <= 0 or 
 					not os.path.isfile(self.file('status.' + phase + '.0'))):
-					raise RollforwardPhaseInvalid
+					return 'Invalid ROLLFORWARD phase'
 				unphase = outphase
 				while phase != unphase:
 					# Load the phase, including orders.
@@ -2474,7 +2478,7 @@ class Game:
 						break
 					unphase = self.map.phaseAbbr(self.phase, self.phase)
 					if not os.path.isfile(self.file('status.' + unphase + '.0')):
-						raise RollforwardPhaseInvalid
+						return 'Invalid ROLLFORWARD phase'
 				self.makeMaps()
 		else:
 			# It's hard to tell what the next phase is, as some phases may
@@ -2482,7 +2486,7 @@ class Game:
 			# least one other saved rolled back status file, and that's
 			# what gets checked here. 
 			if len(glob.glob(self.file('status.*.0'))) < 2:
-				raise RollforwardPhaseInvalid
+				return 'Invalid ROLLFORWARD phase'
 			# Load the phase, including orders.
 			self.load('status.' + outphase + '.0', includeFlags | 1)
 			# Process the phase, suppressing any mail
@@ -2495,7 +2499,7 @@ class Game:
 			else:
 				unphase = self.map.phaseAbbr(self.phase, self.phase.upper())
 			if not os.path.isfile(self.file('status.' + unphase + '.0')):
-				raise RollforwardPhaseInvalid
+				return 'Invalid ROLLFORWARD phase'
 		self.preview, self.tester = preview, tester
 		# Load the last phase
 		prephase = self.phase
@@ -2525,7 +2529,8 @@ class Game:
 				self.save()
 				self.mailPress(None, ['All!'],
 					'The game is over once more. Thank you for playing.')
-		if self.error: return self.error
+		if self.error:
+			return 'Errors during ROLLBACK:\n' + '\n'.join(self.error)
 	#	----------------------------------------------------------------------
 	def rollin(self, branch = None):
 		#	-----------------------------------------------------------------
@@ -2535,6 +2540,7 @@ class Game:
 		#	Returns the branch number of the rolled out branch if any.
 		#	-----------------------------------------------------------------
 		if branch and not os.path.isfile(self.file('status.' + self.phaseAbbr() + '.' + `branch`)):
+			return 'Invalid ROLLIN phase'
 			raise RollinPhaseInvalid
 		statusList, idx = glob.glob(self.file('status.*.0')), None
 		if statusList:
@@ -3143,11 +3149,15 @@ class Game:
 		#	-------------------------------------------------------
 		lastYear, unowned = {}, self.map.scs[:]
 		for power in self.powers:
-			lastYear[power] = sum(map(len, [x.centers for x in self.powers
-				if 'VASSAL_DUMMIES' in self.rules and x.ceo == [power.name]]),
-				len(power.centers))
+			lastYear[power] = len([x for x in power.centers if x != 'SC*'])
 			[unowned.remove(x) for x in power.centers if x in unowned]
 			power.sees = []
+		if 'TEAM_VICTORY' in self.rules:
+			for power in self.powers:
+				if not power.ceo: lastYear[power] += sum([lastYear[x]
+					for x in self.powers if x.ceo == [power.name]])
+			for power in self.powers:
+				if power.ceo: lastYear[power] = 0
 		for power in self.powers + [None]:
 			if power: centers = power.centers
 			else: centers = unowned
@@ -3171,20 +3181,25 @@ class Game:
 		#	See if we have a win.  Criteria are the ARMADA Regatta victory
 		#	criteria (adapted from David Norman's "variable length" system).
 		#	----------------------------------------------------------------
-		victor, thisYear = None, [sum(map(len, [y.centers for y in self.powers
-			if 'TEAM_VICTORY' in self.rules and y.ceo == [x.name]]),
-			len(x.centers)) for x in self.powers]
+		victor, thisYear = None, {}
 		for power in self.powers:
-			centers = sum(map(len, [x.centers for x in self.powers
-				if 'TEAM_VICTORY' in self.rules and x.ceo == [power.name]]),
-				len([x for x in power.centers if x != 'SC*']))
+			thisYear[power] = len([x for x in power.centers if x != 'SC*'])
+		if 'TEAM_VICTORY' in self.rules:
+			for power in self.powers:
+				if not power.ceo: thisYear[power] += sum([thisYear[x]
+					for x in self.powers if x.ceo == [power.name]])
+			for power in self.powers:
+				if power.ceo: thisYear[power] = 0
+		yearCenters = [thisYear[x] for x in self.powers]
+		for power in self.powers:
+			centers = thisYear[power]
 			#	FIRST, YOU MUST HAVE ENOUGH CENTERS TO WIN
 			if	(centers >= self.win
 			#	AND YOU MUST GROW (OR, IF "HOLD_WIN," MUST HAVE HAD A WIN)
 			and (centers > lastYear[power], lastYear[power] >= self.win)
 				['HOLD_WIN' in self.rules]
 			#	AND YOU MUST BE ALONE IN THE LEAD
-			and (centers, thisYear.count(centers)) == (max(thisYear), 1)):
+			and (centers, yearCenters.count(centers)) == (max(yearCenters), 1)):
 				if not self.preview: self.finish([power.name])
 				victor, func = power, None
 				break
@@ -3277,15 +3292,16 @@ class Game:
 			#	------------------------------------------------------------
 			#	Modify (if necessary) what we believe will be the next phase
 			#	------------------------------------------------------------
-			if power is victor: text += '  (* VICTORY!! *)'
+			ceo = getattr(power, 'ceo', [])[:1]
+			victory = victor and (power is victor or
+				'TEAM_VICTORY' in self.rules and [victor.name] == ceo)
+			if victory:
+				text += '  (* VICTORY!! *)'
 			if self.phase == 'COMPLETED' or self.phaseType == 'A':
 				if 'BLIND' in self.rules:
-					if power is victor: list += ['SHOW ' +
-						' '.join([x.name for x in self.powers
-						if not (x.units or x.centers or x.omniscient)]),
-						'\nOwnership of supply centers:\n', 'SHOW']
+					if victory: list += ['SHOW']
 					else: list += ['SHOW MASTER ' + ' '.join([x.name
-						for x in self.powers if x is power or x.omniscient])]
+						for x in self.powers if x is power or x.omniscient or [x.name] == ceo])]
 				list += [text]
 			if func and self.phaseType != 'A': func(power, text.upper().split())
 		return list + ['SHOW' * ('BLIND' in self.rules)]
@@ -4067,7 +4083,9 @@ class Game:
 				self.error += ['ORDERS INCOMPLETE']
 			adjust = []
 		adjust.sort()
-		if adjust == power.adjust: return self.process()
+		if adjust == power.adjust:
+			self.process()
+			return self.error
 		if not self.canChangeOrders(power.adjust, adjust): return
 		if not adjust:
 			power.adjust = []
@@ -4076,7 +4094,8 @@ class Game:
 ###		if 'NO_CHECK' in self.rules:
 ###			power.adjust = power.adjusted = self.adjust
 ###			power.cd = 0
-###			return self.process()
+###			self.process()
+###			return self.error
 		orders = []
 		#	------------------------------------------------------------------
 		#	Check for duplicate orders (building/removing the same unit twice)
@@ -4096,6 +4115,7 @@ class Game:
 			power.adjust = power.adjusted = adjust
 			power.cd = 0
 			self.process()
+			return self.error
 	#	----------------------------------------------------------------------
 	def history(self, email, power = None):
 		try:
@@ -4254,8 +4274,11 @@ class Game:
 		return results + '\n'
 	#	----------------------------------------------------------------------
 	def updateAdjustOrders(self, power, orders):
-		power.adjust, power.cd, places = [], 0, []
-		if not orders: return
+		if self.error: return
+		if not orders:
+			power.adjust, power.cd = [], 0
+			return []
+		adjust, places = [], []
 		need, sites = len(power.centers) - len(power.units), 0
 		if [x for x in power.centers if x in power.homes]:
 			need += (self.map.reserves.count(power.name) +
@@ -4284,11 +4307,11 @@ class Game:
 			if need < 0:
 				if len(word) == 3:
 					if (' '.join(word[1:]) in power.units
-					and order not in power.adjust): power.adjust += [order]
+					and order not in adjust): adjust += [order]
 					else: self.error += ['INVALID REMOVE ORDER: ' + order]
 				else: self.error += ['BAD ADJUSTMENT ORDER: ' + order]
 			elif len(word) == 2 and word[1] in ('WAIVE', 'WAIVED'):
-				if len(power.adjust) < need: power.adjust += ['BUILD WAIVED']
+				if len(adjust) < need: adjust += ['BUILD WAIVED']
 			elif len(word) == 3:
 				site = word[2][:3]
 				if ('&SC' in power.homes
@@ -4307,23 +4330,30 @@ class Game:
 								+ ', '.join(limits) + '): ' + order]
 							break
 					else:
-						power.adjust += [order + ' HIDDEN' * (
+						adjust += [order + ' HIDDEN' * (
 							'HIDE_BUILDS' in self.rules or 
 							site in self.map.hidden.get(power.name, []))]
 						places += [site]
 			else: self.error += ['BAD ADJUSTMENT ORDER: ' + order]
 		if len(claim) > power.homes.count('&SC'):
 			self.error += ['EXCESS HOME CENTER CLAIM']
-		if self.error: return
-		while 0 < need < len(power.adjust):
-			try: power.adjust.remove('BUILD WAIVED')
+		if self.error: return self.error
+		while 0 < need < len(adjust):
+			try: adjust.remove('BUILD WAIVED')
 			except: break
-		if len(power.adjust) == abs(need): self.process()
-		else: self.error += ['ADJUSTMENT ORDERS IGNORED (MISCOUNTED)']
+		if len(adjust) != abs(need):
+			self.error += ['ADJUSTMENT ORDERS IGNORED (MISCOUNTED)']
+		if self.error: return self.error
+		power.adjust, power.cd = adjust, 0
+		self.process()
+		return self.error
 	#	----------------------------------------------------------------------
 	def updateRetreatOrders(self, power, orders):
-		power.adjust, power.cd, retreated = [], 0, []
-		if not orders: return
+		if self.error: return self.error
+		if not orders:
+			power.adjust, power.cd = [], 0
+			return []
+		adjust, retreated = [], []
 		for order in orders:
 			word = self.addUnitTypes(self.expandOrder([order]))
 			if word[0] == 'RETREAT': del word[0]
@@ -4339,9 +4369,13 @@ class Game:
 			or   word[3] not in power.retreats[unit])):
 				return self.error.append('BAD RETREAT ORDER: ' + order)
 			retreated += [unit]
-			power.adjust += ['RETREAT ' + ' '.join(word)]
-		if len(retreated) == len(power.retreats): self.process()
-		else: self.error += ['RETREAT ORDERS IGNORED (INCOMPLETE)']
+			adjust += ['RETREAT ' + ' '.join(word)]
+		if len(retreated) != len(power.retreats):
+			self.error += ['RETREAT ORDERS IGNORED (INCOMPLETE)']
+		if self.error: return self.error
+		power.adjust, power.cd = adjust, 0
+		self.process()
+		return self.error
 	#	----------------------------------------------------------------------
 	def powerOrders(self, power):
 		try:

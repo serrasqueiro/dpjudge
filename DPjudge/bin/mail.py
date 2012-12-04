@@ -697,36 +697,28 @@ class Procmail:
 			elif command == 'ROLLBACK':
 				if power.name != 'MASTER':
 					self.respond('Only the Master can ROLLBACK the game')
-				try:
-					phase, flags = '', 0
-					for param in [x.upper() for x in word[1:]]:
-						if param in ('RESTORE', 'RECOVER'): flags |= 1
-						elif param == 'FULL': flags |= 2
-						else: phase = param
-					game.rollback(flags, phase)
-					self.response += ['Game rolled back to ' + game.phase]
-				except RollbackGameInactive:
-					self.respond('ROLLBACK can only occur on an active game')
-				except RollbackPhaseInvalid:
-					self.respond('Invalid ROLLBACK phase')
+				phase, flags = '', 0
+				for param in [x.upper() for x in word[1:]]:
+					if param in ('RESTORE', 'RECOVER'): flags |= 1
+					elif param == 'FULL': flags |= 2
+					else: phase = param
+				error = game.rollback(flags, phase)
+				if error: self.respond(error)
+				self.response += ['Game rolled back to ' + game.phase]
 			#	---------------------------------
 			#	See if we are to do a ROLLFORWARD
 			#	---------------------------------
 			elif command == 'ROLLFORWARD':
 				if power.name != 'MASTER':
 					self.respond('Only the Master can ROLLFORWARD the game')
-				try:
-					phase, flags = '', 4
-					for param in [x.upper() for x in word[1:]]:
-						if param in ('RESTORE', 'RECOVER'): flags |= 1
-						elif param == 'FULL': flags |= 2
-						else: phase = param
-					game.rollforward(flags, phase)
-					self.response += ['Game rolled forward to ' + game.phase]
-				except RollforwardGameInactive:
-					self.respond('ROLLFORWARD can only occur on an active game')
-				except RollforwardPhaseInvalid:
-					self.respond('Invalid ROLLFORWARD phase')
+				phase, flags = '', 4
+				for param in [x.upper() for x in word[1:]]:
+					if param in ('RESTORE', 'RECOVER'): flags |= 1
+					elif param == 'FULL': flags |= 2
+					else: phase = param
+				error = game.rollforward(flags, phase)
+				if error: self.respond(error)
+				self.response += ['Game rolled forward to ' + game.phase]
 			#	--------------------------------------------------------
 			#	See if we are trying to RESIGN, DUMMY or REVIVE a player
 			#	--------------------------------------------------------
@@ -965,8 +957,10 @@ class Procmail:
 		game = self.game
 		if not orders and 'MUST_ORDER' in game.rules:
 			game.error += ['ORDERS MAY NOT BE CLEARED AFTER SUBMISSION']
-		elif game.phaseType == 'R': game.updateRetreatOrders(self.power, orders)
-		elif game.phaseType == 'A': game.updateAdjustOrders(self.power, orders)
+		elif game.phaseType == 'R':
+			game.updateRetreatOrders(self.power, orders)
+		elif game.phaseType == 'A':
+			game.updateAdjustOrders(self.power, orders)
 		else:
 			try: game.updateOrders(self.power, orders)
 			except:
