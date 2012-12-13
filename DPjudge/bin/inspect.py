@@ -54,7 +54,7 @@ class Inspect:
 		('set '*(os.name == 'nt'), os.path.dirname(host.packageDir),
 		('/usr/bin/env', '&')[os.name == 'nt'], interp,
 		'"' + `';'.join(command)`[1:-1] + '"'))
-	os._exit(os.EX_OK)
+	if host.forceInterpreterExit: os._exit(os.EX_OK)
 
 #	-----------------------
 #	Examine/Update any game

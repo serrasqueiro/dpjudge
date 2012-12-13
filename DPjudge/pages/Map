@@ -476,13 +476,31 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	"<tt>RUSSIA&nbsp;-WAR</tt>" and "<tt>UNOWNED&nbsp;-WAR</tt>"
 	<i>in that order</i>.
 
+<a name=DUMMY></a>
 <p><dt><b><tt>DUMMY</tt></b><dd>
-	This indicates that the curent power is to be made a <tt>DUMMY</tt>
+	This indicates that the current power is to be made a <tt>DUMMY</tt>
 	power in the game.  No player will take the role of such a power.
 	This power can be put into civil disorder using the <tt>CD_DUMMIES</tt>
 	rule, or may be played under the <tt>CONTROL</tt> of another power
-	(see the description of the <tt>ROTATE</tt> and <tt>CONTROL</tt>
-	directives used in the game <a href=<URL>?page=Status>status file</a>).
+	(see below).
+
+<a name=CONTROL></a>
+<p><dt><b><tt>CONTROL <i>powerName</i>...</tt></b><dd>
+	This command puts the dummy power under the control of another power,
+	rotating through the list of powers according to the <tt>ROTATE</tt>
+	directive. (See the <a href=<URL>?page=Status#CONTROL><tt>CONTROL</tt></a>
+	directive in the game status help file for a more thorough description.)
+
+<a name=ROTATE></a>
+<p><dt><b><tt>ROTATE [CONTROL]</tt> -or-<br>
+		  <tt>ROTATE AFTER [<i>phaseType</i>]...</tt> -or-<br>
+		  <tt>ROTATE BEFORE <i>phaseType</i>...</tt> -or-<br>
+		  <tt>ROTATE FOR <i>phaseType</i>...</tt></b><dd>
+	This is used to specify a rotation of power control for all
+	powers in the game that are controlled by other players.
+	(See the <a href=<URL>?page=Status#ROTATE><tt>ROTATE</tt></a>
+	directive in the game status help file for a more thorough description.)
+
 
 <a name=NEWHOMES></a>
 <p><dt><b><tt>NEWHOMES <i>year...</i></tt></b><dd>

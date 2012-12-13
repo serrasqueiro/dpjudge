@@ -19,7 +19,8 @@ for (var, value) in [
 ('zoneFileName', 'zone.tab'),
 ('bannerHtml', ''), ('tester', ''), ('openingsList', ''),
 ('publicDomains', []),
-('copy', 0), ('notify', 0)]:
+('copy', 0), ('notify', 0),
+('forceInterpreterExit', True)]:
 	vars(host).setdefault(var, value)
 
 for (var, base, path) in [

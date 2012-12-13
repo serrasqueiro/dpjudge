@@ -1020,7 +1020,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE GROUP 7 Late and Vacant Power Handling -->
 <dl>
 <a name=CIVIL_DISORDER></a><p><dt><b><tt>CIVIL_DISORDER</tt></b><dd>
-<!-- RULE CIVIL_DISORDER !CIVIL_PREVIEW !CD_DUMMIES =NO_LATE_CHANGES -->
+<!-- RULE CIVIL_DISORDER !CIVIL_PREVIEW =NO_LATE_CHANGES -->
 	Any power that has not submitted orders:
 	<ol type=a>
 	<li>when the game's Master submits a <tt>PROCESS</tt> command,
@@ -1064,8 +1064,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	by setting the <tt>PLAYER</tt> information to <tt>DUMMY</tt>,
 	and using the
 	<a href=#CD_DUMMIES><tt>CD_DUMMIES</tt></a> rule, described below.
-	<tt>CIVIL_DISORDER</tt> and <tt>CIVIL_PREVIEW</tt> are mutually exclusive,
-	as are <tt>CIVIL_DISORDER</tt> and <tt>CD_DUMMIES</tt>.
+	<tt>CIVIL_DISORDER</tt> and <tt>CIVIL_PREVIEW</tt> are mutually exclusive.
 <!-- RULE END -->
 
 <a name=CIVIL_PREVIEW></a><p><dt><b><tt>CIVIL_PREVIEW</tt></b><dd>
@@ -1080,7 +1079,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE END -->
 
 <a name=CD_DUMMIES></a><p><dt><b><tt>CD_DUMMIES</tt></b><dd>
-<!-- RULE CD_DUMMIES !CIVIL_DISORDER -->
+<!-- RULE CD_DUMMIES -->
 	Assuming no powers have set their <tt>WAIT</tt> flag, orders will be
 	processed as <i><u>soon</u></i> as all <i><u>non-</u></i><tt>DUMMY</tt>
 	players have submitted orders.  Any powers having a <tt>PLAYER</tt> marked

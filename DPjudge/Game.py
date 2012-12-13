@@ -646,7 +646,8 @@ class Game:
 			if not word: continue
 			self.directives += [' '.join(word)]
 			# Game data
-			if self.mode and upword == 'END' and len(word) == 2 and word[1].upper() == self.mode:
+			if (self.mode and upword == 'END' and len(word) == 2 and
+				word[1].upper() == self.mode):
 				self.mode = self.modeRequiresEnd = None
 			elif not self.parseGameData(word, 14):
 				error += ['UNRECOGNIZED GAME DIRECTIVE: ' + ' '.join(word)]
@@ -668,7 +669,7 @@ class Game:
 			#	--------------------------------------
 			#	Game-specific information (persistent)
 			#	--------------------------------------
-			if self.mode == 'DESC':
+			if self.mode in ('DESC', 'DESCRIPTION'):
 				self.desc += [' '.join(word)]
 			elif self.mode == 'NAME':
 				self.origin += [' '.join(word)]
@@ -745,7 +746,7 @@ class Game:
 					error += ['TWO TESTER STATEMENTS']
 				elif len(word) == 1: self.tester = '!'
 				else: self.tester = word[1] + '!'
-			elif upword == 'DESC':
+			elif upword in ('DESC', 'DESCRIPTION'):
 				if len(word) > 1: self.desc += [' '.join(word[1:])]
 				else: self.mode, self.modeRequiresEnd = upword, 1
 			elif upword == 'NAME':
@@ -1632,8 +1633,10 @@ class Game:
 			self.map.validate(force = 1)
 		for starter in [x for x in self.map.dummies
 			if x not in [y.name for y in self.powers]]:
-			self.powers.append(self.powerType(self, starter))
-			self.powers[-1].player = ['DUMMY']
+			dummy = self.powerType(self, starter)
+			self.powers.append(dummy)
+			dummy.player = ['DUMMY']
+			dummy.ceo = self.map.controls.get(starter)
 		for starter in [x for x in self.powers if not x.type]:
 			starter.abbrev = self.map.abbrev.get(starter.name, starter.name[0])
 		for starter in [x for x in self.powers if not x.type]:

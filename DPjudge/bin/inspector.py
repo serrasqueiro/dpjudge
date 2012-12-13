@@ -10,8 +10,13 @@ class Inspector:
 	def __init__(self):
 		self.game = None
 		self.varNames = dict()
-	def load(self, gameName):
+	def load(self, gameName = None):
 		import re
+		if not gameName:
+			if self.game: gameName = self.game.name
+			else:
+				print 'No game name specified or loaded.'
+				return
 		self.vars = dict()
 		self.game = Status().load(gameName)
 		if self.game and self.game.error: print '\n'.join(self.game.error)

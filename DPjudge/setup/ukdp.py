@@ -369,4 +369,6 @@ RPAFproxy_ips 127.0.0.1 2a01:348:1f1:10::1
 ---
 Restart apache, log in to a game page, check the access log, and presto: The correct host name appears.
 
+Other issue: Quitting inspect with Ctrl-d doesn't seem to have the expected effect. I find out after some trial and error that os._exit() is the cause. Removing that solves the issue. But back on the Floc server, this call is a must. As a result I add a new host parameter 'forceInterpreterExit', setting it to False and to True on Floc.
+
 """

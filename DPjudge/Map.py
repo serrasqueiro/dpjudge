@@ -12,9 +12,9 @@ class Map:
 		ownWord, abbrev, centers, units, powName, flag = {}, {}, {}, {}, {}, {}
 		rules, files, powers, scs, owns, inhabits = [], [], [], [], [], []
 		flow, unclear, size, homeYears, dummies, locs = [], [], [], [], [], []
-		reserves, militia, flagDirs = [], [], []
+		reserves, militia, flagDirs, error, notify = [], [], [], [], []
 		dynamic, factory, partisan, alternative, hidden = {}, {}, {}, {}, {}
-		leagues, directives, phaseAbbrev, error, notify = {}, {}, {}, [], []
+		controls, leagues, directives, phaseAbbrev = {}, {}, {}, {}
 		if host.notify and host.judgekeeper and (trial or host.notify > 1):
 			notify = [host.judgekeeper]
 		aliases = {			'-': '-',		'H': 'H',		'P': 'P',
@@ -421,6 +421,11 @@ class Map:
 				#	----------------------------------------------
 				if (variant or 'ALL') == 'ALL':
 					self.rules += line.upper().split()[1:]
+			#	----------------
+			#	Other directives
+			#	----------------
+			elif upword == 'ROTATE':
+				self.directives.setdefault(variant or 'ALL', []).append(line)
 			#	---------------------------------------------------
 			#	Year(s), if any, in which new home SC's are decided
 			#	---------------------------------------------------
@@ -513,6 +518,23 @@ class Map:
 						self.reserves += [power] * count
 					except: error += ['INVALID %s COUNT' % upword]
 				else: error += ['%s BEFORE POWER' % upword]
+			#	-------------
+			#	Power control
+			#	-------------
+			elif upword == 'CONTROL':
+				if not power: error += ['CONTROL BEFORE POWER']
+				elif power not in self.dummies: error += [
+					'CONTROLLED POWER %s NOT A DUMMY' % power]
+				else:
+					errorLen = len(error)
+					controllers = [x.upper() for x in word[1:]]
+					for controller in controllers:
+						if controller in self.dummies: error += [
+							'CONTROLLING POWER %s IS A DUMMY' % controller]
+						elif controller not in self.powers: error += [
+							'CONTROLLING POWER %s NOT A POWER' % controller]
+					if errorLen == len(error):
+						self.controls[power] = controllers
 			#	-------------------------------
 			#	League affiliation and behavior
 			#	-------------------------------

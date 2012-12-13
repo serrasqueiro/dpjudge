@@ -1,4 +1,4 @@
-import os, time
+import os, time, datetime
 import host
 
 import DPjudge
@@ -26,13 +26,14 @@ class Check(DPjudge.Status):
 				print game.name, 'HAS NO MASTER!'
 				continue
 			#	---------------------------------------------------
-			#	At the midnight hour, remind a Master of any errors
-			#	or any forming, waiting, or unprepared games he has
+			#	On Monday at the midnight hour, remind a Master of any errors
+			#	or any forming, waiting, or unprepared games he has.
 			#	---------------------------------------------------
 			line = game.deadline
 			if 'active' in data and not line: game.error += ['NO DEADLINE']
 			if game.error or 'active' not in data:
-				if now[-4:] >= '0020': pass
+				if now[-4:] >= '0020' or datetime.date(
+					now[:4], now[4:6], now[6:8]).weekday(): pass
 				elif game.error:
 					print game.name, 'has ERRORS ... notifying the Master'
 					for addr in game.master[1].split(','):

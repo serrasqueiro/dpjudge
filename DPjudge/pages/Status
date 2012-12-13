@@ -340,8 +340,8 @@ page.include('functions')
 	automatically when the game is completed.
 
 <A name=DESC></a>
-<p><dt><b><tt>DESC <i>gameDescription</i></tt> -or-<br>
-	<tt>DESC<br><i>gameDescription</i><br>END DESC</tt></b><dd>
+<p><dt><b><tt>DESC[RIPTION] <i>gameDescription</i></tt> -or-<br>
+	<tt>DESC[RIPTION]<br><i>gameDescription</i><br>END DESC[RIPTION]</tt></b><dd>
 	Description of the game.  Multiple <tt>DESC</tt> lines may be used if
 	needed.  Alternatively, start with a single <tt>DESC</tt> stanza on one line,
 	followed by the game description across multiple lines, and finished 
@@ -539,9 +539,13 @@ page.include('functions')
 	scheme is used when setting up a "Missing Man" variant game.  In the
 	e-mailed <tt>CREATE</tt> message (or in the status file before the
 	players <tt>JOIN</tt>), the Master would create <tt>POWER</tt> stanzas
-	for any powers not to be played.  For example, if Italy and Germany
-	are to be played missing, controlled by the other players, the status
-	file could contain:<br><tt>
+	for any powers not to be played as a series of MORPH lines.  For
+	example, if Italy and Germany are to be played missing, controlled by
+	the other players, the status file could contain:<br><tt>
+	&nbsp;&nbsp;&nbsp;&nbsp;
+	MORPH<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;
+	DUMMY ITALY GERMANY<p>
 	&nbsp;&nbsp;&nbsp;&nbsp;
 	POWER ITALY<br>
 	&nbsp;&nbsp;&nbsp;&nbsp;
@@ -549,7 +553,9 @@ page.include('functions')
 	&nbsp;&nbsp;&nbsp;&nbsp;
 	POWER GERMANY<br>
 	&nbsp;&nbsp;&nbsp;&nbsp;
-	CONTROL TURKEY AUSTRIA ENGLAND FRANCE RUSSIA</tt><br>
+	CONTROL TURKEY AUSTRIA ENGLAND FRANCE RUSSIA<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;
+	END MORPH</tt><br>
 	You could also let a single player control the same power the whole game,
 	thereby effectively allowing him to play two powers. If everyone is given
 	a second power (on maps with an even number of powers), the game would only
