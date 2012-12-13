@@ -33,7 +33,7 @@ class Check(DPjudge.Status):
 			if 'active' in data and not line: game.error += ['NO DEADLINE']
 			if game.error or 'active' not in data:
 				if now[-4:] >= '0020' or datetime.date(
-					now[:4], now[4:6], now[6:8]).weekday(): pass
+					int(now[:4]), int(now[4:6]), int(now[6:8])).weekday(): pass
 				elif game.error:
 					print game.name, 'has ERRORS ... notifying the Master'
 					for addr in game.master[1].split(','):
