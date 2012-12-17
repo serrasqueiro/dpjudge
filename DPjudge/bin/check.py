@@ -39,11 +39,11 @@ class Check(DPjudge.Status):
 					for addr in game.master[1].split(','):
 						mail = DPjudge.Mail(addr,
 							'Diplomacy ERRORS (%s)' % game.name)
-						mail.write('The game %s on %s has the following errors '
-							'in its status file:\n\n%s\n\nLog in at\n'
+						mail.write("The game '%s' on %s has the following "
+							'errors in its status file:\n\n%s\n\nLog in at\n'
 							'   %s?game=%s\nto correct the errors!\n\n'
 							'Thank you,\nThe DPjudge\n' %
-							(`game.name`, host.dpjudgeID, '\n'.join(game.error),
+							(game.name, host.dpjudgeID, '\n'.join(game.error),
 							host.dpjudgeURL, game.name))
 						mail.close()
 				elif 'terminated' not in data:
@@ -54,11 +54,11 @@ class Check(DPjudge.Status):
 					for addr in game.master[1].split(','):
 						mail = DPjudge.Mail(addr,
 							'Diplomacy game reminder (%s)' % game.name)
-						mail.write('GameMaster:\n\nThe game %s on %s is '
+						mail.write("GameMaster:\n\nThe game '%s' on %s is "
 							'still in the %s state.\n\nVisit the game at\n'
 							'   %s?game=%s\nfor more information.\n\n'
 							'Thank you,\nThe DPjudge\n' %
-							(`game.name`, host.dpjudgeID, state,
+							(game.name, host.dpjudgeID, state,
 							host.dpjudgeURL, game.name))
 						mail.close()
 				continue

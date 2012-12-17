@@ -93,10 +93,10 @@ elif not page.name or ' ' not in page.name or nameInvalid:
 		"""
 		<script>
 		alert('Policy is that you must register with your full, true name.\\n' +
-			  "The name %s will not suffice.  Please try again.");
+			  "The name '%s' will not suffice.  Please try again.");
 		window.history.back();
 		</script>
-		""" % `page.name`)
+		""" % page.name)
 else:
 	confirm, realPwd = random.randrange(90000) + 10000, page.password
 	page.password = '%d/%s' % (confirm, realPwd)
