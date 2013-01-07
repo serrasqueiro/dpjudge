@@ -47,18 +47,30 @@ class Check(DPjudge.Status):
 							host.dpjudgeURL, game.name))
 						mail.close()
 				elif 'terminated' not in data:
-					if 'waiting' in data: state = 'waiting'
-					else: state = ('preparation', 'forming')['forming' in data]
+					reason = ''
+					if 'waiting' in data:
+						state = 'waiting'
+						if game.avail:
+							reason = 'Need to replace %s.' % ', '.join([
+								game.anglify(x[:x.find('-')]) + x[x.find('-'):]
+								for x in game.avail])
+					elif 'forming' in data:
+						state = 'forming'
+						spots = int(game.avail[0]) or (
+							len(game.map.powers) - len(game.map.dummies))
+						reason = '%d position%s remain%s.' % (
+							spots, 's'[spots == 1:], 's'[spots != 1:])
+					else: state = 'preparation'
 					print game.name, 'is in the %s state' % state,
 					print '... reminding the Master'
 					for addr in game.master[1].split(','):
 						mail = DPjudge.Mail(addr,
 							'Diplomacy game reminder (%s)' % game.name)
 						mail.write("GameMaster:\n\nThe game '%s' on %s is "
-							'still in the %s state.\n\nVisit the game at\n'
+							'still in the %s state.%s\n\nVisit the game at\n'
 							'   %s?game=%s\nfor more information.\n\n'
 							'Thank you,\nThe DPjudge\n' %
-							(game.name, host.dpjudgeID, state,
+							(game.name, host.dpjudgeID, state, reason,
 							host.dpjudgeURL, game.name))
 						mail.close()
 				continue
