@@ -1342,7 +1342,7 @@ class Game:
 		os.chmod(fileName + '.ps', 0666)
 		self.error += map.error
 	#	----------------------------------------------------------------------
-	def makeGifMaps(self, password = ''):
+	def makeGifMaps(self, password = '', pages = None):
 		#	--------------------------------------------
 		#	Make .gif files from the last page(s) of the
 		#	.ps map for the game.  To do so, extract the
@@ -1371,7 +1371,7 @@ class Game:
 			outp = ('|', ppmf, '|', '|', '|')
 		if err: inp = tuple(['%s %s' % (x, err) for x in inp])
 		toolsDir = host.toolsDir
-		chop = ('%s/psselect -p_%%d %s %s'
+		chop = ('%s/psselect -p%%s %s %s'
 				'%s/gs -q -r%d -dSAFER -sDEVICE=ppmraw -o %s %s;' %
 				(toolsDir, inp[0], outp[0],
 				toolsDir, host.imageResolution, outp[1], inp[1]))
@@ -1390,12 +1390,15 @@ class Game:
 		make += '%s/pnmcrop -white %s %s' % (toolsDir, inp[idx], outp[idx])
 		idx += 1
 		make +=	'%s/ppmtogif -interlace %s > %%s' % (toolsDir, inp[idx])
-		for page in (1, 2):
-			if page == 2 and self.phase == self.map.phase: break
-			gif = root + '_'[page & 1:] + '.gif'
+		if not pages: pages = [0] + [-1] * (self.phase != self.map.phase)
+		for page in pages:
+			gif = root + '_' * (page < 0) + ('%d' % abs(page)) * (
+				not 1 > page > -2) + '.gif'
 			try: os.unlink(gif)
 			except: pass
-			map(os.system, (chop % page + make % gif).split(';'))
+			map(os.system, (chop % ('_' * (page < 1) + '%d' % (
+				page > 0 and page or 1 - page)) + make % gif).split(';'))
+			print('Created %s' % gif)
 			#	------------------------------------------------------------
 			#	If the gif make fails, the file will be 0 bytes.  Remove it.
 			#	------------------------------------------------------------
