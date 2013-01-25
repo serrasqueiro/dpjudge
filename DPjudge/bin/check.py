@@ -25,10 +25,10 @@ class Check(DPjudge.Status):
 			if not game.master or len(game.master) != 3:
 				print game.name, 'HAS NO MASTER!'
 				continue
-			#	---------------------------------------------------
+			#	-------------------------------------------------------------
 			#	On Monday at the midnight hour, remind a Master of any errors
 			#	or any forming, waiting, or unprepared games he has.
-			#	---------------------------------------------------
+			#	-------------------------------------------------------------
 			line = game.deadline
 			if 'active' in data and not line: game.error += ['NO DEADLINE']
 			if game.error or 'active' not in data:

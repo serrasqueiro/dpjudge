@@ -37,6 +37,7 @@ tester = None # '@'
 dpjudgeID		=	'UKDP'
 dpjudge			=	'ukdp@uk.diplom.org'
 judgekeeper     =	'woelpad@gmail.com' # 'peter@spikings.com'
+#judgePassword   =	''
 #	--------------------------------------------------------------
 dpjudgeURL      =	'http://uk.diplom.org'
 

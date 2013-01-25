@@ -1398,7 +1398,6 @@ class Game:
 			except: pass
 			map(os.system, (chop % ('_' * (page < 1) + '%d' % (
 				page > 0 and page or 1 - page)) + make % gif).split(';'))
-			print('Created %s' % gif)
 			#	------------------------------------------------------------
 			#	If the gif make fails, the file will be 0 bytes.  Remove it.
 			#	------------------------------------------------------------
@@ -1639,7 +1638,7 @@ class Game:
 			dummy = self.powerType(self, starter)
 			self.powers.append(dummy)
 			dummy.player = ['DUMMY']
-			dummy.ceo = self.map.controls.get(starter)
+			dummy.ceo = self.map.controls.get(starter) or []
 		for starter in [x for x in self.powers if not x.type]:
 			starter.abbrev = self.map.abbrev.get(starter.name, starter.name[0])
 		for starter in [x for x in self.powers if not x.type]:
@@ -4583,7 +4582,8 @@ class Game:
 				if len(word) < 8: continue
 				if (word[5] == origin.upper() # and '@' not in word[5]
 				and word[6] != power and word[6:] in powers
-				and self.password.upper() not in (word[7], pwd.upper())):
+				and not [1 for x in (self.password.upper(),
+				host.judgePassword.upper()) if x in (word[7], pwd.upper())]):
 					for addr in [self.master[1]] + host.detectives * outsider:
 						self.openMail('Diplomacy suspicious activity',
 							mailTo = addr, mailAs = host.dpjudge)
@@ -4602,6 +4602,7 @@ class Game:
 		#	---------------------------
 		file = open(access, 'a')
 		if pwd == self.password: pwd = '!-MASTER-!'
+		elif pwd == host.judgePassword: pwd = '!-JUDGEKEEPER-!'
 		temp = '%s %-16s %-10s %s\n' % (time.ctime(), origin, power, pwd)
 		file.write(temp.encode('latin-1'))
 		del temp

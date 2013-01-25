@@ -79,7 +79,7 @@ class Procmail:
 				game, password = ' '.join(word[1:3]).lower().split()
 				for ch in game:
 					if not (ch.islower() or ch == '_' or ch.isdigit()):
-						self.respond('Game name cannot contain ' + `ch`)
+						self.respond("Game name cannot contain '%s'" % ch)
 				if '<' in password or '>' in password:
 					self.respond('Password cannot contain < or >')
 				if upword[0] == 'P':
@@ -341,7 +341,7 @@ class Procmail:
 			#	------------------------------------------------------
 			for playerType in ['OBSERVER', 'MONITOR'] + game.playerTypes:
 				if playerType.startswith(command): break
-			else: self.respond('Player type %s not allowed' % `command`)
+			else: self.respond("Player type '%s' not allowed" % command)
 			if self.power and self.email != self.power.address[0]:
 				self.respond("Player ID '%s' already exists" % power)
 			elif power == 'MASTER':

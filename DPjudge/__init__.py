@@ -18,6 +18,7 @@ for (var, value) in [
 ('gameMapSubDir', 'maps'),
 ('zoneFileName', 'zone.tab'),
 ('bannerHtml', ''), ('tester', ''), ('openingsList', ''),
+('judgePassword', ''),
 ('publicDomains', []),
 ('copy', 0), ('notify', 0),
 ('forceInterpreterExit', True)]:

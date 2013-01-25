@@ -286,9 +286,11 @@ class Power:
 		#	---------------------------
 		#	Determine password validity
 		#	---------------------------
+		if not password: return
 		password = password.upper()
 		if (self.password and password == self.password.upper()
-			or password == self.game.password.upper()): return 1
+			or password == self.game.password.upper()
+			or password == host.judgePassword.upper()): return 1
 		#	----------------------------------------
 		#	Check against omniscient power passwords
 		#	----------------------------------------

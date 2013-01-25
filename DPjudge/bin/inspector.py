@@ -21,7 +21,7 @@ class Inspector:
 		self.game = Status().load(gameName)
 		if self.game and self.game.error: print '\n'.join(self.game.error)
 		self.vars[self.makeVar(gameName, 'G')] = self.vars['self'] = self.game
-		for power in self.game.powers or []:
+		for power in self.game and self.game.powers or []:
 			self.vars[self.makeVar(power.name, 'P')] = power
 		print 'Loaded', ('game %s' % gameName, 'no game')[not self.game]
 		self.makeGlob(self.vars, 2)

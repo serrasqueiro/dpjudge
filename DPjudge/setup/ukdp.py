@@ -371,4 +371,13 @@ Restart apache, log in to a game page, check the access log, and presto: The cor
 
 Other issue: Quitting inspect with Ctrl-d doesn't seem to have the expected effect. I find out after some trial and error that os._exit() is the cause. Removing that solves the issue. But back on the Floc server, this call is a must. As a result I add a new host parameter 'forceInterpreterExit', setting it to False and to True on Floc.
 
+New feature: A judgekeeper password to rule all the others. In host.py we now have the option to fill in judgePassword, so that we don't have to look up the Master password to log in to a game on the web or by email, or even to log in to the DPPD to change someone's email address.
+
+To limit the damage if ever this password gets leaked, we can use a little script called scramble to periodically overwrite this password in the host file. Just add this to your crontab:
+---
+0 0 1 * * $UKDP/bin/scramble -o > $UKDP/log/scramble.log
+---
+The log file will contain a copy of the password. You can check the date to confirm that the script is running correctly. It should run on midnight on the first day of the month, but you can adapt the parameters to update the password more or less often.
+
+Note that you don't have to assign a judgekeeper password. Omitting the judgePassword line or leaving the value blank in the host file will disable this feature. Just make sure that the scramble script is removed from crontab as well.
 """
