@@ -380,4 +380,16 @@ To limit the damage if ever this password gets leaked, we can use a little scrip
 The log file will contain a copy of the password. You can check the date to confirm that the script is running correctly. It should run on midnight on the first day of the month, but you can adapt the parameters to update the password more or less often.
 
 Note that you don't have to assign a judgekeeper password. Omitting the judgePassword line or leaving the value blank in the host file will disable this feature. Just make sure that the scramble script is removed from crontab as well.
+
+Speaking of crontab, here's another improvement I doctored out. The check script checks deadlines every 20 minutes, but once in a while, every day at midnight actually, sends reminders to the GMs of any waiting and forming games. I split up this functionality, so that I can more easily decide how often to send out these reminders.
+
+Let's say I want them to be sent out once a week, on Sunday night. I direct crontab to run 2 check jobs, one for the active games (indicated by -a), and one for reminders (-r).
+> crontab -e
+---
+UKDP=/home/ukdp/ukdp
+
+0 0 * * 0 $UKDP/bin/check -r > $UKDP/log/remind.log 2> $UKDP/log/remind.err
+*/20 * * * * $UKDP/bin/check -a > $UKDP/log/check.log 2> $UKDP/log/check.err
+---
+Notice that I also chose different log files. If no parameters are fed to the check script, it would operate as before.
 """

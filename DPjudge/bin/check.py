@@ -1,4 +1,4 @@
-import os, time, datetime
+import os, sys, time
 import host
 
 import DPjudge
@@ -8,6 +8,11 @@ class Check(DPjudge.Status):
 	"""
 	This class is invoked by the cron job to check deadlines on all games,
 	and handle each when and as necessary.
+	The following flags can be added:
+		-r	To send only reminders for inactive games
+		-a	To check only on active games (opposite of -r)
+	If neither flag is specified, the program will check on active games
+	and once a day, at the midnight hour, send reminders for inactive games.
 	"""
 	#	----------------------------------------------------------------------
 	def __init__(self, gameList = None):
@@ -25,15 +30,16 @@ class Check(DPjudge.Status):
 			if not game.master or len(game.master) != 3:
 				print game.name, 'HAS NO MASTER!'
 				continue
-			#	-------------------------------------------------------------
-			#	On Monday at the midnight hour, remind a Master of any errors
-			#	or any forming, waiting, or unprepared games he has.
-			#	-------------------------------------------------------------
+			#	-----------------------------------------------------------
+			#	At the midnight hour or if the -r flag is set, remind a
+			#	Master of any errors or any forming, waiting, or unprepared
+			#	games he has.
+			#	-----------------------------------------------------------
 			line = game.deadline
 			if 'active' in data and not line: game.error += ['NO DEADLINE']
 			if game.error or 'active' not in data:
-				if now[-4:] >= '0020' or datetime.date(
-					int(now[:4]), int(now[4:6]), int(now[6:8])).weekday(): pass
+				if '-r' not in sys.argv and (
+					'-a' in sys.argv or now[-4:] >= '0020'): pass
 				elif game.error:
 					print game.name, 'has ERRORS ... notifying the Master'
 					for addr in game.master[1].split(','):
@@ -51,14 +57,14 @@ class Check(DPjudge.Status):
 					if 'waiting' in data:
 						state = 'waiting'
 						if game.avail:
-							reason = 'Need to replace %s.' % ', '.join([
+							reason = ' Need to replace %s.' % ', '.join([
 								game.anglify(x[:x.find('-')]) + x[x.find('-'):]
 								for x in game.avail])
 					elif 'forming' in data:
 						state = 'forming'
 						spots = int(game.avail[0]) or (
 							len(game.map.powers) - len(game.map.dummies))
-						reason = '%d position%s remain%s.' % (
+						reason = ' %d position%s remain%s.' % (
 							spots, 's'[spots == 1:], 's'[spots != 1:])
 					else: state = 'preparation'
 					print game.name, 'is in the %s state' % state,
@@ -74,6 +80,7 @@ class Check(DPjudge.Status):
 							host.dpjudgeURL, game.name))
 						mail.close()
 				continue
+			elif '-r' in sys.argv and '-a' not in sys.argv: continue
 			#	---------------------------------------------------
 			#	Check for expired grace periods (auto-CD or RESIGN)
 			#	---------------------------------------------------
