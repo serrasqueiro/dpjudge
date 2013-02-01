@@ -1,12 +1,8 @@
-#!/usr/bin/python -Oi
+#!/usr/bin/python -O
 
 import os
 os.sys.path[:0] = [os.path.dirname(os.path.abspath(os.sys.argv[0])) + '/..']
 import host
 
 from DPjudge.bin.inspect import Inspect
-
-#	-----------------------
-#	Examine/Update any game
-#	-----------------------
 Inspect()

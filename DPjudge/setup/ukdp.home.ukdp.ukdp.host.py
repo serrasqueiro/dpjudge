@@ -79,11 +79,6 @@ publicDomains	=	['.proxy.aol.com', '.mx.aol.com', '.spikings.com']
 #	---------------------------------------------------------
 notify = 1
 
-#	----------------------------------------------------------
-#	Force a hard exit to exit the interpreter (default: True).
-#	----------------------------------------------------------
-forceInterpreterExit = False
-
 #   --------------------------------------------------------------
 #	Set timeZone only as a last resort, i.e. if you're on Windows
 #	on a non-English/non-Latin computer where the local timezone

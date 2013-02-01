@@ -20,8 +20,7 @@ for (var, value) in [
 ('bannerHtml', ''), ('tester', ''), ('openingsList', ''),
 ('judgePassword', ''),
 ('publicDomains', []),
-('copy', 0), ('notify', 0),
-('forceInterpreterExit', True)]:
+('copy', 0), ('notify', 0)]:
 	vars(host).setdefault(var, value)
 
 for (var, base, path) in [

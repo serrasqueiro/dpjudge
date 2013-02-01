@@ -38,9 +38,8 @@ class Inspect:
 	def __init__(self, argv = None):
 		if argv is None: argv = sys.argv
 		interp, command  = 'i', [
-			'import sys', "sys.argv[:0] = ['%s']" % argv[0],
-			'from DPjudge.bin.inspector import *', 'inspect = Inspector()'
-			]
+			'from DPjudge.bin.inspector import Inspector',
+			'inspect = Inspector()']
 		if len(argv) > 1:
 			arg1 = argv[1]
 			gameName = arg1.split('.')[0].split('@')[0]
@@ -56,4 +55,3 @@ class Inspect:
 			('set '*(os.name == 'nt'), os.path.dirname(host.packageDir),
 			('/usr/bin/env', '&')[os.name == 'nt'], interp,
 			'"' + `';'.join(command)`[1:-1] + '"'))
-		if host.forceInterpreterExit: os._exit(os.EX_OK)
