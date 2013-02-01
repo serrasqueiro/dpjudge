@@ -15,11 +15,14 @@ class Check(DPjudge.Status):
 	and once a day, at the midnight hour, send reminders for inactive games.
 	"""
 	#	----------------------------------------------------------------------
-	def __init__(self, gameList = None):
+	def __init__(self, argv = None):
 		DPjudge.Status.__init__(self)
+		if argv is None: argv = sys.argv
 		os.putenv('TZ', 'GMT')
 		now = DPjudge.Game.Time()
 		print 'Checking deadlines at %s GMT' % time.ctime()
+		flags = [x for x in argv[1:] if x.startswith('-')]
+		gameList = [x for x in argv[1:] if not x.startswith('-')]
 		for gameName, data in self.dict.items():
 			if 'completed' in data or 'held' in data: continue
 			if gameList and gameName not in gameList: continue
@@ -38,8 +41,8 @@ class Check(DPjudge.Status):
 			line = game.deadline
 			if 'active' in data and not line: game.error += ['NO DEADLINE']
 			if game.error or 'active' not in data:
-				if '-r' not in sys.argv and (
-					'-a' in sys.argv or now[-4:] >= '0020'): pass
+				if '-r' not in flags and (
+					'-a' in flags or now[-4:] >= '0020'): pass
 				elif game.error:
 					print game.name, 'has ERRORS ... notifying the Master'
 					for addr in game.master[1].split(','):
@@ -80,7 +83,7 @@ class Check(DPjudge.Status):
 							host.dpjudgeURL, game.name))
 						mail.close()
 				continue
-			elif '-r' in sys.argv and '-a' not in sys.argv: continue
+			elif '-r' in flags and '-a' not in flags: continue
 			#	---------------------------------------------------
 			#	Check for expired grace periods (auto-CD or RESIGN)
 			#	---------------------------------------------------
@@ -148,9 +151,3 @@ class Check(DPjudge.Status):
 				continue
 			if not game.preview: game.save()
 	#	----------------------------------------------------------------------
-
-#	---------------
-#	Check all games
-#	---------------
-if __name__ == '__main__':
-	Check()

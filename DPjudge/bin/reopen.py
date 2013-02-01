@@ -22,8 +22,3 @@ class Reopen(Status):
 			[not host.openingsList] % host.dpjudgeID)
 		print '-' * 56
 	#	----------------------------------------------------------------------
-
-#	----------------------------------
-#	Announce Re-Opening of the DPjudge
-#	----------------------------------
-Reopen()

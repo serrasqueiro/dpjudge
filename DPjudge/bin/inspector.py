@@ -1,6 +1,6 @@
 import re, sys, urllib
 from DPjudge import *
-from DPjudge.bin.check import *
+from DPjudge.bin.check import Check
 from DPjudge.variants.dppd import *
 
 class Inspector:
@@ -27,7 +27,8 @@ class Inspector:
 		self.makeGlob(self.vars, 2)
 	def check(self, gameNames = None):
 		if gameNames is None and self.game: gameNames = [self.game.name]
-		Check(gameNames)
+		argv = ['inspect.check', '-a', '-r'] + gameNames
+		Check(argv)
 	def connect(self):
 		dppd = DPPD()
 		db = dppd.db

@@ -35,29 +35,25 @@ class Inspect:
 			will print the dpjudge address and WILL leave you
 			in the Python interpreter for further commands
 	"""
-	interp, command  = 'i', [
-		'import sys', "sys.argv[:0] = ['%s']" % sys.argv[0],
-		'from DPjudge.bin.inspector import *', 'inspect = Inspector()'
-		]
-	if len(sys.argv) > 1:
-		arg1 = sys.argv[1]
-		gameName = arg1.split('.')[0].split('@')[0]
-		interp = interp * ('.' not in arg1)
-		if gameName:
+	def __init__(self, argv = None):
+		if argv is None: argv = sys.argv
+		interp, command  = 'i', [
+			'import sys', "sys.argv[:0] = ['%s']" % argv[0],
+			'from DPjudge.bin.inspector import *', 'inspect = Inspector()'
+			]
+		if len(argv) > 1:
+			arg1 = argv[1]
+			gameName = arg1.split('.')[0].split('@')[0]
+			interp = interp * ('.' not in arg1)
+			if gameName:
+				command.extend([
+					"inspect.load('%s')" % gameName])
 			command.extend([
-				"inspect.load('%s')" % gameName])
-		command.extend([
-			'print ' + ' '.join([
-			"inspect.eval('%s')" % x.replace("'", "\\'") for x in sys.argv[(
-			'.' not in arg1 or not arg1.split('.')[1]) + 1:]])])
-	os.system("%sPYTHONPATH=%s %s python -%sOc %s" %
-		('set '*(os.name == 'nt'), os.path.dirname(host.packageDir),
-		('/usr/bin/env', '&')[os.name == 'nt'], interp,
-		'"' + `';'.join(command)`[1:-1] + '"'))
-	if host.forceInterpreterExit: os._exit(os.EX_OK)
-
-#	-----------------------
-#	Examine/Update any game
-#	-----------------------
-if __name__ == '__main__':
-	Inspect()
+				'print ' + ' '.join([
+				"inspect.eval('%s')" % x.replace("'", "\\'") for x in argv[(
+				'.' not in arg1 or not arg1.split('.')[1]) + 1:]])])
+		os.system("%sPYTHONPATH=%s %s python -%sOc %s" %
+			('set '*(os.name == 'nt'), os.path.dirname(host.packageDir),
+			('/usr/bin/env', '&')[os.name == 'nt'], interp,
+			'"' + `';'.join(command)`[1:-1] + '"'))
+		if host.forceInterpreterExit: os._exit(os.EX_OK)

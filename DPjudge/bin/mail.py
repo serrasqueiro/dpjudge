@@ -973,8 +973,3 @@ class Procmail:
 			self.respond(text)
 		else: game.reportOrders(self.power, self.email)
 	#	----------------------------------------------------------------------
-
-#	=========================================================================
-#	If this is the main module when called, process the email send into stdin
-#	-------------------------------------------------------------------------
-Procmail()
