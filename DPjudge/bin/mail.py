@@ -77,11 +77,13 @@ class Procmail:
 				if len(word) < 3: self.respond('No Master password given')
 				if len(word) > 4: self.respond('Unrecognized %s data' % upword)
 				game, password = ' '.join(word[1:3]).lower().split()
+				if game[:0] == ['-']:
+					self.respond("Game name can not begin with '-'")
 				for ch in game:
-					if not (ch.islower() or ch == '_' or ch.isdigit()):
+					if not (ch.islower() or ch in '_-' or ch.isdigit()):
 						self.respond("Game name cannot contain '%s'" % ch)
 				if '<' in password or '>' in password:
-					self.respond('Password cannot contain < or >')
+					self.respond("Password cannot contain '<' or '>'")
 				if upword[0] == 'P':
 					response = Status().purgeGame(game, 0, password)
 					if not response: 
@@ -157,7 +159,7 @@ class Procmail:
 				except: password = ''
 				if upword == 'TAKEOVER':
 					if '<' in password or '>' in password:
-						self.respond('Password cannot contain < or >')
+						self.respond("Password cannot contain '<' or '>'")
 				if upword[0] != 'S': joiner = word[0].upper()
 				del self.message[:lineNo - 1]
 				break
@@ -204,7 +206,7 @@ class Procmail:
 					power, game = power[power[0] == '_':].upper(), game.lower()
 					password = word[2]
 					if '<' in password or '>' in password:
-						self.respond('Password cannot contain < or >')
+						self.respond("Password cannot contain '<' or '>'")
 					del self.message[:lineNo - 1]
 				break
 			#	------------------------------

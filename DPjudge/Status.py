@@ -1,4 +1,4 @@
-import os, sys, urllib, shutil
+import os, sys, urllib, shutil, glob
 from codecs import open
 
 import host, Game, Mail
@@ -89,11 +89,13 @@ class Status:
 			#	Running without a DPPD.  Shame on the judgekeeper.  :-)
 			#	-------------------------------------------------------
 			dppd = '|%s|' % email + email
+		if gameName[:0] == ['-']:
+			error += ["Game name can not begin with '-'"]
 		for ch in gameName:
-			if not (ch.islower() or ch == '_' or ch.isdigit()):
-				error += ['Game name cannot contain ' + ch]
+			if not (ch.islower() or ch in '_-' or ch.isdigit()):
+				error += ["Game name cannot contain '%s'" % ch]
 		if '<' in gamePass or '>' in gamePass:
-			error += ['Password cannot contain < or >']
+			error += ["Password cannot contain '<' or '>'"]
 		if gameName in self.dict:
 			error += ["Game name '%s' already used" % gameName]
 		dir, desc, onmap = host.gameDir + '/' + gameName, 0, ''
@@ -143,6 +145,14 @@ class Status:
 			if not gamePass or game.password != gamePass:
 				error += ['No match with the master password']
 			if error: return error
+		# Remove game maps
+		mapRootName = os.path.join(host.gameMapDir, game.name)
+		for suffix in ('.ps', '.pdf', '.gif', '_.gif'):
+			try: os.unlink(mapRootName + suffix)
+			except: pass
+			for mapFileName in glob.glob(mapRootName + '.*' + suffix):
+				try: os.unlink(mapFileName)
+				except: pass
 		# Remove game dir
 		if os.path.exists(game.gameDir) and os.path.isdir(game.gameDir):
 			try: shutil.rmtree(game.gameDir)
