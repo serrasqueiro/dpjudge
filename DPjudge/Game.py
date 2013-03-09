@@ -1862,10 +1862,10 @@ class Game:
 					elif who is power: lines += ['SHOW ' +
 						' '.join(omnis + [power.name] + ceo)]
 					else: lines += ['SHOW ' + who.name]
-				lines += [y.replace('\0377', '-') for y in textwrap.wrap(
+				lines += [y.replace('\xff', '-') for y in textwrap.wrap(
 					('%-11s %s.' % (powerName,
 					', '.join(map(self.anglify, sorted(seen)))))
-					.replace('-', '\0377'), 75, subsequent_indent = ' ' * 12)]
+					.replace('-', '\xff'), 75, subsequent_indent = ' ' * 12)]
 		if showing: lines += ['SHOW']
 		return lines + ['']
 	#	----------------------------------------------------------------------
@@ -3619,8 +3619,8 @@ class Game:
 					#	------------------------------------
 					#	Make long lines wrap around politely
 					#	------------------------------------
-					dis += [y.replace('\0377', '-')
-						for y in textwrap.wrap(text.replace('-', '\0377'), 75)]
+					dis += [y.replace('\xff', '-')
+						for y in textwrap.wrap(text.replace('-', '\xff'), 75)]
 			if 'BLIND' in rules:
 				list += [' '.join(who)]
 				dis += ['SHOW']
