@@ -18,6 +18,7 @@ for (var, value) in [
 ('gameMapSubDir', 'maps'),
 ('zoneFileName', 'zone.tab'),
 ('bannerHtml', ''), ('tester', ''), ('openingsList', ''),
+('dppd', ''), ('dppdSubURL', '?variant=dppd'),
 ('judgePassword', ''),
 ('publicDomains', []),
 ('copy', 0), ('notify', 0)]:
@@ -29,10 +30,11 @@ for (var, base, path) in [
 ('dpjudgeDir', 'hostDir', 'dpjudgeSubDir'),
 ('gameMapDir', 'dpjudgeDir', 'gameMapSubDir'),
 ('gameMapURL', 'dpjudgeURL', 'gameMapSubDir'),
+('dppdURL', 'dpjudgeURL', 'dppdSubURL'),
 ('zoneFile', 'toolsDir', 'zoneFileName')]:
 	if var not in vars(host):
 		vars(host)[var] = os.path.join(vars(host)[base], vars(host)[path])
-	elif not os.path.isabs(vars(host)[var]):
+	elif vars(host)[var] and not os.path.isabs(vars(host)[var]):
 		vars(host)[var] = os.path.join(vars(host)[base], vars(host)[var])
 
 #   =========================================================================

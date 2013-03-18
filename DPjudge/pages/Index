@@ -143,6 +143,7 @@ for dir in dirs:
 	<li>Check the
 		<a href="<POUCH>/openings/openings.html#<ID>">current
 		openings on <ID></a>.
+	<li><a href="mailto:<MAIL>">Email <ID></a> to join a game, create one, etc.
 	<!--
 	<li><a href="http://groups.yahoo.com/group/dpjudge"><b>Discussion</b></a>
 		of the DPjudge Diplomacy Web/Email interface is on the
@@ -171,6 +172,9 @@ for dir in dirs:
 	<li>Read the
 		<a href="<POUCH>/Zine/F1999R/Hand/dpjudge.html">history
 		of the DPjudge</a> (as of Fall, 1999).
+	<li>Visit the <a href="http://code.google.com/p/dpjudge">DPjudge
+	project</a> to report a coding issue, edit the project wiki or even add
+	functionality.
 	<li>Contact the <a href="mailto:<KEEPER>"><ID> judgekeeper</a>.
 	</td>
 	</tr>

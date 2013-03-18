@@ -38,8 +38,10 @@ class Inspect:
 	def __init__(self, argv = None):
 		if argv is None: argv = sys.argv
 		interp, command  = 'i', [
-			'from DPjudge.bin.inspector import Inspector',
+			'from DPjudge import *',
+			'from DPjudge.variants.dppd import *',
 			'import host',
+			'from DPjudge.bin.inspector import Inspector',
 			'inspect = Inspector()']
 		if len(argv) > 1:
 			arg1 = argv[1]
