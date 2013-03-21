@@ -34,8 +34,9 @@ class Page:
 		#	and bin/mail.py will be confused about a JOIN (etc.)'ing player's
 		#	DPPD status.
 		#   -----------------------------------------------------------------
-		if not self.page or self.page[0].lower() != self.page[0]:
-			print host.bannerHtml or ''
+		if host.bannerHtml and (
+			not self.page or self.page[0].lower() != self.page[0]):
+			self.write(self.adaptToHTML(host.bannerHtml))
 		if self.game:
 			game = self.game.lower().replace('%23', '#')
 			self.game = Status().load(game)
@@ -65,12 +66,50 @@ class Page:
 		self.write("<script>window.location.replace('%s');</script>" %
 			host.dpjudgeURL)
 	#	----------------------------------------------------------------------
+	def setdefault(self, var, val = ''):
+		return vars(self).setdefault(var, val)
+	#	----------------------------------------------------------------------
+	def has(self, var):
+		return var in vars(self)
+	#	----------------------------------------------------------------------
 	def write(self, text = ''):
 		try: print text.encode('latin-1')
 		except UnicodeDecodeError: print text
 	#	----------------------------------------------------------------------
 	def silent(self):
 		self.write = lambda x,y=0: 0
+	#	----------------------------------------------------------------------
+	def convertPlainTextToHTML(self, text):
+		return text.replace('-', '&#8722;').replace(
+			'<', '&#60;').replace('>', '&#62;')
+	#	----------------------------------------------------------------------
+	def isolateHTMLTag(self, text):
+		tag = ''
+		while 1:
+			slashes = text.split('>', 1)
+			if len(slashes) == 1: return [tag + text]
+			cuts = text.split('<', 1)
+			if len(cuts) == 1 or len(cuts[0]) > len(slashes[0]):
+				return [tag + slashes[0], slashes[1]]
+			slashes = self.isolateHTMLTag(cuts[1])
+			if len(slashes) == 1: return [tag + text]
+			tag += cuts[0] + '<' + slashes[0] + '>'
+			text = slashes[1]
+	#	----------------------------------------------------------------------
+	def adaptToHTML(self, text):
+		html = ''
+		while 1:
+			cuts = text.split('<', 1)
+			if len(cuts) == 1: break
+			slashes = self.isolateHTMLTag(cuts[1])
+			html += self.convertPlainTextToHTML(cuts[0])
+			if len(slashes) == 1:
+				html += '&#60;'
+				text = cuts[1]
+			else:
+				html += '<' + slashes[0] + '>'
+				text = slashes[1]
+		return html + self.convertPlainTextToHTML(text)
 	#	----------------------------------------------------------------------
 	def include(self, fileName = None, lims = ('<:', ':>'), data = None):
 		global page

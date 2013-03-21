@@ -26,9 +26,20 @@ class Inspector:
 		print 'Loaded', ('game %s' % gameName, 'no game')[not self.game]
 		self.makeGlob(self.vars, 2)
 	def check(self, gameNames = None):
-		if gameNames is None and self.game: gameNames = [self.game.name]
+		if gameNames is None:
+			if not self.game:
+				print 'No game loaded'
+				return
+			gameNames = [self.game.name]
 		argv = ['inspect.check', '-a', '-r'] + gameNames
 		Check(argv)
+	def purge(self, gameName = None):
+		if gameName is None:
+			if not self.game:
+				print 'No game loaded'
+				return
+			gameName = self.game.name
+		Status().purgeGame(gameName, 1)
 	def connect(self):
 		dppd = DPPD()
 		db = dppd.db

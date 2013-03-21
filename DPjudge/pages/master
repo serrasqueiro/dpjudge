@@ -444,6 +444,67 @@ def showStatusFile():
 #
 #
 #	----------------------------------------------------------------------
+def addOption(option):
+	page.write(
+		"""
+		<input type="checkbox" name="%s">&nbsp;<a
+			href="javascript: describeOption('%s')"
+			onMouseOver="window.status='Show Description of %s';return(1);"
+			onMouseOut="window.status='';return(1);">%s</a>
+		""" % (option.lower(), option, option, option))
+#	----------------------------------------------------------------------
+#
+#
+#	----------------------------------------------------------------------
+def addRollback(phase):
+	if page.power.name != 'MASTER' or page.game.phase == 'COMPLETED' and not (
+		host.judgePassword and host.judgePassword == page.password): return
+	statFile = page.game.file('status')
+	page.write(
+		"""
+		<script>
+		function describeOption(option)
+		{
+			window.open('<URL>?page=showRule&file=Email&tag=OPTION&rule=' +
+				option, 'option', 'width=400,height=120,status=no,' +
+				'toolbar=no,resizable=yes,scrollbars=yes')
+		}
+		function rollback() {
+			var full = "while", restore = "while";
+			confirmation = "Rollback to " + document.roll.phase.value;
+			if (document.roll.phase.value != "FORMING") {
+				if (!document.roll.restore.checked) restore = "without";
+				confirmation += " " + restore + " restoring orders, and";
+			}
+			if (!document.roll.full.checked) full = "without";
+			confirmation += " " + full + " restoring all non-transient" +
+				" parameters, like rules, game description," +
+				" resigned players, etc.?";
+			if (!confirm(confirmation)) {
+				return false;
+			}
+			document.roll.submit();
+		}
+		</script>
+		<form name=roll method=post>
+		<input type=hidden name=game value=%s>
+		<input type=hidden name=power value=MASTER>
+		<input type=hidden name=password value=%s>
+		<input type=hidden name=page value=Update>
+		<input type=hidden name=action value=rollback>
+		<input type=hidden name=stamp value=%d>
+		<input type=hidden name=phase value="%s">
+		<input type="button" value="Rollback to %s" class="inputSubmit"
+		onclick="rollback()"> <b>with</b>
+		""" % (page.game.name, page.password,
+			os.path.getmtime(statFile), phase, phase))
+	addOption('FULL')
+	if phase != 'FORMING': addOption('RESTORE')
+	page.write('</form>')
+#	----------------------------------------------------------------------
+#
+#
+#	----------------------------------------------------------------------
 def powerData():
 	if not page.game.powers: return
 	for num, power in enumerate(page.game.powers):
@@ -530,16 +591,12 @@ def powerData():
 #
 #
 #	----------------------------------------------------------------------
-def updateMaster():
-	statFile = page.game.file('status')
-	if page.stamp != `int(os.path.getmtime(statFile))`: return page.write(
+def reportUpdateError(error):
+	page.write(
 		"""
 		<tr><th align=left class=bodycopy bgcolor=red><font color=yellow>
 		<center><font size=2>&nbsp;<br>Update Aborted</font>
-		</center><blockquote>
-		While you were entering your modifications,
-		the game status file was updated by another participant in the
-		game or by the DPjudge.  Your changes were not made.
+		</center><blockquote> %s
 		</blockquote><center>
 		<form method=post name=form>
 		<input type=hidden name=page value=Status>
@@ -554,7 +611,29 @@ def updateMaster():
 		the latest contents of the status file before making
 		changes.</blockquote>
 		</th></tr>
-		""" % (page.game.name, page.power.name, page.password))
+		""" % (error, page.game.name, page.power.name, page.password))
+#	----------------------------------------------------------------------
+#
+#
+#	----------------------------------------------------------------------
+def updateMaster():
+	statFile = page.game.file('status')
+	if page.stamp != `int(os.path.getmtime(statFile))`:
+		return reportUpdateError(
+			"""
+			While you were entering your modifications,
+			the game status file was updated by another participant in the
+			game or by the DPjudge.  Your changes were not made.
+			""")
+	#	----------
+	#	Roll phase
+	#	----------
+	if page.setdefault('action') == 'rollback':
+		flags = page.has('restore') * 1 + page.has('full') * 2 + (
+			host.judgePassword and page.password == host.judgePassword) * 16
+		error = page.game.rollback(flags, page.phase)
+		if error: return reportUpdateError(error + '.')
+		return finished()
 	#	----------------------
 	#	Game mode modification
 	#	----------------------

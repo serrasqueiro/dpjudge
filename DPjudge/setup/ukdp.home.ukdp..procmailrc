@@ -61,7 +61,7 @@ MAIL=/var/mail/ukdp
 # game takes longer than a minute
 :0 H: /tmp/ukdp.lock
 * ^To:.*(ukdp|judge|dppd)@
-|(cd /home/ukdp/ukdp; /usr/bin/timelimit -t 300 bin/mail > output.email 2>&1)
+|(cd /home/ukdp/ukdp; /usr/bin/timelimit -t 300 bin/mail > log/output.email 2>&1)
 
 #   =======================================================================
 

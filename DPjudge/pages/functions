@@ -176,7 +176,7 @@ def showMapButtons():
 			""" % (host.gameMapURL, file))
 	page.write('</tr>')
 #	----------------------------------------------------------------------
-def showResultsText(list = None, subject = None):
+def showResultsText(list = None, subject = None, align = 1):
 	game = page.game
 	if not os.path.exists(game.file('results')): return
 	if page.power:
@@ -195,23 +195,24 @@ def showResultsText(list = None, subject = None):
 		<input type=hidden name=game value=%s>
 		<input type=hidden name=page value=View>
 		<input type=hidden name=file value=results>
-		<tr>
-		<td class=bodycopy><b>Results:</b></td>
-		<td align=right><select name="subject" class="inputBox"
+		%s<b>Results:</b>
+		%s<select name="subject" class="inputBox"
 		onChange=document.results.submit()>
-		""" % game.name)
+		""" % (game.name, '<tr><td class=bodycopy>' * align,
+			'</td><td align=right>' * align))
 	subject = subject or list[-1]
 	for item in list:
 		page.write('<option%s>' % (' selected' * (subject == item)) + item)
-	page.write('</select></td>')
+	page.write('</select>' + '</td>' * align)
 	if page.power: page.write('<input type=hidden name=password value=%s>'
 		'<input type=hidden name=power value=%s>' % (page.password, power))
 	page.write(
 		"""
 		<input type=hidden name=count value=%d>
-		<td><input type="submit" value="Read" class="inputSubmit"></td>
-		</tr></form>
-		""" % ('count' in vars(page) and (int(page.count) - 1)))
+		%s<input type="submit" value="Read" class="inputSubmit">
+		%s</form>
+		""" % ('count' in vars(page) and (int(page.count) - 1),
+			'<td class=bodycopy>' * align, '</td></tr>' * align))
 #	----------------------------------------------------------------------
 def showDocList(files, beforeEnd = 0):
 	if not beforeEnd and page.game.phase != 'COMPLETED': return
@@ -285,7 +286,7 @@ def showInfo(name, value, left = 0):
 		<tr valign=top>
 		<td class="bodycopy" nowrap align=%s><B>%s:&nbsp;</td>
 		<td class="bodycopy">%s</td>%s</tr>
-		""" % (('right', 'left')[left], name, value.replace('-', '&#8722;'),
+		""" % (('right', 'left')[left], name, page.adaptToHTML(value),
 				'<td></td>' * left))
 #	----------------------------------------------------------------------
 def showVariantInfo():
@@ -912,11 +913,15 @@ def viewFile():
 			page.write(lastLine)
 	file.close()
 	page.write('</td></tr></table>')
-	page.write('<HR><table><tr><td valign=top align=center>')
+	page.write('<HR><table><tr><td valign=top align=center class=bodycopy>')
 	if list:
-		page.write('<table>')
-		showResultsText(list, page.subject)
-		page.write('</table></td></tr><tr><td align=center>')
+		showResultsText(list, page.subject, 0)
+		page.write('</td></tr><tr><td align=center class=bodycopy>')
+		if page.power.name == 'MASTER':
+			word = page.subject.split()
+			phase = word[1:2] == ['results'] and word[-1] or 'FORMING'
+			addRollback(phase)
+			page.write('</td></tr><tr><td align=center>')
 	page.count = ('count' in vars(page) and int(page.count)) - 1
 	page.write(
 		"""

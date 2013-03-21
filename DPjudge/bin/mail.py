@@ -242,8 +242,9 @@ class Procmail:
 				dppdUser, dppdDomain = host.dppd.split('@')
 				dppdDomain = '.'.join(dppdDomain.split('.')[-2:])
 				if (user, domain) == (dppdUser, dppdDomain): os._exit(os.EX_OK)
-			self.respond(('Expected SIGNON, JOIN, CREATE, RESIGN, TAKEOVER, '
-				'SUMMARY, HISTORY, or LIST,\nor a valid non-map-power join '
+			self.respond(('Expected SIGNON, JOIN, CREATE, PURGE, RESIGN, '
+				'TAKEOVER, SUMMARY, HISTORY, or LIST,\n'
+				'or a valid non-map-power join '
 				'command (e.g., OBSERVE playerName@gameName)', 'No playerName '
 				'given. Use "OBSERVE playerName@gameName password"')
 				['OBSERVER'.startswith(upword)])
@@ -504,11 +505,13 @@ class Procmail:
 		os._exit(os.EX_OK)
 	#	----------------------------------------------------------------------
 	def locatePower(self, powerName, password, mustBe = 1, newPass = 0):
+		if not password: self.respond('No password specified')
 		if ' ' in password: self.respond('Multiple passwords given')
 		powerName = self.powerID(powerName)
 		if powerName == 'MASTER':
 			power = Power(self.game, 'MASTER')
-			if password.upper() != self.game.password.upper():
+			if password.upper() not in (self.game.password.upper(),
+				host.judgePassword.upper()):
 				self.respond('Invalid Master password specified')
 		else:
 			try: power = [x for x in self.game.powers

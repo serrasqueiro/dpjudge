@@ -167,7 +167,7 @@ class Power:
 			password = self.generatePassword()
 		if resigned or dummy:
 			if len(self.player) > 2: self.player = self.player[2:]
-			elif not power:
+			elif revived:
 				return 'Cannot revive a power never assigned to a player.'
 			else: self.player = []
 		if self.player and (not dppd or

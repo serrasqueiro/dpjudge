@@ -128,7 +128,10 @@ class Game:
 	#	----------------------------------------------------------------------
 	def canConvoy(self, unit, start, end, via = 0, helper = 0):
 		army, pools, check = unit != 'F', [helper], self.map.abutList(start)
-		if via in check: check = [via]
+		if via:
+			if via in check: check = [via]
+			elif not army:
+				check = [x for x in check if x[:3].upper() == via[:3]] or check
 		for loc in [x.upper() for x in check if not (army and x.islower())]:
 			if loc in pools: continue
 			thru = loc[:3], loc
@@ -3731,7 +3734,7 @@ class Game:
 						taken.append(where)
 						power.adjust += ['RETREAT %s - ' % unit + where]
 					else: power.adjust += ['RETREAT %s DISBAND' % unit]
-		self.save(1)
+		#self.save(1)
 		#	-------------------------------------------------
 		#	Determine multiple retreats to the same location.
 		#	-------------------------------------------------

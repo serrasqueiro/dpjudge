@@ -465,19 +465,16 @@ class Map:
 			#	----------------
 			#	Center ownership
 			#	----------------
-			elif upword == 'OWNS':
+			elif upword in ('OWNS', 'CENTERS'):
 				if not power:
-					error += ['OWNS BEFORE POWER: ' + ' '.join(word)]
+					error += [upword + ' BEFORE POWER: ' + ' '.join(word)]
 				else:
 					if not power in self.owns: self.owns.append(power)
-					self.centers.setdefault(power, []).extend(
-						line.upper().split()[1:])
-			elif upword == 'CENTERS':
-				if not power:
-					error += ['CENTERS BEFORE POWER: ' + ' '.join(word)]
-				else:
-					if not power in self.owns: self.owns.append(power)
-					self.centers[power] = line.upper().split()[1:]
+					if upword[0] == 'C' or not self.centers.has_key(power):
+						self.centers[power] = line.upper().split()[1:]
+					else: self.centers[power].extend([x for x in
+						line.upper().split()[1:]
+						if x not in self.centers[power]])
 			#	--------------------------------------------------------------
 			#	Home centers, overriding those from the power declaration line
 			#	--------------------------------------------------------------
@@ -561,9 +558,19 @@ class Map:
 				else: error += ['INVALID UNIT: ' + unit]
 			elif upword == 'DUMMY':
 				if len(word) > 1: power = None
-				if len(word) == 1 and not power: error += ['DUMMY BEFORE POWER']
+				if len(word) == 1:
+					if not power: error += ['DUMMY BEFORE POWER']
+					elif power not in self.dummies: self.dummies += [power]
+				elif word[1].upper() == 'ALL':
+					if len(word) == 2: self.dummies = self.powers[:]
+					elif word[2].upper() != 'EXCEPT':
+						error += ['NO EXCEPT AFTER DUMMY ALL']
+					elif len(word) == 3:
+						error += ['NO POWER AFTER DUMMY ALL EXCEPT']
+					else: self.dummies = [x for x in self.powers if x not in [
+						y.upper().replace('+','') for y in word[3:]]]
 				else: self.dummies.extend([x for x in [y.upper().replace('+','')
-					for y in word[1:] or [power]] if x not in self.dummies])
+					for y in word[1:]] if x not in self.dummies])
 			elif upword == 'DROP':
 				for place in [x.upper() for x in word[1:]]: self.drop(place)
 			#	----------------------------------------
@@ -655,11 +662,28 @@ class Map:
 			#	Removal of an existing power
 			#	----------------------------
 			elif upword == 'UNPLAYED':
-				for goner in [x.upper() for x in word[1:]]:
+				goners = []
+				if len(word) == 1:
+					if not power: error += ['UNPLAYED BEFORE POWER']
+					else: goners = [power]
+				elif word[1].upper() == 'ALL':
+					if len(word) == 2: goners = self.powers
+					elif word[2].upper() != 'EXCEPT':
+						error += ['NO EXCEPT AFTER UNPLAYED ALL']
+					elif len(word) == 3:
+						error += ['NO POWER AFTER UNPLAYED ALL EXCEPT']
+					else: goners = [x for x in self.powers if x not in [
+						y.upper().replace('+','') for y in word[3:]]]
+				else: goners = [x for x in [y.upper().replace('+','')
+					for y in word[1:]] if x in self.powers]
+				power = None
+
+				for goner in goners:
 					try:
 						del self.powName[goner]
 						del self.ownWord[goner]
 						del self.homes[goner]
+						self.dummies = [x for x in self.dummies if x != goner]
 						self.inhabits = [x for x in self.inhabits if x != goner]
 						if goner in self.centers: del self.centers[goner]
 						self.owns = [x for x in self.owns if x != goner]

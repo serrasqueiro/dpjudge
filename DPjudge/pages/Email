@@ -119,7 +119,7 @@ page.include('functions')
 			<tr valign=top>
 			<td class="bodycopy" valign=top>&middot;<a href=#create>CREATE</a>
 			<br>&middot;<a href=#purge>PURGE</a>
-			<br>&middot;<a href=#state>SET STATE</a></td>
+			<br>&middot;<a href=#status>SET STATUS</a></td>
 			<td width=20></td>
 			<td class="bodycopy">&middot;<a href=#process>PROCESS</a>
 			<br>&middot;<a href=#preview>PREVIEW</a>
@@ -1059,15 +1059,15 @@ does, but tell me anyway.</b><br>
 		PURGE <i>gamename password</i></tt><br>
 	But there are several restrictions: The game must either be in the preparation phase or forming and <b>no</b> player may have joined yet.
 	If they did, make them resign.  The reason that there are so many restrictions, is that a game, once started, is not the property of the GM, but of all involved.  The restrictions are there to protect this shared property from the whims of a single person (the GM).
-	The normal way to end a game that needs to be ended prematurely, is to set its status to terminated. If you have an absolutely good reason to want to eradicate an active or even finished game, tell that to the judgekeeper and he may decide to honour your request or reject it.
+	The normal way to end a game that needs to be ended prematurely, is to set its status to terminated. If you have an absolutely good reason to want to eradicate an active or even finished game, tell that to the judgekeeper and he may decide to honour your request or reject it altogether.
 
-<a name=state></a>
-<P><b>Can I change the game state?</b><br>
-	Yes, you can, in a variety of ways. The command you're looking for is <tt>SET STATE</tt>, followed by one of the valid states: <tt>FORMING</tt>, <tt>ACTIVE</tt>, <tt>WAITING</tt> or <tt>TERMINATED</tt>.
+<a name=status></a>
+<P><b>Can I change the game status?</b><br>
+	Yes, you can, in a variety of ways. The command you're looking for is <tt>SET STATUS</tt>, followed by one of the valid status modes: <tt>FORMING</tt>, <tt>ACTIVE</tt>, <tt>WAITING</tt> or <tt>TERMINATED</tt>.
 	The following single word commands may also be used: <tt>FORM</tt>, <tt>ACTIVATE</tt>, <tt>WAIT</tt> and <tt>TERMINATE</tt>.
-	The states <tt>PREPARATION</tt> and <tt>COMPLETED</tt> can not be set in this way, but must be reached by the normal game mechanics.
-	Nor can a completed game be changed to a different state, unless with the assistance of the judgekeeper, who will need a damn good reason to do so.
-	For a game that already started to go back to the <tt>FORMING</tt> state, you first need to <tt>ROLLBACK</tt> to the starting phase. Afterwards you need to explicitly set the state to <tt>ACTIVE</tt> to get going again, or <tt>ROLLFORWARD</tt> to the desired phase. All players will still have the same powers assigned to them.
+	Any other status, like <tt>PREPARATION</tt> or <tt>COMPLETED</tt>, can not be set in this way, but must be reached by the normal game mechanics.
+	Nor can a completed game be changed to a different status, unless with the assistance of the judgekeeper, who will need a damn good reason to do so.
+	For a game that already started to go back to the <tt>FORMING</tt> status, you first need to <tt>ROLLBACK</tt> to the starting phase. Afterwards you need to explicitly set the status to <tt>ACTIVE</tt> to get going again, or <tt>ROLLFORWARD</tt> to the desired phase. All players will still have the same powers assigned to them.
 
 <a name=deadline></a>
 <P><b>What is the syntax of the <tt>SET DEADLINE</tt> command?</b><br>
@@ -1180,16 +1180,25 @@ does, but tell me anyway.</b><br>
 	When you use the <tt>ROLLBACK</tt> command, the game will be put
 	back on that particular phase, all player orders will be cleared,
 	and a new deadline will be set.<br>
-	Additional options are RESTORE, to restore the orders instead of 
-	resetting them (meaning the game is ready to be processed), and
-	FULL, which will undo any persistent settings, like game rules or
-	the game description or even whether a player is a dummy, to what 
-	they were in the previous phase. 
+	Additional options are:
+	<table border=0 cellpadding=5 cellspacing=0 width=100%>
+	<tr valign=top><td><b><tt>RESTORE</tt></b></td><td class=bodycopy>
+<!-- OPTION RESTORE -->
+	This restores the orders instead of 
+	resetting them, in general meaning the game is ready to be processed.
+<!-- OPTION END -->
+	</td></tr><tr valign=top><td><b><tt>FULL</tt></b></td><td class=bodycopy>
+<!-- OPTION FULL -->
+	This will undo any persistent settings, like game rules or
+	the game description or even whether a power is a dummy or taken over,
+	to what they were in the selected phase. Use with caution.
+<!-- OPTION END -->
+	</td></tr></table>
 	For example<br>
 	<tt>&nbsp;&nbsp;&nbsp;&nbsp;ROLLBACK&nbsp;FULL&nbsp;RESTORE&nbsp;W1904A</tt><br>
 	will roll back to the Winter 1904 Adjustments, with all build orders
 	restored and any rule and other persistent changes made after that 
-	phase undone. <br> Note that a this command may only
+	phase undone. <br> Note that this command may only
 	be used on an active game.  That is, once a game is completed,
 	<tt>ROLLBACK</tt> is no longer possible.  One reason for this is
 	the fact that once a game has completed, the game summary, indicating

@@ -100,7 +100,7 @@ class StandardGame(Game):
 	def defaultOrders(self, power):
 		if not power.units: return
 		if not [x for x in power.units if self.orders.get(x)]: power.cd = 1
-		hold = 'CD_SUPPORTS' not in self.rules or not power.isCD() or not power.cd
+		hold = not ('CD_SUPPORTS' in self.rules and power.cd and power.isCD(1))
 		for unit in power.units: self.orders.setdefault(unit, 'H')
 		if hold: return
 		#	------------------------------------------------------
@@ -183,7 +183,7 @@ class StandardGame(Game):
 		#	to whom it was proxied, it will be caught here.
 		#	------------------------------------------------
 		for power in self.powers: self.defaultOrders(power)
-		self.save(1)
+		#self.save(1)
 		#	-------------------------------------
 		#	In NO_CHECK games, ensure that orders
 		#	to other player's units are reported

@@ -1,13 +1,20 @@
-<title>DPjudge Rule <:=page.rule:></title>
+<:
+for (var, value) in [
+	('tag', 'RULE'),
+	('file', 'Rules')
+	]: vars(page).setdefault(var, value)
+:>
+<title>DPjudge <:=page.tag.title():> <:=page.rule:></title>
 <:
 page.include('stylesheet')
 :>
-<dl><dt><b><tt>RULE <:=page.rule:></tt></b><dd class=bodycopy>
+<dl><dt><b><tt><:=page.tag:> <:=page.rule:></tt></b><dd class=bodycopy>
 <:
-file, text, data = open('<PKG>/pages/Rules'), 0, ''
+file, text, data = open('<PKG>%s/pages/%s' % (
+	page.variant and '/variants/' + page.variant or '', page.file)), 0, ''
 for line in file:
 	word = line.split()
-	if word[:2] == ['<!--', 'RULE']:
+	if word[:2] == ['<!--', page.tag]:
 		if word[2] == page.rule: text = 1
 		elif text and word[2] == 'END': break
 	if text: data += line

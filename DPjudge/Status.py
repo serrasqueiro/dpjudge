@@ -133,7 +133,8 @@ class Status:
 		if gameName not in self.dict:
 			return ['No such game exists on this judge']
 		game = Game.Game(gameName)
-		if not forced:
+		if not forced and (
+			not host.judgePassword or gamePass != host.judgePassword):
 			status = self.dict[gameName][1]
 			if status == 'preparation': pass
 			elif status == 'forming':

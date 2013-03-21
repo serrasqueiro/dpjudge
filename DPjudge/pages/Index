@@ -173,8 +173,8 @@ for dir in dirs:
 		<a href="<POUCH>/Zine/F1999R/Hand/dpjudge.html">history
 		of the DPjudge</a> (as of Fall, 1999).
 	<li>Visit the <a href="http://code.google.com/p/dpjudge">DPjudge
-	project</a> to report a coding issue, edit the project wiki or even add
-	functionality.
+	project</a> to report a coding issue, edit the project wiki or even set
+	up your own judge.
 	<li>Contact the <a href="mailto:<KEEPER>"><ID> judgekeeper</a>.
 	</td>
 	</tr>

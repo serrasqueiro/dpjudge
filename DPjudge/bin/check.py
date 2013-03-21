@@ -26,6 +26,7 @@ class Check(DPjudge.Status):
 		for gameName, data in self.dict.items():
 			if 'completed' in data or 'held' in data: continue
 			if gameList and gameName not in gameList: continue
+			#print('Checking %s' % gameName)
 			try: game = self.load(gameName)
 			except:
 				print gameName, 'DOES NOT EXIST!'
@@ -65,7 +66,7 @@ class Check(DPjudge.Status):
 								for x in game.avail])
 					elif 'forming' in data:
 						state = 'forming'
-						spots = int(game.avail[0]) or (
+						spots = game.avail and int(game.avail[0]) or (
 							len(game.map.powers) - len(game.map.dummies))
 						reason = ' %d position%s remain%s.' % (
 							spots, 's'[spots == 1:], 's'[spots != 1:])

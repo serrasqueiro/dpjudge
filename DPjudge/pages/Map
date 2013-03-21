@@ -477,12 +477,18 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	<i>in that order</i>.
 
 <a name=DUMMY></a>
-<p><dt><b><tt>DUMMY</tt></b><dd>
-	This indicates that the current power is to be made a <tt>DUMMY</tt>
+<p><dt><b><tt>DUMMY [ALL]</tt> -or- <br>
+<tt>DUMMY [ALL EXCEPT] <i>powerName...</i></tt</b><dd>
+	This indicates that either the current power, or all powers, or only those
+	specified by <tt><i>powerName</i><tt>, or again all powers other than
+	those specified, are to be made a <tt>DUMMY</tt>
 	power in the game.  No player will take the role of such a power.
-	This power can be put into civil disorder using the <tt>CD_DUMMIES</tt>
+	Such a power can be put into civil disorder using the <tt>CD_DUMMIES</tt>
 	rule, or may be played under the <tt>CONTROL</tt> of another power
-	(see below).
+	(see below). Turning all powers into dummies can be useful for testing
+	certain scenarios. In such a case it's advisable to turn on the
+	<tt>HIDE_DUMMIES</tt> rule, as that allows to log in to the web page of
+	any dummy power.
 
 <a name=CONTROL></a>
 <p><dt><b><tt>CONTROL <i>powerName</i>...</tt></b><dd>
@@ -508,11 +514,16 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	all players during the adjustment phase of the specified game-year(s).
 	Each power's home SC's will be all of the centers he owns at the time.
 
-<p><dt><b><tt>UNPLAYED <i>powerName...</i></tt></b><dd>
-	This line removes the specified <tt><i>powerName</i></tt>, and all
-	information that had been recorded for that power.  This directive
-	is useful to create variants for a smaller number of players on a
-	specific <tt>USE</tt>d map.
+<p><dt><b><tt>UNPLAYED [ALL]</tt> -or- <br>
+<tt>UNPLAYED [ALL EXCEPT] <i>powerName...</i></tt></b><dd>
+	This line removes either the current power, all powers, the specified
+	<tt><i>powerName</i></tt>, or on the contrary all powers that are not
+	specified.  At the same time all information that had been recorded
+	for those powers is removed as well.
+	This directive is useful to create variants for a smaller number of
+	players on a specific <tt>USE</tt>d map.
+	If you remove all powers, you should add some new powers afterwards,
+	because a game will not start with less than two powers.
 
 <a name=LEAGUE></a>
 <p><dt><b><tt>LEAGUE <i>leagueName</i> </tt>-or-<tt><br>
