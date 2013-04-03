@@ -386,8 +386,10 @@ Let's say I want them to be sent out once a week, on Sunday night. I direct cron
 ---
 UKDP=/home/ukdp/ukdp
 
-0 0 * * 0 $UKDP/bin/check -r > $UKDP/log/remind.log 2> $UKDP/log/remind.err
-*/20 * * * * $UKDP/bin/check -a > $UKDP/log/check.log 2> $UKDP/log/check.err
+0 0 * * 0 $UKDP/bin/check -t -r > $UKDP/log/remind.log 2> $UKDP/log/remind.err
+*/20 * * * * $UKDP/bin/check -t -a > $UKDP/log/check.log 2> $UKDP/log/check.err
 ---
 Notice that I also chose different log files. If no parameters are fed to the check script, it would operate as before.
+
+The observant reader may have noticed a second flag added to these commands, -t. This flag guards against processing games immediately after a server outage when the server comes back online. This is to prevent that games that went past their deadline during the outage would process before players got the chance to enter orders. It is the judgekeeper's task to extend deadlines first, and then run the check script once without the -t flag to restart the cron jobs.
 """

@@ -9,9 +9,18 @@ class Check(DPjudge.Status):
 	This class is invoked by the cron job to check deadlines on all games,
 	and handle each when and as necessary.
 	The following flags can be added:
+		-t	To check the timestamp of the last run, and not run if too much
+			time has elapsed (more than an hour).
+	This could indicate that the server went down. If this happens, the
+	judgekeeper should first make sure that all games are ok and extend the
+	deadline of at least all active games. He can then run the check script
+	manually once without any flags, or remove the timestamp file in the log
+	directory ($JDG/log/check.tim). This will reactivate the cron job.
+
+	Other flags:
 		-r	To send only reminders for inactive games
 		-a	To check only on active games (opposite of -r)
-	If neither flag is specified, the program will check on active games
+	If neither -a or -r is specified, the program will check on active games
 	and once a day, at the midnight hour, send reminders for inactive games.
 	"""
 	#	----------------------------------------------------------------------
@@ -20,6 +29,17 @@ class Check(DPjudge.Status):
 		if argv is None: argv = sys.argv
 		os.putenv('TZ', 'GMT')
 		now = DPjudge.Game.Time()
+		if '-t' in argv and os.path.exists(host.logDir + '/check.tim'):
+			last = os.path.getctime(host.logDir + '/check.tim')
+			if DPjudge.Game.Time(time.localtime(last + 3600)) < now:
+				print('Not checking deadlines, because more than an hour ' +
+					'elapsed since the last check.\n' +
+					'This could be due to a server outage or an exception ' +
+					'raised during the execution of this script.\n' +
+					'Investigate, extend deadlines if necessary, ' +
+					'and only then run check once more without the ' +
+					'-t option to restart the process.')
+				raise ServerOutageSuspected
 		print 'Checking deadlines at %s GMT' % time.ctime()
 		flags = [x for x in argv[1:] if x.startswith('-')]
 		gameList = [x for x in argv[1:] if not x.startswith('-')]
@@ -151,4 +171,5 @@ class Check(DPjudge.Status):
 				print
 				continue
 			if not game.preview: game.save()
+		open(host.logDir + '/check.tim', 'w').close()
 	#	----------------------------------------------------------------------

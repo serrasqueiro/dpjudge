@@ -4717,7 +4717,8 @@ class Game:
 					denied[variant] = [x[1:] for x in word[4:-1] if x[0] == '!']
 				elif word[2] != 'END':
 					rule = word[2]
-					data.setdefault(rule, {'group': group, 'variant': variant})
+					if rule not in data:
+						data[rule] = {'group': group, 'variant': variant}
 					for control in word[3:-1]:
 						if control[0] in '-=+!': data[rule].setdefault(
 							control[0],[]).append(control[1:])

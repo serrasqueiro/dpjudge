@@ -14,6 +14,7 @@ host.hostDir = os.path.dirname(os.path.abspath(host.__file__))
 for (var, value) in [
 ('toolsSubDir', 'tools'),
 ('gameSubDir', 'games'),
+('logSubDir', 'log'),
 ('dpjudgeSubDir', 'web'),
 ('gameMapSubDir', 'maps'),
 ('zoneFileName', 'zone.tab'),
@@ -27,6 +28,7 @@ for (var, value) in [
 for (var, base, path) in [
 ('toolsDir', 'packageDir', 'toolsSubDir'),
 ('gameDir', 'hostDir', 'gameSubDir'),
+('logDir', 'hostDir', 'logSubDir'),
 ('dpjudgeDir', 'hostDir', 'dpjudgeSubDir'),
 ('gameMapDir', 'dpjudgeDir', 'gameMapSubDir'),
 ('gameMapURL', 'dpjudgeURL', 'gameMapSubDir'),

@@ -226,8 +226,9 @@ class PostScriptMap:
 			#	Adjustment orders (modify the units list for final map)
 			#	-------------------------------------------------------
 			if word[1] in ('DEFAULTS,', 'REMOVES', 'BUILDS', 'BUILD'):
-				self.adj.setdefault(power, [self.translate(word[1][0] == 'B' 
-					and 'BUILDS' or 'REMOVES', 0, ['BUILDS', 'REMOVES'])])
+				if power not in self.adj: self.adj[power] = [
+				self.translate(word[1][0] == 'B' and 'BUILDS' or 'REMOVES',
+				0, ['BUILDS', 'REMOVES'])]
 				if word[2][:5] == 'WAIVE':
 					self.adj[power] += [self.translate('WAIVED')]
 					continue

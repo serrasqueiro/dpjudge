@@ -457,8 +457,9 @@ class PayolaGame(Game):
 				for offer in offerer.offers:
 					if (offer.unit == unit and offer.code == ':'
 					and self.validOrder(power, unit, offer.order)):
-						orders.setdefault(offer.order,
-							self.Key(power, offer.unit, offer.order)).add(offer)
+						if offer.order not in orders: orders[offer.order] = (
+							self.Key(power, offer.unit, offer.order))
+						orders[offer.order].add(offer)
 			#	---------------------------------------------------
 			#	In BLIND games, all the offers a unit gets MIGHT be
 			#	invalid.  If so, we'll have no order yet, and we'll

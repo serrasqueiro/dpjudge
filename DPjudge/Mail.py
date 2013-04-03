@@ -77,7 +77,7 @@ class Mail:
 					logtext  = '{ERROR: Unknown|\n'
 				if logtext:
 					try:
-						logfile = open(host.hostDir + '/log/smtperror.log', 'a')
+						logfile = open(host.logDir + '/smtperror.log', 'a')
 						logtext += '|\n' + self.msg + '|\n'
 						logtext += self.logTimeFormat() + '}'
 						logfile.write(logtext.encode('latin-1'))
