@@ -39,7 +39,9 @@ class Inspector:
 				print 'No game loaded'
 				return
 			gameName = self.game.name
-		Status().purgeGame(gameName, 1)
+		errors = Status().purgeGame(gameName, 1)
+		if not errors: print('Game %s purged.' % gameName)
+		else: print('\n'.join(errors))
 	def connect(self):
 		dppd = DPPD()
 		db = dppd.db

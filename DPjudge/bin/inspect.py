@@ -34,6 +34,12 @@ class Inspect:
 		inspect @ host.dpjudge
 			will print the dpjudge address and WILL leave you
 			in the Python interpreter for further commands
+		inspect ".purge('denarius')"
+			will purge the game denarius and WILL NOT leave you
+			in the Python interpreter for further commands
+		inspect @ ".purge('denarius')"
+			will purge the game denarius and WILL leave you
+			in the Python interpreter for further commands
 	"""
 	def __init__(self, argv = None):
 		if argv is None: argv = sys.argv
@@ -50,9 +56,11 @@ class Inspect:
 			if gameName:
 				command.extend([
 					"inspect.load('%s')" % gameName])
-			command.extend([
-				'print ' + ' '.join([
-				"inspect.eval('%s')" % x.replace("'", "\\'") for x in argv[(
+			command.extend(['print ' + ', '.join([(
+				x[0] == '.' and 'inspect' + x or
+				x.split('.')[0] == 'inspect' and x or
+				"inspect.eval('%s')" % x.replace("'", "\\'")) + " or ''"
+				for x in argv[(
 				'.' not in arg1 or not arg1.split('.')[1]) + 1:]])])
 		os.system("%sPYTHONPATH=%s %s python -%sOc %s" %
 			('set '*(os.name == 'nt'), os.path.dirname(host.packageDir),

@@ -36,7 +36,8 @@ for (var, base, path) in [
 ('zoneFile', 'toolsDir', 'zoneFileName')]:
 	if var not in vars(host):
 		vars(host)[var] = os.path.join(vars(host)[base], vars(host)[path])
-	elif vars(host)[var] and not os.path.isabs(vars(host)[var]):
+	elif vars(host)[var] and os.path.isabs(
+		vars(host)[base]) and not os.path.isabs(vars(host)[var]):
 		vars(host)[var] = os.path.join(vars(host)[base], vars(host)[var])
 
 #   =========================================================================
