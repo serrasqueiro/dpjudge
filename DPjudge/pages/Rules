@@ -129,6 +129,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=BACKSEAT_PRESS>BACKSEAT_PRESS
 <option value=FLEX_SETUP>BLANK_BOARD
 <option value=BLIND>BLIND
+<option value=BROADCAST_ORDERS>BROADCAST_ORDERS
 <option value=BUILD_ANY>BUILD_ANY
 <option value=CD_BUILDS>CD_BUILDS
 <option value=CD_DUMMIES>CD_DUMMIES
@@ -215,6 +216,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=UNITS_SEE_SAME>UNITS_SEE_SAME (BLIND)
 <option value=VASSAL_DUMMIES>VASSAL_DUMMIES
 <option value=VENETIAN>VENETIAN (BLIND)
+<option value=VICTORY_HOMES>VICTORY_HOMES
 <option value=WEAK_BOUNCES>WEAK_BOUNCES
 <option value=WEAK_CONVOYS>WEAK_CONVOYS
 <option value=WHITE_GREY>WHITE_GREY
@@ -467,6 +469,13 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	GM on it. This will remove the e-mail receipt flag on the order page.
 	Useful for investigating or discouraging claims of corrupted order entry,
 	e.g. when a password became exposed.
+<!-- RULE END -->
+
+<a name=BROADCAST_ORDERS></a><p><dt><b><tt>BROADCAST_ORDERS</tt></b><dd>
+<!-- RULE BROADCAST_ORDERS +ALWAYS_CONFIRM -->
+	Orders are broadcast to all players immediately after being entered.
+	Mostly useful for educational purposes, when secrecy is not a concern.
+	This rule automatically adds the <tt>ALWAYS_CONFIRM</tt> rule.
 <!-- RULE END -->
 
 <a name=FICTIONAL_OK></a><p><dt><b><tt>FICTIONAL_OK</tt></b><dd>
@@ -1462,6 +1471,21 @@ the course of the game.
 <!-- RULE TEAM_VICTORY -->
 	With this rule the victory condition is calculated based on the total
 	number of centers owned by a power and all of the dummy powers it controls.
+<!-- RULE END -->
+
+<a name=VICTORY_HOMES></a><p><dt><b><tt>VICTORY_HOMES</tt></b><dd>
+<!-- RULE VICTORY_HOMES -->
+	When this rule is in effect, victory is achieved by capturing at least
+	as many home centers from your opponents as the victory criterion
+	dictates. Your own home centers or home centers from dummies that you
+	control don't count for this purpose. If there is a tie, the game
+	continues until the tie is broken with the victory condition still
+	fulfilled.<br>
+	The default victory criterion in this case is not half the number of supply
+	centers plus one, but half the average number of home centers belonging
+	to other powers plus one. E.g. on the standard map there are 22 home
+	centers, on average 3.14 of these belong to any one power. The victory
+	criterion is thus (22-3.14)/2+1 rounded down or 10 home centers.
 <!-- RULE END -->
 
 <a name=NO_EOG></a><p><dt><b><tt>NO_EOG</tt></b><dd>

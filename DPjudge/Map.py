@@ -231,7 +231,6 @@ class Map:
 			if len(phase) != 3: raise
 			self.firstYear = int(phase[1])
 		except: error += ['BAD PHASE IN MAP FILE: ' + self.phase]
-		self.victory = self.victory or [len(self.scs) // 2 + 1]
 		#	----------------------
 		#	Load map specific info
 		#	----------------------
@@ -239,7 +238,6 @@ class Map:
 	#	----------------------------------------------------------------------
 	def loadInfo(self):
 		error = self.error
-		self.victory = self.victory or [centers // 2 + 1]
 		#	-----------------
 		#	Open ps info file
 		#	-----------------
@@ -370,7 +368,7 @@ class Map:
 			#	Centers needed to obtain a VICTORY
 			#	----------------------------------
 			elif upword == 'VICTORY':
-				if self.victory: error += ['TWO VICTORY LINES IN MAP']
+				#if self.victory: error += ['TWO VICTORY LINES IN MAP']
 				try: self.victory = map(int, word[1:])
 				except: error += ['BAD VICTORY LINE IN MAP FILE']
 			#	---------------------------------

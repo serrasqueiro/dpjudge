@@ -46,7 +46,7 @@ class PayolaPower(Power):
 	def initialize(self, game):
 		Power.initialize(self, game)
 		if 'VASSAL_DUMMIES' in game.rules and self.isDummy(): return
-		victory = game.map.victory[0]
+		victory = game.victory[0]
 		if self.abbrev:
 			if 'ZEROSUM' in game.rules: self.funds['+'] = 10 * len(self.centers)
 			self.balance = (self.income(len(self.centers))

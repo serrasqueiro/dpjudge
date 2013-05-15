@@ -440,7 +440,7 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	there is only revealed in the results of the next movement turn. The
 	adjustment results will simply state <tt>BUILD HIDDEN</tt> and no unit
 	will be displayed on the map. 
-	See also the <a href="<PAGE>Rule#HIDE_BUILDS"><tt>HIDE_BUILDS</tt></a>
+	See also the <a href="<PAGE>Rules#HIDE_BUILDS"><tt>HIDE_BUILDS</tt></a>
 	rule for applying this effect to all builds for all players. 
 	This sign can be combined with other signs if you want to apply more than
 	one special property to the same center, as in <tt>~@CAL(NYO)</tt>.
@@ -494,7 +494,7 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 <p><dt><b><tt>CONTROL <i>powerName</i>...</tt></b><dd>
 	This command puts the dummy power under the control of another power,
 	rotating through the list of powers according to the <tt>ROTATE</tt>
-	directive. (See the <a href=<URL>?page=Status#CONTROL><tt>CONTROL</tt></a>
+	directive. (See the <a href=<PAGE>Status#CONTROL><tt>CONTROL</tt></a>
 	directive in the game status help file for a more thorough description.)
 
 <a name=ROTATE></a>
@@ -504,7 +504,7 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 		  <tt>ROTATE FOR <i>phaseType</i>...</tt></b><dd>
 	This is used to specify a rotation of power control for all
 	powers in the game that are controlled by other players.
-	(See the <a href=<URL>?page=Status#ROTATE><tt>ROTATE</tt></a>
+	(See the <a href=<PAGE>Status#ROTATE><tt>ROTATE</tt></a>
 	directive in the game status help file for a more thorough description.)
 
 
@@ -545,7 +545,7 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	space that is <u>currently occupied</u> by a unit owned by a power
 	that <u>is</u> associated with one of the listed leagues.
 	Note that league settings are ignored in any game with the
-	<a href=PAGE:Rules#FICTIONAL_OK><tt>FICTIONAL_OK</tt></a> rule
+	<a href=<PAGE>Rules#FICTIONAL_OK><tt>FICTIONAL_OK</tt></a> rule
 	enabled (including all Crystal Ball Diplomacy variant games).
 
 <a name=FLAGS></a>
@@ -593,9 +593,12 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	Specifies a list of the supply center counts which will determine victory,
 	from the first game-year forward (the final listed number is repeated for
 	subsequent years).
-	This line is optional; if omitted, the <tt>VICTORY</tt> criteria is
+	This line is optional; if omitted, the <tt>VICTORY</tt> criterion is
 	set (for all game-years) to one supply center greater than half the
-	number of centers on the map.
+	number of centers on the map, unless the
+	<a href=<PAGE>Rules#VICTORY_HOMES><tt>VICTORY_HOMES</tt></a> rule
+	is used, in which case the default is based on the number of home
+	centers (click the link for a complete description).
 
 <A name=FLOW></a>
 <p><dt><b><tt>FLOW [<i>season</i>:<i>phase</i>[,<i>phase</i>...] ...]</tt></b><dd>
@@ -811,7 +814,7 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	described on this Webpage.
 
 <p><dt><b><tt>RULE <i>rule...</i></tt></b><dd>
-	Specifies a DPjudge <a href=<URL>?page=Rules><tt>RULE</tt></a> that will be
+	Specifies a DPjudge <a href=<PAGE>Rules><tt>RULE</tt></a> that will be
 	in effect for all games using this map.  For example,
 	<tt>RULE&nbsp;BUILD_ANY</tt> would appear in a map file for the
 	<a href=<URL>?page=about:chaos>Chaos variant</a>, since that variant

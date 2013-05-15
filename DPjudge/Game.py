@@ -18,6 +18,7 @@ class Game:
 	def __init__(self, name = '', fileName = 'status'):
 		if 'variant' not in vars(self): variant = ''
 		if 'powerType' not in vars(self): powerType = Power
+		if 'victory' not in vars(self): victory = None
 		vars(self).update(locals())
 		if name: self.load(fileName)
 		else: self.reinit()
@@ -1028,6 +1029,16 @@ class Game:
 		#	-----------------------------------------
 		if not self.master: raise GameHasNoMaster
 		if not self.map: self.loadMap()
+		self.victory = self.map.victory
+		if not self.victory:
+			self.victory = [len(self.map.scs) // 2 + 1]
+			if 'VICTORY_HOMES' in self.rules:
+				powers = [x for x in self.powers if x.homes]
+				if len(self.powers) > 1:
+					scs = [y for y in self.map.scs if [1 for x in powers
+						if y in x.homes]]
+					if len(scs) > 1: self.victory = [
+						len(scs) * (len(powers) - 1) // (2 * len(powers)) + 1]
 		if self.phase == 'FORMING': self.avail = [`len(self.map.powers) -
 			len([1 for x in self.powers
 			if x.type == 'POWER' and x.name not in self.map.dummies]) -
@@ -1079,7 +1090,7 @@ class Game:
 				#	work only in games where game-years advance by +1.
 				#	This may also be done in another place in this file?
 				year = abs(int(self.phase.split()[1]) - self.map.firstYear)
-				win = self.map.victory[:]
+				win = self.victory[:]
 				self.win = win[min(year, len(win) - 1)]
 			except: error += ['BAD YEAR IN GAME PHASE']
 		#	--------------------
@@ -1622,7 +1633,7 @@ class Game:
 				self.phaseType = 'A'
 		self.avail, avail = [], [x for x in self.map.powers
 			if x not in self.map.dummies]
-		self.win = self.map.victory[0]
+		self.win = self.victory[0]
 		self.setDeadline(firstPhase = 1)
 		for starter in [x for x in self.powers if x.name in self.map.dummies]:
 			starter.type = None
@@ -1691,7 +1702,7 @@ class Game:
 			and x != 'EAVESDROP'])
 		if flags: text += '\n'.join(textwrap.wrap('  Rules:    %s.' % flags,
 			75, subsequent_indent = ' ' * 12)) + '\n'
-		win = self.map.victory
+		win = self.victory
 		if self.outcome: self.year = int(self.outcome[0][1:-1])
 		elif self.year == '-': self.year = int(self.map.phase.split()[1])
 		try: div = [int(x[8:]) for x in self.map.flow
@@ -3142,6 +3153,21 @@ class Game:
 		text += ['The game is waiting for processing of the %s phase.\n' %
 			self.phase.title()]
 	#	----------------------------------------------------------------------
+	def calculateVictoryScore(self):
+		score = {}
+		for power in self.powers:
+			score[power] = len([x for x in power.centers if x != 'SC*' and (
+				'VICTORY_HOMES' not in self.rules or x in [
+				z for y in self.powers for z in y.homes
+				if y is not power and y.ceo != [power.name]])])
+		if 'TEAM_VICTORY' in self.rules:
+			for power in self.powers:
+				if not power.ceo: score[power] += sum([score[x]
+					for x in self.powers if x.ceo == [power.name]])
+			for power in self.powers:
+				if power.ceo: score[power] = 0
+		return score
+	#	----------------------------------------------------------------------
 	def captureCenters(self, func = None):
 		#	-----------------------------------------
 		#	If no power owns centers, initialize them
@@ -3155,17 +3181,10 @@ class Game:
 		#	go through and see if any centers have been taken over.
 		#	Reset the centers seen by each power.
 		#	-------------------------------------------------------
-		lastYear, unowned = {}, self.map.scs[:]
+		lastYear, unowned = self.calculateVictoryScore(), self.map.scs[:]
 		for power in self.powers:
-			lastYear[power] = len([x for x in power.centers if x != 'SC*'])
 			[unowned.remove(x) for x in power.centers if x in unowned]
 			power.sees = []
-		if 'TEAM_VICTORY' in self.rules:
-			for power in self.powers:
-				if not power.ceo: lastYear[power] += sum([lastYear[x]
-					for x in self.powers if x.ceo == [power.name]])
-			for power in self.powers:
-				if power.ceo: lastYear[power] = 0
 		for power in self.powers + [None]:
 			if power: centers = power.centers
 			else: centers = unowned
@@ -3189,23 +3208,17 @@ class Game:
 		#	See if we have a win.  Criteria are the ARMADA Regatta victory
 		#	criteria (adapted from David Norman's "variable length" system).
 		#	----------------------------------------------------------------
-		victor, thisYear = None, {}
-		for power in self.powers:
-			thisYear[power] = len([x for x in power.centers if x != 'SC*'])
-		if 'TEAM_VICTORY' in self.rules:
-			for power in self.powers:
-				if not power.ceo: thisYear[power] += sum([thisYear[x]
-					for x in self.powers if x.ceo == [power.name]])
-			for power in self.powers:
-				if power.ceo: thisYear[power] = 0
+		victor, thisYear = None, self.calculateVictoryScore()
 		yearCenters = [thisYear[x] for x in self.powers]
 		for power in self.powers:
 			centers = thisYear[power]
 			#	FIRST, YOU MUST HAVE ENOUGH CENTERS TO WIN
 			if	(centers >= self.win
-			#	AND YOU MUST GROW (OR, IF "HOLD_WIN," MUST HAVE HAD A WIN)
-			and (centers > lastYear[power], lastYear[power] >= self.win)
-				['HOLD_WIN' in self.rules]
+			#	AND YOU MUST GROW (NOT IN CASE OF "VICTORY_HOMES"
+			#	WHERE IT MAY BE SUFFICIENT TO RETAKE A LOST HOME CENTER),
+			#	OR, IF "HOLD_WIN", MUST HAVE HAD A WIN
+			and ('VICTORY_HOMES' in self.rules or centers > lastYear[power],
+			lastYear[power] >= self.win)['HOLD_WIN' in self.rules]
 			#	AND YOU MUST BE ALONE IN THE LEAD
 			and (centers, yearCenters.count(centers)) == (max(yearCenters), 1)):
 				if not self.preview: self.finish([power.name])
@@ -4531,11 +4544,16 @@ class Game:
 		return result
 	#	----------------------------------------------------------------------
 	def reportOrders(self, power, email = None):
-		whoTo = email = email or power.address[0]
-		if power.address and not [
-			1 for x in email.upper().split(',')
-			if x in power.address[0].upper().split(',')]:
-			whoTo += ',' + power.address[0]
+		if not email and 'BROADCAST_ORDERS' in self.rules:
+			return self.mailPress(None, ['All'],
+				self.powerOrders(power), subject = 'Diplomacy orders')
+		if email:
+			whoTo = email
+			if power.address and not [
+				1 for x in email.upper().split(',')
+				if x in power.address[0].upper().split(',')]:
+				whoTo += ',' + power.address[0]
+		else: whoTo = power.address[0]
 		self.openMail('Diplomacy orders', mailTo = whoTo, mailAs = host.dpjudge)
 		self.mail.write(self.powerOrders(power))
 		self.mail.close()
