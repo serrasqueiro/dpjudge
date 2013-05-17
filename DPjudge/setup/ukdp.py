@@ -392,4 +392,30 @@ UKDP=/home/ukdp/ukdp
 Notice that I also chose different log files. If no parameters are fed to the check script, it would operate as before.
 
 The observant reader may have noticed a second flag added to these commands, -t. This flag guards against processing games immediately after a server outage when the server comes back online. This is to prevent that games that went past their deadline during the outage would process before players got the chance to enter orders. It is the judgekeeper's task to extend deadlines first, and then run the check script once without the -t flag to restart the cron jobs.
+
+Remote backup.
+
+After floc.net, the server hosting USDP and DPFG, crashed and stayed down for a couple of days, I decided to back up the game data and even the program data on this server. And vice versa to back up UKDP on floc.net. I chose rsync as the backup application and wrote a script, rbackup, to perform the task. 
+
+Inside rbackup, which is stored in ~/bin, you need to set USR to the current user (ukdp), JDG to the name of the judge (ukdp), choose the target directory in TRG (start with a local directory first), select whether to do a dry-run with DRY (recommended for the first few runs) and enter the correct port number in the -p option inside the --rsh option in the actual rsync command.
+
+Two other files are important, both in the same bin directory. The first is rbackup.files, which lists the directories to include, relative to the user home dir, and rbackup.exclude, which lists the file patterns to exclude. I chose to exclude vim swap files (of course) and game maps, because of their size and because they're relatively easy to regenerate by invoking inspect:
+> inspect "<game>.makeMaps()"
+If during dry-run you spot other files that are too big and don't need to be backed up, like tar files and older log files, consider to exclude them as well, especially if your remote server file space is limited. This is the case for the ukdp server, and for that reason I have opted to back up only running games from USDP, not completed or terminated games, using a replicate script that I won't explain here. 
+
+To connect to a remote server, rsync, or actually ssh, will ask for a password. To avoid that we need to make a public-private key pair and send the public key to the remote server. The following commands will do the trick:
+> ssh-keygen
+Generates the key pair. Press Enter on every question.
+> ssh-copy-id -i ~/.ssh/id_rsa.pub "mario@floc.net -p 4"
+Copies the public key to my home dir on floc.net through port 4. It will ask for your password one last time, after that you won't need to enter it anymore.
+
+Now you're set. Do a couple of dry-runs, which will mimic the operation but not actually copy any file or directory, and when satisfied execute the first backup. Are we finished now? No. The last step is to add it to crontab. To reduce the risk of losing a processed turn, the best timing is to back up right after the check script finishes. This can be done by appending the rbackup call to the check entry, separated by a semicolon.
+> crontab -e
+---
+...
+BIN=/home/ukdp/bin
+...
+*/20 * * * * $UKDP/bin/check -t -a > $UKDP/log/check.log 2> $UKDP/log/check.err; $BIN/rbackup >> $UKDP/log/rbackup.log 2>> $UKDP/log/rbackup.err
+...
+---
 """

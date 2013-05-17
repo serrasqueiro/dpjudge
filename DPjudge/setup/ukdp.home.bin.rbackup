@@ -1,0 +1,10 @@
+#!/bin/bash
+# Back up judge and source on remote server.
+
+USR=ukdp
+JDG=ukdp
+#TRG=/home/$USR/rbackup/$USR
+TRG=mario@floc.net:/home/dpforge/rbackup/$USR
+#DRY=-n
+
+rsync $DRY -avri --delete --rsh='ssh -p4' --files-from=/home/$USR/bin/rbackup.files --exclude-from=/home/$USR/bin/rbackup.exclude /home/$USR $TRG
