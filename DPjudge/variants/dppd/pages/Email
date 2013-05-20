@@ -46,51 +46,56 @@ def showEmail(id):
 		<input type=hidden name=password value=%s>
 		<input type=hidden name=primary value="">
 		<tr><td align=center><table>
-		<tr><td align=center class=bodycopy><b><u>Address</u></td>
+		<tr><td></td>
 			<td align=center class=bodycopy><b><u>Primary</u></td>
-			<td align=center class=bodycopy><b><u><font color=red>NOTICE</u>
-			</td>
+			<td align=center class=bodycopy><b><u>Address</u></td>
 		</tr>
 		""" % (id, page.password.encode('latin-1')))
 	for num, addr in enumerate(page.dppd[id]['email']):
 		page.write(
 			"""
-			<tr><td align=right class=bodycopy valign=top>
-				<font size=3><tt><b>%s</b></tt></font></td>
-				<td align=center class=bodycopy valign=top>
+			<tr><td></td>
+				<td align=center class=bodycopy valign=center>
 				<input type=radio name=primary %s value="%s">
+				<td align=left class=bodycopy valign=center>
+				<font size=3><tt><b>%s</b></tt></font></td>
 			</tr>
-			""" % (addr, 'checked' * (num == 0), addr))
-		if num == 0:
-			page.write(
-				"""
-			<td align=center class=bodycopy rowspan=%d
-			valign=top><font color=red>
-		Updating your list of e-mail addresses in your DPPD membership<br>
-		is <b><u>not</u></b> sufficient to change your address in any games<br>
-		in which you are currently involved.<br>
-		The list of addresses here is used <i>only</I> to
-		<br>identify you at the time you issue a<br>
-		<tt>JOIN</tt>, <tt>TAKEOVER</tt>, or <tt>CREATE</tt> command.<br>
-		If you wish to change the address that any game is currently<br>
-		using to communicate with you, you will need to issue a<br>
-		<tt><b>SET&nbsp;ADDRESS</b></tt> command by e-mail to that game<br>
-		(after a <tt><b>SIGNON</b></tt> line, of course).
-		</td>
-				""" % (len(page.dppd[id]['email']) + 3))
+			""" % ('checked' * (num == 0), addr, addr))
 	page.write(
 		"""
-		<tr><th align=right class=bodycopy valign=top>New Address?
-		<input class=inputBox type=text size=24 name=newEmail>
-		</td><td align=center class=bodycopy valign=top>
-		<input type=radio name=primary value="new">
+		<tr><th align=right class=bodycopy valign=center>New Address?</td>
+			<td align=center class=bodycopy valign=center>
+			<input type=radio name=primary value="new"></td>
+			<td align=left class=bodycopy valign=center>
+			<input class=inputBox type=text size=24 name=newEmail>
 		</td></tr>
-		<tr><td align=right class=bodycopy valign=top>
-		<input class=inputSubmit type=submit value="Update"></td>
-		<td></td></tr>
-		<tr><td colspan=2 height=100%>&nbsp;</td></tr>
+		<tr><td colspan=2></td>
+			<td align=left class=bodycopy valign=center>
+			<input class=inputSubmit type=submit value="Update">
+		</td></tr>
+		<tr><td colspan=3 height=100%>&nbsp;</td></tr>
 		</table>
-		</form></td></tr>
+		</form></td></tr><tr>
+		<td align=center class=bodycopy><b><u><font color=red>NOTICE</u></td>
+		</tr><tr>
+			<table><tr>
+			<td></td>
+			<td align=left class=bodycopy width=80%
+			valign=top><font color=red>
+			Updating your list of e-mail addresses in your DPPD membership
+			is <b><u>not</u></b> sufficient to change your address in any games
+			in which you are currently involved.
+			The list of addresses here is used <i>only</i> to
+			identify you at the time you issue a
+			<tt>JOIN</tt>, <tt>TAKEOVER</tt>, or <tt>CREATE</tt> command.
+			If you wish to change the address that any game is currently
+			using to communicate with you, you will need to issue a
+			<tt><b>SET&nbsp;ADDRESS</b></tt> command by e-mail to that game
+			(after a <tt><b>SIGNON</b></tt> line, of course).
+			</td>
+			<td></td>
+			</tr></table>
+		</tr>
 		</table>
 		""")
 #	----------------------------------------------------------------------
