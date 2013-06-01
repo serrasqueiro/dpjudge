@@ -95,6 +95,12 @@ leftside()
 		<!--CURRENT MEMBER FORM ENDS HERE-->
 	</td>
 	</tr>
+	<tr>
+	<td class="bodycopy">
+	E-mail address no longer valid? Contact the <a
+	href="mailto:<KEEPER>?subject=Invalid%20e-mail%20address">judgekeeper</a>.
+	</td>
+	</tr>
 	</table>
 </td>
 <td>
