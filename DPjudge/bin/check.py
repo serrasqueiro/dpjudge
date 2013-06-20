@@ -1,4 +1,4 @@
-import os, sys, time
+import os, stat, sys, time
 import host
 
 import DPjudge
@@ -28,17 +28,26 @@ class Check(DPjudge.Status):
 		DPjudge.Status.__init__(self)
 		if argv is None: argv = sys.argv
 		os.putenv('TZ', 'GMT')
-		now = DPjudge.Game.Time()
-		if '-t' in argv and os.path.exists(host.logDir + '/check.tim'):
-			last = os.path.getctime(host.logDir + '/check.tim')
+		now, timestampFile = DPjudge.Game.Time(), host.logDir + '/check.tim'
+		if '-t' in argv and os.path.exists(timestampFile):
+			last = os.path.getmtime(timestampFile)
 			if DPjudge.Game.Time(time.localtime(last + 3600)) < now:
-				print('Not checking deadlines, because more than an hour ' +
+				msg = ('Not checking deadlines, because more than an hour ' +
 					'elapsed since the last check.\n' +
 					'This could be due to a server outage or an exception ' +
 					'raised during the execution of this script.\n' +
 					'Investigate, extend deadlines if necessary, ' +
 					'and only then run check once more without the ' +
 					'-t option to restart the process.')
+				print(msg)
+				# Warn the judgekeeper.
+				mode = os.stat(timestampFile).st_mode
+				if mode & stat.S_IWRITE:
+					mail = DPjudge.Mail(host.judgekeeper, '%s server outage' % host.dpjudgeID)
+					mail.write(msg)
+					mail.close()
+					try: os.chmod(timestampFile, mode & ~stat.S_IWRITE)
+					except: pass
 				raise ServerOutageSuspected
 		print 'Checking deadlines at %s GMT' % time.ctime()
 		flags = [x for x in argv[1:] if x.startswith('-')]
@@ -171,5 +180,10 @@ class Check(DPjudge.Status):
 				print
 				continue
 			if not game.preview: game.save()
-		open(host.logDir + '/check.tim', 'w').close()
+			if os.path.exists(timestampFile):
+				mode = os.stat(timestampFile).st_mode
+				if not mode & stat.S_IWRITE:
+					try: os.chmod(timestampFile, mode | stat.S_IWRITE)
+					except: pass
+		open(timestampFile, 'w').close()
 	#	----------------------------------------------------------------------
