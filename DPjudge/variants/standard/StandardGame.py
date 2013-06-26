@@ -293,7 +293,8 @@ class StandardGame(Game):
 					for x in power.units if x not in power.orders]
 				[self.error.append('UNIT LEFT UNORDERED: %s ' % y.name + x)
 					for y in self.powers for x in y.units
-					if x[2:5] in partial and x not in y.orders]
+					if (x[2:5] in partial or y.ceo[:1] == [power.name]) and
+					x not in y.orders]
 			if not self.error: self.process()
 	#	----------------------------------------------------------------------
 	def getOrders(self, power):
