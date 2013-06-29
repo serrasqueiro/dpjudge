@@ -193,7 +193,7 @@ def showResultsText(list = None, subject = None, align = 1):
 		"""
 		<form name=results method=post>
 		<input type=hidden name=game value=%s>
-		<input type=hidden name=page value=View>
+		<input type=hidden name=page value=Read>
 		<input type=hidden name=file value=results>
 		%s<b>Results:</b>
 		%s<select name="subject" class="inputBox"
@@ -222,7 +222,7 @@ def showDocList(files, beforeEnd = 0):
 			if not shown: page.write(
 				"""
 				<form method=post name=docread>
-				<input type=hidden name=page value=View>
+				<input type=hidden name=page value=Read>
 				<input type=hidden name=game value=%s>
 				<tr><td class="bodycopy"><b>Analysis:</b></td>
 				<td align=right>

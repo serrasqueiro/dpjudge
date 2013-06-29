@@ -468,6 +468,135 @@
 
 %<< /PageSize [842 1090] >> setpagedevice
 
+%%BeginProlog
+% $_DPghost$_
+systemdict /pdfmark known {
+currentglobal true setglobal globaldict begin
+/$_CurrentGlobal$_ exch def
+/$_FormCount$_ 0 def
+/$_Marks$_ [] def
+/$_InFormPaint$_ false def
+/$_FormPaintDepth$_ 0 def
+$_CurrentGlobal$_ end setglobal
+/$_begin$_ {
+currentglobal true setglobal globaldict begin
+/$_CurrentGlobal$_ exch def
+} bind def
+/$_end$_ {
+$_CurrentGlobal$_ end setglobal
+} bind def
+/$_mark$_ {
+count 1 sub exch sub $_Marks$_ aload length 1 add array astore /$_Marks$_ exch def
+$_end$_
+} bind def
+/$_cleartomark$_ {
+$_begin$_
+count 1 sub 1 index sub $_Marks$_ 0 get sub
+dup 0 gt {
+dup 2 index 3 add 1 roll 1 add 1 index add exch roll { pop } repeat
+} { pop pop } ifelse
+$_Marks$_ dup length 1 sub 1 exch getinterval /$_Marks$_ exch def
+} bind def
+/$_GStates$_ [] def
+/$_gsave$_ {
+$_end$_ /$_GStates$_ $_GStates$_ aload
+gstate currentgstate
+exch length 1 add array astore def $_begin$_
+} bind def
+/$_grestore$_ {
+$_end$_ /$_GStates$_ $_GStates$_ aload exch
+setgstate
+length 1 sub array astore def $_begin$_
+} bind def
+/$_execform$_ /execform load def
+/$_defineform$_ {
+/$_FormPaintDepth$_ $_FormPaintDepth$_ 1 add def
+% -- REMOVE THIS LINE IF NESTED FORMS HAVE BEEN PATCHED. --
+/$_InFormPaint$_ true def
+% -- END REMOVAL --
+1 index
+dup /BBox get aload 5 1 roll
+4 2 roll matrix translate
+dup 4 1 roll itransform
+currentpagedevice /PageSize get aload pop
+4 3 roll 3 2 roll div 3 1 roll div
+2 copy lt { exch } if pop dup 1 gt {
+dup matrix scale exch matrix concatmatrix
+} { pop } ifelse
+exch aload pop 4 2 roll pop pop 0 0 4 2 roll 4 index itransform 4 array astore
+3 2 roll dup /Matrix get 3 index exch matrix concatmatrix
+$_FormCount$_ 1 add dup /$_FormCount$_ exch def
+dup log cvi 1 add
+exch 1 index string cvs
+1 index 8 add string
+dup 0 ($_Form) putinterval
+dup 6 4 3 roll putinterval
+dup 3 2 roll 6 add ($_) putinterval
+cvn cvx 1 array astore cvx
+dup 3 2 roll
+6 index { 2 copy 10 2 roll } if
+2 array astore
+2 index /$_FormSpec$_ 3 2 roll put
+1 $_mark$_ [ /_objdef 3 2 roll
+/BBox 5 index
+/BP pdfmark 0 $_cleartomark$_
+$_gsave$_
+exch aload pop exch 3 index sub exch 2 index sub rectclip
+exch matrix invertmatrix concat
+newpath
+1 $_mark$_ dup /PaintProc get exec 0 $_cleartomark$_
+$_grestore$_
+0 $_mark$_ [ /EP pdfmark 0 $_cleartomark$_
+{
+$_InFormPaint$_ not {
+readonly
+} if
+pop
+} if
+$_FormPaintDepth$_ 1 sub dup /$_FormPaintDepth$_ exch def 0 le {
+/$_InFormPaint$_ false def
+} if
+} bind def
+/execform {
+$_begin$_
+$_InFormPaint$_ {
+dup /$_FormSpec$_ known not 1 index wcheck and {
+false $_defineform$_
+} if false
+} {
+dup /$_FormSpec$_ known {
+/$_FormSpec$_ get aload pop true
+} {
+dup wcheck {
+true $_defineform$_ true
+} {
+false
+} ifelse
+} ifelse
+} ifelse
+{
+$_gsave$_ concat
+1 $_mark$_ [ exch /SP pdfmark 0 $_cleartomark$_
+$_grestore$_
+} {
+1 $_mark$_ $_execform$_ 0 $_cleartomark$_
+} ifelse
+$_end$_
+} bind def
+/$_defineresource$_ /defineresource load def
+/defineresource {
+$_begin$_
+dup /Form eq {
+exch dup /$_FormSpec$_ known not 1 index wcheck and {
+false $_defineform$_
+} if exch
+} if
+3 $_mark$_ $_defineresource$_ 1 $_cleartomark$_
+$_end$_
+} bind def
+} if
+% /$_DPghost$_
+%%EndProlog
 /bd { bind def } bind def
 /xd { exch def } bind def
 
@@ -480,7 +609,7 @@
 /TextMinorTitleFont /Courier-Bold findfont def
 /MapUnitLetterFont /Helvetica-Bold findfont def
 /MapNameFont MapUnitLetterFont def
-%/MapNumberFont /Helvetica findfont def
+/MapNumberFont /Helvetica findfont def
 
 /MapUnitScale .4 def
 /MapUnitOffset 8 def % distance above point to draw unit
@@ -488,7 +617,7 @@
 /MapUnitHeightOffset MapUnitOffset MapUnitHeight add def
 /MapUnitLetterSize 14 def
 /MapNameFontSize 14 def
-%/MapNumberFontSize 14 def
+/MapNumberFontSize 14 def
 /MapNameOffset 14 def  % distance below point to draw name
 
 /ArrowLineThickness 1 def
@@ -565,7 +694,12 @@
   load /PieceColour xd
   /Letter xd
   end 
-  [ /Country 2 index { dup /Controlled ChangeController put ChangeController { dup /ControllerColour Country /PieceColour get put /ChangeController false def } if } /exec load /def load ] cvx bind
+  %[ /Country 2 index { 
+  %  dup /Controlled ChangeController put ChangeController { 
+  %    dup /ControllerColour Country /PieceColour get put /ChangeController false def 
+  %  } if 
+  %} /exec load /def load ] cvx bind
+  [ /country 3 index /def load ] cvx bind
   2 index xd
   Countries 3 1 roll put
 } bd
@@ -623,7 +757,7 @@ Countries {
   % Solve for c (expected to be the smaller of the two), taking the positive root.
   % Next, round c up or down and calculate r' accordingly, such that c' * r' >= e.
   % Determine the biggest cell dimensions from there.
- 
+
   UnitWidth UnitHeight div dup ReservedRows mul ReservedColumns sub
   dup dup mul 3 2 roll Entries mul 4 mul add sqrt add 2 div
   iceiling /Columns xd
@@ -792,7 +926,7 @@ Countries {
   OrderBoxStartX OrderColumnWidth OrderEntries OrderRows idiv mul add
   OrderBoxStartY TitleEntries OrderRowHeight mul sub OrderEntries OrderRows mod .6 add OrderRowHeight mul sub
   OrderRowHeight 1.2 mul
-  
+
   % Retreat Coords
   OrderBoxStartX
   OrderBoxStartY TitleEntries OrderRowHeight mul sub
@@ -837,7 +971,7 @@ Countries {
   OwnerRowHeight
   OwnerEntries StatusEntries add MinorTitleEntries add
   dup AdjustEntries add 1 sub
-  
+
   end
 } bd
 
@@ -911,7 +1045,7 @@ Countries {
   OrderBoxStartX OrderColumnWidth OrderEntries OrderRows idiv mul add
   OrderBoxStartY OrderEntries OrderRows mod .6 add OrderRowHeight mul sub
   OrderRowHeight 1.2 mul
-  
+
   % Retreat Coords
   OrderBoxStartX
   OrderBoxStartY
@@ -962,7 +1096,7 @@ Countries {
 
 /AllToBottomLayout { % - => ...
   32 dict begin
-  
+
   .98  .98 .01 SetUpMap /BorderSize xd pop /ImageSizeY xd /ImageSizeX xd
 
   /NrOfPlayers 13 def
@@ -1032,7 +1166,7 @@ Countries {
   OrderBoxStartY .6 AssignedRows OrderRows mod add OrderRowHeight mul sub
   OrderRowHeight 1.2 mul
   /AssignedRows AssignedRows MinorTitleEntries add def
-  
+
   % Retreat Coords
   OrderBoxStartX OrderColumnWidth OwnerColumns mul add
   OrderBoxStartY
@@ -1174,7 +1308,6 @@ Countries {
   SwitchToTextMode
 
   showpage
-  SetUpPage
 } bd
 
 /SwitchToMapMode {
@@ -1798,7 +1931,7 @@ Countries {
   stroke
 
   grestore
-  
+
   end
 } bd
 
@@ -2037,11 +2170,9 @@ Countries {
   } if 3 2 roll SingleDrawName  
 } bd
 
-/SingleDrawArmy { % x y => -
-  Country begin
+/PaintArmy { % dict => -
+  begin
 
-  gsave 
-  translate
   newpath
   MapUnitScale dup scale
   0 MapUnitOffset translate
@@ -2052,11 +2183,11 @@ Countries {
    4 2 moveto 20 -10 rlineto 2 0 rlineto -8 0 rlineto
   -20  10 rlineto       % carriage
   closepath
-  Controlled { gsave ControllerColour currentlinewidth 3 mul setlinewidth stroke grestore } if
+  %Controlled { gsave ControllerColour currentlinewidth 3 mul setlinewidth stroke grestore } if
   Contrast stroke
   0 0 9 0 360 arc   % wheel
   closepath
-  Controlled { gsave ControllerColour currentlinewidth 3 mul setlinewidth stroke grestore } if
+  %Controlled { gsave ControllerColour currentlinewidth 3 mul setlinewidth stroke grestore } if
   Contrast stroke
   newpath
   -20 7 moveto 30 0 rlineto 0 -4 rlineto 4 0 rlineto
@@ -2074,9 +2205,14 @@ Countries {
   MapUnitLetterFont MapUnitLetterSize scalefont setfont
   Contrast Letter show
 
-  grestore
-
   end
+} bd
+
+/SingleDrawArmy { % x y => -
+  gsave
+  translate
+  Armies country get execform
+  grestore
 } bd
 
 /DrawArmy { % x y => -
@@ -2087,11 +2223,9 @@ Countries {
   } if SingleDrawArmy  
 } bd
 
-/SingleDrawFleet { % x y => -
-  Country begin
+/PaintFleet { % dict => -
+  begin
 
-  gsave
-  translate
   newpath
   MapUnitScale dup scale
   0 MapUnitOffset translate
@@ -2110,7 +2244,7 @@ Countries {
   6 0 rlineto 0 -1 rlineto 2 0 rlineto 0 -2 rlineto     % stern
   -1 0 rlineto 0 -2 rlineto
   closepath
-  Controlled { gsave ControllerColour currentlinewidth 3 mul setlinewidth stroke grestore } if
+  %Controlled { gsave ControllerColour currentlinewidth 3 mul setlinewidth stroke grestore } if
   gsave Contrast stroke grestore
   PieceColour fill
 
@@ -2118,9 +2252,14 @@ Countries {
   MapUnitLetterFont MapUnitLetterSize scalefont setfont
   Contrast Letter show
 
-  grestore
- 
   end
+} bd
+
+/SingleDrawFleet { % x y => -
+  gsave
+  translate
+  Fleets country get execform
+  grestore
 } bd
 
 /DrawFleet { % x y => -
@@ -2761,6 +2900,25 @@ end
   VisitTerritories
 } bd
 
+/CreateTroops { % BBox PaintProc => [ FormDict ... ]
+  << 3 1 roll Countries {
+    <<
+      /BBox 5 index
+      /PaintProc 6 index
+      6 -1 roll {} forall
+      /FormType 1
+      /Matrix matrix
+    >> 4 2 roll
+  } forall pop pop >>
+} bind def
+
+/TroopBBox [ MapUnitLetterSize 14 div -28 1 index mul exch
+  -11 1 index mul MapUnitOffset add exch
+  28 1 index mul exch
+  16 exch mul MapUnitOffset add ] def
+/Armies TroopBBox /PaintArmy load CreateTroops def
+/Fleets TroopBBox /PaintFleet load CreateTroops def
+
 /DrawNames {
   { 3 2 roll DrawName } bind
   { 3 2 roll DrawName } bind
@@ -2975,49 +3133,58 @@ end
   VisitCenters
 } bd
 
-[ 
-  currentdict 4 1 /roll load { 
-    Controlled {
-      gsave
-      ControllerColour
-      newpath 0 0 6 0 360 arc fill
-      Contrast
-      newpath 0 0 4.5 0 360 arc fill
-      grestore
-    } if
-    newpath 0 0 3 0 360 arc fill 
-  } bind 3 1 /roll load
-  3 /array load /astore load /cvx load /put load
-] cvx bind
-[
-  currentdict 4 1 /roll load { 
-    Controlled {
-      gsave
-      ControllerColour
-      -4 -4 8 8 rectfill
-      Contrast
-      -3 -3 6 6 rectfill
-      grestore
-    } if
-    -2 -2 4 4 rectfill 
-  } bind 3 1 /roll load 
-  3 /array load /astore load /cvx load /put load
-] cvx bind
-VisitCenters
-
-/SingleSupply { % proc x y => -
-  Country begin
-  
-  gsave
+/PaintSupply { % dict => -
+  begin
   PieceColour
-  translate
-  exec
-  grestore
-  
+  %Controlled {
+  %  gsave
+  %  ControllerColour
+  %  newpath 0 0 6 0 360 arc fill
+  %  Contrast
+  %  newpath 0 0 4.5 0 360 arc fill
+  %  grestore
+  %} if
+  newpath 0 0 3 0 360 arc fill 
   end
 } bd
 
-/supply { % proc x y => -
+/PaintHome { % dict => -
+  begin
+  PieceColour
+  %Controlled {
+  %  gsave
+  %  ControllerColour
+  %  -4 -4 8 8 rectfill
+  %  Contrast
+  %  -3 -3 6 6 rectfill
+  %  grestore
+  %} if
+  -2 -2 4 4 rectfill 
+  end
+} bd
+
+/SupplyBBox [ -3 -3 3 3 ] def
+/Supplies SupplyBBox /PaintSupply load CreateTroops def
+/Homes SupplyBBox /PaintHome load CreateTroops def
+
+[
+  Supplies currentdict {
+    5 1 roll 3 1 roll 3 array astore cvx put
+  } bind /exec load
+] cvx [
+  Homes currentdict {
+    5 1 roll 3 1 roll 3 array astore cvx put
+  } bind /exec load
+] cvx VisitCenters
+
+/SingleSupply { % dict x y => -
+  gsave
+  translate
+  country get execform
+  grestore
+} bd
+
+/supply { % dict x y => -
   SwitchToMapMode
 
   DoublePoint {
@@ -3034,6 +3201,8 @@ VisitCenters
 
 %%BeginSetup
 %%EndSetup
+
+32 dict begin
 
 /ContinentalOutline {
 *u
@@ -8535,12 +8704,6 @@ S
 *U
 } bd
 
-/DrawMap {
-
-SwitchToMapMode
-
-32 dict begin
-
 /incompound false def
 /m { moveto } bd
 /l { lineto } bd
@@ -8561,84 +8724,104 @@ SwitchToMapMode
 /CoastalBorder { 1 setlinewidth [] 0 setdash BorderColor } bd
 /MountainBorder { 2.5 setlinewidth [] 0 setdash BorderColor } bd
 
-% Continents and seas
+currentdict end
 
-SeaColor clippath fill 
+/MapForm <<
+  /MapDict 4 -1 roll
+  /FormType 1
+  /BBox [ BBllx 4 sub BBlly 4 sub BBurx 4 add BBury 4 add ]
+  /Matrix matrix
+  /PaintProc {
+    /MapDict get begin
+    gsave
+    ClipCircumference
 
-/Seas [ 9 10 11 12 14 102 110 ] def
-/ObjectNr 0 def
+	% Continents and seas
+	SeaColor clippath fill 
 
-% Number the territories to find out which is sea, lake, mountain or land. 
-%MapNumberFont MapNumberFontSize scalefont setfont
+	/Seas [ 9 10 11 12 14 102 110 ] def
+	/ObjectNr 0 def
 
-/S {
-  % Needed for drawing the territory number.
-  %pathbbox 
+	% Number the territories to find out which is sea, lake, mountain or land. 
+	MapNumberFont MapNumberFontSize scalefont setfont
 
-  gsave 
-  Seas length 1 ge {
-    Seas 0 get ObjectNr eq {
-      SeaColor
-      /Seas [ Seas aload pop counttomark -1 roll pop ] def
-    }{
-      LandColor
-    } ifelse
-  }{
-    LandColor
-  } ifelse
-  fill grestore stroke 
+	/S {
+	  % Needed for drawing the territory number.
+	  %pathbbox 
+	  
+	  gsave 
+	  Seas length 1 ge {
+	    Seas 0 get ObjectNr eq {
+	      SeaColor
+	      /Seas [ Seas aload pop counttomark -1 roll pop ] def
+	    }{
+	      LandColor
+	    } ifelse
+	  }{
+	    LandColor
+	  } ifelse
+	  fill grestore stroke 
 
-  % Draw a number in the middle of the territory.
-  %3 -1 roll add 2 div 3 1 roll add 2 div exch
-  %gsave
-  %1 0 0 setrgbcolor
-  %ObjectNr 4 string cvs dup 4 1 roll 0 0 moveto true charpath pathbbox newpath
-  %3 -1 roll add 2 div 3 1 roll add 2 div exch
-  %3 -1 roll sub neg 3 1 roll sub exch moveto show
-  %grestore 
+	  % Draw a number in the middle of the territory.
+	  %3 -1 roll add 2 div 3 1 roll add 2 div exch
+	  %gsave
+	  %1 0 0 setrgbcolor
+	  %ObjectNr 4 string cvs dup 4 1 roll 0 0 moveto true charpath pathbbox newpath
+	  %3 -1 roll add 2 div 3 1 roll add 2 div exch
+	  %3 -1 roll sub neg 3 1 roll sub exch moveto show
+	  %grestore 
 
-  /ObjectNr ObjectNr 1 add def
-} bd
+	  /ObjectNr ObjectNr 1 add def
+	} bd
 
-2 setlinecap
-CoastalBorder
+    2 setlinecap
+    CoastalBorder
 
-ContinentalOutline
+    ContinentalOutline
 
-% Mountains and ice
+    % Mountains and ice
 
-/S {
-  gsave MountainColor fill grestore stroke
-} bd
+    /S {
+      gsave MountainColor fill grestore stroke
+    } bd
 
-MountainBorder
+    MountainBorder
 
-MountainOutline
+    MountainOutline
 
-% National borders
+    % National borders
 
-/S { stroke } bd
+    /S { stroke } bd
 
-NationalBorder
+    NationalBorder
 
-NationalOutline
+    NationalOutline
 
-% Internal borders
+    % Internal borders
 
-/S { stroke } bd
+    /S { stroke } bd
 
-InternalBorder
+    InternalBorder
 
-InternalOutlinePart1
-InternalOutlinePart2
+    InternalOutlinePart1
+    InternalOutlinePart2
 
-BorderColor
+    BorderColor
 
-DoConnections
+    DoConnections
 
-CoastalBorder currentlinewidth 2 mul setlinewidth clippath stroke
+    CoastalBorder currentlinewidth 2 mul setlinewidth clippath stroke
+    grestore
+    end
+  } bind
+>> def
 
-end
+/DrawMap {
+SetUpPage
+
+MapForm execform
+
+SwitchToMapMode
 
 UNOWNED
 
@@ -8647,5 +8830,3 @@ DrawCenters
 ArrowLineThickness setlinewidth Black OkOrder
 
 } bd
-
-SetUpPage
