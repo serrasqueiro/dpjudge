@@ -1305,6 +1305,8 @@ Countries {
 } bd
 
 /ShowPage {
+  DrawRemainingCenters
+
   SwitchToTextMode
 
   showpage
@@ -3163,17 +3165,17 @@ end
   end
 } bd
 
-/SupplyBBox [ -3 -3 3 3 ] def
+/SupplyBBox [ -5 -5 5 5 ] def
 /Supplies SupplyBBox /PaintSupply load CreateTroops def
 /Homes SupplyBBox /PaintHome load CreateTroops def
 
 [
   Supplies currentdict {
-    5 1 roll 3 1 roll 3 array astore cvx put
+    5 1 roll 3 1 roll 3 index 4 array astore cvx put
   } bind /exec load
 ] cvx [
   Homes currentdict {
-    5 1 roll 3 1 roll 3 array astore cvx put
+    5 1 roll 3 1 roll 3 index 4 array astore cvx put
   } bind /exec load
 ] cvx VisitCenters
 
@@ -3184,7 +3186,9 @@ end
   grestore
 } bd
 
-/supply { % dict x y => -
+/supply { % dict x y name => -
+  Centers exch false put
+
   SwitchToMapMode
 
   DoublePoint {
@@ -3193,10 +3197,18 @@ end
   SingleSupply
 } bd
 
-/DrawCenters { % - => -
-  {
-    pop pop load exec supply
-  } bind dup VisitCenters
+/Centers << { pop pop true } bind dup VisitCenters >> def
+
+/ReinitializeCenters { % - => -
+  /Centers << Centers { pop true } forall >> def
+} bd
+
+/DrawRemainingCenters { % - => -
+  SwitchToMapMode
+  UNOWNED
+  Centers {
+    { load exec supply } { pop } ifelse
+  } forall
 } bd
 
 %%BeginSetup
@@ -8823,9 +8835,7 @@ MapForm execform
 
 SwitchToMapMode
 
-UNOWNED
-
-DrawCenters
+ReinitializeCenters
 
 ArrowLineThickness setlinewidth Black OkOrder
 
