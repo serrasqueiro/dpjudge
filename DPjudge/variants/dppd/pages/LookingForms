@@ -10,7 +10,7 @@
 		<!--LOOKING FOR SOMEONE FORM BEGINS HERE-->
 		<form method=post name=lu>
 		<input name=variant value=dppd type=hidden>
-		<input type=hidden name=page value=View>
+		<input type=hidden name=page value=Read>
 		<table border=0 align=center>
 		<tr>
 		<td align=right class="bodycopy"><b>Name:&nbsp;</b></td>
@@ -39,7 +39,7 @@
 	<td align=center class="bodycopy">
 		<!--LOOKING AT EVERYONE FORM BEGINS HERE-->
 		<form method=post><input name=variant value=dppd type=hidden>
-		<input type=hidden name=page value=View>
+		<input type=hidden name=page value=Read>
 		&nbsp;<p>
 		<input type=submit value="List All DPPD Members" class="inputSubmit"
 		onclick='document.lu.email.value=document.lu.name.value="";document.lu.submit();'>

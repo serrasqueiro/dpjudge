@@ -6,7 +6,7 @@ def showOrdersButton():
 		return
 	if game.phase != 'COMPLETED' and 'PUBLIC_LISTS' not in game.rules:
 		if not power or power.type == 'OBSERVER': return
-	page.write('<form method=post><input type=hidden name=page value=View>')
+	page.write('<form method=post><input type=hidden name=page value=Read>')
 	if power:
 		data = """
 		<input type=hidden name=power value=%s>

@@ -69,7 +69,7 @@ def showLedgerButton():
 	if os.path.isfile(page.game.file('ledgers')): page.write(
 		"""
 		<form method=post>
-		<input type=hidden name=page value=View>
+		<input type=hidden name=page value=Read>
 		<input type=hidden name=file value=ledgers>
 		<input type=hidden name=game value=%s>
 		<input type=hidden name=power value=%s>
@@ -86,7 +86,7 @@ def showPricesButton():
 	and os.path.isfile(page.game.file('chart'))):
 		page.write(
 			"""
-			<form method=post><input type=hidden name=page value=View>
+			<form method=post><input type=hidden name=page value=Read>
 			<input type=hidden name=file value=chart>
 			<input type=hidden name=game value=%s>
 			<tr><td class=bodycopy><b>Bribes:</b></td>
