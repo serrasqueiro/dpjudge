@@ -180,10 +180,10 @@ class Check(DPjudge.Status):
 				print
 				continue
 			if not game.preview: game.save()
-			if os.path.exists(timestampFile):
-				mode = os.stat(timestampFile).st_mode
-				if not mode & stat.S_IWRITE:
-					try: os.chmod(timestampFile, mode | stat.S_IWRITE)
-					except: pass
+		if os.path.exists(timestampFile):
+			mode = os.stat(timestampFile).st_mode
+			if not mode & stat.S_IWRITE:
+				try: os.chmod(timestampFile, mode | stat.S_IWRITE)
+				except: pass
 		open(timestampFile, 'w').close()
 	#	----------------------------------------------------------------------
