@@ -105,13 +105,13 @@ class Map:
 			alts = [x[0] for x in alternatives]
 			for altHomes in alternatives:
 				for home in altHomes[1:]:
-					if home not in self.homes.get(power,[]):
+					if home not in self.homes.get(power, []):
 						error += ['LIMITATION FOR ALTERNATIVE HOME CENTER '
-							+ alt + ' FOR POWER ' + power
+							+ altHomes[0] + ' FOR POWER ' + power
 							+ ' NOT A HOME CENTER: ' + home]
 					elif home in alts:
 						error += ['LIMITATION FOR ALTERNATIVE HOME CENTER '
-							+ alt + ' FOR POWER ' + power
+							+ altHomes[0] + ' FOR POWER ' + power
 							+ ' CANNOT ITSELF BE ALTERNATIVE HOME CENTER: '
 							+ home]
 		#	-----------------
@@ -783,7 +783,7 @@ class Map:
 	def rename(self, old, new):
 		old = old.upper()
 		if old not in self.locName.values():
-			return error.append('INVALID RENAME LOCATION: ' + `old`)
+			return self.error.append('INVALID RENAME LOCATION: ' + `old`)
 		[x.pop(y) for x in (self.locName, self.aliases)
 			for y,z in x.items() if z == old]
 		if old == new: return
@@ -808,8 +808,8 @@ class Map:
 			del data[gone]
 		for one, two in [(x,y) for z in self.abutRules.values()
 						for x,y in z if old in (x.upper(), y.upper())]:
-			abuts.remove((one, two))
-			abuts.append((	one == old and new
+			self.abuts.remove((one, two))
+			self.abuts.append((	one == old and new
 						or  one == old.lower() and new.lower()
 						or  one == old.title() and new.title() or one,
 							two == old and new
@@ -824,7 +824,7 @@ class Map:
 	#	----------------------------------------------------------------------
 	def renamePower(self, old, new):
 		if old not in self.powName.values(): 
-			return error.append('RENAMING UNDEFINED POWER ' + old)
+			return self.error.append('RENAMING UNDEFINED POWER ' + old)
 		self.powName.pop(old, None)
 		old, new = old.replace('+', ''), new.replace('+', '')
 		[x.pop(old, None) for x in (self.ownWord, self.abbrev)]

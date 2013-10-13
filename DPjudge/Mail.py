@@ -1,6 +1,8 @@
 from codecs import open
 from smtplib import *
 
+import os
+
 import host
 
 class Mail:
