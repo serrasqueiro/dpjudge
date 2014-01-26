@@ -1088,7 +1088,7 @@ $_end$_
 						} ifelse
 					} ifelse
 				} { false exch } ifelse
-				dup cvn load exec Power /ShortName get dup length 0 gt { exch } if pop
+				dup cvn load exec Powers Power get /ShortName get dup length 0 gt { exch } if pop
 				exch {
 					dup length dup NameLength lt { NameLength } { dup } ifelse 1 add
 					dup 4 index length add string
@@ -1119,7 +1119,7 @@ $_end$_
 					} ifelse
 				} ifelse
 			} { false exch } ifelse
-			dup cvn load exec Power /ShortName get dup length 0 gt { exch } if pop
+			dup cvn load exec Powers Power get /ShortName get dup length 0 gt { exch } if pop
 			exch {
 				dup length dup 10 lt { 10 } { dup } ifelse 1 add
 				dup 4 index length add string

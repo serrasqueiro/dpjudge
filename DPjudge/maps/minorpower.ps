@@ -1085,12 +1085,12 @@ $_end$_
 					} ifelse
 				} ifelse
 			} { false exch } ifelse
-			dup cvn load exec Power /LongName get dup length 0 gt { exch } if pop
+			dup cvn load exec Powers Power get /LongName get dup length 0 gt { exch } if pop
 			1 index {
 				3 2 roll dup 0 get 40 eq {
 					dup dup length 1 sub get 41 eq {
 						1 1 index length 2 sub getinterval
-						dup cvn load exec Power /LongName get dup length 0 gt { exch } if pop
+						dup cvn load exec Powers Power get /LongName get dup length 0 gt { exch } if pop
 						dup length 2 add string
 						dup 0 40 put dup dup length 1 sub 41 put
 						dup 1 4 3 roll putinterval
@@ -1127,7 +1127,7 @@ $_end$_
 						} ifelse
 					} ifelse
 				} { false exch } ifelse
-				dup cvn load exec Power /ShortName get dup length 0 gt { exch } if pop
+				dup cvn load exec Powers Power get /ShortName get dup length 0 gt { exch } if pop
 				exch {
 					dup length dup NameLength lt { NameLength } { dup } ifelse 1 add
 					dup 4 index length add string
@@ -1158,7 +1158,7 @@ $_end$_
 					} ifelse
 				} ifelse
 			} { false exch } ifelse
-			dup cvn load exec Power /ShortName get dup length 0 gt { exch } if pop
+			dup cvn load exec Powers Power get /ShortName get dup length 0 gt { exch } if pop
 			exch {
 				dup length dup 5 lt { 5 } { dup } ifelse 1 add
 				dup 4 index length add string
