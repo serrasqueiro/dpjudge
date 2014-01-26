@@ -394,41 +394,55 @@ $_end$_
 	begin
 	.7 .7 x
 	0 8 t
-	n 0 0 9 0 360 a p % wheel
-	2 w Contrast k
-	-20 7 m 10 7 l 10 3 l 14 3 l
-	14 1 l -16 1 l -16 3 l -20 3 l p % barrel
-	4 2 m 24 -8 l 26 -8 l 18 -8 l -2 2 l % carriage
-	s 2 w Contrast k r Paint f
-	n 0 0 9 0 360 a p % wheel
-	Paint f
+	s
+	.1667 .1667 x
+	-121 -82 t
+	172 3 m 174 8 l 179 12 l 179 25 l 184 38 l 177 46 l 177 54 l 185 63 l 195 59 l 195 52 l
+	192 41 l 198 28 l 199 37 l 205 49 l 206 60 l 210 69 l 204 78 l 203 90 l 199 93 l 192 91 l
+	181 80 l 173 86 l 166 97 l 161 123 l 153 133 l 146 135 l 144 146 l 136 153 l 142 160 l 154 159 l
+	139 169 l 127 166 l 127 158 l 133 150 l 129 148 l 129 144 l 123 141 l 129 135 l 132 131 l 132 126 l
+	129 122 l 121 118 l 118 129 l 105 136 l 107 142 l 95 137 l 88 136 l 82 132 l 72 127 l 67 124 l
+	70 115 l 77 111 l 85 115 l 92 115 l 82 106 l 78 94 l 78 84 l 75 78 l 76 71 l 56 61 l
+	54 55 l 62 34 l 74 25 l 81 25 l 80 33 l 77 36 l 63 47 l 66 54 l 79 56 l 86 39 l
+	91 17 l 84 11 l 79 3 l 93 3 l 94 12 l 100 18 l 96 49 l 111 49 l 115 42 l 134 48 l
+	142 48 l 148 36 l 135 22 l 130 9 l 135 5 l 141 10 l 140 18 l 158 31 l 156 42 l 170 37 l
+	174 23 l 168 12 l 162 7 l 162 3 l p
+	s 12 w Contrast k r Paint f
+	r
 	Offset aload pop m
 	MapUnitLetterFont z
 	Contrast Letter h
 	end
 } bd
 /ArmyTroopBBox [
-	-14.7 -1.4 18.9 12.6
+	-8.52 -4.32 11.08 16.45
 ] def
 /PaintControlledArmy {
 	begin
 	.7 .7 x
 	0 8 t
-	n 0 0 9 0 360 a p % wheel
-	s 6 w Outer k r 2 w Contrast k
-	-20 7 m 10 7 l 10 3 l 14 3 l
-	14 1 l -16 1 l -16 3 l -20 3 l p % barrel
-	4 2 m 24 -8 l 26 -8 l 18 -8 l -2 2 l % carriage
-	s s 6 w Outer k r 2 w Contrast k r Paint f
-	n 0 0 9 0 360 a p % wheel
-	Paint f
+	s
+	.1667 .1667 x
+	-121 -82 t
+	172 3 m 174 8 l 179 12 l 179 25 l 184 38 l 177 46 l 177 54 l 185 63 l 195 59 l 195 52 l
+	192 41 l 198 28 l 199 37 l 205 49 l 206 60 l 210 69 l 204 78 l 203 90 l 199 93 l 192 91 l
+	181 80 l 173 86 l 166 97 l 161 123 l 153 133 l 146 135 l 144 146 l 136 153 l 142 160 l 154 159 l
+	139 169 l 127 166 l 127 158 l 133 150 l 129 148 l 129 144 l 123 141 l 129 135 l 132 131 l 132 126 l
+	129 122 l 121 118 l 118 129 l 105 136 l 107 142 l 95 137 l 88 136 l 82 132 l 72 127 l 67 124 l
+	70 115 l 77 111 l 85 115 l 92 115 l 82 106 l 78 94 l 78 84 l 75 78 l 76 71 l 56 61 l
+	54 55 l 62 34 l 74 25 l 81 25 l 80 33 l 77 36 l 63 47 l 66 54 l 79 56 l 86 39 l
+	91 17 l 84 11 l 79 3 l 93 3 l 94 12 l 100 18 l 96 49 l 111 49 l 115 42 l 134 48 l
+	142 48 l 148 36 l 135 22 l 130 9 l 135 5 l 141 10 l 140 18 l 158 31 l 156 42 l 170 37 l
+	174 23 l 168 12 l 162 7 l 162 3 l p
+	s s 36 w Outer k r 12 w Contrast k r Paint f
+	r
 	Offset aload pop m
 	MapUnitLetterFont z
 	Contrast Letter h
 	end
 } bd
 /ControlledArmyTroopBBox [
-	-16.1 -2.8 20.3 14
+	-9.92 -5.72 12.48 17.85
 ] def
 /DrawArmy {
 	SwitchToMapMode
