@@ -295,7 +295,9 @@ class StandardGame(Game):
 					for y in self.powers for x in y.units
 					if (x[2:5] in partial or y.ceo[:1] == [power.name]) and
 					x not in y.orders]
-			if not self.error: self.process()
+			if not self.error:
+				self.logAccess(power, '', 'Orders updated')
+				self.process()
 	#	----------------------------------------------------------------------
 	def getOrders(self, power):
 		if self.phaseType in 'RA': return '\n'.join(power.adjust)
