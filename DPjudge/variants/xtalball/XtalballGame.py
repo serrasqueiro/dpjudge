@@ -245,6 +245,7 @@ class XtalballGame(Game):
 		#	------------------------------------------
 		if not self.canChangeOrders(hadOrders, power.list[which]) or self.error:
 			return
+		self.logAccess(power, '', 'Orders updated')
 		#	--------------------------------------
 		#	If this is not the first turn, there's
 		#	a locked-in turn ready.  Process it.

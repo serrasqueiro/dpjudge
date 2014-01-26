@@ -919,6 +919,7 @@ class PayolaGame(Game):
 			if offer: power.sheet += [offer]
 		self.validateOffers(power)
 		if self.canChangeOrders(hadOffers, power.offers) and not self.error:
+			self.logAccess(power, '', 'Offers updated')
 			self.process()
 	#	----------------------------------------------------------------------
 	def getOrders(self, power):

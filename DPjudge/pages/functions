@@ -1366,8 +1366,9 @@ def showPressArchive(selected = 0, filter = 0):
 					page.game.anglify((fakeFrom or sender).decode('latin-1')))
 				item += b.encode('latin-1')
 				involved += [fakeFrom or sender]
-		if (not filter or filter in item.replace(',','').split()
-		or 'sent' in item.split()):
+		if (not filter or filter in item.replace(',', ' ').split()
+		or 'sent' in item.split()
+		or (filter.upper() == power and 'from' not in item.split())):
 			if len(item) > 113: item = item[:110] + '...'
 			items = [item] + items
 			validCodes.append(code)
@@ -1397,7 +1398,7 @@ def showPressArchive(selected = 0, filter = 0):
 	if selected:
 		involved = [x for x in sorted(dict.fromkeys(involved))]
 		if 'ALL' in involved: involved.remove('ALL')
-		if power in involved: involved.remove(power)
+		if power in involved and not omniscient: involved.remove(power)
 		if involved:
 			page.write("""
 				<td class=bodycopy><b>Filter:</b>
