@@ -79,6 +79,136 @@
 %  328  613 ZEU    Temple of Zeus
 % MAP
 
+%%BeginProlog
+% $_DPghost$_
+systemdict /pdfmark known {
+currentglobal true setglobal globaldict begin
+/$_CurrentGlobal$_ exch def
+/$_FormCount$_ 0 def
+/$_Marks$_ [] def
+/$_InFormPaint$_ false def
+/$_FormPaintDepth$_ 0 def
+$_CurrentGlobal$_ end setglobal
+/$_begin$_ {
+currentglobal true setglobal globaldict begin
+/$_CurrentGlobal$_ exch def
+} bind def
+/$_end$_ {
+$_CurrentGlobal$_ end setglobal
+} bind def
+/$_mark$_ {
+count 1 sub exch sub $_Marks$_ aload length 1 add array astore /$_Marks$_ exch def
+$_end$_
+} bind def
+/$_cleartomark$_ {
+$_begin$_
+count 1 sub 1 index sub $_Marks$_ 0 get sub
+dup 0 gt {
+dup 2 index 3 add 1 roll 1 add 1 index add exch roll { pop } repeat
+} { pop pop } ifelse
+$_Marks$_ dup length 1 sub 1 exch getinterval /$_Marks$_ exch def
+} bind def
+/$_GStates$_ [] def
+/$_gsave$_ {
+$_end$_ /$_GStates$_ $_GStates$_ aload
+gstate currentgstate
+exch length 1 add array astore def $_begin$_
+} bind def
+/$_grestore$_ {
+$_end$_ /$_GStates$_ $_GStates$_ aload exch
+setgstate
+length 1 sub array astore def $_begin$_
+} bind def
+/$_execform$_ /execform load def
+/$_defineform$_ {
+/$_FormPaintDepth$_ $_FormPaintDepth$_ 1 add def
+% -- REMOVE THIS LINE IF NESTED FORMS HAVE BEEN PATCHED. --
+/$_InFormPaint$_ true def
+% -- END REMOVAL --
+1 index
+dup /BBox get aload 5 1 roll
+4 2 roll matrix translate
+dup 4 1 roll itransform
+currentpagedevice /PageSize get aload pop
+4 3 roll 3 2 roll div 3 1 roll div
+2 copy lt { exch } if pop dup 1 gt {
+dup matrix scale exch matrix concatmatrix
+} { pop } ifelse
+exch aload pop 4 2 roll pop pop 0 0 4 2 roll 4 index itransform 4 array astore
+3 2 roll dup /Matrix get 3 index exch matrix concatmatrix
+$_FormCount$_ 1 add dup /$_FormCount$_ exch def
+dup log cvi 1 add
+exch 1 index string cvs
+1 index 8 add string
+dup 0 ($_Form) putinterval
+dup 6 4 3 roll putinterval
+dup 3 2 roll 6 add ($_) putinterval
+cvn cvx 1 array astore cvx
+dup 3 2 roll
+6 index { 2 copy 10 2 roll } if
+2 array astore
+2 index /$_FormSpec$_ 3 2 roll put
+1 $_mark$_ [ /_objdef 3 2 roll
+/BBox 5 index
+/BP pdfmark 0 $_cleartomark$_
+$_gsave$_
+exch aload pop exch 3 index sub exch 2 index sub rectclip
+exch matrix invertmatrix concat
+newpath
+1 $_mark$_ dup /PaintProc get exec 0 $_cleartomark$_
+$_grestore$_
+0 $_mark$_ [ /EP pdfmark 0 $_cleartomark$_
+{
+$_InFormPaint$_ not {
+readonly
+} if
+pop
+} if
+$_FormPaintDepth$_ 1 sub dup /$_FormPaintDepth$_ exch def 0 le {
+/$_InFormPaint$_ false def
+} if
+} bind def
+/execform {
+$_begin$_
+$_InFormPaint$_ {
+dup /$_FormSpec$_ known not 1 index wcheck and {
+false $_defineform$_
+} if false
+} {
+dup /$_FormSpec$_ known {
+/$_FormSpec$_ get aload pop true
+} {
+dup wcheck {
+true $_defineform$_ true
+} {
+false
+} ifelse
+} ifelse
+} ifelse
+{
+$_gsave$_ concat
+1 $_mark$_ [ exch /SP pdfmark 0 $_cleartomark$_
+$_grestore$_
+} {
+1 $_mark$_ $_execform$_ 0 $_cleartomark$_
+} ifelse
+$_end$_
+} bind def
+/$_defineresource$_ /defineresource load def
+/defineresource {
+$_begin$_
+dup /Form eq {
+exch dup /$_FormSpec$_ known not 1 index wcheck and {
+false $_defineform$_
+} if exch
+} if
+3 $_mark$_ $_defineresource$_ 1 $_cleartomark$_
+$_end$_
+} bind def
+} if
+% /$_DPghost$_
+%%EndProlog
+
 %%BeginSetup
 /bd { bind def } bind def
 /xd { exch def } bd
@@ -127,6 +257,7 @@
 } bd
 /ShowPage {
 	DrawAliases
+	DrawRemainingCenters
 	InTextMode { FinishReport } { r } ifelse
 	FrameMap
 	showpage
@@ -162,14 +293,13 @@
 	/WEST (W) /Green /White p
 	end
 } def
-/DrawFleet {
-	SwitchToMapMode
-	Power begin
-	s t
+/PaintFleet {
+	begin
 	.7 .7 x
 	0 8 t
 	s
-	.5 .5 x -35 -16 t
+	.5 .5 x
+	-35 -16 t
 	12 3 m 12 9 l 9 12 l 6 13 l 6 17 l % bow
 	9 17 l 9 23 l 2 22 l 7 16 l 6 16 l
 	1 22 l % bowsprit
@@ -190,33 +320,104 @@
 	48 43 l 49 28 l 51 28 l 51 31 l 54 33 l
 	54 23 l 57 26 l 57 22 l 56 21 l % rear sail and flag
 	56 15 l 59 12 l 59 7 l 57 4 l 55 3 l p % bow
-	s Controlled { s 12 w Outer k r } if 4 w Contrast k r Paint f
+	s 4 w Contrast k r Paint f
 	r
 	Offset aload pop m
 	MapUnitLetterFont z
 	Contrast Letter h
-	r
 	end
 } bd
-/DrawArmy {
+/FleetTroopBBox [
+	-12.6 .35 9.1 22.75
+] def
+/PaintControlledFleet {
+	begin
+	.7 .7 x
+	0 8 t
+	s
+	.5 .5 x
+	-35 -16 t
+	12 3 m 12 9 l 9 12 l 6 13 l 6 17 l % bow
+	9 17 l 9 23 l 2 22 l 7 16 l 6 16 l
+	1 22 l % bowsprit
+	6 27 l 12 37 l 15 45 l % front sail
+	19 44 l 19 48 l 16 48 l 15 49 l 19 49 l
+	19 55 l 20 55 l 20 49 l 24 49 l 23 48 l
+	20 48 l 20 44 l % front mast
+	24 43 l 24 34 l 27 29 l 33 29 l 33 32 l
+	25 32 l 28 39 l 31 51 l % mid sail left
+	35 50 l 35 54 l 30 54 l 29 55 l 35 55 l
+	35 63 l 36 63 l 36 56 l 36 55 l 42 55 l
+	41 54 l 36 54 l 36 50 l % mid mast
+	41 49 l 41 32 l 36 32 l 36 29 l 39 29 l
+	41 43 l % mid sail right
+	45 43 l 45 47 l 41 47 l 41 48 l 45 48 l
+	45 55 l 46 55 l 46 48 l 51 48 l 50 47 l
+	46 47 l 46 43 l % rear mast
+	48 43 l 49 28 l 51 28 l 51 31 l 54 33 l
+	54 23 l 57 26 l 57 22 l 56 21 l % rear sail and flag
+	56 15 l 59 12 l 59 7 l 57 4 l 55 3 l p % bow
+	s s 12 w Outer k r 4 w Contrast k r Paint f
+	r
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	end
+} bd
+/ControlledFleetTroopBBox [
+	-14 -1.05 10.5 24.15
+] def
+/DrawFleet {
 	SwitchToMapMode
-	Power begin
 	s t
+	FleetTroops Power get execform
+	r
+} bd
+/PaintArmy {
+	begin
 	.7 .7 x
 	0 8 t
 	n 0 0 9 0 360 a p % wheel
-	Controlled { s 6 w Outer k r } if 2 w Contrast k
+	2 w Contrast k
 	-20 7 m 10 7 l 10 3 l 14 3 l
 	14 1 l -16 1 l -16 3 l -20 3 l p % barrel
 	4 2 m 24 -8 l 26 -8 l 18 -8 l -2 2 l % carriage
-	s Controlled { s 6 w Outer k r } if 2 w Contrast k r Paint f
+	s 2 w Contrast k r Paint f
 	n 0 0 9 0 360 a p % wheel
 	Paint f
 	Offset aload pop m
 	MapUnitLetterFont z
 	Contrast Letter h
-	r
 	end
+} bd
+/ArmyTroopBBox [
+	-14.7 -1.4 18.9 12.6
+] def
+/PaintControlledArmy {
+	begin
+	.7 .7 x
+	0 8 t
+	n 0 0 9 0 360 a p % wheel
+	s 6 w Outer k r 2 w Contrast k
+	-20 7 m 10 7 l 10 3 l 14 3 l
+	14 1 l -16 1 l -16 3 l -20 3 l p % barrel
+	4 2 m 24 -8 l 26 -8 l 18 -8 l -2 2 l % carriage
+	s s 6 w Outer k r 2 w Contrast k r Paint f
+	n 0 0 9 0 360 a p % wheel
+	Paint f
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	end
+} bd
+/ControlledArmyTroopBBox [
+	-16.1 -2.8 20.3 14
+] def
+/DrawArmy {
+	SwitchToMapMode
+	s t
+	ArmyTroops Power get execform
+	r
 } bd
 /DrawAlias {
 	SwitchToMapMode
@@ -325,22 +526,43 @@
 	/APH 398 413 s
 	end
 } def
+/DrawRemainingCenters {
+	SwitchToMapMode
+	UNOWNED
+	Centers {
+		{ load exec supply } { pop } ifelse
+	} forall
+} bd
+/PaintSupply {
+	begin
+	.7 .7 x
+	Paint
+	n 0 0 6 0 360 a f
+	end
+} bd
+/SupplyCenterBBox [
+	-4.2 -4.2 4.2 4.2
+] def
+/PaintControlledSupply {
+	begin
+	.7 .7 x
+	Outer
+	n 0 0 10 0 360 a f
+	Contrast
+	n 0 0 8 0 360 a f
+	Paint
+	n 0 0 6 0 360 a f
+	end
+} bd
+/ControlledSupplyCenterBBox [
+	-7 -7 7 7
+] def
 /supply {
 	SwitchToMapMode
-	Power begin
-	s
-	t
-	.7 .7 x
-	Controlled {
-		Outer
-		n 0 0 8 0 360 a f
-		Contrast
-		n 0 0 6 0 360 a f
-	} if
-	Paint
-	n 0 0 4 0 360 a f
+	Centers exch false put
+	s t
+	Power get execform
 	r
-	end
 } bd
 /SetArrowStateOk {
 	[] 0 d
@@ -641,23 +863,32 @@
 	k
 	r
 } bd
-/PaintMap {
-	SwitchToMapMode
-	s
-	SeaBlue 119.36 174.16 478.8 464.4 rectfill
-	IncludeIsland
-	IncludeInternalBorders
-	r
-} bd
+/MapForm <<
+	/FormType 1
+	/Matrix matrix
+	/BBox [ 119.36 174.16 598.16 638.56 ]
+	/FormDict 1 dict
+	/PaintProc {
+		/FormDict get begin
+		s
+		SeaBlue 119.36 174.16 478.8 464.4 rectfill
+		IncludeIsland
+		IncludeInternalBorders
+		r
+		end
+	} bind
+>> def
 /DrawMap {
 	PageSetup
-	PaintMap
-	DrawSupplies
+	SwitchToMapMode
+	MapForm execform
+	/Centers << Centers { pop true } forall >> def
+	UNOWNED
 } bd
 /DrawSupplies {
 	SwitchToMapMode
 	UNOWNEDCENTER
-	{ supply pop } bind
+	{ SupplyCenters 3 1 roll 4 3 roll supply } bind
 	VisitSupplies
 } bd
 /DrawAliases {
@@ -674,8 +905,45 @@
 	VisitTerritories
 	r
 } bd
+/GetControlledPower {
+	1 index dup length string cvs 1 index dup length string cvs
+	1 index length dup 2 index length add 1 add string
+	dup 0 6 5 roll putinterval dup 2 index 124 put dup 3 2 roll 1 add 4 3 roll putinterval cvn
+	3 1 roll Powers 3 index known {
+		pop pop
+	} {
+		8 dict dup begin
+		exch Powers exch get /Paint get /Outer xd
+		Powers 2 index get { def } forall
+		end
+		dup ControlledFleetTroopBBox /PaintControlledFleet load CreateTroop FleetTroops 4 index 3 2 roll put
+		dup ControlledArmyTroopBBox /PaintControlledArmy load CreateTroop ArmyTroops 4 index 3 2 roll put
+		dup ControlledSupplyCenterBBox /PaintControlledSupply load CreateTroop SupplyCenters 4 index 3 2 roll put
+		Powers 2 index 3 2 roll put
+		[ /Power 3 index 4 3 roll {
+			ChangeController {
+				Power GetControlledPower exch
+				/ChangeController false def
+			} if pop
+		} bind /exec load /def load ] cvx 2 index xd
+	} ifelse
+} bd
 /Controls {
 	/ChangeController true def
+} bd
+/CreateTroop {
+	<<
+		/BBox 4 3 roll
+		/PaintProc 5 4 roll
+		6 5 roll {} forall
+		/FormType 1
+		/Matrix matrix
+	>>
+} bd
+/CreateTroops {
+	<< 3 1 roll Powers {
+		3 index 3 index CreateTroop 4 2 roll
+	} forall pop pop >>
 } bd
 /SplitString {
 	7 dict begin
@@ -1713,19 +1981,33 @@
 }{
 	currentdict end 6 1 roll [ 5 1 roll /setcmykcolor load ] cvx def begin
 } bind VisitColors
-{ currentdict end 4 1 roll [ 3 1 roll ] cvx def begin } bind
-VisitSupplies
+/ChangeController false def
 s
 MapUnitLetterFont z
 {
 	exch load exch load
 	2 index [ exch n 0 0 m true charpath pathbbox 3 2 roll add -2 div 3 1 roll add -2 div exch ] 3 1 roll
 	4 dict begin /Contrast xd /Paint xd /Offset xd /Letter xd currentdict end
-	[ /Power 3 2 roll { dup /Controlled ChangeController put ChangeController { dup /Outer Power /Paint get put /ChangeController false def } if } /exec load /def load ] cvx
-	currentdict end 3 1 roll def begin
+	currentdict end 3 1 roll
+	Powers 2 index 3 2 roll put
+	[ /Power 2 index {
+		ChangeController {
+			Power GetControlledPower
+			/ChangeController false def
+		} if
+	} bind /exec load /def load ] cvx def
+	begin
 } VisitPowers
 r
-/ChangeController false def
+/FleetTroops FleetTroopBBox /PaintFleet load CreateTroops def
+/ArmyTroops ArmyTroopBBox /PaintArmy load CreateTroops def
+/Centers <<
+	{ pop pop true } bind
+	VisitSupplies
+>> def
+/SupplyCenters SupplyCenterBBox /PaintSupply load CreateTroops def
+{ currentdict end 4 1 roll [ SupplyCenters 4 2 roll 4 index ] cvx def begin } bind
+VisitSupplies
 /UNOWNEDCENTER /UNOWNED ld
 /EASTCENTER /EAST ld
 /NORTHCENTER /NORTH ld

@@ -10,13 +10,13 @@ from Game import Game, Power, Mail, Status
 host.packageDir = __path__[0]
 host.hostDir = os.path.dirname(os.path.abspath(host.__file__))
 
-# No default for host.dpjudgeURL?
 for (var, value) in [
 ('toolsSubDir', 'tools'),
 ('gameSubDir', 'games'),
 ('logSubDir', 'log'),
 ('dpjudgeSubDir', 'web'),
 ('gameMapSubDir', 'maps'),
+('dpjudgeURL', 'http://localhost'),
 ('zoneFileName', 'zone.tab'),
 ('bannerHtml', ''), ('tester', ''), ('openingsList', ''),
 ('dppd', ''), ('dppdSubURL', '?variant=dppd'),

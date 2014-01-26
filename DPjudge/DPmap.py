@@ -618,11 +618,11 @@ class PostScriptMap:
 
 		procsNeeded = dict.fromkeys([p[0] for p in self.procs])
 
-		info, visit, endSetup, self.ownerOrder = 0, 0, None, []
+		info, blank, visit, endSetup, self.ownerOrder = 0, 0, 0, None, []
 		for line in file.readlines():
 			word = line.split()
 			upWord = [x.upper() for x in word]
-			if upWord[:2] == ['%', 'MAP']: info = 0
+			if upWord[:2] == ['%', 'MAP']: info = 0; blank *= 2
 			elif upWord[:2] == ['%', 'INFO']: info = 1
 			elif upWord[:2] == ['%', 'LANG']: info = 2
 			elif info == 1:
@@ -642,15 +642,19 @@ class PostScriptMap:
 				self.outFile.write(line.encode('latin-1'))
 			elif not word:
 				if endSetup: endSetup += '\n'
-				else: self.outFile.write('\n')
+				elif blank < 2: self.outFile.write('\n')
+				blank = 1
 			elif word[0] == '%%EndSetup':
+				blank = 0
 				if endSetup:
 					self.outFile.write(endSetup.encode('latin-1'))
 				endSetup = line
 			elif word[0][0] == '%':
+				blank = 0
 				if endSetup: endSetup += '\n' + line
 				else: self.outFile.write(line.encode('latin-1'))
 			else:
+				blank = 0
 				if endSetup:
 					self.outFile.write(endSetup.encode('latin-1'))
 					endSetup = None

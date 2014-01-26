@@ -23,7 +23,7 @@ can be given when instantiating a class object; see the __init__ method for more
 ps2pdf() method.
 	"""
 
-	markFormCode = """
+	markFormCode = b"""
 % Render forms either with execform or with pdfmark.
 % As this patch is normally injected at the very start of the file, there's
 % no risk of operators like systemdict being overwritten yet with procedures
@@ -333,37 +333,35 @@ systemdict /pdfmark known {
 		except:
 			sys.stderr.write("Unable to read PS file: %s\n" % sys.exc_info()[1])
 			return
-		idx, prolog, newLine = 0, 0, '\n'
+		idx, prolog, blank, newLine = 0, 0, 0, '\n'
 		# Remove a previous injection of the same patch.
-		lines = self.stripCode(lines, 'DPghost')
+		lines = self.stripCode(lines, b'DPghost')
 		# Insert the setup code inside the prolog (marked by %%BeginProlog and %%EndProlog), or, if there is none,
 		# insert a prolog after the top comments (between the PS version and %%EndComments), before %%BeginSetup,
 		# %%Page, or the first PS code in the file.
 		for line in lines:
 			idx += 1
-			newLine = line[-2:] == '\r\n' and line[-2:] or line[-1:] in '\r\n' and line[-1:] or newLine
+			newLine = line[-2:] == b'\r\n' and line[-2:] or line[-1:] in b'\r\n' and line[-1:] or newLine
 			line = line.strip()
-			if line == '': continue
-			if line[:1] != '%': break
-			if line[:2] != '%%': continue
-			keyword = line[2:].split(':')[0]
-			if keyword in ('BeginSetup', 'Page'): break
-			elif keyword == 'BeginProlog':
-				prolog = 1
-				break
+			if line == b'': blank = 1; continue
+			if line[:1] != b'%': break
+			if line[:2] != b'%%': blank = 0; continue
+			keyword = line[2:].split(b':')[0]
+			if keyword in (b'BeginSetup', b'Page'): break
+			elif keyword == b'BeginProlog': prolog = 1; break
 		else:
 			sys.stderr.write('PS file empty or contains only comments\n')
 			return
 		#if lines and lines[-1][-1:] not in '\r\n': lines[-1] += newLine
 		if not prolog:
-			lines = lines[:idx-1] + ['%%BeginProlog' + newLine, '%%EndProlog' + newLine] + lines[idx-1:]
+			lines = lines[:idx-1] + [b'%%BeginProlog' + newLine, b'%%EndProlog' + newLine] + [newLine] * blank + lines[idx-1:]
 		params, markFormCode, stripComments = [], self.markFormCode, True
 		for param in pdfParams:
 			if type(param) not in (tuple, list): param = (param,)
 			if param[0] == 'dDPghostPDFMark':
-				if len(param) == 1 or param[1]: markFormCode = self.stripCode(markFormCode, 'PDFMark')
+				if len(param) == 1 or param[1]: markFormCode = self.stripCode(markFormCode, b'PDFMark')
 			elif param[0] == 'dDPghostNestedForms':
-				if len(param) == 1 or param[1]: markFormCode = self.stripCode(markFormCode, 'NestedForms')
+				if len(param) == 1 or param[1]: markFormCode = self.stripCode(markFormCode, b'NestedForms')
 			elif param[0] == 'dDPghostPatchOnly':
 				if len(param) == 1 or param[1]: pdfFileName = None
 			elif param[0] == 'dDPghostInject':
@@ -465,8 +463,8 @@ systemdict /pdfmark known {
 		stripes = []
 		for line in lines:
 			# Avoid splitting a '\r\n' eol.
-			curls = line[:-2].split('\r')
-			stripes += [curl + '\r' for curl in curls[:-1]] + [curls[-1] + line[-2:]]
+			curls = line[:-2].split(b'\r')
+			stripes += [curl + b'\r' for curl in curls[:-1]] + [curls[-1] + line[-2:]]
 		return stripes
 
 	def writeLines(self, fileName, lines):
@@ -476,23 +474,23 @@ systemdict /pdfmark known {
 
 	def stripCode(self, text, pragma):
 		lines, inPragma, isString = [], False, type(text) != list
-		pragmas = ['%% $_%s$_' % pragma, '%% /$_%s$_' % pragma]
-		for line in (isString and text.split('\n') or text):
+		pragmas = [b'%% $_' + pragma + b'$_', b'%% /$_' + pragma + b'$_']
+		for line in (isString and text.split(b'\n') or text):
 			if line.strip() == pragmas[inPragma]: inPragma = not inPragma
 			elif not inPragma: lines += [line]
 		if inPragma:
-			sys.stderr.write('Warning: Unmatched closing pragma: %s\n' % pragmas[True])
+			sys.stderr.write('Warning: Unmatched closing pragma: %s\n' % pragmas[True].decode())
 			return text
-		return (isString and '\n'.join(lines) or lines)
+		return (isString and b'\n'.join(lines) or lines)
 
-	def embedCode(self, text, newLine = '\n', stripComments = True):
+	def embedCode(self, text, newLine = b'\n', stripComments = True):
 		return [x + newLine for x in
-				["% $_DPghost$_"] +
-				[y for y in [x.strip() for x in text.strip().split('\n')]
-							if not y.startswith('% ') or
-							not (stripComments and not (y.startswith('% --') and y.endswith('--'))) and
-							not ((y.startswith('% $_') or y.startswith('% /$_')) and y.endswith('$_'))] +
-				["% /$_DPghost$_"]]
+				[b"% $_DPghost$_"] +
+				[y for y in [x.strip() for x in text.strip().split(b'\n')]
+							if not y.startswith(b'% ') or
+							not (stripComments and not (y.startswith(b'% --') and y.endswith(b'--'))) and
+							not ((y.startswith(b'% $_') or y.startswith(b'% /$_')) and y.endswith(b'$_'))] +
+				[b"% /$_DPghost$_"]]
 
 	def sanitizePath(self, path):
 		if os.name != 'nt' or not ' ' in path: return path

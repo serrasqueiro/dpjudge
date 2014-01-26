@@ -683,23 +683,18 @@ $_end$_
 
 /Countries 20 dict def
 
-/ChangeController false def
-/Controls {
-	/ChangeController true def
-} bd
-
 /AddCountry { % name letter piececolour contrast => -
   8 dict dup begin 4 1 roll
   load /Contrast xd
   load /PieceColour xd
   /Letter xd
-  end 
-  %[ /Country 2 index { 
-  %  dup /Controlled ChangeController put ChangeController { 
-  %    dup /ControllerColour Country /PieceColour get put /ChangeController false def 
-  %  } if 
-  %} /exec load /def load ] cvx bind
-  [ /country 3 index /def load ] cvx bind
+  end
+  [ /country 3 index {
+    ChangeController {
+      country GetControlledCountry
+      /ChangeController false def
+    } if
+  } bind /exec load /def load ] cvx bind
   2 index xd
   Countries 3 1 roll put
 } bd
@@ -719,8 +714,6 @@ $_end$_
 /MEXICO (X) /Orange /Black AddCountry
 /BRAZIL (Z) /Green /Black AddCountry
 
-/NrOfCountries Countries length def
-
 % Letter offsets
 MapUnitLetterFont MapUnitLetterSize scalefont setfont
 Countries {
@@ -729,6 +722,54 @@ Countries {
   3 2 roll add -2 div 3 1 roll add -2 div exch ] def
   end pop
 } forall
+
+% Controlled countries
+/ChangeController false def
+/Controls {
+	/ChangeController true def
+} bd
+
+/CreateTroop { % CountryDict BBox PaintProc => FormDict
+  <<
+    /BBox 4 3 roll
+    /PaintProc 5 4 roll
+    6 5 roll {} forall
+    /FormType 1
+    /Matrix matrix
+  >>
+} bd
+
+/CreateTroops { % BBox PaintProc => << Country FormDict ... >>
+  << 3 1 roll Countries {
+    3 index 3 index CreateTroop 4 2 roll
+  } forall pop pop >>
+} bd
+
+/GetControlledCountry { % name controllername => controlledname
+  1 index dup length string cvs 1 index dup length string cvs
+  1 index length dup 2 index length add 1 add string
+  dup 0 6 5 roll putinterval dup 2 index (|) putinterval dup 3 2 roll 1 add 4 3 roll putinterval cvn
+  3 1 roll Countries 3 index known {
+    pop pop
+  } {
+    8 dict dup begin
+    exch Countries exch get /PieceColour get /ControllerColour xd
+    Countries 2 index get { def } forall
+    end
+    dup TroopBBox /PaintControlledArmy load CreateTroop Armies 4 index 3 2 roll put
+    dup TroopBBox /PaintControlledFleet load CreateTroop Fleets 4 index 3 2 roll put
+    dup SupplyBBox /PaintControlledSupply load CreateTroop Supplies 4 index 3 2 roll put
+    dup SupplyBBox /PaintControlledHome load CreateTroop Homes 4 index 3 2 roll put
+    [ /country 4 index 5 4 roll {
+      ChangeController {
+        country GetControlledCountry exch
+        /ChangeController false def
+      } if pop
+    } bind /exec load /def load ] cvx bind
+    2 index xd
+    Countries 2 index 3 2 roll put
+  } ifelse
+} bd
 
 %
 % THE REPORTS
@@ -2185,11 +2226,47 @@ Countries {
    4 2 moveto 20 -10 rlineto 2 0 rlineto -8 0 rlineto
   -20  10 rlineto       % carriage
   closepath
-  %Controlled { gsave ControllerColour currentlinewidth 3 mul setlinewidth stroke grestore } if
   Contrast stroke
   0 0 9 0 360 arc   % wheel
   closepath
-  %Controlled { gsave ControllerColour currentlinewidth 3 mul setlinewidth stroke grestore } if
+  Contrast stroke
+  newpath
+  -20 7 moveto 30 0 rlineto 0 -4 rlineto 4 0 rlineto
+   0 -2 rlineto -30 0 rlineto 0  2 rlineto -4 0 rlineto
+   0 4 rlineto      % barrel
+   4 2 moveto 20 -10 rlineto 2 0 rlineto -8 0 rlineto
+  -20  10 rlineto       % carriage
+  closepath
+  PieceColour fill
+  0 0 9 0 360 arc   % wheel
+  closepath
+  PieceColour fill
+
+  Offset aload pop moveto
+  MapUnitLetterFont MapUnitLetterSize scalefont setfont
+  Contrast Letter show
+
+  end
+} bd
+
+/PaintControlledArmy { % dict => -
+  begin
+
+  newpath
+  MapUnitScale dup scale
+  0 MapUnitOffset translate
+  3 setlinewidth [] 0 setdash
+  -20 7 moveto 30 0 rlineto 0 -4 rlineto 4 0 rlineto
+   0 -2 rlineto -30 0 rlineto 0  2 rlineto -4 0 rlineto
+   0 4 rlineto      % barrel
+   4 2 moveto 20 -10 rlineto 2 0 rlineto -8 0 rlineto
+  -20  10 rlineto       % carriage
+  closepath
+  gsave ControllerColour currentlinewidth 3 mul setlinewidth stroke grestore
+  Contrast stroke
+  0 0 9 0 360 arc   % wheel
+  closepath
+  gsave ControllerColour currentlinewidth 3 mul setlinewidth stroke grestore
   Contrast stroke
   newpath
   -20 7 moveto 30 0 rlineto 0 -4 rlineto 4 0 rlineto
@@ -2246,7 +2323,38 @@ Countries {
   6 0 rlineto 0 -1 rlineto 2 0 rlineto 0 -2 rlineto     % stern
   -1 0 rlineto 0 -2 rlineto
   closepath
-  %Controlled { gsave ControllerColour currentlinewidth 3 mul setlinewidth stroke grestore } if
+  gsave Contrast stroke grestore
+  PieceColour fill
+
+  Offset aload pop moveto
+  MapUnitLetterFont MapUnitLetterSize scalefont setfont
+  Contrast Letter show
+
+  end
+} bd
+
+/PaintControlledFleet { % dict => -
+  begin
+
+  newpath
+  MapUnitScale dup scale
+  0 MapUnitOffset translate
+  2 setlinewidth [] 0 setdash
+  -26 -7 moveto 0 5 rlineto 7 0 rlineto 0 1 rlineto     % to bow
+  -3 0 rlineto 0 1 rlineto 7 0 rlineto 0 1 rlineto      % A turret
+  -3 0 rlineto 0 1 rlineto 8 0 rlineto 0 -2 rlineto     % B turret
+  1 0 rlineto 0 4 rlineto 1 0 rlineto 0 2 rlineto       % conn tower
+  2 0 rlineto 0 -1 rlineto 1 0 rlineto 0 4 rlineto      % Infra struct
+  2 0 rlineto 0 5 rlineto 1 0 rlineto 0 -5 rlineto      % funnel 1
+  2 0 rlineto 0 -4 rlineto 1 0 rlineto 0 3 rlineto      % funnel 2
+  2 0 rlineto 0 5 rlineto 1 0 rlineto 0 -5 rlineto      % mast 2
+  2 0 rlineto 0 -8 rlineto 2 0 rlineto 0 2 rlineto      % funnel 2
+  8 0 rlineto 0 -1 rlineto -3 0 rlineto 0 -1 rlineto    % C turret
+  7 0 rlineto 0 -1 rlineto -3 0 rlineto 0 -1 rlineto    % D turret
+  6 0 rlineto 0 -1 rlineto 2 0 rlineto 0 -2 rlineto     % stern
+  -1 0 rlineto 0 -2 rlineto
+  closepath
+  gsave ControllerColour currentlinewidth 3 mul setlinewidth stroke grestore
   gsave Contrast stroke grestore
   PieceColour fill
 
@@ -2902,18 +3010,6 @@ end
   VisitTerritories
 } bd
 
-/CreateTroops { % BBox PaintProc => [ FormDict ... ]
-  << 3 1 roll Countries {
-    <<
-      /BBox 5 index
-      /PaintProc 6 index
-      6 -1 roll {} forall
-      /FormType 1
-      /Matrix matrix
-    >> 4 2 roll
-  } forall pop pop >>
-} bind def
-
 /TroopBBox [ MapUnitLetterSize 14 div -28 1 index mul exch
   -11 1 index mul MapUnitOffset add exch
   28 1 index mul exch
@@ -3138,30 +3234,40 @@ end
 /PaintSupply { % dict => -
   begin
   PieceColour
-  %Controlled {
-  %  gsave
-  %  ControllerColour
-  %  newpath 0 0 6 0 360 arc fill
-  %  Contrast
-  %  newpath 0 0 4.5 0 360 arc fill
-  %  grestore
-  %} if
-  newpath 0 0 3 0 360 arc fill 
+  newpath 0 0 3 0 360 arc fill
+  end
+} bd
+
+/PaintControlledSupply { % dict => -
+  begin
+  PieceColour
+  gsave
+  ControllerColour
+  newpath 0 0 6 0 360 arc fill
+  Contrast
+  newpath 0 0 4.5 0 360 arc fill
+  grestore
+  newpath 0 0 3 0 360 arc fill
   end
 } bd
 
 /PaintHome { % dict => -
   begin
   PieceColour
-  %Controlled {
-  %  gsave
-  %  ControllerColour
-  %  -4 -4 8 8 rectfill
-  %  Contrast
-  %  -3 -3 6 6 rectfill
-  %  grestore
-  %} if
-  -2 -2 4 4 rectfill 
+  -2 -2 4 4 rectfill
+  end
+} bd
+
+/PaintControlledHome { % dict => -
+  begin
+  PieceColour
+  gsave
+  ControllerColour
+  -4 -4 8 8 rectfill
+  Contrast
+  -3 -3 6 6 rectfill
+  grestore
+  -2 -2 4 4 rectfill
   end
 } bd
 
