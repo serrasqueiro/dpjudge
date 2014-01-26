@@ -652,8 +652,7 @@ class Game:
 			if not word: continue
 			self.directives += [' '.join(word)]
 			# Game data
-			if (self.mode and upword == 'END' and len(word) == 2 and
-				word[1].upper() == self.mode):
+			if self.mode and [x.upper() for x in word] == ['END', self.mode]:
 				self.mode = self.modeRequiresEnd = None
 			elif not self.parseGameData(word, 14):
 				error += ['UNRECOGNIZED GAME DIRECTIVE: ' + ' '.join(word)]
@@ -852,7 +851,7 @@ class Game:
 				word = [self] + [x.upper() for x in word]
 				try: power = self.powerType(*word)
 				except:
-					error += ['BAD PARTICIPANT ' + line]
+					error += ['BAD PARTICIPANT ' + ' '.join(word)]
 					return None
 				if power.name in self.map.powers: power.abbrev = (
 					self.map.abbrev.get(power.name, power.name[0]))
