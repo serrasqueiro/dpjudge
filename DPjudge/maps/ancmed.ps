@@ -141,15 +141,7 @@ length 1 sub array astore def $_begin$_
 /$_InFormPaint$_ true def
 % -- END REMOVAL --
 1 index
-dup /BBox get aload 5 1 roll
-4 2 roll matrix translate
-dup 4 1 roll itransform
-currentpagedevice /PageSize get aload pop
-4 3 roll 3 2 roll div 3 1 roll div
-2 copy lt { exch } if pop dup 1 gt {
-dup matrix scale exch matrix concatmatrix
-} { pop } ifelse
-exch aload pop 4 2 roll pop pop 0 0 4 2 roll 4 index itransform 4 array astore
+dup /BBox get matrix exch
 3 2 roll dup /Matrix get 3 index exch matrix concatmatrix
 $_FormCount$_ 1 add dup /$_FormCount$_ exch def
 dup log cvi 1 add

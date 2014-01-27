@@ -19,13 +19,13 @@ class Inspect:
 			spaces and '+'s, replaced by underscores. If the power name 
 			starts with a digit, the variable will have a capital P 
 			prepended to it.
-		inspect "denarius.makeMaps()"
+		inspect "denarius.view.makeMaps()"
 			will make maps for the game "denarius" and will NOT leave
 			you in the Python interpreter
-		inspect denarius "denarius.makeMaps()"
+		inspect denarius "denarius.view.makeMaps()"
 			will make maps for the game "denarius" and WILL leave you
 			in the Python interpreter for further commands
-		inspect denarius. "self.makeMaps()"
+		inspect denarius. "self.view.makeMaps()"
 			will make maps for the game "denarius" and WILL NOT leave you
 			in the Python interpreter for further commands
 		inspect . host.dpjudge

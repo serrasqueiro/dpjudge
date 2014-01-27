@@ -107,14 +107,16 @@ systemdict /pdfmark known {
 		% -- END REMOVAL --
 % /$_NestedForms$_
 		1 index
+		dup /BBox get matrix exch
+% $_PageSizeBBox$_
 		% Surprisingly (Acrobat Reader dictates that) a form XObject is bound by the
 		% same clipping path as the page, independent of the fact that the form will
 		% be transformed or not before being painted. To counter this the BBox and
 		% Matrix must be altered such that it fits on a page.
 		% Calculate transformation matrix to fit on a page and apply to BBox.
-		dup /BBox get aload 5 1 roll
+		aload 5 1 roll
 		% Always translate to the origin to simplify further manipulations.
-		4 2 roll matrix translate
+		4 2 roll 6 5 roll translate
 		dup 4 1 roll itransform
 		currentpagedevice /PageSize get aload pop
 		4 3 roll 3 2 roll div 3 1 roll div
@@ -123,6 +125,7 @@ systemdict /pdfmark known {
 			dup matrix scale exch matrix concatmatrix
 		} { pop } ifelse
 		exch aload pop 4 2 roll pop pop 0 0 4 2 roll 4 index itransform 4 array astore
+% /$_PageSizeBBox$_
 		% The actual form matrix will only be applied when invoking SP, as it may
 		% contain rotations and shearing, which would negatively affect the BBox.
 		3 2 roll dup /Matrix get 3 index exch matrix concatmatrix
@@ -362,6 +365,8 @@ systemdict /pdfmark known {
 				if len(param) == 1 or param[1]: markFormCode = self.stripCode(markFormCode, b'PDFMark')
 			elif param[0] == 'dDPghostNestedForms':
 				if len(param) == 1 or param[1]: markFormCode = self.stripCode(markFormCode, b'NestedForms')
+			elif param[0] == 'dDPghostPageSizeBBox':
+				if len(param) == 1 or param[1]: markFormCode = self.stripCode(markFormCode, b'PageSizeBBox')
 			elif param[0] == 'dDPghostPatchOnly':
 				if len(param) == 1 or param[1]: pdfFileName = None
 			elif param[0] == 'dDPghostInject':
@@ -474,7 +479,7 @@ systemdict /pdfmark known {
 
 	def stripCode(self, text, pragma):
 		lines, inPragma, isString = [], False, type(text) != list
-		pragmas = [b'%% $_' + pragma + b'$_', b'%% /$_' + pragma + b'$_']
+		pragmas = [b'% $_' + pragma + b'$_', b'% /$_' + pragma + b'$_']
 		for line in (isString and text.split(b'\n') or text):
 			if line.strip() == pragmas[inPragma]: inPragma = not inPragma
 			elif not inPragma: lines += [line]
@@ -553,6 +558,7 @@ Options:
 	-i inject  Inject form patch straight into ps file (no new patch file created); equivalent to -dDPghostInject
 	-m mark    Omit the pdfmark check, so that even gsview will use pdfmark instead of execform; equivalent to -dDPghostPDFMark
 	-n nest    Allow nested forms; equivalent to -dDPghostNestedForms
+	-b bbox    Don't adjust the BBox and Matrix to fit the page size; equivalent to -dDPghostPageSizeBBox
 	-l leave   Leave comments in the patch; equivalent to -dDPghostLeaveComments
 	-v verbose Print information during execution
 	-? help    Show this message
@@ -569,6 +575,7 @@ Other options are passed on to ps2pdf as is.
 					['dDPghostInject'] * ('i' in options) +
 					['dDPghostPDFMark'] * ('m' in options) +
 					['dDPghostNestedForms'] * ('n' in options) +
+					['dDPghostPageSizeBBox'] * ('b' in options) +
 					['dDPghostLeaveComments'] * ('l' in options))
 			result = gs.markForms(argv[0], argv[1], params)
 		if not result: exit(1)
