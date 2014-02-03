@@ -220,7 +220,7 @@ directly into your host.py file, making this link superfluous.
 
 Afer installing all 4 packages ("sudo apt-get install <package>"), try to 
 remake the maps:
-> inspect testing 'self.makeMaps()'
+> inspect testing 'self.view.makeMaps()'
 No error gets reported and checking $JDG/web/maps, we see a ps, pdf and gif 
 file. All well then. Note that by providing a second parameter, embraced in 
 quotes to not mess with the shell substitutions, inspect executes that command 
@@ -312,7 +312,7 @@ on .procmailrc, a new dry run, and bingo. Next I send a similar message from
 my gmail account, and check that I get a reply. Looks like procmail is working.
 
 Now, the dpforge .procmailrc file also had a dppd lock for any mails sent to 
-dppd@..., with exactly the same timelimit command and it's body. Being 
+dppd@..., with exactly the same timelimit command and its body. Being 
 efficient, I combine that into one regexp: "* ^To:.*(ukdp|dppd)@", because I 
 don't see the need for a second lock file. And as Peter proposes to add a 
 judge alias as well, I expand that to "* ^To:.*(ukdp|judge|dppd)@", and add 
