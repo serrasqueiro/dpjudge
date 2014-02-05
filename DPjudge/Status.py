@@ -72,8 +72,8 @@ class Status:
 		if not gameName: error += ['No game name to CREATE']
 		if not gamePass: error += ['No game password given']
 		if not email:    error += ['No registered email found']
-		if len([1 for x in self.dict.values()
-			if 'forming' in x or 'preparation' in x]) > 20:
+		if host.createLimit and len([1 for x in self.dict.values()
+			if 'forming' in x or 'preparation' in x]) > host.createLimit:
 				error += ['CREATE is disabled -- ' + \
 					'too many games currently need players']
 		if host.dppdURL:

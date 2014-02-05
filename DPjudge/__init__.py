@@ -11,29 +11,30 @@ host.packageDir = __path__[0]
 host.hostDir = os.path.dirname(os.path.abspath(host.__file__))
 
 for (var, value) in [
-('toolsSubDir', 'tools'),
-('gameSubDir', 'games'),
-('logSubDir', 'log'),
-('dpjudgeSubDir', 'web'),
-('gameMapSubDir', 'maps'),
-('dpjudgeURL', 'http://localhost'),
-('zoneFileName', 'zone.tab'),
-('bannerHtml', ''), ('tester', ''), ('openingsList', ''),
-('dppd', ''), ('dppdSubURL', '?variant=dppd'),
-('judgePassword', ''),
-('publicDomains', []),
-('copy', 0), ('notify', 0)]:
+	('toolsSubDir', 'tools'),
+	('gameSubDir', 'games'),
+	('logSubDir', 'log'),
+	('dpjudgeSubDir', 'web'),
+	('gameMapSubDir', 'maps'),
+	('dpjudgeURL', 'http://localhost'),
+	('zoneFileName', 'zone.tab'),
+	('bannerHtml', ''), ('tester', ''), ('openingsList', ''),
+	('dppd', ''), ('dppdSubURL', '?variant=dppd'),
+	('judgePassword', ''),
+	('publicDomains', []),
+	('createLimit', 20),
+	('copy', 0), ('notify', 0)]:
 	vars(host).setdefault(var, value)
 
 for (var, base, path) in [
-('toolsDir', 'packageDir', 'toolsSubDir'),
-('gameDir', 'hostDir', 'gameSubDir'),
-('logDir', 'hostDir', 'logSubDir'),
-('dpjudgeDir', 'hostDir', 'dpjudgeSubDir'),
-('gameMapDir', 'dpjudgeDir', 'gameMapSubDir'),
-('gameMapURL', 'dpjudgeURL', 'gameMapSubDir'),
-('dppdURL', 'dpjudgeURL', 'dppdSubURL'),
-('zoneFile', 'toolsDir', 'zoneFileName')]:
+	('toolsDir', 'packageDir', 'toolsSubDir'),
+	('gameDir', 'hostDir', 'gameSubDir'),
+	('logDir', 'hostDir', 'logSubDir'),
+	('dpjudgeDir', 'hostDir', 'dpjudgeSubDir'),
+	('gameMapDir', 'dpjudgeDir', 'gameMapSubDir'),
+	('gameMapURL', 'dpjudgeURL', 'gameMapSubDir'),
+	('dppdURL', 'dpjudgeURL', 'dppdSubURL'),
+	('zoneFile', 'toolsDir', 'zoneFileName')]:
 	if var not in vars(host):
 		vars(host)[var] = os.path.join(vars(host)[base], vars(host)[path])
 	elif vars(host)[var] and os.path.isabs(
