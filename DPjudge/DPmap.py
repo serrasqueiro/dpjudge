@@ -635,7 +635,8 @@ class PostScriptMap:
 				try: self.lang[word[0]], self.LANG[word[0].upper()] = word[1], word[1].upper()
 				except: raise BadLangLine
 			elif visit == 1:
-				if word[0][0] == '/': 
+				if not word: pass
+				elif word[0][0] == '/': 
 					power = word[0][1:]
 					if power == power.upper(): self.ownerOrder.append(power)
 				elif word[0][0] == '}': visit = 0
