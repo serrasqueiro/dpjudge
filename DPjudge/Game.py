@@ -1492,6 +1492,20 @@ class Game:
 		return len([x for x in sites if x not in [
 			y[0] for y in self.map.alternative[power.name]]])
 	#	----------------------------------------------------------------------
+	def buildAlternatives(self, power, sites = None):
+		if sites is None: sites = self.buildSites(power)
+		alternatives = []
+		for limits in self.map.alternative.get(power.name, []):
+			if limits[0] not in sites: continue
+			if len(limits) == 1: limits = limits[:] + [
+				x for x in power.homes if x in sites and
+				x not in [y[0] for y in 
+				self.map.alternative[power.name]]]
+			else: limits = limits[:1] + [
+				x for x in limits[1:] if x in sites]
+			if len(limits) > 1: alternatives += [limits]
+		return alternatives
+	#	----------------------------------------------------------------------
 	def sortPowers(self):
 		self.powers.sort(Power.compare)
 	#	----------------------------------------------------------------------
@@ -1843,8 +1857,10 @@ class Game:
 			for power in self.powers:
 				if not (power is sendingPower
 				or [x for y in sendingPower.units for x in power.units
-					if self.validOrder(sendingPower, y, 'S ' + x, 0)
-					or self.validOrder(power, x, 'S ' + y, 0)]):
+					if (self.validOrder(sendingPower, y, 'S ' + x, 0)
+					or self.validOrder(power, x, 'S ' + y, 0))
+					and self.visible(sendingPower, y, 'H')[power.name] & 1
+					and self.visible(power, x, 'H')[sendingPower.name] & 1]):
 					if power in who: who.remove(power)
 					elif power.name in who: who.remove(power.name)
 			if 'REMOTE_PRESS' in rules:
@@ -3992,18 +4008,28 @@ class Game:
 ###			power.cd = 0
 ###			self.process()
 ###			return self.error
-		orders = []
+		orders, places, alternatives = [], [], []
+		if adjust[0].startswith('BUILD'):
+			alternatives = self.buildAlternatives(power)
 		#	------------------------------------------------------------------
 		#	Check for duplicate orders (building/removing the same unit twice)
 		#	------------------------------------------------------------------
 		for order in adjust:
 			if order == 'BUILD WAIVED': continue
 			word = order.split()
-			for other in orders:
-				if word[2][:3] == other.split()[2][:3]:
-					self.error += ['DUPLICATE ORDER: ' + order]
-					break
-			else: orders += [order]
+			site = word[2][:3]
+			if site in places:
+				self.error += ['DUPLICATE ORDER: ' + order]
+			else:
+				for limits in alternatives:
+					if site in limits and len(
+						[x for x in limits if x not in places]) == 1:
+						self.error += ['BUILDS IN ALL ALTERNATIVE SITES ('
+							+ ', '.join(limits) + '): ' + order]
+						break
+				else:
+					places += [site]
+					orders += [order]
 		#	-----------------------------------------
 		#	Process the phase if everything is ready.
 		#	-----------------------------------------
@@ -4185,16 +4211,7 @@ class Game:
 		if need > 0: 
 			sites = self.buildSites(power)
 			need = min(need, self.buildLimit(power, sites))
-			alternatives = []
-			for limits in self.map.alternative.get(power.name, []):
-				if limits[0] not in sites: continue
-				if len(limits) == 1: limits = limits[:] + [
-					x for x in power.homes if x in sites and
-					x not in [y[0] for y in 
-					self.map.alternative[power.name]]]
-				else: limits = limits[:1] + [
-					x for x in limits[1:] if x in sites]
-				if len(limits) > 1: alternatives += [limits]
+			alternatives = self.buildAlternatives(power, sites)
 		for order in orders:
 			word = self.addUnitTypes(self.expandOrder([order]))
 			if word[0] != orderType: word[:0] = [orderType]
