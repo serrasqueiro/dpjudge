@@ -1475,7 +1475,7 @@ the course of the game.
 	condition at the same time (in games where this number is lower than
 	the default of half of the number of SCs plus one), they are jointly
 	declared winners (or participants in a draw, depending on definitions),
-	<i>irrespective of the fact that one may have a higher total than ther
+	<i>irrespective of the fact that one may have a higher total than the
 	other</i>. This replaces the normal victory criterion where only a
 	single player can be victorious and ties result in the continuation
 	of the game.
