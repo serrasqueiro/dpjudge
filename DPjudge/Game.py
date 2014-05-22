@@ -3099,7 +3099,7 @@ class Game:
 		#	See if we have a win.  Criteria are the ARMADA Regatta victory
 		#	criteria (adapted from David Norman's "variable length" system).
 		#	----------------------------------------------------------------
-		victor, thisYear = None, self.calculateVictoryScore()
+		victors, thisYear = [], self.calculateVictoryScore()
 		yearCenters = [thisYear[x] for x in self.powers]
 		for power in self.powers:
 			centers = thisYear[power]
@@ -3110,13 +3110,13 @@ class Game:
 			#	OR, IF "HOLD_WIN", MUST HAVE HAD A WIN
 			and ('VICTORY_HOMES' in self.rules or centers > lastYear[power],
 			lastYear[power] >= self.win)['HOLD_WIN' in self.rules]
-			#	AND YOU MUST BE ALONE IN THE LEAD
-			and (centers, yearCenters.count(centers)) == (max(yearCenters), 1)):
-				if not self.preview: self.finish([power.name])
-				victor, func = power, None
-				break
-		list += self.powerSizes(victor, func)
-		if not victor: list += self.checkVotes(1)
+			#	AND YOU MUST BE ALONE IN THE LEAD (NOT REQUIRED IN CASE OF SHARED_VICTORY)
+			and ('SHARED_VICTORY' in self.rules or (centers, yearCenters.count(centers)) == (max(yearCenters), 1))):
+				victors += [power]
+				func = None
+		if victors and not self.preview: self.finish([x.name for x in victors])
+		list += self.powerSizes(victors, func)
+		if not victors: list += self.checkVotes(1)
 		return list
 	#	----------------------------------------------------------------------
 	def vassalship(self):
@@ -3176,7 +3176,7 @@ class Game:
 								self.anglify(unit, retreating=1))]
 		return list
 	#	----------------------------------------------------------------------
-	def powerSizes(self, victor, func = None):
+	def powerSizes(self, victors, func = None):
 		list = []
 		#	--------------------------------------------------------------
 		#	Generate the table saying how many builds/removes are pending.
@@ -3205,8 +3205,8 @@ class Game:
 			#	Modify (if necessary) what we believe will be the next phase
 			#	------------------------------------------------------------
 			ceo = getattr(power, 'ceo', [])[:1]
-			victory = victor and (power is victor or
-				'TEAM_VICTORY' in self.rules and [victor.name] == ceo)
+			victory = victors and (power in victors or
+				'TEAM_VICTORY' in self.rules and [1 for x in victors if [x.name] == ceo])
 			if victory:
 				text += '  (* VICTORY!! *)'
 			if self.phase == 'COMPLETED' or self.phaseType == 'A':

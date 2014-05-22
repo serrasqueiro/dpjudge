@@ -205,6 +205,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=SEE_NO_SCS>SEE_NO_SCS (BLIND)
 <option value=SEE_NO_UNITS>SEE_NO_UNITS (BLIND)
 <option value=SILENT_ABSENCES>SILENT_ABSENCES
+<option value=SHARED_VICTORY>SHARED_VICTORY
 <option value=SHOW_PHANTOM>SHOW_PHANTOM
 <option value=SMART_CD>SMART_CD
 <option value=TEAM_VICTORY>TEAM_VICTORY
@@ -1465,6 +1466,20 @@ the course of the game.
 <!-- RULE HOLD_WIN -->
 	To win a game using this rule, a player must achieve the winning condition
 	two game-years in a row.
+<!-- RULE END -->
+
+<a name=SHARED_VICTORY></a><p><dt><b><tt>SHARED_VICTORY</tt></b><dd>
+<!-- RULE SHARED_VICTORY -->
+	When this rule is in effect, the game ends immediately after a player
+	reaches the victory condition. If any other player fulfills this
+	condition at the same time (in games where this number is lower than
+	the default of half of the number of SCs plus one), they are jointly
+	declared winners (or participants in a draw, depending on definitions),
+	<i>irrespective</i> of the fact that one may have a higher
+	total than the other. This replaces the normal victory criterion where
+	only a single player can be victorious and ties result in the
+	continuation of the game.
+	number of centers owned by a power and all of the dummy powers it controls.
 <!-- RULE END -->
 
 <a name=TEAM_VICTORY></a><p><dt><b><tt>TEAM_VICTORY</tt></b><dd>
