@@ -1479,7 +1479,6 @@ the course of the game.
 	total than the other. This replaces the normal victory criterion where
 	only a single player can be victorious and ties result in the
 	continuation of the game.
-	number of centers owned by a power and all of the dummy powers it controls.
 <!-- RULE END -->
 
 <a name=TEAM_VICTORY></a><p><dt><b><tt>TEAM_VICTORY</tt></b><dd>
