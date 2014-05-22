@@ -1470,8 +1470,8 @@ the course of the game.
 
 <a name=SHARED_VICTORY></a><p><dt><b><tt>SHARED_VICTORY</tt></b><dd>
 <!-- RULE SHARED_VICTORY -->
-	When this rule is in effect, the game ends immediately after a player
-	reaches the victory condition. If any other player fulfills this
+	When this rule is in effect, the game ends immediately after the first
+	player reaches the victory condition. If any other player fulfills this
 	condition at the same time (in games where this number is lower than
 	the default of half of the number of SCs plus one), they are jointly
 	declared winners (or participants in a draw, depending on definitions),
