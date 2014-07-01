@@ -4450,6 +4450,26 @@ class Game:
 		self.mail.write(self.powerOrders(power))
 		self.mail.close()
 	#	----------------------------------------------------------------------
+	def setAbsence(self, power, nope, line):
+		if 'NOT' in self.timing: self.timing['NOT'] += ','
+		else: self.timing['NOT'] = ''
+		self.timing['NOT'] += nope
+		for who in (1, 0):
+			who = ([x.name for x in self.powers
+				if x.type != 'MONITOR'] *
+				('SILENT_ABSENCES' not in self.rules),
+				['MASTER'])[who]
+			if who: self.mailPress(None, who,
+				"Absences for game '%s' have been changed\n"
+				'%susing the following command:\n'
+				'%s\n' % (self.name, ('by %s ' %
+				(power.name == 'MASTER' and 'the Master'
+				or self.anglify(power.name))) *
+				('HIDE_ABSENTEES' not in self.rules
+				or 'MASTER' in who), line),
+				subject = 'Diplomacy absences notice')
+			self.save()
+	#	----------------------------------------------------------------------
 	def pressSettings(self):
 		if 'NO_PRESS' in self.rules: return 'None.'
 		press = []

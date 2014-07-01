@@ -239,6 +239,107 @@ def showDocList(files, beforeEnd = 0):
 		</form>
 		""")
 #	----------------------------------------------------------------------
+def showAbsenceInput():
+	if page.game.status in ('terminated', 'completed'): return
+	page.write("""
+		<script language="javascript" type="text/javascript"
+		src="<URL>/scripts/dater"></script>
+		<script>
+		function GetToday() {
+			var date = new Date();
+			return (date.getMonth()+1)+'-'+date.getDate()+'-'+date.getFullYear()
+		}
+		function NormDate(date) {
+			var dots = date.split('-')
+			return new Date().setFullYear(dots[2], dots[0]-1, dots[1]) /
+				86400000;
+		}
+		function SubmitAbsence(start, end) {
+			var form = document.setabsence;
+			form.startdate.value = start;
+			form.enddate.value = end;
+			form.submit();
+		}
+		function PickAbsence(side) {
+			var id = side + 'absence';
+			document.getElementById(id).value = '';
+			NewCal(id, 'mmddyyyy', false, 24);
+		}
+		function ChangeAbsence(side) {
+			var id = side + 'absence';
+			var dateText = document.getElementById(id);
+			var date = dateText.value;
+			var today = GetToday();
+			if (NormDate(date) < NormDate(today)) {
+				alert('Choose a date on or after today (' + today + '), ' +
+					'or leave this blank and only fill in the ' +
+					(side == 'end' ? 'start' : 'end') + ' date.');
+				dateText.value = '';
+			}
+		}
+		function SetAbsence() {
+			var startDate = document.getElementById('startabsence').value;
+			var endDate = document.getElementById('endabsence').value;
+			var today = GetToday();
+			var isMaster = document.setabsence.power.value == 'MASTER';
+			if (startDate == '') {
+				if (endDate == '') {
+					alert('Pick a date first by clicking on one of the ' +
+						'calendar icons.');
+				} else if (!isMaster && (NormDate(endDate) -
+					NormDate(today) > 14)) {
+					alert('Only the Master can set an absence longer ' +
+						'than two weeks.');
+				} else if (confirm('Set absence to ' + endDate + '?')) {
+					SubmitAbsence('', endDate);
+				}
+			} else if (endDate == '') {
+				if (confirm('Set absence on ' + startDate + '?')) {
+					SubmitAbsence(startDate, '');
+				}
+			} else if (NormDate(endDate) < NormDate(startDate)) {
+				alert('Choose an end date on or after ' + startDate + '.');
+			} else if (NormDate(endDate) == NormDate(startDate)) {
+				if (confirm('Set absence on ' + startDate + '?')) {
+					SubmitAbsence(startDate, '');
+				}
+			} else if (!isMaster && (NormDate(endDate) -
+				NormDate(startDate) > 14)) {
+				alert('Only the Master can set an absence longer ' +
+					'than two weeks.');
+			} else if (confirm('Set absence from ' + startDate +
+				' to ' + endDate + '?')) {
+				SubmitAbsence(startDate, endDate);
+			}
+		}
+		</script>
+		<form method=post name=setabsence>
+		<input type=hidden name=page value=Status>
+		<input type=hidden name=game value=%s>
+		<input type=hidden name=power value=%s>
+		<input type=hidden name=password value=%s>
+		<tr><td class="bodycopy"><b>Absence:</b></td>
+		<input type=hidden name=startdate value="">
+		<td class="bodycopy" align=right><b><input disabled name=startabsence
+		id=startabsence type=text size=12 value="" class=bodycopy
+		onchange="ChangeAbsence('start')">
+		<a onmouseover=this.style.cursor='pointer'
+		onclick="PickAbsence('start')">
+		<img border=0 src=<URL>/images/cal.gif></a>
+		to
+		<input type=hidden name=enddate value="">
+		<b><input disabled name=endabsence
+		id=endabsence type=text size=12 value="" class=bodycopy
+		onchange="ChangeAbsence('end')">
+		<a onmouseover=this.style.cursor='pointer'
+		onclick="PickAbsence('end')">
+		<img border=0 src=<URL>/images/cal.gif></a>
+		</td><td><input type=button onClick="SetAbsence()" value="Set"
+		class="inputSubmit">
+		</td></tr>
+		</form>
+		""" % (page.game.name, page.power, page.password))
+#	----------------------------------------------------------------------
 #	LoginPage
 #	----------------------------------------------------------------------
 def showLoginForm(showElimPowers = 0):
@@ -1222,6 +1323,27 @@ def checkProposal():
 			for power in game.powers: power.vote = None
 			game.proposal, mod = None, 1
 	if mod: game.save()
+#	----------------------------------------------------------------------
+def checkAbsence():
+	startDate = 'startdate' in vars(page) and page.startdate or ''
+	endDate = 'enddate' in vars(page) and page.enddate or ''
+	nope = line = ''
+	if startDate and endDate:
+		line = 'Set absence from %s to %s.' % (startDate, endDate)
+		nope = normDate(startDate) + '-' + normDate(endDate)
+	elif endDate:
+		line = 'Set absence to %s.' % endDate
+		nope = '-' + normDate(endDate)
+	elif startDate:
+		line = 'Set absence on %s.' % startDate
+		nope = normDate(startDate)
+	else:
+		line = 'No absence set.'
+	if nope: page.game.setAbsence(page.power, nope, line)
+#	----------------------------------------------------------------------
+def normDate(date):
+	dots = date.split('-')
+	return '%04d%02d%02d' % (int(dots[2]), int(dots[0]), int(dots[1]))
 #	----------------------------------------------------------------------
 def showAccessLog():
 	access = page.game.file('access')

@@ -245,6 +245,7 @@ function GenCell(pValue,pHighLight,pColor)//Generate table cell with value
 	var vHLstr1;//HighLight string
 	var vHlstr2;
 	var vTimeStr;
+	var PCtrl;
 	
 	if (pValue==null)
 		PValue="";
@@ -260,15 +261,17 @@ function GenCell(pValue,pHighLight,pColor)//Generate table cell with value
 	else
 		{vHLstr1=">";vHLstr2="";}	
 	
+	PCtrl="winMain.document.getElementById('"+Cal.Ctrl+"')"
+
 	if (Cal.ShowTime)
 	{
-		vTimeStr="winMain.document.getElementById('"+Cal.Ctrl+"').value+=' '+"+"winMain.Cal.getShowHour()"+"+':'+"+"winMain.Cal.Minutes"+"+':'+"+"winMain.Cal.Seconds";
+		vTimeStr=PCtrl+".value+=' '+"+"winMain.Cal.getShowHour()"+"+':'+"+"winMain.Cal.Minutes"+"+':'+"+"winMain.Cal.Seconds";
 		if (TimeMode==12)
 			vTimeStr+="+' '+winMain.Cal.AMorPM";
 	}	
 	else
 		vTimeStr="";		
-	PCellStr="<td "+vColor+" width="+CellWidth+" align='center'><font face='verdana' size='2'"+vHLstr1+"<a href=\"javascript:winMain.document.getElementById('"+Cal.Ctrl+"').value='"+Cal.FormatDate(PValue)+"';"+vTimeStr+";window.close();\">"+PValue+"</a>"+vHLstr2+"</font></td>";
+	PCellStr="<td "+vColor+" width="+CellWidth+" align='center'><font face='verdana' size='2'"+vHLstr1+"<a href=\"javascript:"+PCtrl+".value='"+Cal.FormatDate(PValue)+"';"+vTimeStr+";window.close();"+PCtrl+".onchange();\">"+PValue+"</a>"+vHLstr2+"</font></td>";
 	return PCellStr;
 }
 

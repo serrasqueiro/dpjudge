@@ -162,6 +162,7 @@ page.include('functions')
 			<td class="bodycopy" nowrap>
 			<font color=red>&nbsp;&middot;Sending Press<br>
 			&nbsp;&middot;Submitting Orders<br>
+			&nbsp;&middot;Setting Absences<br>
 			&nbsp;&middot;Changing <tt>WAIT</tt> Status<br>
 			&nbsp;&middot;Obtaining a Phase <tt>HISTORY</tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
 			&nbsp;&middot;Obtaining a Game <tt>SUMMARY</tt><br>
@@ -176,6 +177,7 @@ page.include('functions')
 			<td class="bodycopy">
 			<font color=red>&nbsp;&middot;Sending Press<br>
 			&nbsp;&middot;Submitting Orders<br>
+			&nbsp;&middot;Setting Absences<br>
 			&nbsp;&middot;Changing <tt>WAIT</tt> Status<br>
 			&nbsp;&middot;Viewing Phase <tt>HISTORY</tt><br>
 			&nbsp;&middot;Viewing a Completed Game's <tt>SUMMARY</tt>&nbsp;<br>

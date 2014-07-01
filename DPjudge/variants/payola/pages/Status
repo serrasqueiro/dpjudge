@@ -9,6 +9,7 @@ page.include('payola')
 loadGame()
 page.game.logAccess(page.power, page.password)
 checkPassword()
+checkAbsence()
 checkProposal()
 showGameHeader()
 :>
@@ -210,6 +211,7 @@ and page.game.phase not in ('FORMING', 'COMPLETED')):
 	showBalance()
 	if page.pwdFlag == 1: showTransferForm()
 showPricesButton()
+showAbsenceInput()
 if (page.power.name, page.pwdFlag) == ('MASTER', 1): showStatusFile()
 :>
 		</table>

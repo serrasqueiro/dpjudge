@@ -373,7 +373,7 @@ def showStatusFile():
 		dead = '%s-%s-%s' % (dead[4:6], dead[6:8], dead[:4])
 		page.write("""
 			<script language="javascript" type="text/javascript"
-			src="<URL>/images/scripts/dater"></script>
+			src="<URL>/scripts/dater"></script>
 			<b>Deadline:</b></td>
 			<input type=hidden name=date value="%s">
 			<td class="bodycopy" colspan=2><b><input disabled name=deadline

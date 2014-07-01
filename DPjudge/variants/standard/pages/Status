@@ -9,6 +9,7 @@ page.include('standard')
 loadGame()
 page.game.logAccess(page.power, page.password)
 checkPassword()
+checkAbsence()
 checkProposal()
 showGameHeader()
 :>
@@ -72,12 +73,13 @@ showPressArchive()
 if page.power.name != 'MASTER': showVariantInfo()
 showDocList((('summary', 'Game Summary'),
 			('EOG', 'End Of Game Statements')))
+if (page.power.name != 'MASTER' and page.power.type not in ('OBSERVER',
+	'MONITOR') and page.game.phase not in ('FORMING', 'COMPLETED')):
+	showProposal()
+	showControlInfo()
+showAbsenceInput()
 if page.power.name == 'MASTER':
 	if page.pwdFlag == 1: showStatusFile()
-elif page.power.type not in ('OBSERVER', 'MONITOR'):
-	if page.game.phase not in ('FORMING', 'COMPLETED'):
-		showProposal()
-		showControlInfo()
 :>
 		</table>
 		<!--MAPS, RESULTS, ENDGAME TABLE ENDS HERE-->

@@ -832,23 +832,7 @@ class Procmail:
 						if 'TO' in word: nope += '-'
 						nope += format % newline[:5]
 						while nope[-2:] == '00': nope = nope[:-2]
-						if 'NOT' in game.timing: game.timing['NOT'] += ','
-						else: game.timing['NOT'] = ''
-						game.timing['NOT'] += nope
-						for who in (1, 0):
-							who = ([x.name for x in game.powers
-								if x.type != 'MONITOR'] *
-								('SILENT_ABSENCES' not in game.rules),
-								['MASTER'])[who]
-							if who: game.mailPress(None, who,
-								"Absences for game '%s' have been changed\n"
-								'%susing the following command:\n'
-								'%s\n' % (game.name, ('by %s ' %
-								(power.name == 'MASTER' and 'the Master'
-								or game.anglify(power.name))) *
-								('HIDE_ABSENTEES' not in game.rules
-								or 'MASTER' in who), line),
-								subject = 'Diplomacy absences notice')
+						game.setAbsence(power, nope, line)
 				elif len(word) > 3: self.respond('Bad %s syntax' % word[1])
 				#	---------------
 				#	WAIT and NOWAIT
