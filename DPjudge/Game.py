@@ -3329,7 +3329,7 @@ class Game:
 				#	-----------------------------------
 				#	The seer's home centers are sighted
 				#	-----------------------------------
-				scs = seer.homes[:]
+				scs = seer.homes and seer.homes[:] or []
 				#	----------------------------------------------------------
 				#	Also add locations where the power had units at game start
 				#	(helping void variant games, where units start on non-SCs)
