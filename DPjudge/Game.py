@@ -4616,7 +4616,7 @@ class Game:
 		#   --------------------------------------------------------------------
 		#   Check for an error report and raise an exception if that's the case.
 		#	Double check the DPPD code for any print statements, as it may
-		#	 reveal the whole game status info to the unsuspecting player.
+		#	reveal the whole game status info to the unsuspecting player.
 		#   --------------------------------------------------------------------
 		lines = page.readlines()
 		page.close()

@@ -338,7 +338,7 @@ def showAbsenceInput():
 		class="inputSubmit">
 		</td></tr>
 		</form>
-		""" % (page.game.name, page.power, page.password))
+		""" % (page.game.name, page.power.name, page.password))
 #	----------------------------------------------------------------------
 #	LoginPage
 #	----------------------------------------------------------------------
