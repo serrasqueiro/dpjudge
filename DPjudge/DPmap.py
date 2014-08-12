@@ -331,7 +331,9 @@ class PostScriptMap:
 							(power, unit, si['name'], piece['state']))
 					piece['state'] = state
 					if piece['phase'] != phase: 
-						piece['phase'] = phase; del piece['line'] 
+						piece['phase'] = phase
+						try: del piece['line'] 
+						except: pass
 				else:
 					piece, draw = self.addUnit(power, unit, si, phase, state), 1
 			if state in 'MA': piece['dest'] = di
@@ -846,4 +848,4 @@ if __name__ == '__main__':
 	else:
 		map = PostScriptMap(sys.argv[1],
 			sys.argv[4], sys.argv[5], sys.argv[2], int(sys.argv[3]))
-		if map.error: sys.stderr.write('\n'.join(map.error).encode('latin-1'))
+		if map.error: sys.stderr.write('\n'.join(map.error).encode('latin-1') + '\n')

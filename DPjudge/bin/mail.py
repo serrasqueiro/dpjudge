@@ -72,16 +72,19 @@ class Procmail:
 			#	----------------------------------------
 			#	Detect game creation or deletion message
 			#	----------------------------------------
-			if upword in ('CREATE', 'PURGE'):
+			if upword in ('CREATE', 'PURGE', 'RENAME'):
 				if len(word) < 2: self.respond('No game name to %s' % upword)
-				if len(word) < 3: self.respond('No Master password given')
-				if len(word) > 4: self.respond('Unrecognized %s data' % upword)
-				game, password = ' '.join(word[1:3]).lower().split()
-				if game[:0] == ['-']:
-					self.respond("Game name can not begin with '-'")
-				for ch in game:
-					if not (ch.islower() or ch in '_-' or ch.isdigit()):
-						self.respond("Game name cannot contain '%s'" % ch)
+				if upword[0] != 'R': word = word[:2] + ['X'] + word[2:]
+				elif len(word) < 3: self.respond('No new game name to %s to' % upword)
+				if len(word) < 4: self.respond('No Master password given')
+				if len(word) > 5: self.respond('Unrecognized %s data' % upword)
+				game, toGame, password = ' '.join(word[1:4]).lower().split()
+				for name in [toGame, game][upword[0] != 'R':]:
+					if name[:0] == ['-']:
+						self.respond("Game name can not begin with '-'")
+					for ch in name:
+						if not (ch.islower() or ch in '_-' or ch.isdigit()):
+							self.respond("Game name cannot contain '%s'" % ch)
 				if '<' in password or '>' in password:
 					self.respond("Password cannot contain '<' or '>'")
 				if upword[0] == 'P':
@@ -89,6 +92,13 @@ class Procmail:
 					if not response: 
 						del self.message[:lineNo - 1]
 						response = ['Game %s purged from this DPjudge' % game]
+					self.response += response
+					self.respond()
+				elif upword[0] == 'R':
+					response = Status().renameGame(game, toGame, 0, password)
+					if not response: 
+						del self.message[:lineNo - 1]
+						response = ['Game %s renamed to %s' % (game, toGame)]
 					self.response += response
 					self.respond()
 				else:
@@ -242,8 +252,8 @@ class Procmail:
 				dppdUser, dppdDomain = host.dppd.split('@')
 				dppdDomain = '.'.join(dppdDomain.split('.')[-2:])
 				if (user, domain) == (dppdUser, dppdDomain): os._exit(os.EX_OK)
-			self.respond(('Expected SIGNON, JOIN, CREATE, PURGE, RESIGN, '
-				'TAKEOVER, SUMMARY, HISTORY, or LIST,\n'
+			self.respond(('Expected SIGNON, JOIN, CREATE, PURGE, RENAME, '
+				'RESIGN, TAKEOVER, SUMMARY, HISTORY, or LIST,\n'
 				'or a valid non-map-power join '
 				'command (e.g., OBSERVE playerName@gameName)', 'No playerName '
 				'given. Use "OBSERVE playerName@gameName password"')

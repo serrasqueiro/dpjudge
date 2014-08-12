@@ -89,15 +89,9 @@ class Status:
 			#	Running without a DPPD.  Shame on the judgekeeper.  :-)
 			#	-------------------------------------------------------
 			dppd = '|%s|' % email + email
-		if gameName[:0] == ['-']:
-			error += ["Game name can not begin with '-'"]
-		for ch in gameName:
-			if not (ch.islower() or ch in '_-' or ch.isdigit()):
-				error += ["Game name cannot contain '%s'" % ch]
+		error += self.checkGameName(gameName)
 		if '<' in gamePass or '>' in gamePass:
 			error += ["Password cannot contain '<' or '>'"]
-		if gameName in self.dict:
-			error += ["Game name '%s' already used" % gameName]
 		dir, desc, onmap = host.gameDir + '/' + gameName, 0, ''
 		if not error:
 			os.mkdir(dir)
@@ -113,41 +107,88 @@ class Status:
 			os.chmod(file.name, 0666)
 			self.dict[gameName] = [gameVar.lower(), mode]
 			self.save()
-			self.game, self.message = Game.Game(gameName), []
-			observers = host.observers
-			if type(observers) is not list: observers = [observers]
-			observers += self.game.map.notify
-			observers.append(self.game.master[1])
-			observers = [x for x in observers if x is not None]
-			mail = Mail.Mail(', '.join(observers), 'Game creation', ('', dir + '/mail')[host.copy], 
-				host.dpjudge, '')
-			mail.write("Game '%s' has been created.  Finish preparation at:\n"
-				'  %s%s?game=%s\n\nWelcome to the DPjudge.' %
-				(gameName, host.dpjudgeURL, '/index.cgi' * (os.name == 'nt'),
-				gameName))
-			mail.close()
+			# Send mail
+			self.game = Game.Game(gameName)
+			self.announce('Game creation', 
+				"Game '%s' has been created.  Finish preparation at:\n  %s"
+				'\n\nWelcome to the DPjudge.' %
+				(gameName, self.gameLink()))
+		return error
+	#	----------------------------------------------------------------------
+	def renameGame(self, gameName, toGameName, forced = 0, gamePass = None):
+		error = []
+		if gameName not in self.dict:
+			return ['No such game exists on this judge']
+		self.game = Game.Game(gameName)
+		if not forced and (
+			not host.judgePassword or gamePass != host.judgePassword):
+			if not gamePass or self.game.password != gamePass:
+				error += ['No match with the master password']
+		error += self.checkGameName(toGameName)
+		if error: return error
+		# Rename game maps
+		mapRootName = os.path.join(host.gameMapDir, gameName)
+		mapRootRename = os.path.join(host.gameMapDir, toGameName)
+		for suffix in ('.ps', '.pdf', '.gif', '_.gif'):
+			try: os.rename(mapRootName + suffix, mapRootRename + suffix)
+			except: pass
+			for mapFileName in glob.glob(mapRootName + '.*' + suffix):
+				try: os.rename(mapFileName, mapRootRename + os.path.splitext(
+					os.path.splitext(mapFileName)[0])[1] + suffix)
+				except: pass
+		# Rename game dir
+		if os.path.exists(self.game.gameDir) and os.path.isdir(self.game.gameDir):
+			toGameDir = os.path.join(os.path.split(self.game.gameDir)[0], toGameName)
+			try:
+				os.rename(self.game.gameDir, toGameDir)
+				self.game.gameDir = toGameDir
+			except: error += ['Failed to rename the game directory']
+		# Purge from dppd
+		dict = urllib.urlencode({'judge': host.dpjudgeID.encode('latin-1'),
+			'name': gameName.encode('latin-1')})
+		query = '?&'['?' in host.dppdURL]
+		page = urllib.urlopen(host.dppdURL + query + 'page=delete&' + dict)
+		#   --------------------------------------------------------------------
+		#   Check for an error report and raise an exception if that's the case.
+		#   --------------------------------------------------------------------
+		lines = page.readlines()
+		page.close()
+		if [1 for x in lines if 'DPjudge Error' in x]:
+			if not [1 for x in lines if 'NoGameToDelete' in x]:
+				error += ['Failed to delete the game records from the DPPD'] 
+		# Rename game and update dppd
+		self.game.name = toGameName
+		self.game.save()
+		# Update status
+		self.dict[toGameName] = self.dict[gameName]
+		del self.dict[gameName]
+		self.save()
+		# Send mail
+		self.announce('Game name change', 
+			"Game '%s' has been renamed to '%s'.  The new link is:\n  %s" %
+			(gameName, toGameName, self.gameLink()))
 		return error
 	#	----------------------------------------------------------------------
 	def purgeGame(self, gameName, forced = 0, gamePass = None):
 		error = []
 		if gameName not in self.dict:
 			return ['No such game exists on this judge']
-		game = Game.Game(gameName)
+		self.game = Game.Game(gameName)
 		if not forced and (
 			not host.judgePassword or gamePass != host.judgePassword):
 			status = self.dict[gameName][1]
 			if status == 'preparation': pass
 			elif status == 'forming':
-				if [1 for x in game.powers if not x.isDummy()]:
+				if [1 for x in self.game.powers if not x.isDummy()]:
 					error += ['Please inform your players and make them resign '
 						'first']
 			else: error += ['Please contact the judgekeeper to purge a game '
 				'that has already started']
-			if not gamePass or game.password != gamePass:
+			if not gamePass or self.game.password != gamePass:
 				error += ['No match with the master password']
 			if error: return error
 		# Remove game maps
-		mapRootName = os.path.join(host.gameMapDir, game.name)
+		mapRootName = os.path.join(host.gameMapDir, self.game.name)
 		for suffix in ('.ps', '.pdf', '.gif', '_.gif'):
 			try: os.unlink(mapRootName + suffix)
 			except: pass
@@ -155,8 +196,8 @@ class Status:
 				try: os.unlink(mapFileName)
 				except: pass
 		# Remove game dir
-		if os.path.exists(game.gameDir) and os.path.isdir(game.gameDir):
-			try: shutil.rmtree(game.gameDir)
+		if os.path.exists(self.game.gameDir) and os.path.isdir(self.game.gameDir):
+			try: shutil.rmtree(self.game.gameDir)
 			except: error += ['Failed to remove the game directory']
 		# Purge from dppd
 		dict = urllib.urlencode({'judge': host.dpjudgeID.encode('latin-1'),
@@ -174,4 +215,35 @@ class Status:
 		# Purge from status
 		del self.dict[gameName]
 		self.save()
+		# Send mail
+		self.announce('Game purged', 
+			"Game '%s' has been purged." % gameName)
 		return error
+	#	----------------------------------------------------------------------
+	def checkGameName(self, gameName):
+		error = []
+		if gameName in self.dict:
+			error += ["Game name '%s' already used" % gameName]
+		if gameName[:0] == ['-']:
+			error += ["Game name can not begin with '-'"]
+		for ch in gameName:
+			if not (ch.islower() or ch in '_-' or ch.isdigit()):
+				error += ["Game name cannot contain '%s'" % ch]
+		return error
+	#	----------------------------------------------------------------------
+	def announce(self, subject, message):
+		observers = host.observers
+		if type(observers) is not list: observers = [observers]
+		observers += self.game.map.notify
+		observers.append(self.game.master[1])
+		observers += [x.address for x in self.game.powers]
+		observers = [x for x in observers if x is not None]
+		mail = Mail.Mail(', '.join(observers), subject,
+			('', self.game.gameDir + '/mail')[host.copy], host.dpjudge, '')
+		mail.write(message)
+		mail.close()
+	#	----------------------------------------------------------------------
+	def gameLink(self):
+		return '%s%s?game=%s' % (host.dpjudgeURL,
+			'/index.cgi' * (os.name == 'nt'), self.game.name)
+	#	----------------------------------------------------------------------

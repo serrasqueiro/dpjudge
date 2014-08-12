@@ -115,7 +115,7 @@ class DPPD(dict):
 		#	-----------------------------------------------------------------
 		#	DON'T PRINT THE STATUS! It may show up as an error page in the
 		#	browser of an unsuspecting player if the update for some reason
-		#	fails, revealing the wholegame status.
+		#	fails, revealing the whole game status.
 		#	Any non-ascii character in the data can make this print statement
 		#	fail, unless the environment variable PYTHONIOENCODING is set to
 		#	something suitable, like utf-8.

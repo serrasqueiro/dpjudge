@@ -86,7 +86,7 @@ page.include('functions')
 		<a href=mailto:<MAIL>><tt><MAIL></tt></a>
 
 		<P><b>If I send an e-mail to the DPjudge, what commands may I include in that e-mail?</b><br>
-		The DPjudge recognizes only the following thirty-four commands:
+		The DPjudge recognizes only the following thirty-five commands:
 	
 			<P><table border=0 cellpadding=0 align=center>
 			<tr valign=top>
@@ -110,34 +110,34 @@ page.include('functions')
 			</tr>
 			</table>
 
-		<P><b>Hey, you said there were <i>thirty-four</i> recognized commands!
+		<P><b>Hey, you said there were <i>thirty-five</i> recognized commands!
 		That's only twenty-one!</b><br>
-		Okay, you're right.  I left out the thirteen "Master commands"
+		Okay, you're right.  I left out the fourteen "Master commands"
 		(those that may be used only by a game's Master). These are:
 	
 			<P><table border=0 cellpadding=0 align=center>
 			<tr valign=top>
 			<td class="bodycopy" valign=top>&middot;<a href=#create>CREATE</a>
 			<br>&middot;<a href=#purge>PURGE</a>
-			<br>&middot;<a href=#status>SET STATUS</a></td>
+			<br>&middot;<a href=#rename>RENAME</a>
 			<td width=20></td>
 			<td class="bodycopy">&middot;<a href=#process>PROCESS</a>
 			<br>&middot;<a href=#preview>PREVIEW</a>
-			<br>&middot;<a href=#deadline>SET DEADLINE</a></td>
+			<br>&middot;<a href=#status>SET STATUS</a></td>
 			<td width=20></td>
 			<td class="bodycopy">&middot;<a href=#m_resign>RESIGN</a>
 			<br>&middot;<a href=#m_dummy>DUMMY</a>
-			<br>&middot;<a href=#revive>REVIVE</a></td>
+			<br>&middot;<a href=#deadline>SET DEADLINE</a></td>
 			<td width=20></td>
 			<td class="bodycopy">&middot;<a href=#official>OFFICIAL</a>
-			<br>&middot;<a href=#reveal>REVEAL</a></td>
-			<td width=20></td>
+			<br>&middot;<a href=#reveal>REVEAL</a>
+			<br>&middot;<a href=#revive>REVIVE</a></td>
 			<td class="bodycopy" valign=top>&middot;<a href=#rollback>ROLLBACK</a>
 			<br>&middot;<a href=#rollforward>ROLLFORWARD</a></td>
 			</tr>
 			</table>
 	
-		<p>There; that makes thirty-four.  That's it. If you are familiar with the Ken Lowe Internet judge, you know that it supports a few more commands.  The DPjudge does <i>not</i> support these. Limit your messages to the commands listed above or the DPjudge will simply tell you it does not understand you.
+		<p>There; that makes thirty-five.  That's it. If you are familiar with the Ken Lowe Internet judge, you know that it supports a few more commands.  The DPjudge does <i>not</i> support these. Limit your messages to the commands listed above or the DPjudge will simply tell you it does not understand you.
 	
 		<P><i>Note that if a specific <a href=<URL>?page=Rules><tt>RULE</tt></a>
 		(<tt>PLAYER_DEADLINES</tt>) is used in a game, the
@@ -1062,6 +1062,13 @@ does, but tell me anyway.</b><br>
 	But there are several restrictions: The game must either be in the preparation phase or forming and <b>no</b> player may have joined yet.
 	If they did, make them resign.  The reason that there are so many restrictions, is that a game, once started, is not the property of the GM, but of all involved.  The restrictions are there to protect this shared property from the whims of a single person (the GM).
 	The normal way to end a game that needs to be ended prematurely, is to set its status to terminated. If you have an absolutely good reason to want to eradicate an active or even finished game, tell that to the judgekeeper and he may decide to honour your request or reject it altogether.
+
+<a name=rename></a>
+<P><b>What if I'm not really satisfied with the name of my game and would like to <tt>RENAME</tt> it?</b><br>
+	Then you would use the <tt>RENAME</tt> command. Its syntax is very similar to the previous commands:<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		RENAME <i>gamename newgamename password</i></tt><br>
+	Avoid as much as possible using this command after the game already started, as players may not notice the name change message until after they entered their new orders, leading to all kinds of unnecessary frustrations.
 
 <a name=status></a>
 <P><b>Can I change the game status?</b><br>
