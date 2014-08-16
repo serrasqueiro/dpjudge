@@ -115,7 +115,7 @@ class Status:
 				(gameName, self.gameLink()))
 		return error
 	#	----------------------------------------------------------------------
-	def renameGame(self, gameName, toGameName, forced = 0, gamePass = None):
+	def renameGame(self, gameName, toGameName, forced = 1, gamePass = None):
 		error = []
 		if gameName not in self.dict:
 			return ['No such game exists on this judge']
@@ -169,7 +169,7 @@ class Status:
 			(gameName, toGameName, self.gameLink()))
 		return error
 	#	----------------------------------------------------------------------
-	def purgeGame(self, gameName, forced = 0, gamePass = None):
+	def purgeGame(self, gameName, forced = 1, gamePass = None):
 		error = []
 		if gameName not in self.dict:
 			return ['No such game exists on this judge']
@@ -232,16 +232,18 @@ class Status:
 		return error
 	#	----------------------------------------------------------------------
 	def announce(self, subject, message):
-		observers = host.observers
-		if type(observers) is not list: observers = [observers]
-		observers += self.game.map.notify
-		observers.append(self.game.master[1])
-		observers += [x.address for x in self.game.powers]
-		observers = [x for x in observers if x is not None]
-		mail = Mail.Mail(', '.join(observers), subject,
-			('', self.game.gameDir + '/mail')[host.copy], host.dpjudge, '')
-		mail.write(message)
-		mail.close()
+		groups = [self.game.map.notify]
+		if not host.observers: pass
+		elif type(host.observers) is list: groups += [host.observers]
+		else: groups += [[host.observers]]
+		groups += [[self.game.master[1]]]
+		groups += [x.address for x in self.game.powers if x.address]
+		for addresses in groups:
+			if not addresses: continue
+			mail = Mail.Mail(', '.join(addresses), subject,
+				('', self.game.gameDir + '/mail')[host.copy], host.dpjudge, '')
+			mail.write(message)
+			mail.close()
 	#	----------------------------------------------------------------------
 	def gameLink(self):
 		return '%s%s?game=%s' % (host.dpjudgeURL,
