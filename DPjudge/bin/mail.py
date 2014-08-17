@@ -77,8 +77,9 @@ class Procmail:
 				if upword[0] != 'R': word = word[:2] + ['X'] + word[2:]
 				elif len(word) < 3: self.respond('No new game name to %s to' % upword)
 				if len(word) < 4: self.respond('No Master password given')
-				if len(word) > 5: self.respond('Unrecognized %s data' % upword)
-				game, toGame, password = ' '.join(word[1:4]).lower().split()
+				if len(word) < 5: word += ['standard']
+				elif len(word) > 5: self.respond('Unrecognized %s data' % upword)
+				game, toGame, password, variant = ' '.join(word[1:]).lower().split()
 				for name in [toGame, game][upword[0] != 'R':]:
 					if name[:0] == ['-']:
 						self.respond("Game name can not begin with '-'")
@@ -109,8 +110,6 @@ class Procmail:
 					#		'too many games currently need players')
 					if game in games.dict:
 						self.respond("Game name '%s' already used" % game)
-					if len(word) == 3: variant = 'standard'
-					else: variant = word[3].lower()
 					try: desc = __import__('DPjudge.variants.' + variant, globals(),
 						locals(), `variant`).VARIANT
 					except: self.respond('Unrecognized rule variant: ' + variant)
@@ -120,7 +119,7 @@ class Procmail:
 					os.chmod(dir, 0777)
 					file = open(dir + '/status', 'w')
 					temp = ('GAME %s\nPHASE FORMING\nMASTER %s\n' +
-						'PASSWORD %s\n') % (game, self.dppd, word[2].lower())
+						'PASSWORD %s\n') % (game, self.dppd, password)
 					file.write(temp.encode('latin-1'))
 					for info in self.message[1:]:
 						word = ''.join(info.upper().split()[:1])
