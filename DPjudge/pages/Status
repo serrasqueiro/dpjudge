@@ -648,7 +648,7 @@ page.include('functions')
 	added on any schedule specified in the <tt>.map</tt> file for the
 	variant, and when any power builds a new unit to take advantage of
 	the ability to claim to a new home supply center (indicated by the
-	<tt>&SC</tt> directive described in the <a href=PAGE:Map#CLAIM>Map file
+	<tt>&SC</tt> directive described in the <a href=<PAGE>Map#CLAIM>Map file
 	documentation</a>).
 
 <a name=FUNDS></a>
