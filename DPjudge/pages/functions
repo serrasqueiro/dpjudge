@@ -6,6 +6,7 @@
 #    may want to do that in the future.
 #	----------------------------------------------------------------------
 page.include('master')
+import cgi
 import codecs
 open = codecs.open
 #	----------------------------------------------------------------------
@@ -73,7 +74,7 @@ def listGames(variant = 'standard'):
 #	----------------------------------------------------------------------
 def showGameHeader():
 	game = page.game
-	page.write('<tiTLE>Game %s</title>' % game.name)
+	page.write('<title>Game %s</title>' % game.name)
 	when = game.deadline
 	if 'active' in game.status and when and when > game.Time():
 		page.write(
@@ -240,7 +241,8 @@ def showDocList(files, beforeEnd = 0):
 		""")
 #	----------------------------------------------------------------------
 def showAbsenceInput():
-	if page.game.status in ('terminated', 'completed'): return
+	if 'terminated' in page.game.status or 'completed' in page.game.status:
+		return
 	page.write("""
 		<script language="javascript" type="text/javascript"
 		src="<URL>/scripts/dater"></script>
@@ -1545,11 +1547,12 @@ def showPress(code):
 		line = file.readlines()[int(lineNum):]
 		file.close()
 		if hash(line[0]) != hashVal: raise
-		result = '<pre>'
+		result = ''
 		for each in line[1:]:
 			if each.startswith('::'): break
 			result += each
-		result = result.strip() + '</pre>'
+		# Replace this with html.escape() in Python 3.x.
+		result = '<pre>' + cgi.escape(result.strip()) + '</pre>'
 	except: result = 'No Such Press Message'
 	page.write('<tr><td>%s</td></tr>' % result)
 #	----------------------------------------------------------------------
