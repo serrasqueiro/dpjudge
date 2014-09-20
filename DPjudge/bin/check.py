@@ -31,11 +31,20 @@ class Check(DPjudge.Status):
 		now, timestampFile = DPjudge.Game.Time(), host.logDir + '/check.tim'
 		if '-t' in argv and os.path.exists(timestampFile):
 			last = os.path.getmtime(timestampFile)
-			if DPjudge.Game.Time(time.localtime(last + 3600)) < now:
-				msg = ('Not checking deadlines, because more than an hour ' +
-					'elapsed since the last check.\n' +
+			curr = time.mktime(time.localtime())
+			if last + 3600 < curr:
+				hours = int((curr - last) / 3600)
+				days, hours = hours / 24, hours % 24
+				msg = ('Attention: More than ' + (days > 1 and
+					('%d days ' % days) or days == 1 and 'a day ' or '') +
+					(days > 0 and hours > 0 and 'and ' or '') +
+					(hours > 1 and ('%d hours ' % hours) or hours == 1 and
+					'an hour ' or '') + (days + hours > 1 and 'have ' or
+					'has ') + 'passed since the last check. ' +
 					'This could be due to a server outage or an exception ' +
-					'raised during the execution of this script.\n' +
+					'raised during the execution of the check script. ' +
+					'As a precaution automatic deadline checking has ' +
+					'been disabled. ' +
 					'Investigate, extend deadlines if necessary, ' +
 					'and only then run check once more without the ' +
 					'-t option to restart the process.')
