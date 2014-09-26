@@ -418,4 +418,20 @@ BIN=/home/ukdp/bin
 */20 * * * * $UKDP/bin/check -t -a > $UKDP/log/check.log 2> $UKDP/log/check.err; $BIN/rbackup >> $UKDP/log/rbackup.log 2>> $UKDP/log/rbackup.err
 ...
 ---
+
+Displaying an icon in the browser tab title.
+
+Ever noticed that USDP has a little image of a cannon displayed in front of the browser tab title? It's called a favicon.
+
+There are two ways of adding it to your web pages, either by adding a link to the header of every web page (flexible, but too cumbersome), or by putting an image file called favicon.ioo in the document root folder of your web site.
+
+For reference the link in the header would look like this:
+<link rel="shortcut icon" href="http://uk.diplom.org/favicon.ico">
+Add something like "?v=2" if ever you made a change to it and want to force your browser to reload it.
+
+We go with the second method. Where's our document root? That's determined by how you configured Apache. The default Apache root folder is /var/www, which is the one used on USDP. But you need to be root to put a file there. (On UKDP we become root by entering "sudo -s" with the same password as for the ukdp user.)
+
+On UKDP however we set it up better. If we browse to /etc/apache2/sites-available, there's a ukdp configuration file there that sets DocumentRoot to /home/ukdp/ukdp/web. So we just need to copy favicon.ico, conveniently located in $PKG/web, to that location.
+
+Does this immediately reflect in our browser? Unfortunately no, and clearing the browser's cache also doesn't seem to work. What we need to do is to visit the icon itself and do a refresh. In your browser enter "http://uk.diplom.org/favicon.ico", load the image and then press Ctrl+F5. It immediately changes the icons in the title bar for all your UKDP tabs.
 """
