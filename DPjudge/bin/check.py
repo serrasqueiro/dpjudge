@@ -1,4 +1,4 @@
-import os, stat, sys, time
+import os, stat, sys, time, textwrap
 import host
 
 import DPjudge
@@ -28,35 +28,46 @@ class Check(DPjudge.Status):
 		DPjudge.Status.__init__(self)
 		if argv is None: argv = sys.argv
 		os.putenv('TZ', 'GMT')
-		now, timestampFile = DPjudge.Game.Time(), host.logDir + '/check.tim'
-		if '-t' in argv and os.path.exists(timestampFile):
-			last = os.path.getmtime(timestampFile)
+		now = DPjudge.Game.Time()
+		tsf = host.logDir + '/check.tim'
+		tsf2 = host.logDir + '/check2.tim'
+		if '-t' in argv and os.path.exists(tsf):
+			last = os.path.getmtime(tsf)
 			curr = time.mktime(time.localtime())
 			if last + 3600 < curr:
+				# Use a second timestamp file to keep track of subsequent
+				# server outages.
+				last2, again = 0, False
+				if os.path.exists(tsf2):
+					last2 = os.path.getmtime(tsf2)
+					if last2 > last and last2 + 3600 < curr:
+						last, again = last2, True
 				hours = int((curr - last) / 3600)
 				days, hours = hours / 24, hours % 24
-				msg = ('Attention: More than ' + (days > 1 and
-					('%d days ' % days) or days == 1 and 'a day ' or '') +
+				msg = '\n'.join(textwrap.wrap('Attention: ' +
+					['More than ', 'Once again '][again] +
+					(days > 1 and ('%d days ' % days) or
+					days == 1 and 'a day ' or '') +
 					(days > 0 and hours > 0 and 'and ' or '') +
 					(hours > 1 and ('%d hours ' % hours) or hours == 1 and
 					'an hour ' or '') + (days + hours > 1 and 'have ' or
 					'has ') + 'passed since the last check. ' +
-					'This could be due to a server outage or an exception ' +
+					['This could be due to a server outage or an exception ' +
 					'raised during the execution of the check script. ' +
-					'As a precaution automatic deadline checking has ' +
-					'been disabled. ' +
+					'As a precaution automatic deadline checking has been ' +
+					'disabled. ',
+					'This is probably caused by another server outage. ' +
+					'Automatic deadline checking is still disabled. '][again] + 
 					'Investigate, extend deadlines if necessary, ' +
 					'and only then run check once more without the ' +
-					'-t option to restart the process.')
+					'-t option to restart the process.', 75))
 				print(msg)
 				# Warn the judgekeeper.
-				mode = os.stat(timestampFile).st_mode
-				if mode & stat.S_IWRITE:
+				if not last2 or again:
 					mail = DPjudge.Mail(host.judgekeeper, '%s server outage' % host.dpjudgeID)
 					mail.write(msg)
 					mail.close()
-					try: os.chmod(timestampFile, mode & ~stat.S_IWRITE)
-					except: pass
+				open(tsf2, 'w').close()
 				raise ServerOutageSuspected
 		print 'Checking deadlines at %s GMT' % time.ctime()
 		flags = [x for x in argv[1:] if x.startswith('-')]
@@ -189,10 +200,8 @@ class Check(DPjudge.Status):
 				print
 				continue
 			if not game.preview: game.save()
-		if os.path.exists(timestampFile):
-			mode = os.stat(timestampFile).st_mode
-			if not mode & stat.S_IWRITE:
-				try: os.chmod(timestampFile, mode | stat.S_IWRITE)
-				except: pass
-		open(timestampFile, 'w').close()
+		if os.path.exists(tsf2):
+			try: os.unlink(tsf2)
+			except: pass
+		open(tsf, 'w').close()
 	#	----------------------------------------------------------------------

@@ -249,9 +249,9 @@ ok now.
 Big news from Millis: The site is up. I can access the site, but any mail I 
 send gets swallowed whole. Oh right, forgot to install procmail. A 
 "dpkg -s procmail" tells me procmail is already installed (comes with sendmail, 
-I guess). Just need to add .procmailrc, and replace all instances of dpjudge 
-and usdp with ukdp, as unlike dpjudge/dpforge ukdp is both the user name and 
-the judge name.
+I guess). Just need to copy .procmailrc to the home directory, and replace all
+instances of dpjudge and usdp with ukdp, as unlike dpjudge/dpforge ukdp is both
+the user name and the judge name.
 
 Well, that doesn't do anything yet. Let's try to dry run procmail. First I 
 create a message with the following contents:
@@ -346,7 +346,7 @@ the rest of the world.
 
 Problems that came up later.
 
-Some mail programs insist on being able to do reverse DNS lookup. To accomplish that, you need to add PTR records. Check the net on how to do that.
+Some mail programs insist on being able to do reverse DNS lookup. To accomplish that, you need to add PTR records. Check the net on how to do that. Basically you have to request your IP-provider to set it up for you. Also, IPv4 and IPv6 use different IP addresses (obviously), so if your site has both, you need Reverse DNS for both. If not, you might end up with "DNS: Service unavailable (dns=5.0.0) in your /var/log/mail.log file. In such cases your mail gets bounced, which gets logged in the daemon.log file we configured previously (that's $JDG/log/daemon.log if you configured it as written here). Check that too for better diagnostics.
 
 After a few players joined the first games, I started receiving "Suspicious activity" emails. This was not because they were on the same network, but because they, and even I, the master, were routed through home.spikings.com when accessing the web page at uk.diplom.org. I decided to create a publicDomains host parameter, move the problematic .aol.com domain names in there, and add .spikings.com to that list. Not entirely satisfactory, so let's look for a real solution.
 
