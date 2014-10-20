@@ -6,7 +6,7 @@ from codecs import open
 
 class GhostScript:
 	"""
-In GhostScript, at least up to version 9.07, execform calls are not cached, but always expanded. As a result such
+In GhostScript, up to version 9.13, execform calls are not cached, but always expanded. As a result such
 pdf-files are much bigger than needed. This has been reported as Bug 687561 of the GhostScript Bugzilla bug tracker
 ("Smaller PDFs when using execform").
 

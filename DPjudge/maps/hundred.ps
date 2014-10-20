@@ -1,7 +1,7 @@
 %!PS-Adobe-3.0
 %%Title: Diplomacy Map (Hundred)
 %%Creator: dpmap, using a map created with DPeye by Mario Huys (woelpad@yahoo.com)
-%%DocumentPaperSizes: Letter
+%%DocumentPaperSizes: $Letter
 %%LanguageLevel: 2
 %%Orientation: Landscape
 %%Pages: (atend)
@@ -59,128 +59,6 @@
 %  170  652 WAL    Wales
 %  295  682 WAS    The Wash
 % MAP
-
-%%BeginProlog
-% $_DPghost$_
-systemdict /pdfmark known {
-currentglobal true setglobal globaldict begin
-/$_CurrentGlobal$_ exch def
-/$_FormCount$_ 0 def
-/$_Marks$_ [] def
-/$_InFormPaint$_ false def
-/$_FormPaintDepth$_ 0 def
-$_CurrentGlobal$_ end setglobal
-/$_begin$_ {
-currentglobal true setglobal globaldict begin
-/$_CurrentGlobal$_ exch def
-} bind def
-/$_end$_ {
-$_CurrentGlobal$_ end setglobal
-} bind def
-/$_mark$_ {
-count 1 sub exch sub $_Marks$_ aload length 1 add array astore /$_Marks$_ exch def
-$_end$_
-} bind def
-/$_cleartomark$_ {
-$_begin$_
-count 1 sub 1 index sub $_Marks$_ 0 get sub
-dup 0 gt {
-dup 2 index 3 add 1 roll 1 add 1 index add exch roll { pop } repeat
-} { pop pop } ifelse
-$_Marks$_ dup length 1 sub 1 exch getinterval /$_Marks$_ exch def
-} bind def
-/$_GStates$_ [] def
-/$_gsave$_ {
-$_end$_ /$_GStates$_ $_GStates$_ aload
-gstate currentgstate
-exch length 1 add array astore def $_begin$_
-} bind def
-/$_grestore$_ {
-$_end$_ /$_GStates$_ $_GStates$_ aload exch
-setgstate
-length 1 sub array astore def $_begin$_
-} bind def
-/$_execform$_ /execform load def
-/$_defineform$_ {
-/$_FormPaintDepth$_ $_FormPaintDepth$_ 1 add def
-% -- REMOVE THIS LINE IF NESTED FORMS HAVE BEEN PATCHED. --
-/$_InFormPaint$_ true def
-% -- END REMOVAL --
-1 index
-dup /BBox get matrix exch
-3 2 roll dup /Matrix get 3 index exch matrix concatmatrix
-$_FormCount$_ 1 add dup /$_FormCount$_ exch def
-dup log cvi 1 add
-exch 1 index string cvs
-1 index 8 add string
-dup 0 ($_Form) putinterval
-dup 6 4 3 roll putinterval
-dup 3 2 roll 6 add ($_) putinterval
-cvn cvx 1 array astore cvx
-dup 3 2 roll
-6 index { 2 copy 10 2 roll } if
-2 array astore
-2 index /$_FormSpec$_ 3 2 roll put
-1 $_mark$_ [ /_objdef 3 2 roll
-/BBox 5 index
-/BP pdfmark 0 $_cleartomark$_
-$_gsave$_
-exch aload pop exch 3 index sub exch 2 index sub rectclip
-exch matrix invertmatrix concat
-newpath
-1 $_mark$_ dup /PaintProc get exec 0 $_cleartomark$_
-$_grestore$_
-0 $_mark$_ [ /EP pdfmark 0 $_cleartomark$_
-{
-$_InFormPaint$_ not {
-readonly
-} if
-pop
-} if
-$_FormPaintDepth$_ 1 sub dup /$_FormPaintDepth$_ exch def 0 le {
-/$_InFormPaint$_ false def
-} if
-} bind def
-/execform {
-$_begin$_
-$_InFormPaint$_ {
-dup /$_FormSpec$_ known not 1 index wcheck and {
-false $_defineform$_
-} if false
-} {
-dup /$_FormSpec$_ known {
-/$_FormSpec$_ get aload pop true
-} {
-dup wcheck {
-true $_defineform$_ true
-} {
-false
-} ifelse
-} ifelse
-} ifelse
-{
-$_gsave$_ concat
-1 $_mark$_ [ exch /SP pdfmark 0 $_cleartomark$_
-$_grestore$_
-} {
-1 $_mark$_ $_execform$_ 0 $_cleartomark$_
-} ifelse
-$_end$_
-} bind def
-/$_defineresource$_ /defineresource load def
-/defineresource {
-$_begin$_
-dup /Form eq {
-exch dup /$_FormSpec$_ known not 1 index wcheck and {
-false $_defineform$_
-} if exch
-} if
-3 $_mark$_ $_defineresource$_ 1 $_cleartomark$_
-$_end$_
-} bind def
-} if
-% /$_DPghost$_
-%%EndProlog
 
 %%BeginSetup
 /bd { bind def } bind def
@@ -834,12 +712,13 @@ $_end$_
 } bd
 /MapForm <<
 	/FormType 1
-	/Matrix matrix
-	/BBox [ 68.82 355.14 421.02 839.94 ]
+	/Matrix [ 2.3765 0 0 2.3765 68.82 355.14 ]
+	/BBox [ 0 0 148.2 204 ]
 	/FormDict 1 dict
 	/PaintProc {
-		/FormDict get begin
+		dup /Matrix get exch /FormDict get begin
 		s
+		matrix invertmatrix concat
 		SeaBlue clippath fill
 		IncludeIsland
 		IncludeInternalBorders
