@@ -63,8 +63,8 @@ UNOWNED				IRE MOR NWY ISR LIB BEL MON SWI AUS DEN HOL CRO SER
 UNOWNED				TUN BIE CZE LIT SWE POR BUL GEO GRE IRN RUM HUN SAU
 
 Adana					= ada
-Adriatic Sea			= adr adrs adriatic ads
-Aegean Sea				= aeg aegs aegean ags egs aes
+Adriatic Sea			= adr adrs adriatic
+Aegean Sea				= aeg aegs aegean
 Albania					= alb
 Alexandria				= ale
 Algeria					= alg
@@ -73,27 +73,27 @@ Anatolia				= ana
 Andalusia				= and
 Ankara					= ank
 Apulia					= apu
-Arabian Sea				= ara aras arabian ars
+Arabian Sea				= ara aras arabian
 Armenia					= arm
 Aswan					= asw
 Austria					= aus aut
 Auvergne				= auv
 Arctic Ocean			= arc arctic
 Azerbaijan				= aze
-Baltic Sea				= bal bals baltic bls
+Baltic Sea				= bal bals baltic
 Bay of Biscay			= bis bob bay biscay
 Barcelona				= bar barc
-Barents Sea				= brn bars brnts barents brs
+Barents Sea				= brn bars brnts barents
 Belgium					= bel
 Berlin					= ber
 Bielorussia				= bie
 Bordeaux				= bor
-Bornholm Sea			= bhm bors born bornholm bhs
+Bornholm Sea			= bhm bors born bornholm
 Bosnia					= bos
 Brittany				= bri
 Bulgaria				= bul
 Cairo					= cai
-Caspian Sea				= cas cass caspian cps css
+Caspian Sea				= cas cass caspian
 Caucasus				= cau
 Central Russian Plateau	= cen crp pla
 Clyde					= cly
@@ -102,7 +102,7 @@ Czech Republic			= cze
 Denmark					= den
 Donbas					= don
 Eastern Black Sea		= ebs ebl ebla eblack
-Eastern Mediterranean	= eme emed ems eas eastern+mediterranean+sea eastern+med
+Eastern Mediterranean	= eme emed
 Eastern Sahara			= esa esah
 Edinburgh				= edi
 English Channel			= eng english cha channel
@@ -121,13 +121,13 @@ Heligoland Bight		= hel heligoland
 Holland					= hol
 Hungary					= hun
 Iceland					= ice
-Ionian Sea				= ion ions ionian ios
+Ionian Sea				= ion ions ionian
 Irak					= irk irq iraq
 Iran (north coast) 		= irn/nc
 Iran (south coast) 		= irn/sc
 Iran					= irn
 Ireland					= ire eire eir
-Irish Sea				= iri iris irish irs
+Irish Sea				= iri iris irish
 Israel					= isr
 Istanbul				= ist constantinople con
 Izmir					= izm
@@ -139,15 +139,15 @@ Krakow					= kra
 Lapland					= lap
 Latvia					= lat
 Libya					= lib
-Libyan Sea				= lbn libs libyan lbs
-Ligurian Sea			= lig ligs ligurian lgs
+Libyan Sea				= lbn libs libyan
+Ligurian Sea			= lig ligs ligurian
 Lithuania				= lit
 Liverpool				= liv lpl livp
 London					= lon
 Lyon					= lyo
 Macedonia				= mac skopje sko
 Madrid					= mad
-Maltese Sea				= mal mals maltese mls
+Maltese Sea				= mal mals matlese
 Marseilles				= mar
 Mid Atlantic Ocean		= mid mao mat
 Milan					= mil
@@ -160,9 +160,9 @@ Murmansk				= mur
 Naples					= nap
 Navarra					= nav
 North Atlantic Ocean	= nao nat
-North Sea				= nth north nts
+North Sea				= nth north
 Norway					= nwy nor
-Norwegian Sea			= nwg nors norwegian nws
+Norwegian Sea			= nwg nors norwegian
 Odessa					= ode
 Paris					= par
 Persian Gulf			= per perg persian
@@ -171,7 +171,7 @@ Piedmont				= pie
 Podolia					= pod
 Portugal				= por
 Prussia					= pru
-Red Sea					= red reds rds
+Red Sea					= red reds
 Rome					= rom
 Rostov					= ros
 Ruhr					= ruh
@@ -201,9 +201,9 @@ Volga					= vol
 Wales					= wal
 Warsaw					= war
 Western Black Sea		= wbs wbl wbla wblack
-Western Mediterranean	= wme wmed wms wes western+mediterranean+sea western+med
+Western Mediterranean	= wme wmed
 Western Sahara			= wsa wsah
-White Sea				= whi whis white whs
+White Sea				= whi white
 Yorkshire				= yor york
 
 COAST	ADA		ABUTS	ANA ank arm irk irn SYR EME 
@@ -264,7 +264,7 @@ COAST	HAM		ABUTS	BER DEN fra HOL ruh BHM HEL
 WATER	HEL		ABUTS	DEN HAM HOL NTH 
 COAST	HOL		ABUTS	BEL HAM ruh HEL NTH 
 LAND	HUN		ABUTS	AUS CRO POD RUM SER SLO 
-COAST	ICE		ABUTS	ARC NAO NWG 
+COAST	ICE		ABUTS	ice ARC NAO NWG 
 WATER	ION		ABUTS	ADR AEG ALB APU EME GRE LBN MAL NAP 
 COAST	IRE		ABUTS	ire IRI NAO 
 WATER	IRI		ABUTS	ENG IRE LIV MID NAO WAL 

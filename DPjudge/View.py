@@ -51,70 +51,12 @@ class View:
 		self.game.error += map.error
 	#	----------------------------------------------------------------------
 	def makeGifMaps(self, password = '', pages = None):
-		#	--------------------------------------------
-		#	Make .gif files from the last page(s) of the
-		#	.ps map for the game.  To do so, extract the
-		#	target page using the psselect utility (from
-		#	Andrew Duggan's "psutils" package), and mess
-		#	with it until it is all converted to a .gif.
-		#	--------------------------------------------
-		root = host.gameMapDir + '/' + self.game.name + password
-		file = root + '.'
-		upscale = host.imageResolution / 72.
-		origin = size = None
-		if self.game.map.bbox:
-			origin = [self.game.map.bbox[0] * upscale, self.game.map.bbox[1] * upscale]
-			size = [(self.game.map.bbox[2] - self.game.map.bbox[0]) * upscale,
-					(self.game.map.bbox[3] - self.game.map.bbox[1]) * upscale]
-		psf, ppmf, tmpf1, tmpf2 = file + 'ps', file + 'ppm', file + 'dat', file + 'dta'
-		if os.name == 'nt':
-			err  = '2>nul'
-			inp  = (psf, tmpf1,
-					ppmf, '< %s' % tmpf1, '< %s' % tmpf2, '< %s' % tmpf1)
-			outp = ('> %s;' % tmpf1, ppmf,
-					'> %s;' % tmpf1, '> %s;' % tmpf2, '> %s;' % tmpf1)
-		else:
-			err  = '2>/dev/null'
-			inp  = (psf, '-', ppmf, '', '', '')
-			outp = ('|', ppmf, '|', '|', '|')
-		if err: inp = tuple(['%s %s' % (x, err) for x in inp])
-		toolsDir = host.toolsDir
-		chop = ('%s/psselect -p%%s %s %s'
-				'%s/gs -q -r%d -dSAFER -sDEVICE=ppmraw -o %s %s;' %
-				(toolsDir, inp[0], outp[0],
-				 toolsDir, host.imageResolution, outp[1], inp[1]))
-		#	----------------------------------------------------------
-		#	All landscape maps must be rotated 270 degrees by pnmflip.
-		#	----------------------------------------------------------
-		make, idx = '', 2
-		if self.game.map.rotation:
-			make += '%s/pnmflip -r%d %s %s' % (toolsDir,
-											   self.game.map.rotation * 90, inp[idx], outp[idx])
-			idx += 1
-		if origin:
-			make += '%s/pnmcut %d %d %d %d %s %s' % (toolsDir,
-													 origin[0], origin[1], size[0], size[1], inp[idx], outp[idx])
-			idx += 1
-		make += '%s/pnmcrop -white %s %s' % (toolsDir, inp[idx], outp[idx])
-		idx += 1
-		make +=	'%s/ppmtogif -interlace %s > %%s' % (toolsDir, inp[idx])
-		if not pages: pages = [0] + [-1] * (self.game.phase != self.game.map.phase)
-		for page in pages:
-			gif = root + '_' * (page < 0) + ('%d' % abs(page)) * (
-			not 1 > page > -2) + '.gif'
-			try: os.unlink(gif)
-			except: pass
-			map(os.system, (chop % ('_' * (page < 1) + '%d' % (
-			page > 0 and page or 1 - page)) + make % gif).split(';'))
-			#	------------------------------------------------------------
-			#	If the gif make fails, the file will be 0 bytes.  Remove it.
-			#	------------------------------------------------------------
-			if os.path.getsize(gif): os.chmod(gif, 0666)
-			else:
-				try: os.unlink(gif)
-				except: pass
-		try: map(os.unlink, (ppmf, tmpf1, tmpf2))
-		except: pass
+		import DPimage
+		#	------------------------------------------------------------------
+		#	Make .gif files from the last page(s) of the .ps map for the game.
+		#	------------------------------------------------------------------
+		DPimage.ImageView(self.game.map, None, host.toolsDir, host.gameMapDir, host.imageResolution).extract(
+			self.game.name + password, pages or [-1, 0])
 	#	----------------------------------------------------------------------
 	def makePdfMaps(self, password = ''):
 		import DPghost
@@ -123,6 +65,11 @@ class View:
 		#	---------------------------------------------------------
 		psFileName, params = host.gameMapDir + '/' + self.game.name + password + '.ps', []
 		if self.game.map.papersize: params += [('sPAPERSIZE', self.game.map.papersize)]
+		if host.usePDFMark:
+			#	----------------------------------------------------------
+			#	All maps already have their bbox altered to fit on a page.
+			#	----------------------------------------------------------
+			params += ['dDPghostPageSizeBBox']
 		#	----------------------------------------
 		#	Add more parameters before this comment.
 		#	----------------------------------------
@@ -130,5 +77,8 @@ class View:
 		#	(We could run psselect -_2-_1 xx.ps 2>/dev/null > tmp.ps and then
 		#	run the ps2pdf on the tmp.ps file, but we now pdf the full game.)
 		#	-----------------------------------------------------------------
-		DPghost.GhostScript(pdfFileMode = 0666, ps2pdfDir = host.toolsDir).ps2pdf(psFileName, pdfParams=params)
-
+		ghost = DPghost.GhostScript(pdfFileMode = 0666, ps2pdfDir = host.toolsDir)
+		if host.usePDFMark:
+			ghost.markForms(psFileName, pdfParams=params)
+		else:
+			ghost.ps2pdf(psFileName, pdfParams=params)

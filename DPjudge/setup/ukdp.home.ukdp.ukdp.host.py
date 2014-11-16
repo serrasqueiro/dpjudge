@@ -99,6 +99,12 @@ zoneFile    	=	'/usr/share/zoneinfo/zone.tab'
 #	--------------------------------------------------------------
 imageResolution =	108
 
+#	--------------------------------------------------------------
+#	Use pdfmark. Turns forms into pdfmarks, so that they can be
+#   properly rendered by ps2pdf prior to GhostScript v9.14.
+#	--------------------------------------------------------------
+usePDFMark = True
+
 #   --------------------------------------------------------------
 #   Time synchronizaion.  Set ntpService to None if you do not 
 #   want to automatically synchronize all reported times with an 

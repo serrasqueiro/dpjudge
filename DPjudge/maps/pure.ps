@@ -1,675 +1,1088 @@
-%!PS-Adobe-2.0
-%%Title: diplomacy map (regular map)
-%%Creator: mapit
-%%Pages: (atend) 1
-%%BoundingBox: 0 0 612 792
-%%DocumentPaperSizes: Letter
+%!PS-Adobe-3.0
+%%Title: Diplomacy Map (pure map)
+%%Creator: dpmap, using a map created with DPeye by Mario Huys (woelpad@yahoo.com)
+%%DocumentPaperSizes: $Letter
+%%LanguageLevel: 2
 %%Orientation: Landscape
+%%Pages: (atend)
+%%DocumentNeededResources: font Helvetica-Bold Courier Courier-Bold Times-Roman
 %%EndComments
 
+%%BeginDefaults
+%%PageResources: font Helvetica-Bold Courier Courier-Bold Times-Roman
+%%EndDefaults
+
 % INFO
-% 250 400	BER Berlin
-% 396 217 CON Constantinople
-% 133 344 LON London
-% 367 344 MOS Moscow
-% 104 217 PAR Paris
-% 185 115 ROM Rome
-% 315 115 VIE Vienna
+%  250  400 BER    Berlin
+%  396  217 CON    Constantinople
+%  133  344 LON    London
+%  367  344 MOS    Moscow
+%  104  217 PAR    Paris
+%  185  115 ROM    Rome
+%  315  115 VIE    Vienna
 % MAP
 
-% The original map postscript code is from William Roberts, 30/4/92
-
-% * modified by George Boyce for use with his mapit program, i.e.
-% * this file provides the following procedures:
-% *
-% * DrawMap      draws the base map
-% * DrawName     draws a province name
-% * DrawArmy     draws an army
-% * DrawFleet    draws a fleet
-% * DrawTitle    write game title
-% * DrawMessage  write a footnote/message
-%
-% * OrderReport   positions point to write order report
-% * RetreatReport
-% * OwnerReport
-% * AdjustReport
-% * StatusReport
-%
-% * WriteOrder   writes the order line
-% * WriteRetreat
-% * WriteOwner
-% * WriteAdjust
-% * WriteStatus
-%
-% * ArrowMove    draws arrow indicating a move order
-% * ArrowHold
-% * ArrowSupport
-% * ArrowConvoy
-% * ArrowRetreat
-%
-% * BuildUnit    draws ray around newly built unit
-% * DestroyUnit  draws slash through destroyed unit
-% * DisbandUnit
-% * RemoveUnit
-%
-
-% constants:
-  /NameOffset {LetterSize} def		% distance below point to draw name
-  /UnitOffset 8 def			% distance above point to draw unit
-
-  /TitleFontSize 20 def			% font size (Times-Roman)
-  /MessageFontSize 8 def		% font size (Times-Roman)
-  /NameFontSize 12 def			% font size (Helvetica-Bold)
-  /OrderFontSize 10 def			% font size (Courier)
-  /OwnerFontSize 8 def			% font size (Courier)
-
-  /HeadLength 10 def			% of a move arrow head
-  /HalfHeadThickness 5 2 div def	
-
-  /HalfThickness 1 2 div def		% of a move/support/convoy arrow shaft
-
-  /HoldCircle 10 def	% of a support hold arrow
-  /MoveCircle 4 def	% of a support move arrow
-  /ConvoyCircle 6 def	% of a convoy arrow
-
-/ShowPage /showpage load def	% nothing special required
-
-/OrderReport {	% to the right of the map
- maxx 5 add maxy 55 sub moveto
- /Courier findfont OrderFontSize scalefont setfont
+%%BeginSetup
+/bd { bind def } bind def
+/xd { exch def } bd
+/ld { load def } bd
+/ifloor { .001 add floor cvi } bd
+/iceiling { .001 sub ceiling cvi } bd
+/min { 2 copy gt { exch } if pop } bd
+/max { 2 copy lt { exch } if pop } bd
+/secure_atan { 2 copy 0 eq exch 0 eq and { pop pop 0 } { atan } ifelse } bd
+/center { 3 2 roll add 2 div 3 1 roll add 2 div exch } bd
+/a /arc ld
+/c /curveto ld
+/d /setdash ld
+/f /fill ld
+/h /show ld
+/k /stroke ld
+/l /lineto ld
+/m /moveto ld
+/n /newpath ld
+/o /rotate ld
+/p /closepath ld
+/r /grestore ld
+/s /gsave ld
+/t /translate ld
+/w /setlinewidth ld
+/x /scale ld
+/y /scalefont ld
+/z /setfont ld
+/Powers 20 dict def
+%%IncludeResource: font Helvetica-Bold
+/MapUnitLetterFont /Helvetica-Bold findfont 14 y def
+%%IncludeResource: font Helvetica-Bold
+/MapNameFont /Helvetica-Bold findfont 14 y def
+%%IncludeResource: font Courier
+/TextFixedFont /Courier findfont def
+%%IncludeResource: font Courier-Bold
+/TextHeadingFont /Courier-Bold findfont def
+%%IncludeResource: font Times-Roman
+/TextTitleFont /Times-Roman findfont def
+/PageSetup {
+	612 0 t
+	90 o
+	/FinishReport { } def /InTextMode true def
+	Black
+	MovePhase
+} bd
+/ShowPage {
+	DrawAliases
+	DrawRemainingCenters
+	InTextMode { FinishReport } { r } ifelse
+	FrameMap
+	showpage
+} bd
+/VisitColors {
+	3 dict begin
+	/c xd /r xd /g xd
+	/BorderBlack .1 g
+	/MountainGrey .5 g
+	/IceGrey .9 g
+	/ArrowBlack 0 g
+	/ArrowWhite .9 g
+	/Black 0 g
+	/White .9 g
+	/LandBrown .8 .7 .4 r
+	/SeaBlue .1 .4 .6 r
+	/ArrowRed 1 0 0 r
+	/ArrowBlue .529 .808 .922 r
+	/Brown .6 .45 .2 r
+	/Blue 0 0 1 r
+	/Turquoise .2 .7 .7 r
+	/Yellow 1 1 0 r
+	/Red 1 0 0 r
+	/Green 0 .7 0 r
+	/DarkGreen 0 .4 0 r
+	end
 } def
-/RetreatReport { % below order report with a title in slightly larger font
- maxx 5 add maxy 500 sub moveto
- /Courier-Bold findfont OrderFontSize 2 add scalefont setfont
- currentpoint OrderFontSize sub 2 sub (Retreat orders:) show moveto
- /Courier findfont OrderFontSize scalefont setfont
+/VisitPowers {
+	1 dict begin
+	/p xd
+	/UNOWNED (?) /Brown /White p
+	/ENGLAND (E) /Blue /White p
+	/FRANCE (F) /Turquoise /Black p
+	/GERMANY (G) /Black /White p
+	/RUSSIA (R) /White /Black p
+	/TURKEY (T) /Yellow /Black p
+	/AUSTRIA (A) /Red /Black p
+	/ITALY (I) /Green /Black p
+	end
 } def
-/OwnerReport {	% below left half of map
- minx miny 10 sub moveto
- /Courier findfont OwnerFontSize scalefont setfont
-} def
-/AdjustReport {	% below right half of map
- minx 450 add miny 10 sub moveto
- /Courier findfont OwnerFontSize scalefont setfont
-} def
-/StatusReport {	% in upper right corner of map
- maxx 100 sub maxy 10 sub moveto
- /Courier findfont OwnerFontSize scalefont setfont
-} def
-
-/Write { currentpoint 3 2 roll show moveto 0 FontSize neg rmoveto } def
-/WriteOrder { /FontSize OrderFontSize def Write } def
-/WriteRetreat { WriteOrder } def
-/WriteOwner { /FontSize OwnerFontSize def Write } def
-/WriteAdjust { WriteOwner } def
-/WriteStatus { WriteOwner } def
-
-% failed orders get dashed lines, good orders normal lines
-/FailedOrder { [2] 1 setdash } def
-/OkOrder { [] 0 setdash } def
-
-/DrawTitle {
- maxx 5 add maxy 10 sub moveto
- /Times-Roman findfont TitleFontSize scalefont setfont
- currentpoint (DIPLOMACY) show moveto
- 0 TitleFontSize neg rmoveto
- dup stringwidth pop 308 exch div dup 1 lt
-	{ gsave 1 scale show grestore }{ pop show } ifelse
-} def
-
-/DrawMessage {
- minx maxy MessageFontSize add moveto
- /Times-Roman findfont MessageFontSize scalefont setfont
- show
-} def
-
-% draw an arrow indicating a move order between two points
-/ArrowMove {
-  /tipy exch def
-  /tipx exch def
-  /taily exch def
-  /tailx exch def
-
-  /dx tipx tailx sub def
-  /dy tipy taily sub def
-  /angle dy dx atan def
-
-% positon origin at base of arrow with arrow point along x axis
-  gsave
-  tailx taily translate
-  angle rotate
-
-  /arrowlength dx dx mul dy dy mul add sqrt def
-  /base arrowlength HeadLength sub def
-
-  % if base of arrow is long enough, shorten it
-  % e.g. which moves arrow start beyond support circle
-  /x base LetterSize gt {/base base LetterSize sub def LetterSize /arrowlength arrowlength LetterSize sub def} {0} ifelse def
-  % if base is still 5 or longer, shorten it some more
-  % which makes arrow head touch support circle
-  base LetterSize ge {/base base LetterSize sub def /arrowlength arrowlength LetterSize sub def} if
-
-  x 0 translate
-
-  newpath
-  0 HalfThickness neg moveto
-  base HalfThickness neg lineto
-  base HalfHeadThickness neg lineto
-  arrowlength 0 lineto
-  base HalfHeadThickness lineto
-  base HalfThickness lineto
-  0 HalfThickness lineto
-  closepath
-
-  stroke
-
-  grestore
-} def
-
-% draw an arrow indicating support of a unit holding at p1
-/ArrowHold {
-  /tipy exch def
-  /tipx exch def
-  /taily exch def
-  /tailx exch def
-
-  tailx taily tipx tipy HoldCircle ArrowCircle
-
-} def
-
-% draw arrow indicating support of a unit moving from p1 to p2
-/ArrowSupport {
-  /y2 exch def
-  /x2 exch def
-  /y1 exch def
-  /x1 exch def
-  /taily exch def
-  /tailx exch def
-
-% find midpoint of (x1,y1)-(x2,y2)
-  /tipx x1 x2 min x1 x2 sub abs 2 div add def
-  /tipy y1 y2 min y1 y2 sub abs 2 div add def
-
-  tailx taily tipx tipy MoveCircle ArrowCircle
-
-} def
-
-% draw arrow indicating convoy of a unit moving from p1 to p2
-/ArrowConvoy {
-  /y2 exch def
-  /x2 exch def
-  /y1 exch def
-  /x1 exch def
-  /taily exch def
-  /tailx exch def
-
-% find midpoint of (x1,y1)-(x2,y2)
-  /tipx x1 x2 min x1 x2 sub abs 2 div add def
-  /tipy y1 y2 min y1 y2 sub abs 2 div add def
-
-  tailx taily tipx tipy ConvoyCircle ArrowCircle
-
-} def
-
-% draw an arrow indicating a retreat order between two points
-/ArrowRetreat {
-  /tipy exch def
-  /tipx exch def
-  /taily exch def
-  /tailx exch def
-
-  /dx tipx tailx sub def
-  /dy tipy taily sub def
-  /angle dy dx atan def
-
-% positon origin at base of arrow with arrow point along x axis
-  gsave
-  Red
-  tailx taily translate
-  angle rotate
-
-  /arrowlength dx dx mul dy dy mul add sqrt def
-  /base arrowlength HeadLength 2 mul HalfThickness HalfHeadThickness div sub sub def
-
-  % if base of arrow is long enough, shorten it
-  % e.g. which moves arrow start beyond support circle
-  /x base LetterSize gt {/base base LetterSize sub def LetterSize /arrowlength arrowlength LetterSize sub def} {0} ifelse def
-  % if base is still 5 or longer, shorten it some more
-  % which makes arrow head touch support circle
-  base LetterSize ge {/base base LetterSize sub def /arrowlength arrowlength LetterSize sub def} if
-
-  /headBase arrowlength base add HalfThickness HalfHeadThickness div sub 2 div def
-
-  x 0 translate
-
-  newpath
-  0 HalfThickness neg moveto
-  base HalfThickness neg lineto
-  base HalfHeadThickness neg lineto
-  headBase HalfThickness neg lineto
-  headBase HalfHeadThickness neg lineto
-  arrowlength 0 lineto
-  headBase HalfHeadThickness lineto
-  headBase HalfThickness lineto
-  base HalfHeadThickness lineto
-  base HalfThickness lineto
-  0 HalfThickness lineto
-  closepath
-
-  stroke
-
-  grestore
-} def
-
-/ArrowCircle {	% like an arrow but with a circle at the tip
-  /headdiam exch def
-  /tipy exch def
-  /tipx exch def
-  /taily exch def
-  /tailx exch def
-
-  /dx tipx tailx sub def
-  /dy tipy taily sub def
-  /arrowlength dx dx mul dy dy mul add sqrt def
-  /angle dy dx atan def
-  /base arrowlength headdiam sub def
-
-% positon origin at base of arrow with arrow point along x axis
-  gsave
-  tailx taily translate
-  angle rotate
-
-  % if base of arrow is long enough, shorten it by LetterSize
-  % e.g. which moves arrow start beyond support circle
-  /x base LetterSize gt {/base base LetterSize sub def /arrowlength arrowlength LetterSize sub def LetterSize} {0} ifelse def
-
-  x 0 translate
-
-% draw the shaft first...
-  base HalfThickness neg moveto
-  0 HalfThickness neg lineto
-  0 HalfThickness lineto
-  base HalfThickness lineto
-% now the circle...
-  /a 180 HalfThickness headdiam 2 div atan sub def
-  /b 180 HalfThickness headdiam 2 div atan add def
-  arrowlength 0 headdiam a b arcn
-
-  closepath
-  stroke
-  grestore
-} def
-
-% draw the given name centered just below the specified point
-/DrawName { % x y str => -
- gsave
- /Helvetica-Bold findfont NameFontSize scalefont setfont
- 3 1 roll translate
-% mark the spot...
-% 0 0 5 0 360 arc fill
- dup stringwidth pop
- -2 div 0 NameOffset sub moveto show
- grestore
-} def
-
-% Letters for the different countries
-%
-% 0 means "nobody", then 1-7 going clockwise from England
-/Countries [
-  (?) (E) (F) (G) (R) (T) (A) (I)
+/PaintFleet {
+	begin
+	.7 .7 x
+	0 8 t
+	-26 -7 m -26 -2 l -19 -2 l -19 -1 l % to bow
+	-22 -1 l -22 0 l -15 0 l -15 1 l % A turret
+	-18 1 l -18 2 l -10 2 l -10 0 l % B turret
+	-9 0 l -9 4 l -8 4 l -8 6 l % conn tower
+	-6 6 l -6 5 l -5 5 l -5 9 l % Infra struct
+	-3 9 l -3 14 l -2 14 l -2 9 l % funnel 1
+	0 9 l 0 5 l 1 5 l 1 8 l % funnel 2
+	3 8 l 3 13 l 4 13 l 4 8 l % mast 2
+	6 8 l 6 0 l 8 0 l 8 2 l % funnel 2
+	16 2 l 16 1 l 13 1 l 13 0 l % C turret
+	20 0 l 20 -1 l 17 -1 l 17 -2 l % D turret
+	23 -2 l 23 -3 l 25 -3 l 25 -5 l % stern
+	24 -5 l 24 -7 l p
+	s 2 w Contrast k r Paint f
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	end
+} bd
+/FleetTroopBBox [
+	-18.9 0 18.2 16.1
 ] def
-
-/country 0 def
-
-/Black { 0 setgray }   bind def
-/White { 1 setgray }   bind def
-/Grey  { 0.7 setgray } bind def
-
-/Red    { 1 0 0   setrgbcolor } bind def
-/Pink   { 0.3 0 0 setrgbcolor } bind def
-/Blue   { 0 0 1   setrgbcolor } bind def
-/Mauve  { 1 0 1   setrgbcolor } bind def
-/Yellow { 1 1 0   setrgbcolor } bind def
-/Orange { 1 0.5 0.3  setrgbcolor } bind def
-/Green  { 0 0.7 0 setrgbcolor } bind def
-/Brown  { 0.7 0.5 0.2 setrgbcolor } bind def
-/Turquoise { 0.2 0.7 0.7 setrgbcolor } bind def
-
-
-% Piece colourname, Contrast colourname
-%
-/UnownedColours { /Brown /White } def
-/EnglandColours { /Blue  /White } def
-/FranceColours  { /Turquoise  /Black } def
-/GermanyColours { /Black /White } def
-/RussiaColours  { /White /Black } def
-/TurkeyColours  { /Yellow /Black } def
-/AustriaColours { /Red /Black } def
-/ItalyColours   { /Green /Black } def
-
-/set_country { % N /piececolour /contrast => -
-    load /Contrast exch store
-    load /PieceColour exch store
-    /country exch store
-} bind def
-
-/UNOWNED { 0 UnownedColours set_country } def
-/ENGLAND { 1 EnglandColours set_country } def
-/FRANCE  { 2 FranceColours  set_country } def
-/GERMANY { 3 GermanyColours set_country } def
-/RUSSIA  { 4 RussiaColours  set_country } def
-/TURKEY  { 5 TurkeyColours  set_country } def
-/AUSTRIA { 6 AustriaColours set_country } def
-/ITALY   { 7 ItalyColours   set_country } def
-
-/Offsets 8 array def
-
-/max { % p q => max(p,q)
-  2 copy lt { exch} if pop
-} bind def
-
-/min { % p q => min(p,q)
-  2 copy gt { exch} if pop
-} bind def
-
-/InitLetters {
-  0 0				% maxdx maxdy
-  0 1 7 {
-    /N exch def
-    Countries N get	% maxdx maxdy (N)
-    newpath 0 0 moveto
-    true charpath pathbbox     % ... llx lly urx ury
-    %
-    % Compute the offset in to centre the letter at 0,0
-       4 copy		% llx lly urx ury
-       3 -1 roll add -2 div	% llx urx dy
-       3 1 roll add -2 div	% dy dx
-       exch 2 array astore	% [dx,dy]
-       Offsets N 3 -1 roll put  % - ([dx,dy] stored in offsets)
-    %
-    % Update maximum xwidth, ywidth
-    3 -1 roll sub		% llx urx leny
-    3 1 roll exch sub exch	% lenx leny
-    				% maxdx maxdy lenx leny
-    3 -1 roll max		% maxdx lenx newmaxdy
-    3 1 roll max		% newmaxdy newmaxdx
-    exch
-  } for
-
-  newpath
-  % maxdx maxdy = biggest bounding rectangle of the letters
-  max 1.5 mul /LetterSize exch def
+/PaintControlledFleet {
+	begin
+	.7 .7 x
+	0 8 t
+	-26 -7 m -26 -2 l -19 -2 l -19 -1 l % to bow
+	-22 -1 l -22 0 l -15 0 l -15 1 l % A turret
+	-18 1 l -18 2 l -10 2 l -10 0 l % B turret
+	-9 0 l -9 4 l -8 4 l -8 6 l % conn tower
+	-6 6 l -6 5 l -5 5 l -5 9 l % Infra struct
+	-3 9 l -3 14 l -2 14 l -2 9 l % funnel 1
+	0 9 l 0 5 l 1 5 l 1 8 l % funnel 2
+	3 8 l 3 13 l 4 13 l 4 8 l % mast 2
+	6 8 l 6 0 l 8 0 l 8 2 l % funnel 2
+	16 2 l 16 1 l 13 1 l 13 0 l % C turret
+	20 0 l 20 -1 l 17 -1 l 17 -2 l % D turret
+	23 -2 l 23 -3 l 25 -3 l 25 -5 l % stern
+	24 -5 l 24 -7 l p
+	s s 6 w Outer k r 2 w Contrast k r Paint f
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	end
+} bd
+/ControlledFleetTroopBBox [
+	-20.3 -1.4 19.6 17.5
+] def
+/DrawFleet {
+	SwitchToMapMode
+	s t
+	FleetTroops Power get execform
+	r
+} bd
+/PaintArmy {
+	begin
+	.7 .7 x
+	0 8 t
+	n 0 0 9 0 360 a p % wheel
+	2 w Contrast k
+	-20 7 m 10 7 l 10 3 l 14 3 l
+	14 1 l -16 1 l -16 3 l -20 3 l p % barrel
+	4 2 m 24 -8 l 26 -8 l 18 -8 l -2 2 l % carriage
+	s 2 w Contrast k r Paint f
+	n 0 0 9 0 360 a p % wheel
+	Paint f
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	end
+} bd
+/ArmyTroopBBox [
+	-14.7 -1.4 18.9 12.6
+] def
+/PaintControlledArmy {
+	begin
+	.7 .7 x
+	0 8 t
+	n 0 0 9 0 360 a p % wheel
+	s 6 w Outer k r 2 w Contrast k
+	-20 7 m 10 7 l 10 3 l 14 3 l
+	14 1 l -16 1 l -16 3 l -20 3 l p % barrel
+	4 2 m 24 -8 l 26 -8 l 18 -8 l -2 2 l % carriage
+	s s 6 w Outer k r 2 w Contrast k r Paint f
+	n 0 0 9 0 360 a p % wheel
+	Paint f
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	end
+} bd
+/ControlledArmyTroopBBox [
+	-16.1 -2.8 20.3 14
+] def
+/DrawArmy {
+	SwitchToMapMode
+	s t
+	ArmyTroops Power get execform
+	r
+} bd
+/DrawAlias {
+	SwitchToMapMode
+	s
+	3 1 roll t
+	.7 .7 x
+	0 -14 t
+	MapNameFont z
+	dup stringwidth pop -2 div 0 neg m h
+	r
+} bd
+/DrawName {
+	pop pop pop
+} bd
+/VisitTerritories {
+	1 dict begin
+	/i xd
+	(BER) 250 400 i
+	(CON) 396 217 i
+	(LON) 133 344 i
+	(MOS) 367 344 i
+	(PAR) 104 217 i
+	(ROM) 185 115 i
+	(VIE) 315 115 i
+	end
 } def
-
-/Helvetica-Bold findfont NameFontSize scalefont setfont InitLetters
-
-/PieceColour { 1 setgray } bind def
-/Contrast { 0 setgray } bind def
-
-% Army is a little cannon...
-/DrawArmy { % x y X => -
-  country
-  3 1 roll UnitOffset add
-  gsave translate
-    gsave 
-      newpath
-      LetterSize 14 div dup scale
-      -20 7 moveto 30 0 rlineto 0 -4 rlineto 4 0 rlineto
-       0 -2 rlineto -30 0 rlineto 0  2 rlineto -4 0 rlineto
-       0 4 rlineto		% barrel
-       4 2 moveto 20 -10 rlineto 2 0 rlineto -8 0 rlineto
-      -20  10 rlineto		% carriage
-      Contrast 2 setlinewidth stroke
-      0 0 9 0 360 arc	% wheel
-      closepath
-      Contrast 2 setlinewidth stroke
-      newpath
-      -20 7 moveto 30 0 rlineto 0 -4 rlineto 4 0 rlineto
-       0 -2 rlineto -30 0 rlineto 0  2 rlineto -4 0 rlineto
-       0 4 rlineto		% barrel
-       4 2 moveto 20 -10 rlineto 2 0 rlineto -8 0 rlineto
-      -20  10 rlineto		% carriage
-      PieceColour fill
-      0 0 9 0 360 arc	% wheel
-      closepath
-      PieceColour fill
-    grestore
-    dup Offsets exch get aload pop	% N dx dy
-    moveto
-    /Helvetica-Bold findfont NameFontSize scalefont setfont
-    Countries exch get Contrast show	% then a white letter
-  grestore
-} bind def
-
-% Fleet is a little boat...
-/DrawFleet { % N x y => -
-  country
-  3 1 roll UnitOffset add
-  gsave translate
-    gsave 
-      newpath
-      LetterSize 14 div dup scale
-      -26 -7 moveto 0 5 rlineto 7 0 rlineto 0 1 rlineto		% to bow
-      -3 0 rlineto 0 1 rlineto 7 0 rlineto 0 1 rlineto		% A turret
-      -3 0 rlineto 0 1 rlineto 8 0 rlineto 0 -2 rlineto		% B turret
-      1 0 rlineto 0 4 rlineto 1 0 rlineto 0 2 rlineto		% conn tower
-      2 0 rlineto 0 -1 rlineto 1 0 rlineto 0 4 rlineto		% Infra struct
-      2 0 rlineto 0 5 rlineto 1 0 rlineto 0 -5 rlineto		% funnel 1
-      2 0 rlineto 0 -4 rlineto 1 0 rlineto 0 3 rlineto		% funnel 2
-      2 0 rlineto 0 5 rlineto 1 0 rlineto 0 -5 rlineto		% mast 2
-      2 0 rlineto 0 -8 rlineto 2 0 rlineto 0 2 rlineto		% funnel 2
-      8 0 rlineto 0 -1 rlineto -3 0 rlineto 0 -1 rlineto	% C turret
-      7 0 rlineto 0 -1 rlineto -3 0 rlineto 0 -1 rlineto	% D turret
-      6 0 rlineto 0 -1 rlineto 2 0 rlineto 0 -2 rlineto		% stern
-      -1 0 rlineto 0 -2 rlineto
-      closepath
-      gsave Contrast 2 setlinewidth stroke grestore
-      PieceColour fill
-    grestore
-    dup Offsets exch get aload pop	% N dx dy
-    moveto
-    /Helvetica-Bold findfont NameFontSize scalefont setfont
-    Countries exch get Contrast show	% then a white letter
-  grestore
-} bind def
-
-% draw a ray around a newly built unit
-/BuildUnit { % x y => -
-  gsave
-  UnitOffset add translate
-  LetterSize 14 div dup scale
-  White
-  6 setlinewidth [ 1 8 ] 0 setdash
-  newpath
-  0 0 24 0 360 arc
-  closepath stroke
-  grestore
-} bind def
-
-% draw a slash through a unit
-/SlashUnit { % x y => -
-  UnitOffset add translate
-  LetterSize 14 div dup scale
-  newpath
-  -21 -16 moveto
-  -5 0 lineto -21 16 lineto -11 16 lineto 0 5 lineto
-  11 16 lineto
-  21 16 lineto
-  5 0 lineto 21 -16 lineto 11 -16 lineto 0 -5 lineto
-  -11 -16 lineto
-  closepath
-  fill
-} bind def
-
-% draw a slash through a destroyed unit
-/DestroyUnit { % x y => -
-  gsave
-  Black SlashUnit
-  grestore
-} bind def
-
-% draw a slash through a disbanded unit
-/DisbandUnit { % x y => -
-  gsave
-  Red SlashUnit
-  grestore
-} bind def
-
-% draw a slash through a removed unit
-/RemoveUnit { % x y => -
-  gsave
-  White SlashUnit
-  grestore
-} bind def
-
-/DrawMap {
-536 0 translate
-90 rotate
-0.9 dup scale		% reduce the size by 10%
-lastborder
-part1
-docenters
-
-% give credits
-% /Times-Roman findfont 6 scalefont setfont
-% 30 70 moveto
-% currentpoint (Electronic map by Juho Snellman) show
-% moveto 0 -12 rmoveto
-% currentpoint (Map drawn by mapit, public domain software) show
-% moveto 0 -6 rmoveto
-% currentpoint (written by George Boyce, 1992) show
-% moveto 0 -12 rmoveto
-% currentpoint (Diplomacy is a trademark of the Avalon Hill Game Company,) show
-% moveto 0 -6 rmoveto
-% (Baltimore, Maryland, all rights reserved.) show
+/VisitSupplies {
+	1 dict begin
+	/s xd
+	/BER 250 380 s
+	/MOS 367 324 s
+	/CON 396 197 s
+	/VIE 315 95 s
+	/ROM 185 95 s
+	/PAR 104 197 s
+	/LON 133 324 s
+	end
 } def
-
-/minx 22 def /maxx 494 def
-/miny 25 def /maxy 460 def
-
-/gm /moveto load def
-/lin /lineto load def
-
-/lastborder { 
-  gsave
-    % frame 
-    newpath
-    minx miny moveto
-    minx maxy lineto
-    maxx maxy lineto
-    maxx miny lineto    
-    closepath
-    gsave 
-    Seawater fill
-    grestore 
-    Black 6 setlinewidth stroke 
-  grestore
-} def
-
-/buffer 255 string def
-
-/Coastcolour { 2.5 setlinewidth 0 setgray } def
-/Swisscolour { 0.5 setgray } def
-/Seawater    { 0.1 0.4 0.6 setrgbcolor } bind def
-/Landcolour  { 0.8 0.7 0.4 setrgbcolor } bind def%
-
-/ISLAND {
-    closepath
-    gsave Landcolour fill grestore
-    gsave Coastcolour stroke grestore
-    newpath
-} def
-
-/SEA {
-    closepath
-    gsave Seawater fill grestore
-    gsave Coastcolour stroke grestore
-    newpath
-} def
-
-1 setlinewidth
-0 setgray
-
+/DrawRemainingCenters {
+	SwitchToMapMode
+	UNOWNED
+	Centers {
+		{ load exec supply } { pop } ifelse
+	} forall
+} bd
+/PaintSupply {
+	begin
+	.7 .7 x
+	Paint
+	n 0 0 6 0 360 a f
+	end
+} bd
+/SupplyCenterBBox [
+	-4.2 -4.2 4.2 4.2
+] def
+/PaintControlledSupply {
+	begin
+	.7 .7 x
+	Outer
+	n 0 0 10 0 360 a f
+	Contrast
+	n 0 0 8 0 360 a f
+	Paint
+	n 0 0 6 0 360 a f
+	end
+} bd
+/ControlledSupplyCenterBBox [
+	-7 -7 7 7
+] def
 /supply {
-  gsave translate    
-  newpath
-    0 0 5 0 360 arc
-    gsave 
-    PieceColour fill
-    grestore
-    0 setgray 
-    0.3 setlinewidth
-    stroke
-  grestore
-} def
-
-/docenters {
-gsave
-UNOWNED
-BER supply
-MOS  supply
-CON  supply
-VIE  supply
-ROM  supply
-PAR  supply
-LON  supply
-grestore
-} def
-
-/draw_island
+	SwitchToMapMode
+	Centers exch false put
+	s t
+	Power get execform
+	r
+} bd
+/SetArrowStateOk {
+	[] 0 d
+} bd
+/OkOrder {
+	/SetArrowState /SetArrowStateOk ld
+} bd
+/SetArrowStateFailed {
+	[4 6] 2 d
+} bd
+/FailedOrder {
+	/SetArrowState /SetArrowStateFailed ld
+} bd
+/MovePhase {
+	/ArrowColor /ArrowBlack ld
+	/ArrowBase 20 def
+	/TraceArrowHead /TraceSingleArrowHead ld
+	InTextMode not { ArrowColor } if
+} bd
+/RetreatPhase {
+	/ArrowColor /ArrowRed ld
+	/ArrowBase 39.8 def
+	/TraceArrowHead /TraceDoubleArrowHead ld
+	InTextMode not { ArrowColor } if
+} bd
+/ProposePhase {
+	/ArrowColor /ArrowWhite ld
+	/ArrowBase 39.8 def
+	/TraceArrowHead /TraceDoubleArrowHead ld
+	InTextMode not { ArrowColor } if
+} bd
+/TraceSingleArrowHead {
+	% draw the arrow head ...
+	n
+	dup -5 m
+	dup 20 add 0 l
+	dup 5 l
+	p
+} bd
+/TraceDoubleArrowHead {
+	% draw the double arrow head ...
+	n
+	dup -5 m
+	dup 19.8 add
+	dup -1 l
+	dup -5 l
+	dup 20 add 0 l
+	dup 5 l
+	1 l
+	dup 5 l
+	p
+} bd
+/PaintArrowMove {
+	s
+	3 index 3 index t
+	3 2 roll sub 3 1 roll exch sub exch
+	2 copy dup mul exch dup mul add sqrt 3 1 roll exch secure_atan
+	.7 .7 x
+	0 8 t
+	o
+	.7 div ArrowBase sub
+	% if base of arrow is long enough, shorten it enough
+	% to e.g. move arrow start beyond support circle
+	dup 14 gt {
+		14 14 0 t sub
+	} {
+		0 t 0
+	} ifelse
+	% if base is still too long, shorten it some more
+	% to make arrow head touch support circle
+	dup 14 gt {
+		14 sub
+	} {
+		pop 0
+	} ifelse
+	1 w
+	TraceArrowHead
+	k
+	% now the shaft ...
+	2 w
+	0 0 m
+	0 l
+	k
+	r
+} bd
+/PaintArrowCircle {
+	s
+	5 1 roll
+	3 index 3 index t
+	3 2 roll sub 3 1 roll exch sub exch
+	2 copy dup mul exch dup mul add sqrt 3 1 roll exch secure_atan
+	.7 .7 x
+	0 8 t
+	o
+	.7 div
+	1 index sub
+	% if base of arrow is long enough, shorten it enough
+	% to e.g. move arrow start beyond support circle
+	dup 14 gt {
+		14 14 0 t sub
+	} {
+		0 t 0
+	} ifelse
+	% draw the circle ...
+	1 w
+	n
+	2 copy add 0 4 3 roll 0 360 a
+	p k
+	% now the shaft ...
+	2 w
+	0 0 m
+	0 l
+	k
+	r
+} bd
+/PaintArrowArrive {
+	s
+	t
+	.7 .7 x
+	0 8 t
+	180 rotate 54 ArrowBase add neg 0 t
+	40
+	1 w
+	TraceArrowHead
+	k
+	% now the shaft ...
+	2 w
+	0 0 m
+	0 l
+	k
+	-5 0 m -10 0 l
+	-15 0 m -20 0 l
+	k
+	r
+} bd
+/PaintArrowDepart {
+	s
+	t
+	.7 .7 x
+	0 8 t
+	-54 0 t
+	40
+	2 w
+	0 0 m
+	0 l
+	-6 0 m -10 0 l
+	-16 0 m -20 0 l
+	k
+	r
+} bd
+/ArrowMove {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowMove
+	r
+} bd
+/ArrowHold {
+	SwitchToMapMode
+	s
+	SetArrowState
+	24 PaintArrowCircle
+	r
+} bd
+/ArrowSupport {
+	SwitchToMapMode
+	s
+	SetArrowState
+	center
+	8 PaintArrowCircle
+	r
+} bd
+/ArrowConvoy {
+	SwitchToMapMode
+	s
+	SetArrowState
+	center
+	12 PaintArrowCircle
+	r
+} bd
+/ArrowArrive {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowArrive
+	r
+} bd
+/ArrowDepart {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowDepart
+	r
+} bd
+/ArrowRetreat {
+	RetreatPhase
+	ArrowMove
+	MovePhase
+} bd
+/ArrowPropose {
+	ProposePhase
+	ArrowMove
+	MovePhase
+} bd
+/ArrowRetreatArrive {
+	RetreatPhase
+	ArrowArrive
+	MovePhase
+} bd
+/ArrowRetreatDepart {
+	RetreatPhase
+	ArrowDepart
+	MovePhase
+} bd
+/BuildUnit {
+	SwitchToMapMode
+	s
+	t
+	ArrowWhite
+	.7 .7 x
+	0 8 t
+	6 w [ 3.14 6.28 ] 1.57 d
+	n
+	0 0 24 0 360 a
+	p k
+	r
+} bd
+/SlashUnit {
+	s
+	3 1 roll t
+	.7 .7 x
+	0 8 t
+	n
+	-21 -16 m
+	11 16 l
+	21 16 l
+	-11 -16 l
+	p
+	exec
+	r
+} bd
+/DestroyUnit {
+	SwitchToMapMode
+	{ ArrowRed f } SlashUnit
+} bd
+/DisbandUnit {
+	SwitchToMapMode
+	{ s ArrowWhite f r 1 w ArrowRed k } SlashUnit
+} bd
+/RemoveUnit {
+	SwitchToMapMode
+	{ ArrowWhite f } SlashUnit
+} bd
+/FindUnit {
+	SwitchToMapMode
+	s
+	t
+	ArrowBlue
+	.7 .7 x
+	0 8 t
+	6 w [ 3.14 6.28 ] 1.57 d
+	n
+	0 0 24 0 360 a
+	p k
+	r
+} bd
+/LoseUnit {
+	SwitchToMapMode
+	s
+	t
+	ArrowBlue
+	.7 .7 x
+	0 8 t
+	4 w
+	-12 4 m
+	-8 7 -4 7 0 4 c
+	4 1 8 1 12 4 c
+	-12 -4 m
+	-8 -1 -4 -1 0 -4 c
+	4 -7 8 -7 12 -4 c
+	k
+	r
+} bd
+/QueryUnit {
+	SwitchToMapMode
+	s
+	t
+	ArrowWhite
+	.7 .7 x
+	0 8 t
+	4 w
+	-12 4 m
+	-8 7 -4 7 0 4 c
+	4 1 8 1 12 4 c
+	-12 -4 m
+	-8 -1 -4 -1 0 -4 c
+	4 -7 8 -7 12 -4 c
+	k
+	r
+} bd
+/MapForm <<
+	/FormType 1
+	/Matrix [ 2.1324 0 0 2.1324 22 25 ]
+	/BBox [ 0 0 221.35 204 ]
+	/FormDict 1 dict
+	/PaintProc {
+		dup /Matrix get exch /FormDict get begin
+		s
+		matrix invertmatrix concat
+		SeaBlue 22 25 472 435 rectfill
+		IncludeRays
+		IncludeCore
+		IncludeIslands
+		r
+		end
+	} bind
+>> def
+/DrawMap {
+	PageSetup
+	SwitchToMapMode
+	MapForm execform
+	/Centers << Centers { pop true } forall >> def
+	UNOWNED
+} bd
+/DrawSupplies {
+	SwitchToMapMode
+	UNOWNEDCENTER
+	{ SupplyCenters 3 1 roll 4 3 roll supply } bind
+	VisitSupplies
+} bd
+/DrawAliases {
+	NameTerritories
+} bd
+/NameTerritories {
+	SwitchToMapMode
+	s
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	VisitTerritories
+	r
+} bd
+/GetControlledPower {
+	1 index dup length string cvs 1 index dup length string cvs
+	1 index length dup 2 index length add 1 add string
+	dup 0 6 5 roll putinterval dup 2 index 124 put dup 3 2 roll 1 add 4 3 roll putinterval cvn
+	3 1 roll Powers 3 index known {
+		pop pop
+	} {
+		8 dict dup begin
+		exch Powers exch get /Paint get /Outer xd
+		Powers 2 index get { def } forall
+		end
+		dup ControlledFleetTroopBBox /PaintControlledFleet load CreateTroop FleetTroops 4 index 3 2 roll put
+		dup ControlledArmyTroopBBox /PaintControlledArmy load CreateTroop ArmyTroops 4 index 3 2 roll put
+		dup ControlledSupplyCenterBBox /PaintControlledSupply load CreateTroop SupplyCenters 4 index 3 2 roll put
+		Powers 2 index 3 2 roll put
+		[ /Power 3 index 4 3 roll {
+			ChangeController {
+				Power GetControlledPower exch
+				/ChangeController false def
+			} if pop
+		} bind /exec load /def load ] cvx 2 index xd
+	} ifelse
+} bd
+/Controls {
+	/ChangeController true def
+} bd
+/CreateTroop {
+	<<
+		/BBox 4 3 roll
+		/PaintProc 5 4 roll
+		6 5 roll {} forall
+		/FormType 1
+		/Matrix matrix
+	>>
+} bd
+/CreateTroops {
+	<< 3 1 roll Powers {
+		3 index 3 index CreateTroop 4 2 roll
+	} forall pop pop >>
+} bd
+/SplitString {
+	7 dict begin
+	/nrChars xd
+	/indentString xd
+	/objectString xd
+	/objectLast objectString length 1 sub def
+	% Short string?
+	objectLast nrChars lt {
+		false objectString
+	} {
+		% Look for a suitable place to split.
+		% First tracking backwards, if that doesn't work, look forward.
+		/splitIndex -1 def
+		nrChars -1 0 {
+			objectString 1 index get 32 eq {
+				/splitIndex xd exit
+			} if pop
+		} for splitIndex -1 eq {
+			nrChars 1 add 1 objectLast {
+				objectString 1 index get 32 eq {
+					/splitIndex xd exit
+				} if pop
+			} for
+		} if
+		splitIndex -1 eq splitIndex objectLast eq or {
+			false objectString
+		} {
+			% The first part.
+			objectString 0 splitIndex getinterval
+			% The second part.
+			objectString splitIndex 1 add objectLast splitIndex sub getinterval
+			% Add indentation if needed.
+			indentString length 0 gt {
+				dup length indentString length add string
+				dup 0 indentString putinterval
+				dup indentString length 4 3 roll putinterval
+			} if
+			% Add white space of the first part.
+			/nonSpaceIndex objectLast 1 add def
+			0 1 objectLast {
+				objectString 1 index get 32 ne {
+					/nonSpaceIndex xd exit
+				} if pop
+			} for
+			nonSpaceIndex 0 gt nonSpaceIndex splitIndex lt and {
+				dup length nonSpaceIndex add string
+				dup 0 objectString 0 nonSpaceIndex getinterval putinterval
+				dup nonSpaceIndex 4 3 roll putinterval
+			} if
+			exch true exch
+		} ifelse
+	} ifelse
+	end
+} bd
+/DrawLayoutBorders {
+	s
+	TextFixedFont 12 y z
+	r
+} bd
+/Owner <<
+	/Steps [
+		{ /Count 0 def /Y 147.36 def false true } bind
+		{
+			Count 9 ge { false true } {
+				65 SplitString
+				/Count Count 1 add def /Y Y 12 sub def
+				21.6 Y m h
+				true false
+			} ifelse
+		} bind
+		{
+			65 SplitString [ exch {
+				21.6 27.36 m h
+			} /exec load ] cvx /Finish xd
+			true true
+		} bind
+		{
+			/Count 1 def /Finish {
+				21.6 27.36 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
+			} bd false true
+		} bind
+		{ /Count Count 1 add def 65 SplitString pop true false } bind
+	]
+	/Start {
+		TextFixedFont 12 y z
+		/StepIndex 0 def
+		/Step Steps 0 get def
+		/Finish { } def
+	} bind
+	/Write {
+		(  ) {
+			Step {
+				/StepIndex StepIndex 1 add def
+				/Step Steps StepIndex get def
+			} if { not { exit } if () } if
+		} loop
+	} bind
+>> def
+/OwnerReport {
+	SwitchToTextMode
+	Owner begin Start end
+	/FinishReport /FinishOwnerReport load def
+} bd
+/WriteOwner {
+	Owner begin Write end
+} bd
+/FinishOwnerReport {
+	Owner begin Finish end
+} bd
+/Adjustment <<
+	/Steps [
+		{ /Count 0 def /Y 171.36 def false true } bind
+		{
+			Count 11 ge { false true } {
+				37 SplitString
+				/Count Count 1 add def /Y Y 12 sub def
+				504 Y m h
+				true false
+			} ifelse
+		} bind
+		{
+			37 SplitString [ exch {
+				504 27.36 m h
+			} /exec load ] cvx /Finish xd
+			true true
+		} bind
+		{
+			/Count 1 def /Finish {
+				504 27.36 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
+			} bd false true
+		} bind
+		{ /Count Count 1 add def 37 SplitString pop true false } bind
+	]
+	/Start {
+		TextHeadingFont 12 y z
+		504 171.36 moveto
+		(Adjustments) h
+		TextFixedFont 12 y z
+		/StepIndex 0 def
+		/Step Steps 0 get def
+		/Finish { } def
+	} bind
+	/Write {
+		(  ) {
+			Step {
+				/StepIndex StepIndex 1 add def
+				/Step Steps StepIndex get def
+			} if { not { exit } if () } if
+		} loop
+	} bind
+>> def
+/AdjustReport {
+	SwitchToTextMode
+	Adjustment begin Start end
+	/FinishReport /FinishAdjustReport load def
+} bd
+/WriteAdjust {
+	Adjustment begin Write end
+} bd
+/FinishAdjustReport {
+	Adjustment begin Finish end
+} bd
+/Retreat <<
+	/Steps [
+		{ /Count 0 def /Y 291.36 def false true } bind
+		{
+			Count 8 ge { false true } {
+				37 SplitString
+				/Count Count 1 add def /Y Y 12 sub def
+				504 Y m h
+				true false
+			} ifelse
+		} bind
+		{
+			37 SplitString [ exch {
+				504 183.36 m h
+			} /exec load ] cvx /Finish xd
+			true true
+		} bind
+		{
+			/Count 1 def /Finish {
+				504 183.36 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
+			} bd false true
+		} bind
+		{ /Count Count 1 add def 37 SplitString pop true false } bind
+	]
+	/Start {
+		TextHeadingFont 12 y z
+		504 291.36 moveto
+		(Retreats) h
+		TextFixedFont 12 y z
+		/StepIndex 0 def
+		/Step Steps 0 get def
+		/Finish { } def
+	} bind
+	/Write {
+		(  ) {
+			Step {
+				/StepIndex StepIndex 1 add def
+				/Step Steps StepIndex get def
+			} if { not { exit } if () } if
+		} loop
+	} bind
+>> def
+/RetreatReport {
+	SwitchToTextMode
+	Retreat begin Start end
+	/FinishReport /FinishRetreatReport load def
+} bd
+/WriteRetreat {
+	Retreat begin Write end
+} bd
+/FinishRetreatReport {
+	Retreat begin Finish end
+} bd
+/Order <<
+	/Steps [
+		{ /Count 0 def /Y 531.36 def false true } bind
+		{
+			Count 18 ge { false true } {
+				37 SplitString
+				/Count Count 1 add def /Y Y 12 sub def
+				504 Y m h
+				true false
+			} ifelse
+		} bind
+		{
+			37 SplitString [ exch {
+				504 303.36 m h
+			} /exec load ] cvx /Finish xd
+			true true
+		} bind
+		{
+			/Count 1 def /Finish {
+				504 303.36 m (... \() h
+				Count dup 1 add log iceiling string cvs h
+				( more\)) h
+			} bd false true
+		} bind
+		{ /Count Count 1 add def 37 SplitString pop true false } bind
+	]
+	/Start {
+		TextFixedFont 12 y z
+		/StepIndex 0 def
+		/Step Steps 0 get def
+		/Finish { } def
+	} bind
+	/Write {
+		(  ) {
+			Step {
+				/StepIndex StepIndex 1 add def
+				/Step Steps StepIndex get def
+			} if { not { exit } if () } if
+		} loop
+	} bind
+>> def
+/OrderReport {
+	SwitchToTextMode
+	Order begin Start end
+	/FinishReport /FinishOrderReport load def
+} bd
+/WriteOrder {
+	Order begin Write end
+} bd
+/FinishOrderReport {
+	Order begin Finish end
+} bd
+/DrawTitle {
+	SwitchToTextMode
+	TextTitleFont 36 y z
+	(Diplomacy)
+	504 562.08 m h
+	TextTitleFont 24 y z
+	dup stringwidth pop dup 266.4 gt {
+		504 528 m
+		266.4 exch div dup 1 x exch
+		0 6.72 rmoveto h
+		1 exch div 1 x
+	} {
+		pop 504 534.72 m h
+	} ifelse
+} bd
+/SwitchToTextMode {
+	InTextMode {
+		FinishReport /FinishReport { } def
+	} {
+		r /InTextMode true def
+	} ifelse
+} bd
+/SwitchToMapMode {
+	InTextMode {
+		FinishReport /FinishReport { } def
+		/InTextMode false def
+		s
+		27.6 162 456 420 rectclip .9788 .9788 x 3.13 137.55 t
+		ArrowColor
+		OkOrder
+	} if
+} bd
+/FrameMap {
+	s
+	2 w LandBrown
+	24.6 159.11 m 486.6 159.11 l 486.6 584.89 l 24.6 584.89 l
+	p
+	s 8 w Black k r
+	clipsave clip k cliprestore
+	r
+} bd
+/IncludeRays {
+	s
+	/fk { k } bd
+	2.5 w [ 3 3 ] 1.5 d BorderBlack
+	ShapeRays
+	r
+} bd
+/IncludeCore {
+	s
+	/fk {
+		p
+		s SeaBlue f r
+		k
+	} bd
+	2.5 w [ 3 3 ] 1.5 d BorderBlack
+	ShapeCore
+	r
+} bd
+/IncludeIslands {
+	s
+	/fk {
+		p
+		s LandBrown f r
+		k
+	} bd
+	2.5 w BorderBlack
+	ShapeIslands
+	r
+} bd
+/ShapeRays {
+	250 250 m
+	250 400 l
+	250 250 m
+	367 344 l
+	250 250 m
+	396 217 l
+	250 250 m
+	315 115 l
+	250 250 m
+	185 115 l
+	250 250 m
+	104 217 l
+	250 250 m
+	133 344 l
+	fk
+} bd
+/ShapeCore {
+	285 250 m 250 250 35 0 360 a
+	fk
+} bd
+/ShapeIslands {
+	285 400 m 250 400 35 0 360 a
+	402 344 m 367 344 35 0 360 a
+	431 217 m 396 217 35 0 360 a
+	350 115 m 315 115 35 0 360 a
+	220 115 m 185 115 35 0 360 a
+	139 217 m 104 217 35 0 360 a
+	168 344 m 133 344 35 0 360 a
+	fk
+} bd
 {
-   0 0 moveto
-   gsave
-     translate
-       0 0 lineto
-       closepath
-       gsave
-         [3 3] 1.5 setdash 
-         0 setgray
-         stroke
-       grestore
-       newpath
-     0 0 35 0 360 arc
-     ISLAND
-   grestore   
-}
-def
-
-/BER { 250 380 } def
-/MOS { 367 324  } def
-/CON { 396 197   } def 
-/VIE { 315 95  } def 
-/ROM { 185 95  } def 
-/PAR { 104 197   } def 
-/LON { 133 324    } def 
-
-/part1 
+	currentdict end 3 1 roll [ exch /setgray load ] cvx def begin
+}{
+	currentdict end 5 1 roll [ 4 1 roll /setrgbcolor load ] cvx def begin
+}{
+	currentdict end 6 1 roll [ 5 1 roll /setcmykcolor load ] cvx def begin
+} bind VisitColors
+/ChangeController false def
+s
+MapUnitLetterFont z
 {
-   gsave 
-   
-   250 250 translate
-   
-   gsave
-
-   2.5 setlinewidth
-
-   0    150   draw_island
-   117  94    draw_island
-   146  -33   draw_island
-   65   -135  draw_island
-   -65  -135  draw_island
-   -146 -33   draw_island
-   -117 94    draw_island
-   
-   grestore
-
-   gsave
-     2.5 setlinewidth
-     [3 3] 3 setdash 
-     0 setgray
-     0 0 35 0 360 arc gsave Seawater fill grestore stroke 
-   grestore
-
-   grestore
-}
-def
+	exch load exch load
+	2 index [ exch n 0 0 m true charpath pathbbox 3 2 roll add -2 div 3 1 roll add -2 div exch ] 3 1 roll
+	4 dict begin /Contrast xd /Paint xd /Offset xd /Letter xd currentdict end
+	currentdict end 3 1 roll
+	Powers 2 index 3 2 roll put
+	[ /Power 2 index {
+		ChangeController {
+			Power GetControlledPower
+			/ChangeController false def
+		} if
+	} bind /exec load /def load ] cvx def
+	begin
+} VisitPowers
+r
+/FleetTroops FleetTroopBBox /PaintFleet load CreateTroops def
+/ArmyTroops ArmyTroopBBox /PaintArmy load CreateTroops def
+/Centers <<
+	{ pop pop true } bind
+	VisitSupplies
+>> def
+/SupplyCenters SupplyCenterBBox /PaintSupply load CreateTroops def
+{ currentdict end 4 1 roll [ SupplyCenters 4 2 roll 4 index ] cvx def begin } bind
+VisitSupplies
+/UNOWNEDCENTER /UNOWNED ld
+/ENGLANDCENTER /ENGLAND ld
+/FRANCECENTER /FRANCE ld
+/GERMANYCENTER /GERMANY ld
+/RUSSIACENTER /RUSSIA ld
+/TURKEYCENTER /TURKEY ld
+/AUSTRIACENTER /AUSTRIA ld
+/ITALYCENTER /ITALY ld
+%%EndSetup

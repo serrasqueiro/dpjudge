@@ -23,6 +23,7 @@ for (var, value) in [
 	('judgePassword', ''),
 	('publicDomains', []),
 	('createLimit', 20),
+	('imageResolution', 72), ('usePDFMark', True),
 	('copy', 0), ('notify', 0)]:
 	vars(host).setdefault(var, value)
 
