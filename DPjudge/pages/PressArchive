@@ -6,7 +6,6 @@
 page.include('stylesheet')
 page.include('functions')
 loadGame()
-if page.power: checkPassword()
 showGameHeader()
 :>
 
@@ -26,7 +25,9 @@ gameHeader()
 </tr>
 <:
 showReadyNotice()
-if page.power:
+pwdFlag = (isinstance(page.power, Power) and
+	page.power.isValidPassword(page.password))
+if pwdFlag:
 	page.write('<tr><td><br>')
 	powerHeader()
 	page.write('<br></td></tr>')

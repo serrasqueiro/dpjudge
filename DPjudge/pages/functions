@@ -180,11 +180,11 @@ def showMapButtons():
 def showResultsText(list = None, subject = None, align = 1):
 	game = page.game
 	if not os.path.exists(game.file('results')): return
-	if page.power:
-		power, password = page.power.name, page.power.password
-		if power == 'MASTER': password = game.password
+	pwdFlag = (isinstance(page.power, Power) and
+		page.power.isValidPassword(page.password))
+	if pwdFlag: power = page.power.name
 	elif 'BLIND' in game.rules: return
-	else: power = password = ''
+	else: power = ''
 	if not list:
 		file = open(game.file('results'), encoding='latin-1')
 		list = [line[9:-1] for line in file if line[:8] == 'Subject:']
@@ -205,7 +205,7 @@ def showResultsText(list = None, subject = None, align = 1):
 	for item in list:
 		page.write('<option%s>' % (' selected' * (subject == item)) + item)
 	page.write('</select>' + '</td>' * align)
-	if page.power: page.write('<input type=hidden name=password value=%s>'
+	if pwdFlag: page.write('<input type=hidden name=password value=%s>'
 		'<input type=hidden name=power value=%s>' % (page.password, power))
 	page.write(
 		"""
@@ -488,7 +488,9 @@ def showGameInfo():
 	page.write('</table>')
 #	----------------------------------------------------------------------
 def gameHeader():
-	game, power = page.game, page.power
+	pwdFlag = (isinstance(page.power, Power) and
+		page.power.isValidPassword(page.password))
+	game, power = page.game, pwdFlag and page.power or None
 	page.write(
 		"""
 		<tr>
@@ -718,7 +720,9 @@ def showProposal():
 			""" % (game.name, power.name, page.password))
 #	----------------------------------------------------------------------
 def showMessages():
-	if page.power.name != 'MASTER' and page.power.msg:
+	pwdFlag = (isinstance(page.power, Power) and
+		page.power.isValidPassword(page.password))
+	if pwdFlag and page.power.name != 'MASTER' and page.power.msg:
 		page.write('<tr><td class=bodycopy valign=top><b>Message:</b></td>'
 			'<td valign=top class=bodycopy colspan=2><b><font color=red>')
 		for msg in page.power.msg: page.write(msg + '<br>')
@@ -986,6 +990,8 @@ def showRetreatList():
 #	----------------------------------------------------------------------
 def viewFile():
 	if page.file == 'status': return
+	pwdFlag = (isinstance(page.power, Power) and
+		page.power.isValidPassword(page.password))
 	page.write(
 		"""
 		<tr valign=top bgcolor="#CCCCCC">
@@ -1010,7 +1016,7 @@ def viewFile():
 			if showing < 2: continue
 		if page.file == 'results' and line.startswith('SHOW'):
 			showTo = line[:-1].split()[1:]
-			blind = showTo and not (page.power and page.power.name in showTo)
+			blind = showTo and not (pwdFlag and page.power.name in showTo)
 		elif not blind and (line[:-1] or lastLine):
 			lastLine = line[:-1]
 			page.write(lastLine)
@@ -1020,7 +1026,7 @@ def viewFile():
 	if list:
 		showResultsText(list, page.subject, 0)
 		page.write('</td></tr><tr><td align=center class=bodycopy>')
-		if page.power and page.power.name == 'MASTER':
+		if pwdFlag and page.power.name == 'MASTER':
 			word = page.subject.split()
 			phase = word[1:2] == ['results'] and word[-1] or 'FORMING'
 			addRollback(phase)
@@ -1444,10 +1450,13 @@ def showPressArchive(selected = 0, filter = 0):
 #	if 'TZAR' not in `page.power`: return []
 	file = page.game.file('press')
 	if not os.path.exists(file): return
-	power = page.power and page.power.name or ''
+	pwdFlag = (isinstance(page.power, Power) and
+		page.power.isValidPassword(page.password))
+	power = pwdFlag and page.power.name or ''
 	thePower = power.encode('latin-1')
 	file, items, validCodes, involved = open(file), [], [], []
-	omniscient = (power == 'MASTER') or power and page.power.omniscient
+	omniscient = pwdFlag and ((power == 'MASTER') or
+		power and page.power.omniscient)
 	for lineNum, line in enumerate(file):
 		if not line.startswith('::'): continue
 		data, receivers = line.strip().upper().split(), []
