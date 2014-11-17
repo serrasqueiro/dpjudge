@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><ID>: Modern-up Overview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<:
+page.include('stylesheet')
+page.include('functions')
+:>
+</head>
+
+<body bgcolor="#ffffff">
+
+<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
+<tr valign=top>
+<td colspan=4>
+	<!--BANNER TABLE BEGINS HERE-->
+	<table border=0 cellpadding=0 cellspacing=0 width=100%>
+	<tr>
+	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
+	<td width=1 class="border"><img src="<URL>/images/spacer.gif" width=1></td>
+	<td class="gameheader" align=center>
+		<!--HEADER GOES HERE-->
+		<b>The Modern-up Variant</b>
+		<!--INFORMATION LINKS TABLE BEGINS HERE-->
+		<table border=0 cellpadding=5 cellspacing=0 width=100%>
+		<tr>
+		<td class="bodycopy" align=center>
+		<a href="<URL>?page=About">about the DPjudge</a> |
+		<a href="<DPPD>">the DPPD</a> |
+		<a href="<URL>?page=Questions">common questions</a></td>
+		</tr>
+		</table>
+		<!--INFORMATION LINKS TABLE ENDS HERE-->
+		<!--HEADER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	<!--BANNER TABLE ENDS HERE-->
+</td>
+</tr>
+<tr><td colspan=2 height=5><!--SPACER--></td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><b>Contents</b></td>
+<td align=center class="grey"><a name="1"></a><b>Basic Rules</b></td>
+</tr>
+<tr valign=top>
+<td rowspan=5>
+<!--GAME INFORMATION TABLES BEGIN HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td nowrap class="bodycopy">
+		<!--QUESTIONS LIST BEGINS HERE-->
+<!--		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br> -->
+		<b>&middot;</b>&nbsp;<a href="#2">Map Notes</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
+		<!--QUESTIONS LIST TABLE ENDS HERE-->
+		<p>
+		<form action=<URL> target=modern-up>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=modern-up>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+		<p>
+		<form action=<URL> target=modern-up>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=modern-up>
+		<input type=hidden name=trial value=1>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Trial Map">
+		</form>
+	</td>
+	</tr>
+	</table>
+<!--GAME INFORMATION TABLES END HERE-->
+</td>
+	<td class="bodycopy">
+<!--MOVEMENT ORDERS TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr><td class=bodycopy>
+		<!--BODYCOPY BEGINS HERE-->
+
+
+The same rules as for <a href=<PAGE>about_modern>Modern</a> apply, except as noted below.
+<ol>
+<li>Britain starts with an army in Liverpool instead of a fleet.
+</ol>
+		<!--BODYCOPY ENDS HERE-->
+</td></tr></table>
+
+	</td>
+	</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="2"></a><b>Map Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+
+The Modern-up map is the same as for <a href=<PAGE>about_modern>Modern</a> with the following modifications.
+<ol>
+<li>
+Addition of Ulster (Northern Ireland). Ulster is a canal province like Denmark or Istanbul, bordering Ireland, Liverpool and Clyde and separating the North−Atlantic Ocean from the Irish Sea.
+<p><li>
+The North− and South−Atlantic Ocean now touch each other, while Ireland borders the Mid−Atlantic Ocean.
+<p><li>
+(Trial version only) Addition of Sahara (Libyan desert). Sahara is a landlocked province bordering Western Sahara, Libya, Eastern Sahara and Aswan. Aswan stretches eastwards up to the Libyan border.
+</ol>
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+</td>
+</tr>
+<tr valign=top bgcolor="#CCCCCC">
+<td align=center class="grey"><a name="3"></a><b>Design Notes</b></td>
+</tr>
+<tr valign=top>
+<td>
+<!--MAIN TABLES GO HERE-->
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--BODYCOPY BEGINS HERE-->
+<p>
+The Modern variant was created by Vincent Mous. The Modern-up modifications were proposed and implemented by Mario Huys in collaboration with Vincent.
+Mario described some of these modifications in the <a href=<POUCH>>Diplomatic Pouch</A> Zine article <a href=<POUCH>/Zine/F2013M/Huys/troubles.htm>A Modern Look at 'The Troubles'</a>.
+
+		<!--BODYCOPY ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+	
+<:
+footer()
+:>

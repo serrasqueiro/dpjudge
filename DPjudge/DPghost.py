@@ -129,6 +129,17 @@ systemdict /pdfmark known {
 		% The actual form matrix will only be applied when invoking SP, as it may
 		% contain rotations and shearing, which would negatively affect the BBox.
 		3 2 roll dup /Matrix get 3 index exch matrix concatmatrix
+% $_UndoBBox$_
+		% If scaling and translating negatively impacts the BBox, we should undo it.
+		% Extract the scale and translation components from the Form matrix.
+		aload pop 6 2 roll dup 4 index mul 3 index 3 index mul sub dup 0 gt {
+			sqrt 4 { exch 1 index div 5 1 roll } repeat
+		} { pop 1 } ifelse 5 1 roll 0 0 6 array astore 4 1 roll 0 0 2 index 6 4 roll 6 array astore
+		% Undo the BBox transformation
+		4 3 roll aload pop 4 2 roll 4 index transform 4 2 roll 4 index transform 4 array astore 4 1 roll
+		% Adapt the matrices
+		matrix invertmatrix 5 4 roll matrix concatmatrix 4 1 roll
+% $_/UndoBBox$_
 		% Create unique form name by increasing the count.
 		$_FormCount$_ 1 add dup /$_FormCount$_ exch def
 		% Avoiding 0 for the first index, as log of 0 is not defined.
@@ -358,7 +369,8 @@ systemdict /pdfmark known {
 		#if lines and lines[-1][-1:] not in '\r\n': lines[-1] += newLine
 		if not prolog:
 			lines = lines[:idx-1] + [b'%%BeginProlog' + newLine, b'%%EndProlog' + newLine] + [newLine] * blank + lines[idx-1:]
-		params, markFormCode, stripComments = [], self.markFormCode, True
+		params, markFormCode = [], self.markFormCode
+		stripComments = stripUndoBBox = True
 		for param in pdfParams:
 			if type(param) not in (tuple, list): param = (param,)
 			if param[0] == 'dDPghostPDFMark':
@@ -367,6 +379,8 @@ systemdict /pdfmark known {
 				if len(param) == 1 or param[1]: markFormCode = self.stripCode(markFormCode, b'NestedForms')
 			elif param[0] == 'dDPghostPageSizeBBox':
 				if len(param) == 1 or param[1]: markFormCode = self.stripCode(markFormCode, b'PageSizeBBox')
+			elif param[0] == 'dDPghostUndoBBox':
+				if len(param) == 1 or param[1]: stripUndoBBox = False
 			elif param[0] == 'dDPghostPatchOnly':
 				if len(param) == 1 or param[1]: pdfFileName = None
 			elif param[0] == 'dDPghostInject':
@@ -374,6 +388,7 @@ systemdict /pdfmark known {
 			elif param[0] == 'dDPghostLeaveComments':
 				if len(param) == 1 or param[1]: stripComments = False
 			else: params += [len(param) != 1 and param or param[0]]
+		if stripUndoBBox: markFormCode = self.stripCode(markFormCode, b'UndoBBox')
 		lines = lines[:idx] + self.embedCode(markFormCode, newLine, stripComments) + lines[idx:]
 		discardMarkFile = not os.path.exists(markFileName)
 		if self.verbose: print("%satched file: '%s'" % (('P', 'Temporary p')[discardMarkFile], markFileName))
@@ -559,6 +574,7 @@ Options:
 	-m mark    Omit the pdfmark check, so that even gsview will use pdfmark instead of execform; equivalent to -dDPghostPDFMark
 	-n nest    Allow nested forms; equivalent to -dDPghostNestedForms
 	-b bbox    Don't adjust the BBox and Matrix to fit the page size; equivalent to -dDPghostPageSizeBBox
+	-u undo    Undo BBox and Matrix settings aimed at fitting the page size; equivalent to -dDPghostUndoBBox
 	-l leave   Leave comments in the patch; equivalent to -dDPghostLeaveComments
 	-v verbose Print information during execution
 	-? help    Show this message
@@ -576,6 +592,7 @@ Other options are passed on to ps2pdf as is.
 					['dDPghostPDFMark'] * ('m' in options) +
 					['dDPghostNestedForms'] * ('n' in options) +
 					['dDPghostPageSizeBBox'] * ('b' in options) +
+					['dDPghostUndoBBox'] * ('u' in options) +
 					['dDPghostLeaveComments'] * ('l' in options))
 			result = gs.markForms(argv[0], argv[1], params)
 		if not result: exit(1)

@@ -69,7 +69,7 @@ class View:
 			#	----------------------------------------------------------
 			#	All maps already have their bbox altered to fit on a page.
 			#	----------------------------------------------------------
-			params += ['dDPghostPageSizeBBox']
+			params += ['dDPghostPageSizeBBox', 'dDPghostUndoBBox']
 		#	----------------------------------------
 		#	Add more parameters before this comment.
 		#	----------------------------------------
