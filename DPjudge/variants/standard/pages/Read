@@ -7,7 +7,6 @@ page.include('stylesheet')
 page.include('functions')
 loadGame()
 showGameHeader()
-if page.power: checkPassword()
 :>
 
 <body bgcolor="#ffffff">

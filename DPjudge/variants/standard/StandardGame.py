@@ -266,15 +266,15 @@ class StandardGame(Game):
 		for line in orders:
 			word = line.split()
 			if not word: continue
-			who = [x for x in self.powers
-				if word[0] in (x.name, x.abbrev and x.abbrev + '_' or '')]
+			who = [x for x in self.powers if word[0].upper() in
+				(x.name, x.abbrev and x.abbrev + '_' or '')]
 			if who:
 				who = who[0]
 				if who != power and who.ceo[:1] != [power.name]:
 					for sc in who.homes:
 						if sc in partial: break
 					else:
-						return self.error.append('NO CONTROL OVER ' + word[0])
+						return self.error.append('NO CONTROL OVER ' + who.name)
 				newPower, word = who, word[1:]
 			else: newPower = curPower
 			if word:
