@@ -253,16 +253,9 @@ class StandardGame(Game):
 		#	Empty the order list and then stick each
 		#	order (if any) into it, if it is valid.
 		#	----------------------------------------
-		curPower, hadOrders = power, power.orders
-		#	-------------------------------------------------
-		#	Empty orders for vassal and partial vassal powers
-		#	-------------------------------------------------
+		curPower, hadOrders = power, [power.orders]
+		power.orders, powers = {}, [power]
 		partial = [x[1:] for x in power.centers if x[0] == '/']
-		for who in self.powers:
-			if who is power or who.ceo[:1] == [power.name]: who.orders = {}
-			for order in who.orders:
-				if order.startswith(power.name) or order[2:5] in partial:
-					del who.orders[order]
 		for line in orders:
 			word = line.split()
 			if not word: continue
@@ -270,11 +263,26 @@ class StandardGame(Game):
 				(x.name, x.abbrev and x.abbrev + '_' or '')]
 			if who:
 				who = who[0]
-				if who != power and who.ceo[:1] != [power.name]:
-					for sc in who.homes:
-						if sc in partial: break
+				if who not in powers:
+					#	-------------------------------------------------
+					#	Empty orders for vassal and partial vassal powers
+					#	-------------------------------------------------
+					if who.ceo[:1] == [power.name]:
+						hadOrders += [who.orders]
+						who.orders = {}
 					else:
-						return self.error.append('NO CONTROL OVER ' + who.name)
+						for sc in who.homes:
+							if sc in partial: break
+						else: return self.error.append('NO CONTROL OVER ' +
+							who.name)
+						partOrders = {}
+						for unit in who.orders:
+							if unit.startswith(power.name + ' ') or (
+								unit[1:2] == ' ' and unit[2:5] in partial):
+								partOrders[unit] = who.orders[unit]
+								del who.orders[unit]
+						hadOrders += [partOrders]
+					powers += [who]
 				newPower, word = who, word[1:]
 			else: newPower = curPower
 			if word:
@@ -286,18 +294,23 @@ class StandardGame(Game):
 						(len(newPower.orders) + 1)], newPower.cd = ' '.join(word), 0
 				else: self.addOrder(newPower, word)
 			else: curPower = newPower
-		if self.canChangeOrders(hadOrders, power.orders):
-			if not power.orders: return self.save()
-			if 'DEFAULT_UNORDERED' not in self.rules:
-				[self.error.append('UNIT LEFT UNORDERED: ' + x)
-					for x in power.units if x not in power.orders]
-				[self.error.append('UNIT LEFT UNORDERED: %s ' % y.name + x)
-					for y in self.powers for x in y.units
-					if (x[2:5] in partial or y.ceo[:1] == [power.name]) and
-					x not in y.orders]
+		hasOrders = 0
+		for who, oldOrders in zip(powers, hadOrders):
+			if self.canChangeOrders(oldOrders, who.orders):
+				if not who.orders: continue
+				hasOrders = 1
+				if 'DEFAULT_UNORDERED' not in self.rules:
+					[self.error.append('UNIT LEFT UNORDERED: ' +
+						(who.name + ' ', '')[who is power] + x)
+						for x in who.units if x not in who.orders and
+						(who is power or who.ceo[:1] == [power.name] or
+						x.startswith(power.name + ' ') or
+						(x[1:2] == ' ' and x[2:5] in partial))]
 			if not self.error:
-				self.logAccess(power, '', 'Orders updated')
-				self.process()
+				if hasOrders:
+					self.logAccess(power, '', 'Orders updated')
+					self.process()
+				else: self.save()
 	#	----------------------------------------------------------------------
 	def getOrders(self, power):
 		if self.phaseType in 'RA': return '\n'.join(power.adjust)
