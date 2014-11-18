@@ -434,4 +434,18 @@ We go with the second method. Where's our document root? That's determined by ho
 On UKDP however we set it up better. If we browse to /etc/apache2/sites-available, there's a ukdp configuration file there that sets DocumentRoot to /home/ukdp/ukdp/web. So we just need to copy favicon.ico, conveniently located in $PKG/web, to that location.
 
 Does this immediately reflect in our browser? Unfortunately no, and clearing the browser's cache also doesn't seem to work. What we need to do is to visit the icon itself and do a refresh. In your browser enter "http://uk.diplom.org/favicon.ico", load the image and then press Ctrl+F5. It immediately changes the icons in the title bar for all your UKDP tabs.
+---
+
+After upgrading to Python 2.7 I could no longer run hg. An error message appeared telling that mercurial was not in the install path or PYTHONPATH. I did a find to confirm that mercurial was only located under python2.6.
+
+To fix this I purged and reinstalled mercurial.
+> sudo apt-get purge --remove mercurial
+> sudo apt-get autoremove
+> sudo apt-get install mercurial
+This did not place a mercurial folder or link in python2.7, but somehow the problem was solved.
+> find / -name mercurial -print
+...
+/usr/lib/pyshared/python2.6/mercurial
+/usr/lib/pymodules/python2.6/mercurial
+...
 """
