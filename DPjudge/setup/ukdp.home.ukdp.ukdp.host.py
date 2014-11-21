@@ -73,6 +73,16 @@ publicDomains	=	['.proxy.aol.com', '.mx.aol.com', '.spikings.com']
 #	--------------------------------------------------------
 #gameSubDir	  	=	'games'	# Location: hostDir
 
+#   --------------------------------------------------------
+#   Game creation limit (default 20, use 0 to have no limit).
+#   --------------------------------------------------------
+createLimit    =   0
+
+#   --------------------------
+#   The openings list address.
+#   --------------------------
+openingsList   =   'opening@diplom.org'
+
 #	---------------------------------------------------------
 #	Notify the judgekeeper of any game created on a trial map
 #	0: no notice [default]; 1: trial maps only; 2: all maps
