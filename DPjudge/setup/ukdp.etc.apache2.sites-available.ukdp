@@ -16,7 +16,7 @@
 	Alias /images /home/ukdp/ukdp/web/images
 	<Directory /home/ukdp/ukdp/web/>
 		DirectoryIndex index.cgi index.html
-		Options Indexes FollowSymLinks MultiViews ExecCGI
+		Options -Indexes FollowSymLinks MultiViews ExecCGI
 		AddHandler cgi-script .cgi
 		AllowOverride None
 		Order allow,deny
@@ -33,7 +33,7 @@
 
     Alias /doc/ "/usr/share/doc/"
     <Directory "/usr/share/doc/">
-        Options Indexes MultiViews FollowSymLinks
+        Options -Indexes MultiViews FollowSymLinks
         AllowOverride None
         Order deny,allow
         Deny from all

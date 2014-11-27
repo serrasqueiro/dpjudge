@@ -937,7 +937,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <a name=VENETIAN></a><p><dt><b><tt>VENETIAN</tt></b> (<tt>BLIND</tt> modifier)<dd>
 <!-- RULE VENETIAN +OWN_SCS_SEE +SEE_NO_SCS +BLIND -->
 	A <tt>VENETIAN</tt> game is a <tt>BLIND</tt> mixture, in which owned (as opposed
-	to home) units have "visibility" and foreign supply center ownership is not revealed.
+	to home) centers have "visibility" and foreign supply center ownership is not revealed.
 <!-- RULE END -->
 
 <a name=GREEK></a><p><dt><b><tt>GREEK</tt></b> (<tt>BLIND</tt> modifier)<dd>

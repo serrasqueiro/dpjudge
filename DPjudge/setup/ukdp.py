@@ -434,6 +434,7 @@ We go with the second method. Where's our document root? That's determined by ho
 On UKDP however we set it up better. If we browse to /etc/apache2/sites-available, there's a ukdp configuration file there that sets DocumentRoot to /home/ukdp/ukdp/web. So we just need to copy favicon.ico, conveniently located in $PKG/web, to that location.
 
 Does this immediately reflect in our browser? Unfortunately no, and clearing the browser's cache also doesn't seem to work. What we need to do is to visit the icon itself and do a refresh. In your browser enter "http://uk.diplom.org/favicon.ico", load the image and then press Ctrl+F5. It immediately changes the icons in the title bar for all your UKDP tabs.
+
 ---
 
 After upgrading to Python 2.7 I could no longer run hg. An error message appeared telling that mercurial was not in the install path or PYTHONPATH. I did a find to confirm that mercurial was only located under python2.6.
@@ -448,4 +449,10 @@ This did not place a mercurial folder or link in python2.7, but somehow the prob
 /usr/lib/pyshared/python2.6/mercurial
 /usr/lib/pymodules/python2.6/mercurial
 ...
+
+---
+
+Again a chilling surprise today. On visiting http://uk.diplom.org/maps I could see a directory list of all game maps. Imagine playing a blind game and knowing that you can simply download the maps for every player, including the master. That's simply not acceptable!
+
+After searching on the Internet and comparing with USDP, I browsed through this setup file and noticed the extra configuration files I had created, in particular /etc/apache2/sites-available/ukdp. I knew that Options Indexes was the likely culprit, and finally I found a file that had it set. I put a "-" in front of Indexes and restarted the apache2 service. Now this server too displays a "No permission" error page.
 """
