@@ -249,68 +249,59 @@ class StandardGame(Game):
 		return Game.process(self, now, email, roll)
 	#	----------------------------------------------------------------------
 	def updateOrders(self, power, orders):
-		#	----------------------------------------
-		#	Empty the order list and then stick each
-		#	order (if any) into it, if it is valid.
-		#	----------------------------------------
-		curPower, hadOrders = power, [power.orders]
-		power.orders, powers = {}, [power]
-		partial = [x[1:] for x in power.centers if x[0] == '/']
+		curPower, hadOrders, hasOrders, powers = power, [], [], []
 		for line in orders:
 			word = line.split()
 			if not word: continue
-			who = [x for x in self.powers if word[0].upper() in
-				(x.name, x.abbrev and x.abbrev + '_' or '')]
+			who = self.parsePower(word[0])
 			if who:
-				who = who[0]
+				word = word[1:]
+				if not word:
+					curPower = who
+					continue
+			else: who = curPower
+			nmr = len(word) == 1 and word[0][word[0][:1] in '([':len(
+				word[0]) - (word[0][-1:] in '])')].upper() in ('NMR', 'CLEAR')
+			if nmr or who not in powers :
+				if who is not power and who.ceo[:1] != [power.name]:
+					return self.error.append('NO CONTROL OVER ' + who.name)
+				#	--------------------------------------------------
+				#	Empty orders before sticking any new orders in it.
+				#	--------------------------------------------------
 				if who not in powers:
-					#	-------------------------------------------------
-					#	Empty orders for vassal and partial vassal powers
-					#	-------------------------------------------------
-					if who.ceo[:1] == [power.name]:
-						hadOrders += [who.orders]
-						who.orders = {}
-					else:
-						for sc in who.homes:
-							if sc in partial: break
-						else: return self.error.append('NO CONTROL OVER ' +
-							who.name)
-						partOrders = {}
-						for unit in who.orders:
-							if unit.startswith(power.name + ' ') or (
-								unit[1:2] == ' ' and unit[2:5] in partial):
-								partOrders[unit] = who.orders[unit]
-								del who.orders[unit]
-						hadOrders += [partOrders]
+					hadOrders += [who.orders]
 					powers += [who]
-				newPower, word = who, word[1:]
-			else: newPower = curPower
-			if word:
-				if 'NO_CHECK' in self.rules:
-					data = self.expandOrder(word)
-					if len(data) < 3 and (len(data) == 1 or data[1] != 'H'):
-						return self.error.append('BAD ORDER: ' + line.upper())
-					newPower.orders['ORDER %d' %
-						(len(newPower.orders) + 1)], newPower.cd = ' '.join(word), 0
-				else: self.addOrder(newPower, word)
-			else: curPower = newPower
-		hasOrders = 0
+				who.orders = {}
+				if nmr:
+					hasOrders = [x for x in hasOrders if x is not who]
+					continue
+			if 'NO_CHECK' in self.rules:
+				data = self.expandOrder(word)
+				if len(data) < 3 and (len(data) == 1 or data[1] != 'H'):
+					self.error.append('BAD ORDER: ' + line.upper())
+					continue
+				who.orders['ORDER %d' %
+					(len(who.orders) + 1)], who.cd = ' '.join(word), 0
+			else: self.addOrder(who, word)
+			if who not in hasOrders: hasOrders += [who]
+		#	------------------------------------------
+		#	Make sure the player can update his orders
+		#	------------------------------------------
 		for who, oldOrders in zip(powers, hadOrders):
 			if self.canChangeOrders(oldOrders, who.orders):
-				if not who.orders: continue
-				hasOrders = 1
-				if 'DEFAULT_UNORDERED' not in self.rules:
+				if who not in hasOrders: continue
+				if who.orders and 'DEFAULT_UNORDERED' not in self.rules:
 					[self.error.append('UNIT LEFT UNORDERED: ' +
 						(who.name + ' ', '')[who is power] + x)
 						for x in who.units if x not in who.orders and
-						(who is power or who.ceo[:1] == [power.name] or
-						x.startswith(power.name + ' ') or
-						(x[1:2] == ' ' and x[2:5] in partial))]
-			if not self.error:
-				if hasOrders:
-					self.logAccess(power, '', 'Orders updated')
-					self.process()
-				else: self.save()
+						(who is power or who.ceo[:1] == [power.name])]
+		if not self.error:
+			if hasOrders:
+				self.logAccess(power, '', 'Orders updated')
+				self.process()
+			else:
+				self.logAccess(power, '', 'Orders cleared')
+				self.save()
 	#	----------------------------------------------------------------------
 	def getOrders(self, power):
 		if self.phaseType in 'RA': return '\n'.join(power.adjust)

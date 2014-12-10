@@ -23,23 +23,33 @@ def showOrdersButton():
 		<td><input class=inputSubmit type=submit value="Read"></td></form>
 		""" % (game.name, data, which))
 #	----------------------------------------------------------------------
+def isAlive(power):
+	if power.centers or power.units or power.retreats: return True
+	game = page.game
+	if not 'GARRISON' in game.rules: return False
+	save = next = game.phase
+	while next not in 'AM':
+		game.phase = game.findNextPhase()
+		next = game.phase.split()[-1][0]
+	game.phase = save
+	return next == 'A'
+#	----------------------------------------------------------------------
 def showOrders():
+	import json, cgi
+
 	page.write('<td><table border=0 cellpadding=2 cellspacing=2 width=100%>')
 	game, power = page.game, page.power
-	alive = power.centers or power.units or power.retreats
-	if not alive and 'GARRISON' in game.rules:
-		save = next = game.phase
-		while next not in 'AM':
-			game.phase = game.findNextPhase()
-			next = game.phase.split()[-1][0]
-			alive = next == 'A'
-		game.phase = save
-	if not alive: return showWaitNotice()
+	alive = isAlive(power)
+	vassals = [x for x in game.powers if x.ceo[:1] == [power.name] and
+		isAlive(x)]
+	if not alive and not vassals:
+		showWaitNotice()
+		return page.write('</table></td>')
 	which, shown = 'LATER', 0
 	if [x for x in game.powers if x.units and not x.list['SOONER']]:
 		which = 'SOONER'
 	if (('MOBILIZE' in game.rules or 'BLANK_BOARD' in game.rules)
-	and 'SKIP_FIRST' in game.rules): which = 'LATER'
+		and 'SKIP_FIRST' in game.rules): which = 'LATER'
 	page.write('<p>')
 	if not game.await: page.write(
 		'<form %s><input type=hidden name=page value=Update>'
@@ -47,7 +57,8 @@ def showOrders():
 		'<input type=hidden name=power value=%s>'
 		'<input type=hidden name=password value=%s>'
 		'<input type=hidden name=phase value=%s>' %
-		(('onSubmit="return false"', 'method=post')[page.pwdFlag == 1],
+		(('onSubmit="return false"',
+		'method=post name=UpdateForm')[page.pwdFlag == 1],
 		game.name, power.name, page.password, game.phaseAbbr()))
 	if game.phaseType != 'M':
 		if game.phaseType == 'A': shown = showAdjustList()
@@ -61,49 +72,77 @@ def showOrders():
 	page.write(
 		"""
 		<tr><td class=bodycopy align=center><font size=2>
-		<b>%s Order List</b></font><br>
+		<p><b>%s Order List</b></font></p>
 		""" % curPhase)
 	if which == 'LATER':
-		text = """
-			<table cellspacing=0 cellpadding=5 border=1 width=80%>
-			<tr><td bgcolor=white class=bodycopy>
-			<pre><font size=2>"""
-		if not game.await: game.determineOrders(power, processing = 0)
-		for count, order in enumerate(power.list['SOONER']):
-			if game.await:
-				text += order + '\n'
-				continue
-			if power.notes[count] == 'ignored':
-				start, end = '<font color=brown><i>', '</i></font>'
-			elif power.notes[count] == 'default':
-				start, end = '<font color=green>', '</font>'
-			elif power.notes[count] == 'ordered': start = end = ''
-			elif power.notes[count] == 'revoked':
-				start, end = '<strike>', '</strike>'
-			elif power.notes[count] in ('proxied', 'byProxy', 'proxy??'):
-				start, end = '<font color=gray>', '</font>'
-			else: start, end = '<font color=red>', '</font>'
-			text += (start + '[%s] ' % power.notes[count] + order + end + '\n')
-		page.write(text + '</td></tr></table>')
+		for who in [power][:alive] + vassals:
+			if who is not power:
+				page.write('</p><font size=2><b>%s</b></font><p>' %
+					game.anglify(who.name))
+			text = """
+				<table cellspacing=0 cellpadding=5 border=1 width=80%>
+				<tr><td bgcolor=white class=bodycopy>
+				<pre><font size=2>"""
+			if not game.await: game.determineOrders(who, processing = 0)
+			for count, order in enumerate(who.list['SOONER']):
+				if game.await:
+					text += order + '\n'
+					continue
+				if who.notes[count] == 'ignored':
+					start, end = '<font color=brown><i>', '</i></font>'
+				elif who.notes[count] == 'default':
+					start, end = '<font color=green>', '</font>'
+				elif who.notes[count] == 'ordered': start = end = ''
+				elif who.notes[count] == 'revoked':
+					start, end = '<strike>', '</strike>'
+				elif who.notes[count] in ('proxied', 'byProxy', 'proxy??'):
+					start, end = '<font color=gray>', '</font>'
+				else: start, end = '<font color=red>', '</font>'
+				text += start + '[%s] ' % who.notes[count] + order + end + '\n'
+			page.write(text + '</td></tr></table>')
 		if shown and game.phaseType == 'M':
 			page.write(
 			"""
 			<tr><td class=bodycopy align=center><font size=2>
-			<b>%s Order List</b></font><br>
+			<p><b>%s Order List</b></font></p>
 			""" % nextPhase)
 	if game.skip: which = 'LATER'
 	if shown:
 		if game.phaseType == 'M':
+			if alive: unorders = ['(NMR)']
+			else: unorders = []
+			for who in vassals:
+				unorders += ['[' + who.name + ']', '(NMR)']
+			unorders = '\n'.join(unorders)
 			try: orders = page.errorOrders
-			except: orders = power.list[which]
+			except: orders = []
+			if not orders:
+				if alive:
+					orders = power.list[which]
+					if not orders: orders = ['(NMR)']
+				for who in vassals:
+					orders += ['[' + who.name + ']']
+					if who.list[which]: orders += who.list[which]
+					else: orders += ['(NMR)']
 			rows = max(len(orders), 19) + 1
-			page.write(
-				'<textarea class=inputBox rows=%s cols=50 name=%s wrap=off>' %
-				(rows, which))
-			map(page.write, orders)
-			page.write('</textarea>')
-		if power.units: showWaitFlag()
+			orders = '\n'.join(orders)
+			page.write("""
+				<p><input onClick='document.UpdateForm.%s.value = %s'
+				type=button value="Clear" class="inputSubmit">
+				""" % (which, json.dumps(unorders)))
+			if unorders != orders:
+				page.write("""
+					&nbsp;&nbsp;
+					<input onClick='document.UpdateForm.%s.value = %s'
+					type=button value="Revert" class="inputSubmit">
+					""" % (which, json.dumps(orders)))
+			page.write('</p><p><textarea rows=%s cols=40 name=%s wrap=off '
+				'class=inputBox>' % (rows, which))
+			page.write(cgi.escape(orders))
+			page.write('</textarea></p>')
+		showWaitFlag()
 		changeButton()
+		page.write('<tr><td height=5></td></tr>')
 	page.write('</table></td>')
 #	----------------------------------------------------------------------
 :>

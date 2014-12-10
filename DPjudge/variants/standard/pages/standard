@@ -1,66 +1,68 @@
 <:
 #	----------------------------------------------------------------------
 def showOrderList():
-	if not page.power.units: return
+	import json, cgi
+
+	power, game = page.power, page.game
+	active = power.units
+	vassals = [x for x in game.powers if x.ceo[:1] == [power.name] and x.units]
+	if not active and not vassals: return
 	page.write(
 		"""
 		<tr><td class=bodycopy align=center><font size=2>
 		<b>%s Orders</b></font><br>
-		""" % page.game.phaseName(form=2).title())
-	if 'NO_CHECK' in page.game.rules: page.write(
+		""" % game.phaseName(form=2).title())
+	if 'NO_CHECK' in game.rules: page.write(
 		'<font color=red>Remember: '
 		'Specify the path of any convoying army '
 		'by listing the fleets involved!</font><p>')
-	rows = max(len(page.power.orders), 19) + 1
-	page.write(
-		'<textarea rows=%s cols=40 name=orders wrap=off class=inputBox>' % rows)
-	partial = [x[1:] for x in page.power.centers if x[0] == '/']
-	if 'orders' in vars(page): page.write(page.orders)
+	unorders = []
+	if 'NO_CHECK' in game.rules:
+		if active: unorders += ['(NMR)']
+		for who in vassals:
+			unorders += ['[' + who.name + ']', '(NMR)']
 	else:
-		if 'NO_CHECK' in page.game.rules:
-			for order in page.power.orders.values(): page.write(order)
-			for who in page.game.powers:
-				if who is page.power or who.ceo[:1] != [page.power.name]:
-					continue
-				for order in who.orders.values():
-					page.write(who.name + ' ' + order)
-			if partial:
-				for who in page.game.powers:
-					if who is page.power or who.ceo[:1] == [page.power.name]:
-						continue
-					for unit, order in who.orders.items():
-						if unit.startswith(page.power.name + ' '):
-							page.write(who.name + ' ' + order)
+		if active: unorders += power.units
+		for who in vassals:
+			unorders += ['[' + who.name + ']'] + who.units
+	unorders = '\n'.join(unorders)
+	if 'orders' in vars(page): orders = page.orders.split('\n')
+	else:
+		orders = []
+		if 'NO_CHECK' in game.rules:
+			if active:
+				if power.orders: orders += power.orders.values()
+				else: orders += ['(NMR)']
+			for who in vassals:
+				orders += ['[' + who.name + ']']
+				if who.orders: orders += who.orders.values()
+				else: orders += ['(NMR)']
 		else:
-			if page.power.orders:
-				for unit, order in page.power.orders.items():
-					page.write(unit + ' ' + order)
-			else:
-				for unit in page.power.units: page.write(unit + ' ')
-			for who in page.game.powers:
-				if who is page.power or who.ceo[:1] != [page.power.name]:
-					continue
+			if active:
+				if power.orders:
+					orders += [u + ' ' + o for u, o in power.orders.items()]
+				else: orders += power.units
+			for who in vassals:
+				orders += ['[' + who.name + ']']
 				if who.orders:
-					for unit, order in who.orders.items():
-						page.write(who.name + ' ' + unit + ' ' + order)
-				else:
-					for unit in who.units:
-						page.write(who.name + ' ' + unit + ' ')
-			if partial:
-				for who in page.game.powers:
-					if who is page.power or who.ceo[:1] == [page.power.name]:
-						continue
-					hasOrders = 0
-					if who.orders:
-						for unit, order in who.orders.items():
-							if unit[1:2] == ' ' and unit[2:5] in partial:
-								page.write(who.name + ' ' + unit + ' ' + order)
-								hasOrders = 1
-					if not hasOrders:
-						for unit in who.units:
-							if unit[1:2] == ' ' and unit[2:5] in partial:
-								page.write(who.name + ' ' + unit + ' ')
-	page.write('</textarea></td></tr>')
+					orders += [u + ' ' + o for u, o in who.orders.items()]
+				else: orders += who.units
+	rows = max(len(orders), 19) + 1
+	orders = '\n'.join(orders)
+	page.write("""
+		<p><input onClick='document.UpdateForm.orders.value = %s'
+		type=button value="Clear" class="inputSubmit">
+		""" % json.dumps(unorders))
+	if unorders != orders:
+		page.write("""
+			&nbsp;&nbsp;
+			<input onClick='document.UpdateForm.orders.value = %s'
+			type=button value="Revert" class="inputSubmit">
+			""" % json.dumps(orders))
+	page.write('</p><p><textarea rows=%s cols=40 name=orders wrap=off '
+		'class=inputBox>' % rows)
+	page.write(cgi.escape(orders))
+	page.write('</textarea></p></td></tr>')
 	return 1
 #	----------------------------------------------------------------------
 def showLists(orders = 0):
@@ -74,8 +76,7 @@ def showLists(orders = 0):
 				<!--ORDER SUBMISSION TABLE BEGINS HERE-->		
 				<table border=0 align=center>
 		""")
-	if page.game.await or (not page.power.centers
-	and not page.power.units and not page.power.retreats): shown = 0
+	if page.game.await: shown = 0
 	else:
 		page.write(
 			"""
@@ -98,11 +99,8 @@ def showLists(orders = 0):
 		showWaitFlag()
 		changeButton()
 	else: showWaitNotice()
-	page.write('</td></tr>')
 	page.write(
 		"""
-		</td>
-		</tr>
 		<tr><td height=5></td></tr>
 		</table>
 		<!--ORDER SUBMISSION TABLE ENDS HERE-->

@@ -1690,9 +1690,11 @@ class Game:
 				(self.name, self.timeFormat())]
 		self.openMail(subject,
 			mailTo = email, mailAs = host.dpjudge)
-		if (playing and playing.name in self.map.powers
-		and (playing.units or playing.retreats or playing.centers)):
-			lines += [self.powerOrders(playing)]
+		if (playing and (playing.name in self.map.powers
+		and (playing.units or playing.retreats or playing.centers))
+		or [1 for x in self.powers if x.ceo[:1] == [playing.name]
+		and x.units or x.retreats or x.centers]):
+			lines += [self.playerOrders(playing)]
 		self.mail.write('\n'.join(self.mapperHeader()) + '\n\n')
 		self.mail.write('\n'.join(lines) + '\n')
 		self.mail.close()
@@ -3344,8 +3346,8 @@ class Game:
 			both = (before & after) | set(scs)
 			before, after = before - both, after - both
 			old, new = old[:3], new[:3]
-			places = (' ' in unit and unit in power.hides and [(new, 4)] or
-				 old == new and [(old, 5)] or [(old, 1), (new, 4)])
+			places = (' ' in unit and unit in getattr(power, 'hides', []) and
+				[(new, 4)] or old == new and [(old, 5)] or [(old, 1), (new, 4)])
 
 			#	-------------------------------------------------------
 			#	Set the bitmap for this "seer" if any unit or sc in the
@@ -3989,7 +3991,36 @@ class Game:
 			return self.error.append('ORDERS REQUIRED AFTER SUBMISSION')
 		return 1
 	#	----------------------------------------------------------------------
+	def parsePower(self, word):
+		upword = word[word[:1] in '([':len(word) - (word[-1:] in '])')].upper()
+		powers = [x for x in self.powers if upword == x.name or
+			(len(word) != len(upword) and x.abbrev and x.abbrev == upword)]
+		if powers: return powers[0]
+	#	----------------------------------------------------------------------
 	def updateOffPhases(self, power, adjust):
+		powers, adjusts = [power], {power.name: []}
+		curPower = power
+		for order in adjust:
+			word = order.split()
+			if not word: continue
+			who = self.parsePower(word[0])
+			if who:
+				if who.name not in adjusts:
+					if who.ceo[:1] != [power.name]:
+						return self.error.append('NO CONTROL OVER ' + who.name)
+					powers += [who]
+					adjusts[who.name] = []
+				word = word[1:]
+				if not word:
+					curPower = who
+					continue
+			else: who = curPower
+			adjusts[who.name] += [' '.join(word)]
+		for who in powers:
+			self.updatePowerOffPhases(who, adjusts[who.name])
+		return self.error
+	#	----------------------------------------------------------------------
+	def updatePowerOffPhases(self, power, adjust):
 		if not adjust or '(NMR)' in adjust:
 			if adjust and adjust.count('(NMR)') < len(adjust):
 				self.error += ['ORDERS INCOMPLETE']
@@ -4294,9 +4325,15 @@ class Game:
 		try:
 			if self.phaseType in 'RA': orders = '\n'.join(power.adjust)
 			else: orders = self.getOrders(power)
-		except: orders = '(None)'
-		return ('Current orders for %s:\n\n%s\n\nEnd of orders.\n' %
-			(self.anglify(power.name), orders or '(NMR)'))
+		except: orders = ''
+		return ('Current orders for %s:\n\n%s\n\n' %
+			(self.anglify(power.name), orders or '(None)'))
+	#	----------------------------------------------------------------------
+	def playerOrders(self, power):
+		orders = self.powerOrders(power)
+		orders += ''.join([self.powerOrders(x) for x in self.powers
+			if x.ceo[:1] == [power.name]])
+		return orders + 'End of orders.\n'
 	#	----------------------------------------------------------------------
 	def lateNotice(self, after = 0):
 		#	----------------------------------------------------------------------
@@ -4438,7 +4475,7 @@ class Game:
 	def reportOrders(self, power, email = None):
 		if not email and 'BROADCAST_ORDERS' in self.rules:
 			return self.mailPress(None, ['All'],
-				self.powerOrders(power), subject = 'Diplomacy orders')
+				self.playerOrders(power), subject = 'Diplomacy orders')
 		if email:
 			whoTo = email
 			if power.address and not [
@@ -4447,7 +4484,7 @@ class Game:
 				whoTo += ',' + power.address[0]
 		else: whoTo = power.address[0]
 		self.openMail('Diplomacy orders', mailTo = whoTo, mailAs = host.dpjudge)
-		self.mail.write(self.powerOrders(power))
+		self.mail.write(self.playerOrders(power))
 		self.mail.close()
 	#	----------------------------------------------------------------------
 	def setAbsence(self, power, nope, line):
