@@ -1834,8 +1834,9 @@ class Game:
 		#	----------------------------------------
 		#	Create list of eligible press recipients
 		#	----------------------------------------
-		who = self.powers + (['MASTER', 'ALL'], ['ALL', 'MASTER'])[
-		'PRESS_MASTER' in self.rules]
+		if not self.powers: who = ['MASTER']
+		else: who = self.powers + (['MASTER', 'ALL'], ['ALL', 'MASTER'])[
+				'PRESS_MASTER' in self.rules]
 		if sendingPower.name == 'MASTER': 
 			who.remove('MASTER')
 			who.append('JUDGEKEEPER')

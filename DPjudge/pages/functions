@@ -460,8 +460,8 @@ def showGameInfo():
 		if 'preparation' in game.status: showInfo('Current Phase',
 			'<font color=white><blink>Preparation</blink></font>')
 		else:
-			spots = (int(game.avail[0])
-				or (len(game.map.powers) - len(game.map.dummies)))
+			spots = int(game.avail[0])
+				# or (len(game.map.powers) - len(game.map.dummies))
 			showInfo('<blink>Players Needed', '%d Position%s Remain' %
 				(spots, 's'[spots == 1:]) + 's'[spots != 1:])
 			showInfo('<a href=mailto:%s?subject=%s>'
@@ -793,10 +793,6 @@ def showReadyNotice():
 		'</font></th></tr></table></th></tr>')
 #	----------------------------------------------------------------------
 def showPressOptions():
-	if not page.game.powers:
-		page.write('<td class=bodycopy align=center valign=top>'
-					'(None available)</td>')
-		return
 	readers = page.game.eligiblePressRecipients(page.power)
 	page.write('<form method=post name=press>'
 		'<input type=hidden name=page value=Press>'
@@ -832,28 +828,29 @@ def showPressOptions():
 			"""
 			</script>
 			<td class="bodycopy" nowrap><b>Send Press To:</b></td>
-			</tr>
-			<td valign=top class=bodycopy><b>
+			</tr><tr><td><table cellspacing=0>
 			""")
 		for power in readers:
-			page.write('<input type=checkbox name=recipient value=' + power)
-			if 'ALL' in readers:
-				page.write('onclick=reclick(%d)' % (power == 'ALL'))
-			page.write('>%s<br>' % page.game.anglify(power))
+			page.write(
+				"""
+				<tr><td>
+				<input type=checkbox name=recipient value=%s%s>
+				</td><td class="bodycopy" nowrap><b>%s</b></td></tr>
+				""" % (power, 'ALL' in readers and ' onclick=reclick(%d)' %
+				(power == 'ALL') or '', page.game.anglify(power)))
 		page.write(
 			"""
-			</td></tr><tr><td align=center>
+			</table></td></tr><tr><td align=center>
 			<input type=button class=inputSubmit
 			value="Compose" onclick=compose()>
 			</td>
 			""")
-	elif page.power.name != 'MASTER': page.write(
+	else: page.write(
 		"""
-		<input type=hidden name=recipient value=MASTER>
-		<th><input class=inputSubmit type=submit value="Mail the Master">
+		<input type=hidden name=recipient value=%s>
+		<th><input class=inputSubmit type=submit value="Mail the %s">
 		</th>
-		""")
-	else: page.write('<td class=bodycopy align=center>(None available)</td>')
+		""" % (readers[0], page.game.anglify(readers[0])))
 	page.write('</form>')
 #	----------------------------------------------------------------------
 def showWaitNotice():
