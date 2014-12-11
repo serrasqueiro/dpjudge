@@ -826,31 +826,32 @@ def showPressOptions():
 				""" % readers.index('ALL'))
 		page.write(
 			"""
-			</script>
-			<td class="bodycopy" nowrap><b>Send Press To:</b></td>
-			</tr><tr><td><table cellspacing=0>
+</script>
+<td><table cellspacing=0>
+<tr><td class="bodycopy" nowrap><b>Send Press To:</b></td></tr>
 			""")
 		for power in readers:
 			page.write(
 				"""
-				<tr><td>
-				<input type=checkbox name=recipient value=%s%s>
-				</td><td class="bodycopy" nowrap><b>%s</b></td></tr>
+<tr><td class="bodycopy" nowrap>
+<input type=checkbox name=recipient value=%s%s>
+<b>%s</b></td></tr>
 				""" % (power, 'ALL' in readers and ' onclick=reclick(%d)' %
 				(power == 'ALL') or '', page.game.anglify(power)))
 		page.write(
 			"""
-			</table></td></tr><tr><td align=center>
-			<input type=button class=inputSubmit
-			value="Compose" onclick=compose()>
-			</td>
+<tr><td align=center>
+<input type=button class=inputSubmit value="Compose" onclick=compose()>
+</td></tr>
+</table></td>
 			""")
-	else: page.write(
+	elif readers: page.write(
 		"""
 		<input type=hidden name=recipient value=%s>
 		<th><input class=inputSubmit type=submit value="Mail the %s">
 		</th>
 		""" % (readers[0], page.game.anglify(readers[0])))
+	else: page.write('<td class=bodycopy align=center>(None&nbsp;available)</td>')
 	page.write('</form>')
 #	----------------------------------------------------------------------
 def showWaitNotice():
