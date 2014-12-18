@@ -912,15 +912,41 @@ class PayolaGame(Game):
 				self.mail = None
 	#	----------------------------------------------------------------------
 	def updateOrders(self, power, offers):
-		hadOffers = power.offers
-		power.offers, power.sheet, power.cd = [], [], 0
+		#	---------------------------------------------------------
+		#	Offers for controlled powers should not be included here,
+		#	as each power has its own purse, acceptance list, etc.
+		#	---------------------------------------------------------
+		hadOffers, hasOffers = power.offers, None
 		for line in filter(None, offers):
-			offer = self.parseOffer(power, line)
-			if offer: power.sheet += [offer]
+			word = line.strip().split()
+			if not word: continue
+			if len(word) == 1 and word[0][word[0][:1] in '([':len(
+				word[0]) - (word[0][-1:] in '])')].upper() in ('NMR', 'CLEAR'):
+				power.offers, power.sheet, hasOffers = [], [], 0
+			else:
+				if hasOffers is None:
+					power.offers, power.sheet = [], []
+				offer = self.parseOffer(power, line)
+				if offer:
+					hasOffers = 1
+					power.sheet += [offer]
+		#	------------------------------------------
+		#	Make sure the player can update his orders
+		#	------------------------------------------
+		if hasOffers is None: return 1
 		self.validateOffers(power)
-		if self.canChangeOrders(hadOffers, power.offers) and not self.error:
+		self.canChangeOrders(hadOffers, power.offers)
+		if self.error: return self.error
+		#	-------------------------------------------
+		#	Clear CD flag, even if orders were cleared.
+		#	-------------------------------------------
+		power.cd = 0
+		if hasOffers:
 			self.logAccess(power, '', 'Offers updated')
 			self.process()
+		else:
+			self.logAccess(power, '', 'Offers cleared')
+			self.save()
 	#	----------------------------------------------------------------------
 	def getOrders(self, power):
 		if self.phaseType in 'RA': return '\n'.join(power.adjust)

@@ -227,32 +227,35 @@ class XtalballGame(Game):
 			and [x for x in self.powers if x.units and not x.list['SOONER']]):
 				which = 'SOONER'
 		curPower, hadOrders, hasOrders, powers = power, [], [], []
-		for line in [x.strip() for x in orders]:
-			word = line.split()
+		for line in orders:
+			word = line.strip().split()
 			if not word: continue
-			who = self.parsePower(word[0])
+			who, parsed = self.getPower(word)
 			if who:
-				word = word[1:]
+				word = word[parsed:]
 				if not word:
 					curPower = who
 					continue
 			else: who = curPower
 			nmr = len(word) == 1 and word[0][word[0][:1] in '([':len(
 				word[0]) - (word[0][-1:] in '])')].upper() in ('NMR', 'CLEAR')
-			if nmr or who not in powers:
+			if who not in powers:
 				if who is not power and who.ceo[:1] != [power.name]:
-					return self.error.append('NO CONTROL OVER ' + who.name)
+					return self.error.append('NO CONTROL OVER ' + who.name + (
+						'PROXY_OK' in self.rules and 
+						' (NO NEED TO SPECIFY THE POWER FOR PROXIED UNITS)' or ''))
 				#	----------------------------------------
 				#	Empty the order list and then stick each
 				#	order (if any) into it, if it is valid.
 				#	----------------------------------------
-				if who not in powers:
-					powers += [who]
-					hadOrders += [power.list[which]]
+				powers += [who]
+				hadOrders += [power.list[which]]
 				who.list[which] = []
-				if nmr:
-					hasOrders = [x for x in hasOrders if x is not who]
-					continue
+				if nmr: continue
+			elif nmr:
+				who.list[which] = []
+				hasOrders = [x for x in hasOrders if x is not who]
+				continue
 			word = self.expandOrder(word)
 			if len(word) < 3:
 				self.error += ['BAD ORDER: ' + line]
@@ -264,19 +267,29 @@ class XtalballGame(Game):
 		#	------------------------------------------
 		#	Make sure the player can update his orders
 		#	------------------------------------------
+		if not powers: return 1
 		for who, oldOrders in zip(powers, hadOrders):
 			self.canChangeOrders(hadOrders, who.list[which])
 		if self.error: return self.error
+		#	-------------------------------------------
+		#	Clear CD flag, even if orders were cleared.
+		#	-------------------------------------------
+		for who in powers: who.cd = 0
 		if not hasOrders:
 			self.logAccess(power, '', 'Orders cleared')
-			return self.save()
-		for who in hasOrders: who.cd = 0
+			self.save()
+			return
 		self.logAccess(power, '', 'Orders updated')
+		if len(hasOrders) < len(powers):
+			self.save()
+			return
 		#	--------------------------------------
 		#	If this is not the first turn, there's
 		#	a locked-in turn ready.  Process it.
 		#	--------------------------------------
-		if which != 'SOONER': return self.process()
+		if which != 'SOONER':
+			self.process()
+			return
 		#	---------------------------------------------
 		#	This is the first game turn.  If this was the
 		#	last player to lock in an order list for it,

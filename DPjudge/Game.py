@@ -457,13 +457,31 @@ class Game:
 		if 'NO_CHECK' in self.rules: [error.append('AMBIGUOUS PLACENAME: ' + x)
 			for x in result if x.upper() in self.map.unclear]
 		while which < len(result):
-			#	Don't convert anything after a proxy request
-			if 'P' in final: item, parsed = result[which].upper(), 1
-			else: item, parsed = self.map.alias(result[which:])
+			#	---------------------------------------------
+			#	Concatenate everything after a proxy request.
+			#	---------------------------------------------
+			if 'P' in final:
+				item, parsed = result[which].upper(), 1
+				if final[-1] != 'P' or final[-2:] == ['P'] * 2:
+					final[-1] += item
+					item = ''
+			else:
+				item, parsed = self.map.alias(result[which:])
+				#	---------------------------------
+				#	Insert "-" between two locations.
+				#	---------------------------------
+				if (item and len(item.split('/')[0]) == 3 and
+					final and len(final[-1].split('/')[0]) == 3): final += ['-']
 			if item: final += [item]
 			which += parsed or 1
 			if not parsed and 'NO_CHECK' in self.rules:
 				error += ['UNRECOGNIZED DATA IN ORDER: ' + item]
+		#	------------------------------------------
+		#	Replace proxy target with full power name.
+		#	------------------------------------------
+		if 'P' in final and final[-1] != 'P':
+			who, parsed = self.getPower(final[-1], 0)
+			if who: final[-1] = who.name
 		#	-------------------------------
 		#	Remove the "H" from any order
 		#	having the form "u xxx S xxx H"
@@ -626,7 +644,8 @@ class Game:
 					self.mode = self.modeRequiresEnd = None
 			elif blockMode == 3:
 				# Power data
-				if self.mode and upword == 'END' and len(word) == 2 and word[1].upper() == self.mode:
+				if (self.mode and upword == 'END' and
+					len(word) == 2 and word[1].upper() == self.mode):
 					self.mode = self.modeRequiresEnd = None
 				elif (not self.parsePowerData(power, word, includeFlags)
 				and includeFlags & 6 == 6):
@@ -3992,26 +4011,50 @@ class Game:
 			return self.error.append('ORDERS REQUIRED AFTER SUBMISSION')
 		return 1
 	#	----------------------------------------------------------------------
-	def parsePower(self, word):
-		upword = word[word[:1] in '([':len(word) - (word[-1:] in '])')].upper()
-		powers = [x for x in self.powers if upword == x.name or
-			(len(word) != len(upword) and x.abbrev and x.abbrev == upword)]
-		if powers: return powers[0]
+	def getPower(self, word, ambiguous = 1):
+		if not word: return ('', 0)
+		ambiguous = ambiguous and len(word) > 1
+		if not ambiguous: item, parsed = ''.join(word), len(word)
+		elif word[0][0] in '([':
+			item, parsed = word[0], 1
+			if item[-1] in '])': ambiguous = 0
+			else:
+				for tail in word[1:]:
+					if tail[0] in '([': break
+					item += tail
+					parsed += 1
+					if tail[-1] in '])':
+						ambiguous = 0
+						break
+		if ambiguous: item, parsed = word[0], 1
+		item = item.upper()
+		upword = item[item[:1] in '([':len(item) - (item[-1:] in '])')]
+		if not upword: return ('', 0)
+		ambiguous = ambiguous and upword == item
+		powers = [x for x in self.powers if upword in
+			[x.abbrev, x.name][ambiguous:]]
+		if powers: return (powers[0], parsed)
+		if ambiguous and len(word[0]) > 1:
+			item, parsed = ''.join(word).upper(), len(word)
+			upword = item[item[:1] in '([':len(item) - (item[-1:] in '])')]
+			powers = [x for x in self.powers if upword == x.name]
+			if powers: return (powers[0], parsed)
+		return ('', 0)
 	#	----------------------------------------------------------------------
 	def updateOffPhases(self, power, adjust):
 		powers, adjusts = [power], {power.name: []}
 		curPower = power
 		for order in adjust:
-			word = order.split()
+			word = order.strip().split()
 			if not word: continue
-			who = self.parsePower(word[0])
+			who, parsed = self.getPower(word[0])
 			if who:
 				if who.name not in adjusts:
 					if who.ceo[:1] != [power.name]:
 						return self.error.append('NO CONTROL OVER ' + who.name)
 					powers += [who]
 					adjusts[who.name] = []
-				word = word[1:]
+				word = word[parsed:]
 				if not word:
 					curPower = who
 					continue
