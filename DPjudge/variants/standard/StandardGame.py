@@ -291,8 +291,10 @@ class StandardGame(Game):
 		#	------------------------------------------
 		if not powers: return 1
 		for who, oldOrders in zip(powers, hadOrders):
-			self.canChangeOrders(oldOrders, who.orders)
-			if (not self.error and who.orders and 'NO_CHECK' not in self.rules and
+			self.canChangeOrders(oldOrders, who.orders,
+				'PROXY_OK' in self.rules and not who.units)
+			if (not self.error and who.orders and
+				'NO_CHECK' not in self.rules and
 				'DEFAULT_UNORDERED' not in self.rules):
 				[self.error.append('UNIT LEFT UNORDERED: ' +
 					(who.name + ' ', '')[who is power] + x)

@@ -302,8 +302,17 @@ remove) phase orders?  Anything I need to know about those?</b>
 <P>
 <dt><b>Are you just as picky about using <tt>DISBAND</tt> (for retreat orders) and <tt>REMOVE</tt> (for adjustment orders) exclusively as any of the other judges out there?</b>
 <dd>
-I'm afraid yes. All the more reason to get accustomed to the Web Interface, where no such banalities exist.
-
+No, not at all. You're allowed to mix them up, even to write them at the front or back. You can also use <tt>+</tt> for <tt>BUILD</tt>, and <tt>-</tt> or <tt>*</tt> for <tt>REMOVE/DISBAND</tt>. And you can use <tt>RETREAT</tt> instead of <tt>MOVE</tt>. Thus a sentence like:<br>
+	<tt>
+	&nbsp;&nbsp;
+	The fleet in St. Petersburg (south coast) retreats to the Gulf of Bothnia
+	</tt>
+<br>will be interpreted as<br>
+	<tt>
+	&nbsp;&nbsp;
+	RETREAT F STP/SC - BOT
+	</tt>
+<br>If you don't believe me, try it.
 	</td>
 	</tr>
 	</table>
@@ -429,7 +438,7 @@ Of course you can also use the Clear button to clear all orders, then fill in ne
 <dt><b>What happens if I just leave <tt>(NMR)</tt> in while writing my orders?</b>
 <dd>
 <tt>(NMR)</tt> actually works just like the <tt>CLEAR</tt> statement in e-mails. Either of these will clear all the orders for the current power (if a power statement was given, otherwise the main power; see the topic on controlled units) up to now, but not any order following this statement.
-That is, you could leave your old orders stand in the order box, write <tt>CLEAR</tt> or <tt>NMR</tt> (with or without brackets) below them, and then write new orders below that, while still being able to see the original orders. E.g.
+That is, you could leave your old orders stand in the order box, write <tt>CLEAR</tt> or <tt>NMR</tt> (with or without brackets) below them, and then write new orders below that. This way you're still able to see the original orders. E.g.
 		<tt>
 		<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		A TRI - ALB

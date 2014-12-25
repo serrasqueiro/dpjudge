@@ -6,8 +6,7 @@ def showAcceptList():
 	or ('PAY_DUMMIES' in page.game.rules
 	and 'VASSAL_DUMMIES' not in page.game.rules)
 	or (not page.power.centers and page.game.phaseType == 'A')): return
-	if ('VASSAL_DUMMIES' in page.game.rules
-	and not [x for x in page.game.powers if x.ceo == [page.power.name]]): return
+	if 'VASSAL_DUMMIES' in page.game.rules and not page.power.vassals(): return
 	page.write('<tr><td align=center class=bodycopy><b>Acceptance List: ')
 	page.write(page.game.await and '<tt>%s</tt></b>' % accept or
 		'</b><input class=inputBox name=accept maxlength=%d size=%d value=%s>' %

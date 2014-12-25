@@ -4,8 +4,10 @@ def showOrderList():
 	import json, cgi
 
 	power, game = page.power, page.game
-	active = power.units
-	vassals = [x for x in game.powers if x.ceo[:1] == [power.name] and x.units]
+	dummyProxy = 'PROXY_OK' in game.rules and 'HIDE_DUMMIES' in game.rules
+	vassals = [x for x in power.vassals() if x.units or dummyProxy]
+	active = power.units or ('PROXY_OK' in game.rules and
+		not power.isDummy(True) and (power.centers or vassals))
 	if not active and not vassals: return
 	page.write(
 		"""
@@ -22,9 +24,9 @@ def showOrderList():
 		for who in vassals:
 			unorders += ['[' + who.name + ']', '(NMR)']
 	else:
-		if active: unorders += power.units
+		if active: unorders += power.units or ['(NMR)']
 		for who in vassals:
-			unorders += ['[' + who.name + ']'] + who.units
+			unorders += ['[' + who.name + ']'] + (who.units or ['(NMR)'])
 	unorders = '\n'.join(unorders)
 	if 'orders' in vars(page): orders = page.orders.split('\n')
 	else:
@@ -41,12 +43,12 @@ def showOrderList():
 			if active:
 				if power.orders:
 					orders += [u + ' ' + o for u, o in power.orders.items()]
-				else: orders += power.units
+				else: orders += power.units or ['(NMR)']
 			for who in vassals:
 				orders += ['[' + who.name + ']']
 				if who.orders:
 					orders += [u + ' ' + o for u, o in who.orders.items()]
-				else: orders += who.units
+				else: orders += who.units or ['(NMR)']
 	rows = max(len(orders), 19) + 1
 	orders = '\n'.join(orders)
 	page.write("""

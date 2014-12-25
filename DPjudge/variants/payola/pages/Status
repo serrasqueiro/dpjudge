@@ -184,11 +184,12 @@ def showBalance():
 				""" % (power.name.title(),
 				shares, issued, power.funds.get(stock, 0)))
 		page.write('</table></td></tr>')
-	page.write(
-		"""
-		<tr><td class=bodycopy><b>Balance:</b></td>
-		<td class=bodycopy align=right>%d AgP</td></tr>
-		""" % page.power.balance)
+	if page.power.balance is not None:
+		page.write(
+			"""
+			<tr><td class=bodycopy><b>Balance:</b></td>
+			<td class=bodycopy align=right>%d AgP</td></tr>
+			""" % page.power.balance)
 #	----------------------------------------------------------------------
 
 if page.power.name != 'MASTER':
@@ -203,7 +204,6 @@ showDocList( (	('summary', 'Game Summary'),
 				('chart', 'Bribe Chart'),
 				('ledgers', 'Offer Ledgers')))
 if (page.power.name != 'MASTER'
-and page.power.type not in ('OBSERVER', 'MONITOR')
 and page.game.phase not in ('FORMING', 'COMPLETED')):
 	showProposal()
 	showControlInfo()

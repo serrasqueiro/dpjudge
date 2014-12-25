@@ -543,7 +543,7 @@ class PayolaGame(Game):
 		#	------------------------------------------------------------------
 		if 'VASSAL_DUMMIES' in self.rules:
 			for power in self.powers:
-				for vassal in [x for x in self.powers if x.ceo == [power.name]]:
+				for vassal in power.vassals():
 					vassal.accept = power.accept
 		#	---------------------------------
 		#	Provide default hold offers and
@@ -751,7 +751,8 @@ class PayolaGame(Game):
 		#	Empty the offer sheets
 		#	----------------------
 		for power in self.powers:
-			if not power.offers and (power.units or power.centers): power.cd = 1
+			if not power.offers and not power.isEliminated(False, True):
+				power.cd = 1
 			power.sheet = power.offers = []
 		return Game.preMoveUpdate(self)
 	#	----------------------------------------------------------------------
@@ -796,7 +797,7 @@ class PayolaGame(Game):
 			if power.centers:
 				if type(power.accept) not in (str, unicode): power.initAccept()
 				else: self.checkAccept(power)
-			if power.balance is None and (power.centers or power.units):
+			if power.balance is None and not power.isEliminated(False, True):
 				self.error += ['NO BALANCE FOR ' + power.name]
 #		for subvar in ('ZEROSUM', 'EXCHANGE', 'FLAT_TAX'):
 #			if subvar in self.rules:

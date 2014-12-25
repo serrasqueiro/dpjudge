@@ -57,7 +57,7 @@ class Power:
 		#	-----------------------------------
 		if includeFlags & 4:
 			wait = balance = homes = vote = None
-			held = adjusted = goner = cd = 0
+			held = goner = cd = 0
 			centers, units, adjust, ceo = [], [], [], []
 			retreats, funds, sees, hides = {}, {}, [], []
 		vars(self).update(locals())
@@ -99,7 +99,7 @@ class Power:
 			del self.game.powers[num]
 		else:
 			if (self.game.status[1] in ('active', 'waiting')
-			and (self.units or self.centers)):
+			and not self.isEliminated(False, True)):
 				self.game.avail += ['%s-(%s)' % (self.name,
 					('%d/%d' % (len(self.units), len(self.centers)),
 					'?/?')['BLIND' in self.game.rules])]
@@ -130,7 +130,7 @@ class Power:
 					% (self.game.anglify(self.name), self.game.name))
 				self.game.mail.close()
 			self.message, self.pressSent = [], 1
-			if self.units or self.centers:
+			if not self.isEliminated(False, True):
 				self.game.mailPress(None, ['All!'],
 					(("The Master has resigned %s from game '%s'.",
 					"%s has resigned from game '%s'.")[not byMaster])
@@ -234,11 +234,27 @@ class Power:
 			self.game.timeFormat())[not self.game.avail],
 			subject = 'Diplomacy position dummied')
 	#	----------------------------------------------------------------------
+	def boss(self):
+		if not self.ceo or self.ceo[0] == 'MASTER': return None
+		for power in self.game.powers:
+			if power.name == self.ceo[0]: return power
+		return None
+	#	----------------------------------------------------------------------
+	def vassals(self, public = False, all = False):
+		return [x for x in self.game.powers if x.ceo[:1] == [self.name] and
+			(all or not x.isEliminated(public, True))]
+	#	----------------------------------------------------------------------
 	def isResigned(self):
 		return self.player[:1] == ['RESIGNED']
 	#	----------------------------------------------------------------------
-	def isDummy(self):
-		return self.player[:1] == ['DUMMY']
+	def isDummy(self, public = False):
+		return self.player[:1] == ['DUMMY'] and not (
+			public and 'HIDE_DUMMIES' in self.game.rules)
+	#	----------------------------------------------------------------------
+	def isEliminated(self, public = False, personal = False):
+		return not (self.units or self.centers or self.retreats or
+			(public and 'BLIND' in self.game.rules) or
+			(not personal and self.vassals()))
 	#	----------------------------------------------------------------------
 	def isCD(self, after = 0):
 		#	-----------------------------------
@@ -280,9 +296,8 @@ class Power:
 		#	-------------------------------------------------------------------
 		#	If power is run by controller, password is in the controller's data
 		#	-------------------------------------------------------------------
-		if self.ceo:
-			ceo = [x for x in self.game.powers if x.name == self.ceo[0]][0]
-			return ceo.isValidPassword(password)
+		ceo = self.boss()
+		if ceo: return ceo.isValidPassword(password)
 		#	---------------------------
 		#	Determine password validity
 		#	---------------------------
@@ -315,6 +330,6 @@ class Power:
 		return False
 	#	----------------------------------------------------------------------
 	def canVote(self):
-		return not self.ceo and (self.centers or [1 for x in self.game.powers
-				if x.ceo and x.ceo[0] == self.name and x.centers])
+		return not self.ceo and (self.centers or
+			[1 for x in self.vassals() if x.centers])
 	#	----------------------------------------------------------------------

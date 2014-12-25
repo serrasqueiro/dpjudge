@@ -23,25 +23,12 @@ def showOrdersButton():
 		<td><input class=inputSubmit type=submit value="Read"></td></form>
 		""" % (game.name, data, which))
 #	----------------------------------------------------------------------
-def isAlive(power):
-	if power.centers or power.units or power.retreats: return True
-	game = page.game
-	if not 'GARRISON' in game.rules: return False
-	save = next = game.phase
-	while next not in 'AM':
-		game.phase = game.findNextPhase()
-		next = game.phase.split()[-1][0]
-	game.phase = save
-	return next == 'A'
-#	----------------------------------------------------------------------
 def showOrders():
 	import json, cgi
 
 	page.write('<td><table border=0 cellpadding=2 cellspacing=2 width=100%>')
 	game, power = page.game, page.power
-	alive = isAlive(power)
-	vassals = [x for x in game.powers if x.ceo[:1] == [power.name] and
-		isAlive(x)]
+	alive, vassals = not power.isEliminated(personal = True), power.vassals()
 	if not alive and not vassals:
 		showWaitNotice()
 		return page.write('</table></td>')
@@ -69,13 +56,15 @@ def showOrders():
 	nextPhase = game.phaseName(form = 2,
 		phase = game.findNextPhase('M', skip = game.phaseType != 'M'))
 	if game.await or game.skip: curPhase = nextPhase
+	active = alive or ('PROXY_OK' in game.rules and
+		not power.isDummy(True) and vassals)
 	page.write(
 		"""
 		<tr><td class=bodycopy align=center><font size=2>
 		<p><b>%s Order List</b></font></p>
 		""" % curPhase)
 	if which == 'LATER':
-		for who in [power][:alive] + vassals:
+		for who in [power][:active] + vassals:
 			if who is not power:
 				page.write('</p><font size=2><b>%s</b></font><p>' %
 					game.anglify(who.name))
@@ -109,7 +98,7 @@ def showOrders():
 	if game.skip: which = 'LATER'
 	if shown:
 		if game.phaseType == 'M':
-			if alive: unorders = ['(NMR)']
+			if active: unorders = ['(NMR)']
 			else: unorders = []
 			for who in vassals:
 				unorders += ['[' + who.name + ']', '(NMR)']
@@ -117,7 +106,7 @@ def showOrders():
 			try: orders = page.errorOrders
 			except: orders = []
 			if not orders:
-				if alive:
+				if active:
 					orders = power.list[which]
 					if not orders: orders = ['(NMR)']
 				for who in vassals:

@@ -401,9 +401,20 @@ class Game:
 		elif orderType == 'P':
 			if 'PROXY_OK' not in rules: return error.append(
 				'PROXY ORDER NOT ALLOWED: %s ' % unit + order)
-			proxyTo = ''.join(word[1:])
-			if proxyTo not in map.powers or proxyTo == power.name:
-				return error.append('IMPROPER PROXY ORDER: %s ' % unit + order)
+			if len(word) == 1: return error.append(
+				'NO PROXY POWER SPECIFIED: %s ' % unit + order)
+			if len(word) > 2: return error.append(
+				'MORE THAN ONE PROXY POWER SPECIFIED: %s ' % unit + order)
+			if word[1] == power.name: return error.append(
+				'PROXY TO SELF NOT ALLOWED: %s ' % unit + order)
+			proxyTo = [x for x in self.powers if x.name == word[1]]
+			if not proxyTo: return error.append(
+				'NO SUCH PROXY POWER: %s ' % unit + order)
+			proxyTo = proxyTo[0]
+			if proxyTo.isDummy(True): return error.append(
+				'PROXY TO DUMMY NOT ALLOWED: %s ' % unit + order)
+			if proxyTo.isEliminated(True): return error.append(
+				'PROXY TO POWER NOT ALLOWED: %s ' % unit + order)
 		else: return error.append('UNRECOGNIZED ORDER TYPE: %s ' % unit + order)
 		#	--------
 		#	All done
@@ -519,9 +530,11 @@ class Game:
 		for token in item:
 			if not dependent: dependent = token in 'CS'
 			elif token in 'AF': hadType = 1
+			elif token in ('RETREAT', 'DISBAND', 'BUILD', 'REMOVE'): pass
 			else:
 				try:
-					unit = [x for y in self.powers for x in y.units
+					unit = [x for y in self.powers for x in
+						(y.units, y.retreats.keys())[self.phaseType == 'R']
 						if x[2:].startswith(token)][0]
 					if not hadType: word += [unit[0]]
 					if self.map.isValidUnit(word[-1] + unit[1:]):
@@ -1709,10 +1722,7 @@ class Game:
 				(self.name, self.timeFormat())]
 		self.openMail(subject,
 			mailTo = email, mailAs = host.dpjudge)
-		if (playing and (playing.name in self.map.powers
-		and (playing.units or playing.retreats or playing.centers))
-		or [1 for x in self.powers if x.ceo[:1] == [playing.name]
-		and x.units or x.retreats or x.centers]):
+		if playing and not playing.isEliminated():
 			lines += [self.playerOrders(playing)]
 		self.mail.write('\n'.join(self.mapperHeader()) + '\n\n')
 		self.mail.write('\n'.join(lines) + '\n')
@@ -1749,7 +1759,7 @@ class Game:
 			if blind and hidden and playing and playing.name not in omnis:
 				lines += ['%s is a vassal of %s.' %
 					(self.anglify(x.name), self.anglify(playing.name))
-					for x in self.powers if x.ceo and x.ceo[0] == playing.name]
+					for x in playing.vassals()]
 			else:
 				showing = blind and hidden and not playing
 				for dummy in [x for x in self.powers if x.isDummy()]:
@@ -1908,8 +1918,7 @@ class Game:
 				if power.type == 'MONITOR': continue
 				if power.address:
 					if (power.isResigned() or power.isDummy()
-					or	sendingPower.ceo
-					and sendingPower.ceo[0] == power.name): continue
+					or sendingPower.ceo[:1] == [power.name]): continue
 				elif power.ceo:
 					if power.ceo[0] in ('MASTER', sendingPower.name): continue
 				elif 'HIDE_DUMMIES' not in self.rules: continue
@@ -1987,8 +1996,7 @@ class Game:
 					power = reader.name
 					if reader.address: email = reader.address[0]
 					else:
-						try: email = [x.address[0] for x in self.powers
-							if x.name == reader.ceo[0]][0]
+						try: email = reader.boss().address[0]
 						except: continue
 				#	---------------------------------------------
 				#	Make sure this party should receive the press
@@ -2655,7 +2663,7 @@ class Game:
 		and (self.unitOwner(unit) is not self.unitOwner(otherUnit)
 			#	EXCEPTION TO EXCEPTION A: THE FRIENDLY_FIRE RULE
 			or 'FRIENDLY_FIRE' in self.rules
-			or 'DUMMY_FIRE' in self.rules and self.unitOwner(unit).isDummy)
+			or 'DUMMY_FIRE' in self.rules and self.unitOwner(unit).isDummy())
 		#	EXCEPTION B: CANNOT CUT SUPPORT FOR A MOVE AGAINST YOUR LOCATION
 		and coord[-1][:3] != unit[2:5]
 		#	EXCEPTION C: OR (IF CONVOYED) FOR OR AGAINST ANY CONVOYING FLEET
@@ -3038,7 +3046,8 @@ class Game:
 			return
 		if self.phaseType == 'R':
 			if [1 for x in self.powers if x.retreats]: return
-			for power in self.powers: power.retreats, power.adjust, power.cd = {}, [], 0
+			for power in self.powers:
+				power.retreats, power.adjust, power.cd = {}, [], 0
 			return 1
 		if self.phaseType == 'A':
 			text += self.captureCenters()
@@ -3075,8 +3084,8 @@ class Game:
 				if y is not power and y.ceo != [power.name]])])
 		if 'TEAM_VICTORY' in self.rules:
 			for power in self.powers:
-				if not power.ceo: score[power] += sum([score[x]
-					for x in self.powers if x.ceo == [power.name]])
+				if not power.ceo:
+					score[power] += sum([score[x] for x in power.vassals()])
 			for power in self.powers:
 				if power.ceo: score[power] = 0
 		return score
@@ -3174,10 +3183,9 @@ class Game:
 			#	-----------------------------------------------------------
 			#	Give the great powers back their centers from their vassals
 			#	-----------------------------------------------------------
-			if power.ceo:
-				ceo = [y for y in self.powers if y.name == power.ceo[0]][0]
-				[self.transferCenter(power, ceo, y)
-					for y in power.centers if y in ceo.homes]
+			ceo = power.boss()
+			if ceo: [self.transferCenter(power, ceo, y)
+				for y in power.centers if y in ceo.homes]
 		#	---------------------------------------------------------
 		#	Determine torn allegiance destructions (vassal units on
 		#	SC's now controlled by a different great power than they)
@@ -3638,7 +3646,8 @@ class Game:
 									removals.append(limits[0])
 									alternatives.remove(limits)
 		elif self.phaseType == 'R':
-			for power in [x for x in self.powers if x.retreats and not x.adjust]:
+			for power in [x for x in self.powers
+				if x.retreats and not x.adjust]:
 				power.cd = 1
 				if 'CD_RETREATS' not in self.rules:
 					power.adjust = [
@@ -3862,7 +3871,8 @@ class Game:
 		self.end = self.end[self.end[0] == '0':]
 		self.outcome = [self.phaseAbbr()] + victors
 		self.proposal, self.phase = None, 'COMPLETED'
-		for power in self.powers: power.retreats, power.adjust, power.cd = {}, [], 0
+		for power in self.powers:
+			power.retreats, power.adjust, power.cd = {}, [], 0
 		self.changeStatus('completed')
 		self.save()
 		if 'BLIND' in self.rules:
@@ -4000,14 +4010,15 @@ class Game:
 		#	----------------------------------------------------------------
 		self.deadline = max(self.deadline, self.Time(when))
 	#	----------------------------------------------------------------------
-	def canChangeOrders(self, oldOrders, newOrders):
+	def canChangeOrders(self, oldOrders, newOrders, proxyOnly = False):
 		if self.deadline and self.deadline <= self.Time() and not self.avail:
-			if not newOrders:
+			if not newOrders and not proxyOnly:
 				return self.error.append('ORDERS REQUIRED TO AVOID LATE STATUS')
 			if oldOrders and 'NO_LATE_CHANGES' in self.rules:
 				return self.error.append(
 					'ORDER RESUBMISSION NOT ALLOWED AFTER DEADLINE')
-		if 'MUST_ORDER' in self.rules and oldOrders and not newOrders:
+		if 'MUST_ORDER' in self.rules and (
+			oldOrders and not newOrders and not proxyOnly):
 			return self.error.append('ORDERS REQUIRED AFTER SUBMISSION')
 		return 1
 	#	----------------------------------------------------------------------
@@ -4041,17 +4052,18 @@ class Game:
 			if powers: return (powers[0], parsed)
 		return ('', 0)
 	#	----------------------------------------------------------------------
-	def updateOffPhases(self, power, adjust):
+	def parseOffPhases(self, power, adjust, clear = True):
 		powers, adjusts = [power], {power.name: []}
 		curPower = power
 		for order in adjust:
 			word = order.strip().split()
 			if not word: continue
-			who, parsed = self.getPower(word[0])
+			who, parsed = self.getPower(word)
 			if who:
 				if who.name not in adjusts:
 					if who.ceo[:1] != [power.name]:
-						return self.error.append('NO CONTROL OVER ' + who.name)
+						self.error.append('NO CONTROL OVER ' + who.name)
+						return
 					powers += [who]
 					adjusts[who.name] = []
 				word = word[parsed:]
@@ -4059,12 +4071,22 @@ class Game:
 					curPower = who
 					continue
 			else: who = curPower
-			adjusts[who.name] += [' '.join(word)]
-		for who in powers:
-			self.updatePowerOffPhases(who, adjusts[who.name])
+			if clear and len(word) == 1 and word[0][word[0][:1] in '([':len(
+				word[0]) - (word[0][-1:] in '])')].upper() in ('NMR', 'CLEAR'):
+				adjusts[who.name] = []
+			else: adjusts[who.name] += [' '.join(word)]
+		return [(x, adjusts[x.name]) for x in powers]
+	#	----------------------------------------------------------------------
+	def updateOffPhases(self, power, adjust):
+		for who, adj in self.parseOffPhases(power, adjust, False):
+			self.addOffPhases(who, adj)
+		#	-----------------------------------------
+		#	Process the phase if everything is ready.
+		#	-----------------------------------------
+		if not self.error: self.process()
 		return self.error
 	#	----------------------------------------------------------------------
-	def updatePowerOffPhases(self, power, adjust):
+	def addOffPhases(self, power, adjust):
 		if not adjust or '(NMR)' in adjust:
 			if adjust and adjust.count('(NMR)') < len(adjust):
 				self.error += ['ORDERS INCOMPLETE']
@@ -4075,12 +4097,10 @@ class Game:
 			return self.error
 		if not self.canChangeOrders(power.adjust, adjust): return
 		if not adjust:
-			power.adjust = []
-			power.cd = 0
+			power.adjust, power.cd = [], 0
 			return self.save()
 ###		if 'NO_CHECK' in self.rules:
-###			power.adjust = power.adjusted = self.adjust
-###			power.cd = 0
+###			power.adjust, power.cd = self.adjust, 0
 ###			self.process()
 ###			return self.error
 		orders, places, alternatives = [], [], []
@@ -4105,14 +4125,7 @@ class Game:
 				else:
 					places += [site]
 					orders += [order]
-		#	-----------------------------------------
-		#	Process the phase if everything is ready.
-		#	-----------------------------------------
-		if not self.error:
-			power.adjust = power.adjusted = adjust
-			power.cd = 0
-			self.process()
-			return self.error
+		if not self.error: power.adjust, power.cd = adjust, 0
 	#	----------------------------------------------------------------------
 	def history(self, email, power = None):
 		try:
@@ -4237,7 +4250,7 @@ class Game:
 			else: player = ['|%s|' % power.address[0]]
 			if request == 'LIST': del player[1:]
 			elif (power.isResigned() and self.phase != self.map.phase
-			and not power.units and not power.centers): del player[:2]
+			and power.isEliminated()): del player[:2]
 			for data in reversed(player):
 				if '|' in data:
 					late = 'late' * (self.deadline and data == player[-1]
@@ -4271,10 +4284,15 @@ class Game:
 		return results + '\n'
 	#	----------------------------------------------------------------------
 	def updateAdjustOrders(self, power, orders):
-		if self.error: return
+		for who, adj in self.parseOffPhases(power, orders):
+			self.addAdjustOrders(who, adj)
+		if not self.error: self.process()
+		return self.error
+	#	----------------------------------------------------------------------
+	def addAdjustOrders(self, power, orders):
 		if not orders:
 			power.adjust, power.cd = [], 0
-			return []
+			return
 		adjust, places = [], []
 		need, sites = len(power.centers) - len(power.units), 0
 		if [x for x in power.centers if x in power.homes]:
@@ -4289,7 +4307,14 @@ class Game:
 			alternatives = self.buildAlternatives(power, sites)
 		for order in orders:
 			word = self.addUnitTypes(self.expandOrder([order]))
-			if word[0] != orderType: word[:0] = [orderType]
+			if word[-1] in '+*R-': word = word[-1:] + word[:-1]
+			if word[0] == '+': word[0] = 'BUILD'
+			elif word[0] in '*R-': word[0] = 'REMOVE'
+			if word[0] == orderType: pass
+			elif word[0] in ('BUILD', 'REMOVE'):
+				self.error += [word[0] + ' NOT ALLOWED: ' + order]
+				continue
+			else: word[:0] = [orderType]
 			if len(word) == 4 and word[3] == 'HIDDEN': word = word[:-1]
 			order = ' '.join(word)
 			if need < 0:
@@ -4325,45 +4350,58 @@ class Game:
 			else: self.error += ['BAD ADJUSTMENT ORDER: ' + order]
 		if len(claim) > power.homes.count('&SC'):
 			self.error += ['EXCESS HOME CENTER CLAIM']
-		if self.error: return self.error
+		if self.error: return
 		while 0 < need < len(adjust):
 			try: adjust.remove('BUILD WAIVED')
 			except: break
 		if len(adjust) != abs(need):
 			self.error += ['ADJUSTMENT ORDERS IGNORED (MISCOUNTED)']
-		if self.error: return self.error
+			return
 		power.adjust, power.cd = adjust, 0
-		self.process()
-		return self.error
 	#	----------------------------------------------------------------------
 	def updateRetreatOrders(self, power, orders):
-		if self.error: return self.error
+		for who, adj in self.parseOffPhases(power, orders):
+			self.addRetreatOrders(who, adj)
+		if not self.error: self.process()
+		return self.error
+	#	----------------------------------------------------------------------
+	def addRetreatOrders(self, power, orders):
 		if not orders:
 			power.adjust, power.cd = [], 0
-			return []
+			return
 		adjust, retreated = [], []
 		for order in orders:
 			word = self.addUnitTypes(self.expandOrder([order]))
-			if word[0] == 'RETREAT': del word[0]
+			if word[0] == 'RETREAT' or (word[0] == 'R' and len(word) > 3):
+				del word[0]
+			if word[0] in '+*R-': word = word[1:] + word[:1]
 			unit = ' '.join(word[:2])
 			try: unit = [x for x in power.retreats
 				if x == unit or x.startswith(unit + '/')][0]
-			except: return self.error.append('UNIT NOT IN RETREAT: ' + unit)
-			if unit in retreated: return self.error.append(
-				'TWO ORDERS FOR RETREATING UNIT: ' + unit)
+			except:
+				self.error.append('UNIT NOT IN RETREAT: ' + unit)
+				continue
+			if unit in retreated:
+				self.error.append('TWO ORDERS FOR RETREATING UNIT: ' + unit)
+				continue
 			word[1] = unit[2:]
-			if ((len(word) != 3 or word[2] != 'DISBAND')
-			and (len(word) != 4 or word[2] != '-'
-			or   word[3] not in power.retreats[unit])):
-				return self.error.append('BAD RETREAT ORDER: ' + order)
+			if len(word) == 3 and (word[2] == 'DISBAND' or word[2] in '*R-'):
+				word[2] = 'DISBAND'
+			elif len(word) == 4 and (word[2] == 'RETREAT' or word[2] in 'R-'):
+				word[2] = '-'
+				if word[3] not in power.retreats[unit]:
+					self.error.append('INVALID RETREAT DESTINATION: ' +
+						' '.join(word))
+					continue
+			else:
+				self.error.append('BAD RETREAT ORDER: ' + ' '.join(word))
+				continue
 			retreated += [unit]
 			adjust += ['RETREAT ' + ' '.join(word)]
-		if len(retreated) != len(power.retreats):
-			self.error += ['RETREAT ORDERS IGNORED (INCOMPLETE)']
-		if self.error: return self.error
-		power.adjust, power.cd = adjust, 0
-		self.process()
-		return self.error
+		if not self.error:
+			if len(retreated) != len(power.retreats):
+				self.error += ['RETREAT ORDERS IGNORED (INCOMPLETE)']
+			else: power.adjust, power.cd = adjust, 0
 	#	----------------------------------------------------------------------
 	def powerOrders(self, power):
 		try:
@@ -4375,8 +4413,7 @@ class Game:
 	#	----------------------------------------------------------------------
 	def playerOrders(self, power):
 		orders = self.powerOrders(power)
-		orders += ''.join([self.powerOrders(x) for x in self.powers
-			if x.ceo[:1] == [power.name]])
+		orders += ''.join([self.powerOrders(x) for x in power.vassals()])
 		return orders + 'End of orders.\n'
 	#	----------------------------------------------------------------------
 	def lateNotice(self, after = 0):

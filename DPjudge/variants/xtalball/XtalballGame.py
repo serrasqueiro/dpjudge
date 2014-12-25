@@ -269,7 +269,8 @@ class XtalballGame(Game):
 		#	------------------------------------------
 		if not powers: return 1
 		for who, oldOrders in zip(powers, hadOrders):
-			self.canChangeOrders(hadOrders, who.list[which])
+			self.canChangeOrders(hadOrders, who.list[which],
+				'PROXY_OK' in self.rules and not who.units)
 		if self.error: return self.error
 		#	-------------------------------------------
 		#	Clear CD flag, even if orders were cleared.
