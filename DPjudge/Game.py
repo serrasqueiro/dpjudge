@@ -3667,10 +3667,11 @@ class Game:
 		#	----------------------------
 		#	Add the orders to the output
 		#	----------------------------
-		for power in self.powers:
-			if 'BLIND' in self.rules:
+		if 'BLIND' in self.rules:
+			for power in self.powers:
 				for unit in power.units:
 					list += self.showLines(power, ['HOLD'] + unit.split(), [])[:-1]
+		for power in self.powers:
 			for order in power.adjust or []:
 				word = order.split()
 				if 'BLIND' in self.rules:
