@@ -393,16 +393,20 @@ def showInfo(name, value, left = 0):
 				'<td></td>' * left))
 #	----------------------------------------------------------------------
 def showVariantInfo():
-	game, ceoInfo = page.game, ''
-	for power in game.powers:
-		if power.type: continue
-		if power.abbrev not in power.funds: ipo = ''
-		else: ipo = '(%d shares in IPO)' % power.funds[power.abbrev]
-		if power.ceo or ipo: ceoInfo += (('<tr>' +
+	game, power, ceoInfo = page.game, page.power, ''
+	pwdFlag = isinstance(power, Power) and power.isValidPassword(page.password)
+	omniscient = pwdFlag and (power.name == 'MASTER' or power.omniscient)
+	if (not omniscient and 'completed' not in page.game.status and
+		'HIDE_DUMMIES' in game.rules): return
+	for who in game.powers:
+		if who.type: continue
+		if who.abbrev not in who.funds: ipo = ''
+		else: ipo = '(%d shares in IPO)' % who.funds[who.abbrev]
+		if who.ceo or ipo: ceoInfo += (('<tr>' +
 			('<td class=bodycopy>%s</td>' * 3) + '</tr>') %
-			(game.anglify(power.name),
-			game.anglify(power.ceo and power.ceo[0] or 'None'), ipo))
-	if ceoInfo and 'HIDE_DUMMIES' not in game.rules: page.write("""
+			(game.anglify(who.name),
+			game.anglify(who.ceo and who.ceo[0] or 'None'), ipo))
+	if ceoInfo: page.write("""
 		<tr><td valign=top class=bodycopy><b>Control&nbsp;Info:</td>
 		<td valign=top align=right><table topmargin=0><tr><td class=bodycopy>
 		<b><u>Power</u>%s</td><td class=bodycopy><b><u>Controller</th></tr>
