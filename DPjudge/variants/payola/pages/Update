@@ -41,7 +41,7 @@ page.write(
 
 #	----------------------------------------------------------------------
 def updateOffers():
-	if 'offers' in vars(page): page.game.updateOrders(page.power,
+	if 'offers' in vars(page): return page.game.updateOrders(page.power,
 		[x.strip() for x in page.offers.split('\012')])
 #	----------------------------------------------------------------------
 def payolaProblem():
@@ -112,18 +112,23 @@ def updateExchangeDividends():
 def updatePower():
 	if page.game.await or page.phase != page.game.phaseAbbr(): lockedUp()
 	page.power.wait = (None, 1)['wait' in vars(page)]
+	unchanged = 1
 	if 'accept' in vars(page) and page.accept != page.power.accept:
 		page.game.checkAccept(page.power, page.accept)
-		if not page.game.error: page.game.save()
+		if not page.game.error:
+			page.game.save()
+			unchanged = 0
 	if 'dividend' in vars(page):
 		updateExchangeDividends()
-		if not page.game.error: page.game.save()
-	if 'adjust' in vars(page): updateOffPhases()
-	elif page.game.phaseType not in 'DE': updateOffers()
+		if not page.game.error:
+			page.game.save()
+			unchanged = 0
+	if 'adjust' in vars(page): return updateOffPhases() and unchanged
+	elif page.game.phaseType not in 'DE': return updateOffers() and unchanged
 #	----------------------------------------------------------------------
 page.game.error = []
 if page.power.name != 'MASTER':
-	updatePower()
+	untouched = updatePower() and 'No ' or ''
 	if page.game.error:
 		page.write('<td align=center class="grey"><b>Erroneous Offers</b></td>')
 :>
@@ -151,7 +156,7 @@ powerHeader()
 <:
 if page.power.name != 'MASTER':
 	if page.game.error: payolaProblem()
-	else: finished()
+	else: finished(untouched + 'Update Made')
 :>
 		</tr>
 		</table>

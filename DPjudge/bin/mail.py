@@ -564,7 +564,7 @@ class Procmail:
 				if claimFrom == '(WHITE)': claimFrom = None
 				if power.name != 'MASTER':
 					late = game.latePowers()
-					if (game.deadline and game.deadline <= Time()
+					if (game.deadline and game.deadline <= Game.Time()
 					and ('LATE_SEND' not in game.rules
 					or	'NO_LATE_RECEIVE' in game.rules
 					or	'FTF_PRESS' in game.rules)
@@ -789,26 +789,19 @@ class Procmail:
 					if (word[1][0] == 'D' and power.name != 'MASTER'
 					and 'PLAYER_DEADLINES' not in game.rules):
 						self.respond('Only the Master can SET %s' % word[1])
-					if word[2] in ['TO', 'ON', 'FROM'][
-					word[1][0] == 'A':3 - (word[1][0] == 'D')]: del word[2]
-					word = [x for x in word if x != 'AT']
-					now, dates, oldline = Time(npar=6), [word[2:]], None
+					now, dates, oldline = time.localtime(), [word[2:]], 0
 					if word[1][0] == 'A' and 'TO' in word:
 						where = word.index('TO')
 						if where == 2: dates = [word[3:]]
 						else: dates = word[2:where], word[where + 1:]
 					for date in dates:
 						try:
-							if len(date) == 1 and ':' in date[0]:
-								newline = Time(now[:8] +
-									time.strptime(date[0], '%H:%M'))
-							else:
-								if len(date) == 2 or ':' in date[2]:
-									date[2:2] = [now[:4]]
-								if (len(date) == 3 and 'AT' in game.timing
-								and word[1][0] == 'D'): date += [game.timing['AT']]
-								newline = Time(time.strptime(' '.join(date),
-									' '.join(('%d %b %Y', '%H:%M')[:len(date) - 2])))
+							if len(date) == 2 or ':' in date[2]:
+								date[2:2] = [`now[0]`]
+							if (len(date) == 3 and 'AT' in game.timing
+							and word[1][0] == 'D'): date += [game.timing['AT']]
+							newline = time.strptime(' '.join(date),
+								' '.join(('%d %b %Y', '%H:%M')[:len(date) - 2]))
 							if not oldline: oldline = newline
 						except: self.respond('Bad %s specified' % word[1])
 					if word[1][0] == 'D':
@@ -817,8 +810,9 @@ class Procmail:
 						#	------------
 						if game.phase in ('FORMING', 'COMPLETED'): self.respond(
 							'DEADLINE cannot be set on an inactive game')
-						if now.seconds() > newline.seconds(): self.respond(
+						if now > newline: self.respond(
 							'DEADLINE has already past: ' + ' '.join(word[2:]))
+						newline = '%4d%02d%02d%02d%02d' % newline[:5]
 						if (power.name != 'MASTER'
 						and newline < game.deadline): self.respond(
 							'Only the Master may shorten a deadline')
@@ -835,17 +829,17 @@ class Procmail:
 						#	-----------
 						#	SET ABSENCE
 						#	-----------
-						nope, length = '', 0
+						nope, format, length = '', '%4d' + '%02d' * 4, 0
 						if len(dates) > 1:
-							nope = Time(oldline)
+							nope = format % oldline[:5]
 							while nope[-2:] == '00': nope = nope[:-2]
-							length = newline.seconds() - oldline.seconds()
-						if (length < 0 or newline.seconds() < now.seconds()
+							length = time.mktime(newline) - time.mktime(oldline)
+						if (length < 0 or newline < time.localtime()
 						or	power.name != 'MASTER' and len(dates) > 1
 						and length > 14 * 24 * 60 * 60):
 							self.respond('Invalid ABSENCE duration')
 						if 'TO' in word: nope += '-'
-						nope += Time(newline)
+						nope += format % newline[:5]
 						while nope[-2:] == '00': nope = nope[:-2]
 						game.setAbsence(power, nope, line)
 				elif len(word) > 3: self.respond('Bad %s syntax' % word[1])
@@ -855,10 +849,9 @@ class Procmail:
 				elif word[1][0] in 'NW':
 					if power.name == 'MASTER':
 						self.respond('MASTER has no WAIT flag')
-					if game.await or game.deadline < Time():
+					if game.await or game.deadline < Game.Time():
 						self.respond('WAIT unavailable after deadline')
-					if (not power.centers
-					and not power.units and not power.retreats):
+					if power.isEliminated():
 						self.respond('WAIT unavailable; no orders required')
 					if ('NO_MINOR_WAIT' in game.rules
 					and game.phaseType != 'M'):
@@ -925,7 +918,7 @@ class Procmail:
 			#	----------------
 			#	CLEAR and STATUS
 			#	----------------
-			elif command == 'CLEAR': self.setOrders([])
+			elif command == 'CLEAR': orders += [command]
 			elif command == 'STATUS': game.reportOrders(power, self.email)
 			#	----------------------------
 			#	REVEAL the game if requested

@@ -1,9 +1,9 @@
 import os, stat, sys, time, textwrap
 import host
 
-from DPjudge import *
+import DPjudge
 
-class Check(Status):
+class Check(DPjudge.Status):
 	#	----------------------------------------------------------------------
 	"""
 	This class is invoked by the cron job to check deadlines on all games,
@@ -25,15 +25,15 @@ class Check(Status):
 	"""
 	#	----------------------------------------------------------------------
 	def __init__(self, argv = None):
-		Status.__init__(self)
+		DPjudge.Status.__init__(self)
 		if argv is None: argv = sys.argv
 		os.putenv('TZ', 'GMT')
-		now = Time()
+		now = DPjudge.Game.Time()
 		tsf = host.logDir + '/check.tim'
 		tsf2 = host.logDir + '/check2.tim'
 		if '-t' in argv and os.path.exists(tsf):
 			last = os.path.getmtime(tsf)
-			curr = now.seconds()
+			curr = time.mktime(time.localtime())
 			if last + 3600 < curr:
 				# Use a second timestamp file to keep track of subsequent
 				# server outages.
@@ -64,7 +64,7 @@ class Check(Status):
 				print(msg)
 				# Warn the judgekeeper.
 				if not last2 or again:
-					mail = Mail(host.judgekeeper, '%s server outage' % host.dpjudgeID)
+					mail = DPjudge.Mail(host.judgekeeper, '%s server outage' % host.dpjudgeID)
 					mail.write(msg)
 					mail.close()
 				open(tsf2, 'w').close()
@@ -96,7 +96,7 @@ class Check(Status):
 				elif game.error:
 					print game.name, 'has ERRORS ... notifying the Master'
 					for addr in game.master[1].split(','):
-						mail = Mail(addr,
+						mail = DPjudge.Mail(addr,
 							'Diplomacy ERRORS (%s)' % game.name)
 						mail.write("The game '%s' on %s has the following "
 							'errors in its status file:\n\n%s\n\nLog in at\n'
@@ -123,7 +123,7 @@ class Check(Status):
 					print game.name, 'is in the %s state' % state,
 					print '... reminding the Master'
 					for addr in game.master[1].split(','):
-						mail = Mail(addr,
+						mail = DPjudge.Mail(addr,
 							'Diplomacy game reminder (%s)' % game.name)
 						mail.write("GameMaster:\n\nThe game '%s' on %s is "
 							'still in the %s state.%s\n\nVisit the game at\n'
@@ -167,7 +167,7 @@ class Check(Status):
 				try: game.process(now = 1)
 				except: pass
 				if game.await:
-					mail = Mail(host.judgekeeper,
+					mail = DPjudge.Mail(host.judgekeeper,
 						'Diplomacy adjudication error! (%s)' % game.name)
 					mail.write('JudgeKeeper:\n\nThe game %s on %s\n'
 						'encountered an error during adjudication\n'
@@ -186,7 +186,9 @@ class Check(Status):
 				hey, when = game.latePowers(), game.timing.get('WARN', '4H')
 				for warn in when.split(','):
 					if warn[:-1] != '0' and hey:
-						hit = (Time(line).seconds() - int(warn[:-1]) *
+						hit = (time.mktime(map(int,
+							(line[:4], line[4:6], line[6:8], line[8:10],
+							line[10:], 0, 0, 0, -1))) - int(warn[:-1]) *
 							{ 'M': 60, 'H': 3600, 'D': 86400, 'W': 604800 }
 							.get(warn[-1], 1))
 						start = time.localtime(hit)[:5]

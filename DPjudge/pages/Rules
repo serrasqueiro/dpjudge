@@ -322,7 +322,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <p><HR><br><dt><b>1.2 Press</b>
 <dl>
 <a name=NO_PRESS></a><p><dt><b><tt>NO_PRESS</tt></b><dd>
-<!-- RULE NO_PRESS +SILENT_ABSENCES !NO_LATE_RECEIVE !MUST_ORDER !LATE_SEND -FAKE_PRESS -GREY_PRESS -WHITE_GREY -TOUCH_PRESS -REMOTE_PRESS -PUBLIC_PRESS -YELLOW_PRESS -BACKSEAT_PRESS -MUTE_OBSERVERS -PROXY_OK -->
+<!-- RULE NO_PRESS +SILENT_ABSENCES !NO_LATE_RECEIVE !MUST_ORDER !LATE_SEND -FAKE_PRESS -GREY_PRESS -WHITE_GREY -TOUCH_PRESS -REMOTE_PRESS -PUBLIC_PRESS -YELLOW_PRESS -BACKSEAT_PRESS -MUTE_OBSERVERS -->
     Press is only allowed to and from the Master.  This rule is invalid
     when used with <tt>PUBLIC_PRESS</tt> or other rules that imply that
 	any type of press is allowed.
@@ -521,7 +521,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE END -->
 
 <a name=PROXY_OK></a><p><dt><b><tt>PROXY_OK</tt></b><dd>
-<!-- RULE PROXY_OK -NO_PROXY -->
+<!-- RULE PROXY_OK -NO_PROXY +ORDER_ANY -->
     Players may issue the proxy order to any one or more of their units.
     [If this rule is used, <tt>ORDER_ANY</tt> is effectively in use as well.]
 	Only the actual original owner of a unit may issue it a proxy order;
@@ -967,7 +967,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE END -->
 
 <a name=HIDE_DUMMIES></a><p><dt><b><tt>HIDE_DUMMIES</tt></b><dd>
-<!-- RULE HIDE_DUMMIES -->
+<!-- RULE HIDE_DUMMIES +HIDE_ABSENTEES +HIDE_LATE_POWERS -->
 	If this rule is in use, any <tt>DUMMY</tt> powers will be listed
 	on the game's main Webpage as powers that can be logged in and will
 	be listed as available to receive press messages sent to them.  This
@@ -977,6 +977,8 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	is to be allowed access to any <tt>DUMMY</tt> power pages, this should
 	be done with a <tt>CONTROL</tt> directive in the dummy power's stanza
 	of the game <a href=<URL>?page=Status>status file</a>.)
+	Both the <tt>HIDE_LATE_POWERS</tt> and <tt>HIDE_ABSENTEES</tt> rules are
+	in effect.
 	This rule also completely suppresses the display of controller
 	information for any and all powers under the <tt>CONTROL</tt> of another
 	player, such that the power in control is not listed publicly.
@@ -1612,7 +1614,7 @@ the course of the game.
 </tr>
 <tr valign=top bgcolor="#CCCCCC">
 <td align=center class="grey"><a name="3."></a></a><b>3. Rules Affecting Only Payola Games</b></td>
-<!-- RULE VARIANT payola +ORDER_ANY !PROXY_OK -->
+<!-- RULE VARIANT payola !PROXY_OK +ORDER_ANY -->
 </tr>
 <tr valign=top>
 <td>

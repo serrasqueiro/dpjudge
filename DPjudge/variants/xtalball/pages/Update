@@ -49,19 +49,20 @@ def updateOrders():
 		lines, which = '', 'LATER'
 		for power in page.game.powers:
 			if power.units and not power.list['SOONER']: which = 'SOONER'
-	page.game.updateOrders(page.power, lines.split('\012'), which)
+	unchanged = page.game.updateOrders(page.power, lines.split('\012'), which)
 	if page.game.error: page.errorOrders = lines.split('\012')
+	return unchanged
 #	----------------------------------------------------------------------
 def updatePower():
 	if page.game.await or page.phase != page.game.phaseAbbr(): lockedUp()
 	if 'wait' in vars(page): page.power.wait = 1
 	elif page.power.wait: page.power.wait = None
-	if 'adjust' in vars(page): updateOffPhases()
-	else: updateOrders()
+	if 'adjust' in vars(page): return updateOffPhases()
+	else: return updateOrders()
 #	----------------------------------------------------------------------
 page.game.error = []
 if page.power.name != 'MASTER':
-	updatePower()
+	untouched = updatePower() and 'No ' or ''
 	if page.game.error:
 		page.write('<td align=center class="grey"><b>Erroneous Orders</b></td>')
 :>
@@ -89,7 +90,7 @@ powerHeader()
 <:
 if page.power.name != 'MASTER':
 	if page.game.error: problem()
-	else: finished()
+	else: finished(untouched + 'Update Made')
 :>
 		</tr>
 		</table>

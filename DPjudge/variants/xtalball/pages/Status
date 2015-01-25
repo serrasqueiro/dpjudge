@@ -77,8 +77,8 @@ files = (('summary', 'Game Summary'),
 if page.game.phase != 'COMPLETED': files = [files[-1]]
 showDocList(files, 'PUBLIC_LISTS' in page.game.rules)
 if page.game.phase not in ('FORMING', 'COMPLETED'): showOrdersButton()
-if (page.power.name != 'MASTER' and page.power.type not in ('OBSERVER',
-	'MONITOR') and page.game.phase not in ('FORMING', 'COMPLETED')):
+if (page.power.name != 'MASTER' and page.game.phase not in
+	('FORMING', 'COMPLETED')):
 	showProposal()
 	showControlInfo()
 showAbsenceInput()

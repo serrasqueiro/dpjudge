@@ -35,13 +35,9 @@ for (var, base, path) in [
 	('gameMapDir', 'dpjudgeDir', 'gameMapSubDir'),
 	('gameMapURL', 'dpjudgeURL', 'gameMapSubDir'),
 	('dppdURL', 'dpjudgeURL', 'dppdSubURL'),
-	('resultsID', 'dpjudgeID', ''),
-	('resultsFrom', 'dpjudge', ''),
-	('resultsURL', 'dpjudgeURL', ''),
 	('zoneFile', 'toolsDir', 'zoneFileName')]:
 	if var not in vars(host):
-		vars(host)[var] = path and os.path.join(vars(host)[base],
-			vars(host)[path]) or vars(host)[base]
+		vars(host)[var] = os.path.join(vars(host)[base], vars(host)[path])
 	elif vars(host)[var] and os.path.isabs(
 		vars(host)[base]) and not os.path.isabs(vars(host)[var]):
 		vars(host)[var] = os.path.join(vars(host)[base], vars(host)[var])
