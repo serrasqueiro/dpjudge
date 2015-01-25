@@ -73,8 +73,8 @@ showPressArchive()
 if page.power.name != 'MASTER': showVariantInfo()
 showDocList((('summary', 'Game Summary'),
 			('EOG', 'End Of Game Statements')))
-if (page.power.name != 'MASTER' and page.game.phase not in
-	('FORMING', 'COMPLETED')):
+if (page.power.name != 'MASTER' and page.power.type not in ('OBSERVER',
+	'MONITOR') and page.game.phase not in ('FORMING', 'COMPLETED')):
 	showProposal()
 	showControlInfo()
 showAbsenceInput()

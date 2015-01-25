@@ -172,9 +172,9 @@ class XtalballGame(Game):
 		#	Move the order sheets ahead
 		#	---------------------------
 		for power in self.powers:
-			if power.list['SOONER'] and not power.list['LATER']: power.cd = 1
 			power.list = {'SOONER': power.list['LATER']
-				or (power.units and [power.units[0] + ' H']) or []}
+			or (power.units and [power.units[0] + ' H']) or []}
+			if power.list['SOONER'] and not power.list['LATER']: power.cd = 1
 		return Game.preMoveUpdate(self)
 	#	----------------------------------------------------------------------
 	def otherResults(self):
@@ -226,71 +226,31 @@ class XtalballGame(Game):
 			if (not self.skip
 			and [x for x in self.powers if x.units and not x.list['SOONER']]):
 				which = 'SOONER'
-		curPower, hadOrders, hasOrders, powers = power, [], [], []
-		for line in orders:
-			word = line.strip().split()
+		#	----------------------------------------
+		#	Empty the order list and then stick each
+		#	order (if any) into it, if it is valid.
+		#	----------------------------------------
+		hadOrders, power.list[which], power.cd = power.list[which], [], 0
+		for line in [x.strip() for x in orders]:
+			word = line.split()
 			if not word: continue
-			who, parsed = self.getPower(word)
-			if who:
-				word = word[parsed:]
-				if not word:
-					curPower = who
-					continue
-			else: who = curPower
-			nmr = len(word) == 1 and word[0][word[0][:1] in '([':len(
-				word[0]) - (word[0][-1:] in '])')].upper() in ('NMR', 'CLEAR')
-			if who not in powers:
-				if who is not power and who.ceo[:1] != [power.name]:
-					return self.error.append('NO CONTROL OVER ' + who.name + (
-						'PROXY_OK' in self.rules and 
-						' (NO NEED TO SPECIFY THE POWER FOR PROXIED UNITS)' or ''))
-				#	----------------------------------------
-				#	Empty the order list and then stick each
-				#	order (if any) into it, if it is valid.
-				#	----------------------------------------
-				powers += [who]
-				hadOrders += [power.list[which]]
-				who.list[which] = []
-				if nmr: continue
-			elif nmr:
-				who.list[which] = []
-				hasOrders = [x for x in hasOrders if x is not who]
-				continue
 			word = self.expandOrder(word)
-			if len(word) < 3:
-				self.error += ['BAD ORDER: ' + line]
-				continue
-			unit, order = ' '.join(word[:2]), ' '.join(word[2:])
-			if self.validOrder(who, unit, order) != None:
-				who.list[which] += [' '.join(word)]
-				if who not in hasOrders: hasOrders += [who]
+			if len(word) < 3: self.error += ['BAD ORDER: ' + line]
+			else:
+				unit, order = ' '.join(word[:2]), ' '.join(word[2:])
+				if self.validOrder(power, unit, order) != None:
+					power.list[which] += [' '.join(word)]
 		#	------------------------------------------
 		#	Make sure the player can update his orders
 		#	------------------------------------------
-		if not powers: return 1
-		for who, oldOrders in zip(powers, hadOrders):
-			self.canChangeOrders(hadOrders, who.list[which],
-				'PROXY_OK' in self.rules and not who.units)
-		if self.error: return self.error
-		#	-------------------------------------------
-		#	Clear CD flag, even if orders were cleared.
-		#	-------------------------------------------
-		for who in powers: who.cd = 0
-		if not hasOrders:
-			self.logAccess(power, '', 'Orders cleared')
-			self.save()
+		if not self.canChangeOrders(hadOrders, power.list[which]) or self.error:
 			return
 		self.logAccess(power, '', 'Orders updated')
-		if len(hasOrders) < len(powers):
-			self.save()
-			return
 		#	--------------------------------------
 		#	If this is not the first turn, there's
 		#	a locked-in turn ready.  Process it.
 		#	--------------------------------------
-		if which != 'SOONER':
-			self.process()
-			return
+		if which != 'SOONER': return self.process()
 		#	---------------------------------------------
 		#	This is the first game turn.  If this was the
 		#	last player to lock in an order list for it,

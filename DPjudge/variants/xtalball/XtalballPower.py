@@ -19,17 +19,6 @@ class XtalballPower(Power):
 		if includeFlags & 4:
 			self.list, self.notes = {'SOONER': [], 'LATER': []}, {}
 	#	----------------------------------------------------------------------
-	def isEliminated(self, public = False, personal = False):
-		if not Power.isEliminated(self, public, personal): return False
-		if not (self.homes and self.game.phase == 'M' and
-			'GARRISON' in self.game.rules): return True
-		save = next = self.game.phase
-		while next not in 'AM':
-			self.game.phase = self.game.findNextPhase()
-			next = self.game.phase.split()[-1][0]
-		self.game.phase = save
-		return next != 'A'
-	#	----------------------------------------------------------------------
 	def movesSubmitted(self):
 		if self.name not in self.game.map.powers: return 1
 		if (not self.game.skip

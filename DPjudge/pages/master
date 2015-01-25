@@ -431,11 +431,11 @@ def showStatusFile():
 				<a href=<URL>?page=Rules target=rules>
 				<font color=red>[Game Rules Help]</font></a></td></tr>""")
 	if 'preparation' in page.game.status: page.write("""
-		<tr><td colspan=3 align=center><table border cellpadding=10>
+		<p><table border cellpadding=10>
 		<tr><th class=bodycopy bgcolor=yellow><input type=checkbox name=form>
-		<select name=formMode><option value=forming>Allow Game To Form
+		<select name=gameMode><option value=forming>Allow Game To Form
 		<option value=active>Set Game To Active
-		</select></th></tr></table></td></tr>
+		</select></th></tr></table>
 		""")
 	changeButton()
 	page.write('</td>') #</tr>')
@@ -638,8 +638,6 @@ def updateMaster():
 	#	Game mode modification
 	#	----------------------
 	gameMode = page.game.status[1:]
-	if 'form' in vars(page) and page.form and 'formMode' in vars(page):
-		page.gameMode = page.formMode
 	if 'gameMode' in vars(page):
 		if page.gameMode == 'active':
 #			page.game = Game(page.game.name)
@@ -660,7 +658,6 @@ def updateMaster():
 	#	------------------
 	#	NEW STUFF (TO BE USED TO UPDATE WITH)
 	if 'map' in vars(page): page.game.map = Map(page.map, page.game.map.trial)
-	if page.password == page.game.password: page.password = page.newPassword
 	page.game.password = page.newPassword
 	if page.privacy == 'public': page.game.private = None
 	else: page.game.private = page.private
@@ -695,7 +692,6 @@ def updateMaster():
 	extract('MILITIA', 'defense', 1)
 	page.game.timing = None	# it will be in page.extra if given....
 	page.game.terrain = {}	# ditto this guy as well
-	if page.game.tester[-1:] == '!': page.game.tester = ''	# and this one?
 	if 'corrupt' in page.game.status: return finished()
 	#--------------
 	# Write the file
@@ -735,7 +731,6 @@ def updateMaster():
 	except: pass
 	gamename = page.game.name
 	page.game.updateState()
-	checkErrors()
 	finished()
 	####################################################
 	### Now that we've updated the file, let's look at

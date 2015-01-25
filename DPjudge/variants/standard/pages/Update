@@ -41,19 +41,19 @@ page.write(
 #	----------------------------------------------------------------------
 def updateOrders():
 	if 'orders' not in vars(page): page.orders = ''
-	return page.game.updateOrders(page.power, page.orders.split('\012'))
+	page.game.updateOrders(page.power, page.orders.split('\012'))
 #	----------------------------------------------------------------------
 def updatePower():
 	if page.game.await or page.phase != page.game.phaseAbbr(): lockedUp()
 	if 'wait' in vars(page): page.power.wait = 1
 	elif page.power.wait: page.power.wait = None
-	if 'adjust' in vars(page): return updateOffPhases()
-	else: return updateOrders()
+	if 'adjust' in vars(page): updateOffPhases()
+	else: updateOrders()
 #	----------------------------------------------------------------------
 
 page.game.error = []
 if page.power.name != 'MASTER':
-	untouched = updatePower() and 'No ' or ''
+	updatePower()
 	if page.game.error:
 		page.write('<td align=center class="grey"><b>Erroneous Orders</b></td>')
 :>
@@ -81,7 +81,7 @@ powerHeader()
 <:
 if page.power.name != 'MASTER':
 	if page.game.error: problem()
-	else: finished(untouched + 'Update Made')
+	else: finished()
 :>
 		</tr>
 		</table>

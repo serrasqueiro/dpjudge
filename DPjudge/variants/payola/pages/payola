@@ -6,7 +6,8 @@ def showAcceptList():
 	or ('PAY_DUMMIES' in page.game.rules
 	and 'VASSAL_DUMMIES' not in page.game.rules)
 	or (not page.power.centers and page.game.phaseType == 'A')): return
-	if 'VASSAL_DUMMIES' in page.game.rules and not page.power.vassals(): return
+	if ('VASSAL_DUMMIES' in page.game.rules
+	and not [x for x in page.game.powers if x.ceo == [page.power.name]]): return
 	page.write('<tr><td align=center class=bodycopy><b>Acceptance List: ')
 	page.write(page.game.await and '<tt>%s</tt></b>' % accept or
 		'</b><input class=inputBox name=accept maxlength=%d size=%d value=%s>' %
@@ -25,8 +26,8 @@ def showPowerData():
 		<input type=hidden name=password value=%s>
 		<input type=hidden name=balance value=%d>
 		<input type=hidden name=phase value=%s>
-		""" % (('onSubmit="return false"',
-		'method=post name=UpdateForm')[page.pwdFlag == 1],
+		""" %
+		(('onSubmit="return false"', 'method=post')[page.pwdFlag == 1],
 		game.name, power.name, page.password, power.balance,
 		game.phaseAbbr()))
 	showAcceptList()
@@ -61,8 +62,6 @@ def showDividends():
 	return 1
 #	----------------------------------------------------------------------
 def showOfferList():
-	import json, cgi
-
 	if 'VASSAL_DUMMIES' in page.game.rules and page.power.ceo: return
 	selfControl = 'PAY_DUMMIES' in page.game.rules and not page.power.isDummy()
 	page.write(
@@ -72,21 +71,11 @@ def showOfferList():
 		""" % (page.game.phaseName(form=2),
 			('Offer List','Orders')[selfControl]))
 	text = page.power.sheet[:] or selfControl and page.power.units or []
+	page.write('<textarea class=inputBox rows=%s cols=50 name=offers wrap=off>'
+		% (max(len(text), 19) + 1))
 	if 'offers' in vars(page): text = page.offers.split('\012')
 	if selfControl: text = [x[x.startswith('0 : ') * 4:] for x in text]
-	page.write("""
-		<p><input onClick='document.UpdateForm.offers.value = "(NMR)"'
-		type=button value="Clear" class="inputSubmit">
-		""")
-	if text:
-		page.write("""
-			&nbsp;&nbsp;<input onClick='document.UpdateForm.offers.value = %s'
-			type=button value="Revert" class="inputSubmit">
-			""" % json.dumps(text))
-	if not text: text = ['(NMR)']
-	page.write('</p><p><textarea class=inputBox rows=%s cols=40 name=offers wrap=off>'
-			% (max(len(text), 19) + 1))
-	map(page.write, map(cgi.escape, text))
+	map(page.write, text)
 	page.write('</textarea></td></tr>')
 	return 1
 #	----------------------------------------------------------------------
