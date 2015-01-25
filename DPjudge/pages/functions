@@ -75,34 +75,33 @@ def listGames(variant = 'standard'):
 def showGameHeader():
 	game = page.game
 	page.write('<title>Game %s</title>' % game.name)
-	when = game.deadline
-	if 'active' in game.status and when and when > game.Time():
-		page.write(
-		"""
-		<script>
-		window.setTimeout("Update(%d);",0);
-		function Update(left) {
-			down=--left;tick="Time to Deadline: ";
-			weeks=Math.floor(down/604800);down%%=604800;
-			days=Math.floor(down/86400);down%%=86400;
-			hrs=Math.floor(down/3600);down%%=3600;
-			mins=Math.floor(down/60);secs=down%%60;
-			if(weeks>1)tick+=weeks+" weeks, ";
-			else if(weeks==1)tick+="1 week, ";
-			if(days>1)tick+=days+" days, ";
-			else if(days==1)tick+="1 day, ";
-			if(hrs>1)tick+=hrs+" hours, ";
-			else if(hrs==1)tick+="1 hour, ";
-			if(mins>1)tick+=mins+" minutes, ";
-			else if(mins==1)tick+="1 minute, ";
-			tick+=secs+" second";if(secs!=1)tick+="s";
-			window.status=tick;
-			if(left)window.setTimeout("Update("+left+");",1000);
-			else alert("Deadline!!");}
-		</script>
-		""" % (time.mktime(map(int, (when[:4], when[4:6], when[6:8],
-			when[8:10], when[10:], 0, 0, 0, -1))) -
-			time.mktime(time.localtime())))
+	if 'active' not in game.status or not game.deadline: return
+	when, now = Time(game.deadline).seconds(), Time(npar=6).seconds()
+	if when <= now: return
+	page.write(
+	"""
+	<script>
+	window.setTimeout("Update(%d);",0);
+	function Update(left) {
+		down=--left;tick="Time to Deadline: ";
+		weeks=Math.floor(down/604800);down%%=604800;
+		days=Math.floor(down/86400);down%%=86400;
+		hrs=Math.floor(down/3600);down%%=3600;
+		mins=Math.floor(down/60);secs=down%%60;
+		if(weeks>1)tick+=weeks+" weeks, ";
+		else if(weeks==1)tick+="1 week, ";
+		if(days>1)tick+=days+" days, ";
+		else if(days==1)tick+="1 day, ";
+		if(hrs>1)tick+=hrs+" hours, ";
+		else if(hrs==1)tick+="1 hour, ";
+		if(mins>1)tick+=mins+" minutes, ";
+		else if(mins==1)tick+="1 minute, ";
+		tick+=secs+" second";if(secs!=1)tick+="s";
+		window.status=tick;
+		if(left)window.setTimeout("Update("+left+");",1000);
+		else alert("Deadline!!");}
+	</script>
+	""" % (when - now))
 #	----------------------------------------------------------------------
 def showMapButtons():
 	file, game = mapName(), page.game
@@ -485,7 +484,7 @@ def showGameInfo():
 			'Terminated by GameMaster</blink></font>')
 	elif game.phase not in ('FORMING', 'COMPLETED'):
 		if (game.deadline and 'HIDE_LATE_POWERS' in game.rules
-		and game.Time() > game.deadline and not game.avail):
+		and Time() > game.deadline and not game.avail):
 			late = game.latePowers()
 			if late: showInfo('Late Power' + 's'[len(late) < 2:],
 				'(Identit%s Concealed by Rule)' % ('ies', 'y')[len(late) == 1])
@@ -528,7 +527,7 @@ def gameHeader():
 			'<br><font color=yellow size=2>-- Waiting to replace %s --' %
 			', '.join([game.anglify(x[:x.find('-')]) + x[x.find('-'):]
 				for x in game.avail]))
-		elif game.deadline < game.Time():
+		elif game.deadline < Time():
 			if power and power.name in late: page.write(
 				'<br><font size=+1><blink>You Are Late!</blink></font>')
 			elif late and (power and power.name == 'MASTER'
@@ -898,7 +897,7 @@ def showWaitFlag():
 	showReceiptFlag()
 	if (('NO_MINOR_WAIT' in page.game.rules and page.game.phaseType != 'M')
 	or 'REAL_TIME' in page.game.rules
-	or not page.game.deadline or page.game.deadline < page.game.Time()): return
+	or not page.game.deadline or page.game.deadline < Time()): return
 	page.write(
 		"""
 		<tr><td class=bodycopy align=center>
