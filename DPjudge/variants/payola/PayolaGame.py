@@ -543,7 +543,7 @@ class PayolaGame(Game):
 		#	------------------------------------------------------------------
 		if 'VASSAL_DUMMIES' in self.rules:
 			for power in self.powers:
-				for vassal in [x for x in self.powers if x.ceo == [power.name]]:
+				for vassal in power.vassals():
 					vassal.accept = power.accept
 		#	---------------------------------
 		#	Provide default hold offers and
@@ -751,7 +751,8 @@ class PayolaGame(Game):
 		#	Empty the offer sheets
 		#	----------------------
 		for power in self.powers:
-			if not power.offers and (power.units or power.centers): power.cd = 1
+			if not power.offers and not power.isEliminated(False, True):
+				power.cd = 1
 			power.sheet = power.offers = []
 		return Game.preMoveUpdate(self)
 	#	----------------------------------------------------------------------
@@ -796,7 +797,7 @@ class PayolaGame(Game):
 			if power.centers:
 				if type(power.accept) not in (str, unicode): power.initAccept()
 				else: self.checkAccept(power)
-			if power.balance is None and (power.centers or power.units):
+			if power.balance is None and not power.isEliminated(False, True):
 				self.error += ['NO BALANCE FOR ' + power.name]
 #		for subvar in ('ZEROSUM', 'EXCHANGE', 'FLAT_TAX'):
 #			if subvar in self.rules:
@@ -912,15 +913,41 @@ class PayolaGame(Game):
 				self.mail = None
 	#	----------------------------------------------------------------------
 	def updateOrders(self, power, offers):
-		hadOffers = power.offers
-		power.offers, power.sheet, power.cd = [], [], 0
+		#	---------------------------------------------------------
+		#	Offers for controlled powers should not be included here,
+		#	as each power has its own purse, acceptance list, etc.
+		#	---------------------------------------------------------
+		hadOffers, hasOffers = power.offers, None
 		for line in filter(None, offers):
-			offer = self.parseOffer(power, line)
-			if offer: power.sheet += [offer]
+			word = line.strip().split()
+			if not word: continue
+			if len(word) == 1 and word[0][word[0][:1] in '([':len(
+				word[0]) - (word[0][-1:] in '])')].upper() in ('NMR', 'CLEAR'):
+				power.offers, power.sheet, hasOffers = [], [], 0
+			else:
+				if hasOffers is None:
+					power.offers, power.sheet = [], []
+				offer = self.parseOffer(power, line)
+				if offer:
+					hasOffers = 1
+					power.sheet += [offer]
+		#	------------------------------------------
+		#	Make sure the player can update his orders
+		#	------------------------------------------
+		if hasOffers is None: return 1
 		self.validateOffers(power)
-		if self.canChangeOrders(hadOffers, power.offers) and not self.error:
+		self.canChangeOrders(hadOffers, power.offers)
+		if self.error: return self.error
+		#	-------------------------------------------
+		#	Clear CD flag, even if orders were cleared.
+		#	-------------------------------------------
+		power.cd = 0
+		if hasOffers:
 			self.logAccess(power, '', 'Offers updated')
 			self.process()
+		else:
+			self.logAccess(power, '', 'Offers cleared')
+			self.save()
 	#	----------------------------------------------------------------------
 	def getOrders(self, power):
 		if self.phaseType in 'RA': return '\n'.join(power.adjust)

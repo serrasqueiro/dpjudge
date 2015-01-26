@@ -19,12 +19,15 @@ class Map:
 			notify = [host.judgekeeper]
 		aliases = {			'-': '-',		'H': 'H',		'P': 'P',
 			'A': 'A',		'F': 'F',		'S': 'S',		'C': 'C',
-			'B': 'BUILD',	'R': 'REMOVE',	'D': 'DISBAND',
+			'B': '+',		'D': '*',		'R': 'R',
+			'BUILD': '+',	'BUILDS': '+',	'DISBAND': '*',	'DISBANDS': '*',
+			'REMOVE': '*',	'REMOVES': '*',	'RETREATS':		'RETREAT',
 			'ARMY': 'A',	'FLEET': 'F',	'SUPPORT': 'S',	'SUPPORTS': 'S',
 			'CONVOY': 'C',	'CONVOYS': 'C', 'HOLD': 'H',	'HOLDS': 'H',
-			'TO': '-',		'MOVE': '-',	'MOVES': '-',	'M': '-',
+			'TO': '',		'MOVE': '-',	'MOVES': '-',	'M': '-',
 			'SEA': '',		'OCEAN': '',	'GULF': '',		'OF': '',
-			'THE': '',		'IN': '',		'AT': '',		'PROXY': 'P'	}
+			'THE': '',		'IN': '',		'AT': '',		'ON': '',
+			'PROXY': 'P'	}
 		vars(self).update(locals())
 		self.load()
 		self.validate()

@@ -73,6 +73,15 @@ class Page:
 		return var in vars(self)
 	#	----------------------------------------------------------------------
 	def write(self, text = ''):
+		if not text:
+			print
+			return
+		#	------------------------------------------------------------
+		#	Strip spaces in front for texts surrounded by triple quotes.
+		#	------------------------------------------------------------
+		lines = text.split('\n')
+		if not lines[-1].strip() and not lines[0].strip():
+			text = '\n'.join([x.strip() for x in lines[1:-1]])
 		try: print text.encode('latin-1')
 		except UnicodeDecodeError: print text
 	#	----------------------------------------------------------------------

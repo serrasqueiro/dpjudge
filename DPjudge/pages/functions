@@ -322,7 +322,8 @@ def showAbsenceInput():
 		<input type=hidden name=password value=%s>
 		<tr><td class="bodycopy"><b>Absence:</b></td>
 		<input type=hidden name=startdate value="">
-		<td class="bodycopy" align=right><b><input disabled name=startabsence
+		<td class="bodycopy" align=right nowrap>
+		<b><input disabled name=startabsence
 		id=startabsence type=text size=12 value="" class=bodycopy
 		onchange="ChangeAbsence('start')">
 		<a onmouseover=this.style.cursor='pointer'
@@ -464,8 +465,8 @@ def showGameInfo():
 		if 'preparation' in game.status: showInfo('Current Phase',
 			'<font color=white><blink>Preparation</blink></font>')
 		else:
-			spots = (int(game.avail[0])
-				or (len(game.map.powers) - len(game.map.dummies)))
+			spots = int(game.avail[0])
+				# or (len(game.map.powers) - len(game.map.dummies))
 			showInfo('<blink>Players Needed', '%d Position%s Remain' %
 				(spots, 's'[spots == 1:]) + 's'[spots != 1:])
 			showInfo('<a href=mailto:%s?subject=%s>'
@@ -733,7 +734,8 @@ def showMessages():
 		page.write('</td></tr>')
 #	----------------------------------------------------------------------
 def showControlInfo():
-	if page.power.ceo: return page.write(
+	game, power = page.game, page.power
+	if power.ceo: return page.write(
 		"""
 		<form name=ceoForm method=post>
 		<input type=hidden name=page value=Status>
@@ -745,10 +747,8 @@ def showControlInfo():
 		<td><input class=inputSubmit type=submit value="Log In">
 		</td></tr></form>
 		""" %
-		(page.game.name, page.power.ceo[0],
-		page.password, page.game.anglify(page.power.ceo[0])))
-	headsUp = [x.name for x in page.game.powers
-		if x.ceo and x.ceo[0] == page.power.name]
+		(game.name, power.ceo[0], page.password, game.anglify(power.ceo[0])))
+	headsUp = [x.name for x in power.vassals(all = True)]
 	if headsUp:
 		page.write(
 			"""
@@ -760,9 +760,9 @@ def showControlInfo():
 			<td align=right>
 			<select class=inputBox
 			name=power onChange=document.ceoForm.submit()>
-			""" % (page.game.name, page.password))
+			""" % (game.name, page.password))
 		for country in headsUp: page.write('<option value="%s">%s' %
-			(country, page.game.anglify(country)))
+			(country, game.anglify(country)))
 		page.write(
 			"""
 			</select></td>
@@ -797,10 +797,6 @@ def showReadyNotice():
 		'</font></th></tr></table></th></tr>')
 #	----------------------------------------------------------------------
 def showPressOptions():
-	if not page.game.powers:
-		page.write('<td class=bodycopy align=center valign=top>'
-					'(None available)</td>')
-		return
 	readers = page.game.eligiblePressRecipients(page.power)
 	page.write('<form method=post name=press>'
 		'<input type=hidden name=page value=Press>'
@@ -834,30 +830,32 @@ def showPressOptions():
 				""" % readers.index('ALL'))
 		page.write(
 			"""
-			</script>
-			<td class="bodycopy" nowrap><b>Send Press To:</b></td>
-			</tr>
-			<td valign=top class=bodycopy><b>
+</script>
+<td><table cellspacing=0>
+<tr><td class="bodycopy" nowrap><b>Send Press To:</b></td></tr>
 			""")
 		for power in readers:
-			page.write('<input type=checkbox name=recipient value=' + power)
-			if 'ALL' in readers:
-				page.write('onclick=reclick(%d)' % (power == 'ALL'))
-			page.write('>%s<br>' % page.game.anglify(power))
+			page.write(
+				"""
+<tr><td class="bodycopy" nowrap>
+<input type=checkbox name=recipient value=%s%s>
+<b>%s</b></td></tr>
+				""" % (power, 'ALL' in readers and ' onclick=reclick(%d)' %
+				(power == 'ALL') or '', page.game.anglify(power)))
 		page.write(
 			"""
-			</td></tr><tr><td align=center>
-			<input type=button class=inputSubmit
-			value="Compose" onclick=compose()>
-			</td>
+<tr><td align=center>
+<input type=button class=inputSubmit value="Compose" onclick=compose()>
+</td></tr>
+</table></td>
 			""")
-	elif page.power.name != 'MASTER': page.write(
+	elif readers: page.write(
 		"""
-		<input type=hidden name=recipient value=MASTER>
-		<th><input class=inputSubmit type=submit value="Mail the Master">
+		<input type=hidden name=recipient value=%s>
+		<th><input class=inputSubmit type=submit value="Mail the %s">
 		</th>
-		""")
-	else: page.write('<td class=bodycopy align=center>(None available)</td>')
+		""" % (readers[0], page.game.anglify(readers[0])))
+	else: page.write('<td class=bodycopy align=center>(None&nbsp;available)</td>')
 	page.write('</form>')
 #	----------------------------------------------------------------------
 def showWaitNotice():
@@ -907,90 +905,109 @@ def showWaitFlag():
 		""" % (' checked', '')[not page.power.wait])
 #	----------------------------------------------------------------------
 def showAdjustList():
-	game, power = page.game, page.power
-	if len(power.centers) == 0: return
-	count = len(power.centers) - len(power.units)
-	if [x for x in power.centers if x in power.homes]:
-		count += (game.map.reserves.count(power.name) +
-			min(game.map.militia.count(power.name),
-			len([0 for x in power.units
-				if x[2:5] in power.homes])))
-	if count > 0:
-		#	-------------------------------------------
-		#	Determine list of all available build sites
-		#	(count may be set to zero by doing this!!)
-		#	-------------------------------------------
-		buildable = game.buildSites(power)
-		count = min(count, game.buildLimit(power, buildable))
-	#	-----------------------
-	#	Create list of possible
-	#	build or remove orders.
-	#	-----------------------
-	if count > 0:
-		action, list = 'BUILD', ['WAIVED']
-		for site in sorted([x.upper() for x in game.map.locType]):
-			if site[:3] in buildable: list += [x + ' HIDDEN' * (
-				'HIDE_BUILDS' in game.rules or 
-				site[:3] in game.map.hidden.get(power.name, [])
-				) for x in ('A ' + site, 'F ' + site) if game.map.isValidUnit(x)]
-	elif count: action, list = 'REMOVE', sorted(power.units)
-	else: return
-	#	----------------------
-	#	Display pulldowns with
-	#	all available orders
-	#	----------------------
-	page.write(
-		"""
-		<tr><td class=bodycopy align=center><font size=2>
-		<b>%s Orders</b><br></font>
-		""" % game.phaseName(form = 2)[:-1])
-	if game.await:
-		return page.write('<b>%s</b>' % '<br>'.join(power.adjust))
-###		if 'NO_CHECK' in game.rules:
-###			page.write('<textarea name=adjust rows=%d cols=40>%s</textarea>' %
-###				(abs(count), '\n'.join(power.adjust)))
-###			return 1
-	for which in range(abs(count)):
-		order = power.adjust[which:which + 1]
-		page.write('<b>%s <select name=adjust class=inputBox>' % action.title())
-		if page.pwdFlag == 1 or not order: page.write('<option>(NMR)')
-		for ord in list:
-			syntax = action + ' ' + ord
-			select = ' selected' * (syntax in order)
-			if select or page.pwdFlag == 1: page.write(
-				'<option value=\'%s\'%s>' % (syntax, select) + ord)
-		page.write('</select><br>')
-	page.write('</td></tr>')
-	return 1
+	game, power, shown = page.game, page.power, 0
+	for who in [power] + power.vassals():
+		if len(who.centers) == 0: continue
+		count = len(who.centers) - len(who.units)
+		if [x for x in who.centers if x in who.homes]:
+			count += (game.map.reserves.count(who.name) +
+				min(game.map.militia.count(who.name),
+				len([0 for x in who.units
+					if x[2:5] in who.homes])))
+		if count > 0:
+			#	-------------------------------------------
+			#	Determine list of all available build sites
+			#	(count may be set to zero by doing this!!)
+			#	-------------------------------------------
+			buildable = game.buildSites(who)
+			count = min(count, game.buildLimit(who, buildable))
+		#	-----------------------
+		#	Create list of possible
+		#	build or remove orders.
+		#	-----------------------
+		if count > 0:
+			action, list = 'BUILD', ['WAIVED']
+			for site in sorted([x.upper() for x in game.map.locType]):
+				if site[:3] in buildable: list += [x + ' HIDDEN' * (
+					'HIDE_BUILDS' in game.rules or 
+					site[:3] in game.map.hidden.get(who.name, [])
+					) for x in ('A ' + site, 'F ' + site)
+					if game.map.isValidUnit(x)]
+		elif count: action, list = 'REMOVE', sorted(who.units)
+		else: continue
+		#	----------------------
+		#	Display pulldowns with
+		#	all available orders
+		#	----------------------
+		if not shown:
+			shown = 1
+			page.write(
+				"""
+				<tr><td class=bodycopy align=center><font size=2>
+				<b>%s Orders</b><p></font>
+				""" % game.phaseName(form = 2)[:-1])
+		if who is not power:
+			page.write('</p><font size=2><b>%s</b></font><p>' %
+				game.anglify(who.name))
+		if game.await:
+			page.write('<b>%s</b>' % '<br>'.join(who.adjust))
+			continue
+	###		if 'NO_CHECK' in game.rules:
+	###			page.write('<textarea name=adjust rows=%d cols=40>%s</textarea>' %
+	###				(abs(count), '\n'.join(who.adjust)))
+	###			return 1
+		for which in range(abs(count)):
+			order = who.adjust[which:which + 1]
+			page.write('<b>%s <select name=adjust class=inputBox>' % action.title())
+			if page.pwdFlag == 1 or not order:
+				page.write('<option value=\'%s(NMR)\'>(NMR)' %
+					(who is not power and who.name + ' ' or ''))
+			for ord in list:
+				syntax = action + ' ' + ord
+				select = ' selected' * (syntax in order)
+				if who is not power: syntax = who.name + ' ' + syntax
+				if select or page.pwdFlag == 1: page.write(
+					'<option value=\'%s\'%s>' % (syntax, select) + ord)
+			page.write('</select><br>')
+	if shown: page.write('</p></td></tr>')
+	return shown
 #	----------------------------------------------------------------------
 def showRetreatList():
-	power = page.power
-	if not power.retreats or power.goner: return
-	page.write(
-		"""
-		<tr><td class=bodycopy align=center><font size=2>
-		<b>%s Orders</b></font>
-		""" % page.game.phase.title()[:-1])
-	if page.game.await:
-		for order in power.adjust: page.write(order[8:] + '<br>')
-	else:
-		page.write('<table>')
-		for unit in power.retreats:
-			page.write('<tr><td class=bodycopy align=right>' +
-				unit.replace(' ', '&nbsp;') + '</td>')
-			page.write('<td><select name=adjust class=inputBox>')
-			if not power.adjust or page.pwdFlag == 1:
-				page.write('<option>(NMR)')
-			choices = ['DISBAND'] + ['- ' + x for x in power.retreats[unit]]
-			for choice in choices:
-				ord = 'RETREAT %s ' % unit + choice
-				select = ' selected' * (ord in power.adjust)
-				if select or page.pwdFlag == 1: page.write(
-					'<option value=\'%s\'%s>' % (ord, select) + choice)
-			page.write('</select></td></tr>')
-		page.write('</table')
-	page.write('</td></tr>')
-	return 1
+	game, power, shown = page.game, page.power, 0
+	for who in [power] + power.vassals():
+		if not who.retreats or who.goner: continue
+		if not shown:
+			shown = 1
+			page.write(
+				"""
+				<tr><td class=bodycopy align=center><font size=2>
+				<b>%s Orders</b></font>
+				""" % game.phase.title()[:-1])
+		if who is not power:
+			page.write('</p><font size=2><b>%s</b></font><p>' %
+				game.anglify(who.name))
+		if game.await:
+			for order in who.adjust: page.write(order[8:] + '<br>')
+		else:
+			page.write('<table>')
+			for unit in who.retreats:
+				page.write('<tr><td class=bodycopy align=right>' +
+					unit.replace(' ', '&nbsp;') + '</td>')
+				page.write('<td><select name=adjust class=inputBox>')
+				if not who.adjust or page.pwdFlag == 1:
+					page.write('<option value=\'%s(NMR)\'>(NMR)' %
+						(who is not power and who.name + ' ' or ''))
+				choices = ['DISBAND'] + ['- ' + x for x in who.retreats[unit]]
+				for choice in choices:
+					ord = 'RETREAT %s ' % unit + choice
+					select = ' selected' * (ord in who.adjust)
+					if who is not power: ord = who.name + ' ' + ord
+					if select or page.pwdFlag == 1: page.write(
+						'<option value=\'%s\'%s>' % (ord, select) + choice)
+				page.write('</select></td></tr>')
+			page.write('</table')
+	if shown: page.write('</td></tr>')
+	return shown
 #	----------------------------------------------------------------------
 def viewFile():
 	if page.file == 'status': return
