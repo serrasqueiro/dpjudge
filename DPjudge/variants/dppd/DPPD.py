@@ -127,7 +127,8 @@ class DPPD(dict):
 		newrules, newroles = set(), []
 		for info in [x.split(':') for x in data.split('|')]:
 			key, value = info[0], info[1:]
-			if key == 'JUDGE':
+			if not key: pass
+			elif key == 'JUDGE':
 				self.db.execute("select id from Judge where id = %s",
 					value[0])
 				try: judgeId = self.db.fetchone()['id']

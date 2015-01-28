@@ -17,7 +17,7 @@ class PayolaPower(Power):
 		if self.elect:
 			text += 'ELECT %s\n' % ' '.join(map(':'.join, self.elect.items()))
 		for power in self.sent: text += 'SENT %s\n' % power
-		if self.accept and (self.centers or self.units or self.retreats):
+		if self.accept and not self.isEliminated(False, True):
 			text += 'ACCEPT %s\n' % self.accept
 		if self.state: text += 'STATE %s\n' % self.state
 		for offer in self.sheet: text += '%s\n' % offer
@@ -58,6 +58,10 @@ class PayolaPower(Power):
 		if not self.centers: self.balance = 0
 		Power.resign(self, gmResign)
 	#	----------------------------------------------------------------------
+	def isEliminated(self, public = False, personal = False):
+		return (personal or not self.balance) and Power.isEliminated(
+			self, public, personal)
+	#	----------------------------------------------------------------------
 	def income(self, count, asVassal = 0):
 		if ('VASSAL_DUMMIES' in self.game.rules
 		and self.isDummy() and not asVassal): return 0
@@ -77,7 +81,7 @@ class PayolaPower(Power):
 			for tax in range(count): bux += self.game.win - count + tax
 		if self.game.cap: bux = min(self.game.cap, bux)
 		if 'VASSAL_DUMMIES' in self.game.rules:
-			for vassal in [x for x in self.game.powers if x.ceo == [self.name]]:
+			for vassal in self.vassals():
 				bux += vassal.income(len(vassal.centers), 1)
 		return bux
 	#	----------------------------------------------------------------------

@@ -857,8 +857,7 @@ class Procmail:
 						self.respond('MASTER has no WAIT flag')
 					if game.await or game.deadline < Time():
 						self.respond('WAIT unavailable after deadline')
-					if (not power.centers
-					and not power.units and not power.retreats):
+					if power.isEliminated():
 						self.respond('WAIT unavailable; no orders required')
 					if ('NO_MINOR_WAIT' in game.rules
 					and game.phaseType != 'M'):
@@ -925,7 +924,7 @@ class Procmail:
 			#	----------------
 			#	CLEAR and STATUS
 			#	----------------
-			elif command == 'CLEAR': self.setOrders([])
+			elif command == 'CLEAR': orders += [command]
 			elif command == 'STATUS': game.reportOrders(power, self.email)
 			#	----------------------------
 			#	REVEAL the game if requested
