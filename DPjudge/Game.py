@@ -855,8 +855,11 @@ class Game:
 		#	-----------------------------
 		if not self.map: self.loadMap()
 		if self.morphs:
+			error, self.map.error = self.map.error, []
 			self.map.load(self.morphs)
 			self.map.validate(force = 1)
+			self.error += self.map.error
+			self.map.error = error + self.map.error
 		#	-------------------------
 		#	Validate RULE consistency
 		#	-------------------------
@@ -1072,11 +1075,25 @@ class Game:
 						if y in x.homes]]
 					if len(scs) > 1: self.victory = [
 						len(scs) * (len(powers) - 1) // (2 * len(powers)) + 1]
-		if self.phase == 'FORMING': self.avail = [`len(self.map.powers) -
-			len([1 for x in self.powers
-			if x.type == 'POWER' and x.name not in self.map.dummies]) -
-			len(self.map.dummies)`]
 		rules, error = self.rules, self.error
+		if self.phase == 'FORMING':
+			self.avail = [`len(self.map.powers) -
+				len([1 for x in self.powers
+				if x.type == 'POWER' and x.name not in self.map.dummies]) -
+				len(self.map.dummies)`]
+			#	-----------------------------------
+			#	Ensure all controlling powers exist
+			#	-----------------------------------
+			checked = []
+			for controllers in self.map.controls.values():
+				for controller in controllers:
+					if controller in checked: continue
+					checked += [controller]
+					if controller not in self.map.powers + ['MASTER'] + [x.name
+						for x in self.powers if not x.name.startswith('POWER#')]:
+						error += ['CONTROLLING POWER %s IS NOT A POWER' % controller]
+					elif controller in self.map.dummies:
+						error += ['CONTROLLING POWER %s IS A DUMMY' % controller]
 		if self.phase not in ('FORMING', 'COMPLETED') and not self.deadline:
 			error += ['GAME HAS NO DEADLINE!']
 		if 'NO_RESERVES' in rules: self.map.reserves = []
@@ -2952,10 +2969,10 @@ class Game:
 				try: word = {'REMOVE': 'Removes', 'WAIVED': 'waived',
 				 			'HIDDEN': 'hidden',	'-': '->', 'H': 'HOLD'}[word]
 				except:
-					for loc in [x.strip('_')
-						for x,y in self.map.locName.items() +
-						self.map.powName.items()
-						if y.strip('_') == word.strip('_')]:
+					for loc in [y for y, x in self.map.locName.items()
+						if x == word] + [y.strip('_')
+						for x, y in self.map.powName.items()
+						if x.strip('_') == word.strip('_')]:
 						#	----------------------------
 						#	A "roll-our-own" str.title()
 						#	----------------------------

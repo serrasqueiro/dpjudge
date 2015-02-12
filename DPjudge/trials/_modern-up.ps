@@ -1,7 +1,7 @@
 %!PS-Adobe-3.0
 %%Title: Diplomacy Map (modern-up map)
 %%Creator: dpmap, using a map created with DPeye by Mario Huys (woelpad@gmail.com)
-%%DocumentPaperSizes: $Letter
+%%DocumentPaperSizes: Letter
 %%LanguageLevel: 2
 %%Orientation: Landscape
 %%Pages: (atend)
@@ -838,10 +838,34 @@
 	0 0 m
 	0 l
 	k
-	-5 0 m -10 0 l
-	-15 0 m -20 0 l
+	-10 0 m -20 0 l
+	-30 0 m -40 0 l
 	k
 	r
+} bd
+/PaintArrowArriveFleet {
+	2 copy
+	PaintArrowArrive
+	SetArrowStateOk
+	exch 14 ArrowBase add 30 add .6 mul add exch 8.64 add t
+	.8 .8 x
+	FleetTroops Power get execform
+} bd
+/PaintArrowArriveWing {
+	2 copy
+	PaintArrowArrive
+	SetArrowStateOk
+	exch 14 ArrowBase add 30 add .6 mul add exch 8.64 add t
+	.8 .8 x
+	WingTroops Power get execform
+} bd
+/PaintArrowArriveArmy {
+	2 copy
+	PaintArrowArrive
+	SetArrowStateOk
+	exch 14 ArrowBase add 30 add .6 mul add exch 8.64 add t
+	.8 .8 x
+	ArmyTroops Power get execform
 } bd
 /PaintArrowDepart {
 	s
@@ -853,8 +877,8 @@
 	2 w
 	0 0 m
 	0 l
-	-6 0 m -10 0 l
-	-16 0 m -20 0 l
+	-10 0 m -20 0 l
+	-30 0 m -40 0 l
 	k
 	r
 } bd
@@ -888,18 +912,32 @@
 	12 PaintArrowCircle
 	r
 } bd
-/ArrowArrive {
-	SwitchToMapMode
-	s
-	SetArrowState
-	PaintArrowArrive
-	r
-} bd
 /ArrowDepart {
 	SwitchToMapMode
 	s
 	SetArrowState
 	PaintArrowDepart
+	r
+} bd
+/ArrowArriveFleet {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowArriveFleet
+	r
+} bd
+/ArrowArriveWing {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowArriveWing
+	r
+} bd
+/ArrowArriveArmy {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowArriveArmy
 	r
 } bd
 /ArrowRetreat {
@@ -912,9 +950,19 @@
 	ArrowMove
 	MovePhase
 } bd
-/ArrowRetreatArrive {
+/ArrowRetreatArriveFleet {
 	RetreatPhase
-	ArrowArrive
+	ArrowArriveFleet
+	MovePhase
+} bd
+/ArrowRetreatArriveWing {
+	RetreatPhase
+	ArrowArriveWing
+	MovePhase
+} bd
+/ArrowRetreatArriveArmy {
+	RetreatPhase
+	ArrowArriveArmy
 	MovePhase
 } bd
 /ArrowRetreatDepart {
