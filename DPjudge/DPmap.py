@@ -27,7 +27,7 @@ class PostScriptMap:
 		if viewer: viewer = viewer.upper()
 		self.pages, self.sc, show = 0, '', 1
 		self.started = self.scBefore = section = lastSection = lastLine = None
-		power = powerDecl = powerOrder = season = year = None
+		power = powerDecl = powerRedecl = powerOrder = season = year = None
 		self.map, self.lang, self.LANG = [], dict(), dict()
 		self.orders, self.retreats, self.ownerOrder = [], [], []
 		self.owner, self.adj, self.units, self.discoveries = {}, {}, {}, {}
@@ -128,6 +128,7 @@ class PostScriptMap:
 					if power in self.vassals:
 						powerDecl = self.vassals[power] + ' Controls ' + powerDecl
 						powerOrder += ' (' + self.vassals[power] + ')'
+					powerRedecl = powerDecl
 
 			#	--------------------------------------------
 			#	Lines signaling the end of the phase results
@@ -145,7 +146,7 @@ class PostScriptMap:
 				#	---------------------
 				for graphic in graphics:
 					self.outFile.write((graphic + '\n').encode('latin-1'))
-				power = powerDecl = powerOrder = None
+				power = powerDecl = powerRedecl = powerOrder = None
 				if section: section = 'O'
 				continue
 
@@ -412,7 +413,10 @@ class PostScriptMap:
 			#	-------
 			elif order[0] == 'A':
 				order = '- %.3s' % (di or si)['nick']
-				graph = 'Arrow' + 'Retreat' * (section == 'R') + 'Arrive'
+				graph = 'Arrow' + 'Retreat' * (section == 'R') + 'Arrive' + ('Fleet', 'Army')[unit == 'A']
+				if powerRedecl:
+					graphics += [powerRedecl]
+					powerRedecl = None
 			#	-------
 			#	Departs
 			#	-------
@@ -611,7 +615,9 @@ class PostScriptMap:
 		]
 		# Blind orders 
 		self.procs += [
-			('ArrowArrive', 2), ('ArrowDepart', 2), ('ArrowRetreatArrive', 2), ('ArrowRetreatDepart', 2), ('FindUnit', 2), ('LoseUnit', 2),
+			('ArrowArriveArmy', 2), ('ArrowArriveFleet', 2), ('ArrowDepart', 2),
+			('ArrowRetreatArriveArmy', 2), ('ArrowRetreatArriveFleet', 2), ('ArrowRetreatDepart', 2),
+			('FindUnit', 2), ('LoseUnit', 2),
 		]
 		# Vassal orders 
 		self.procs += [
