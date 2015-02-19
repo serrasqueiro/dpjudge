@@ -96,7 +96,7 @@ powerHeader()
 		<!--MAPS, RESULTS, ENDGAME TABLE BEGINS HERE-->
 		<table border=0 align=center width=100%>
 <:
-finished('Transfer Made<br>Notice of the transfer has been sent to %s.' %
+finished('Transfer Made', 'Notice of the transfer has been sent to %s.' %
 	page.game.anglify(page.beneficiary))
 :>
 		</td></tr>
