@@ -479,6 +479,7 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 <a name=DUMMY></a>
 <p><dt><b><tt>DUMMY [ALL]</tt> -or- <br>
 <tt>DUMMY [ALL EXCEPT] <i>powerName...</i></tt> -or- <br>
+<tt>DUMMIES ALL</tt> -or- <br>
 <tt>DUMMIES [ALL EXCEPT] <i>powerName...</i></tt></b><dd>
 	This indicates that either the current power, or all powers, or only those
 	specified by <tt><i>powerName</i><tt>, or again all powers other than
@@ -510,7 +511,9 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 
 <a name=TEAM></a>
 <p><dt><b><tt>TEAM[S] <i>powerName-...-powerName ...</i></tt></b><dd>
-	This command creates teams that can be controlled by a single player. The first power name becomes the controlling (main) power, the other powers, connected to the first one by hyphens, become dummies controlled by the main power. Only the main power can be a non-map power. More than one team can be specified on the same line by separating them with spaces. If the power name contains a hyphen, omit it.
+	This command creates teams that can be controlled by a single player. The first power name becomes the controlling (main) power, the other powers, connected to the first one by hyphens, become dummies controlled by the main power. Only the main power can be a non-map power. More than one team can be specified on the same line by separating them with spaces. If the power name contains a hyphen, omit it. For example an Empire game could have the following team pairings:<br>
+	&nbsp;&nbsp;
+	TEAMS B.C.-California Cuba-Florida Heartland-Mexico NewYork-Peru Quebec-Texas
 
 <a name=NEWHOMES></a>
 <p><dt><b><tt>NEWHOMES <i>year...</i></tt></b><dd>
@@ -818,7 +821,7 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	appear in such a stanza; the lines are not limited to those
 	described on this Webpage.
 
-<p><dt><b><tt>RULE <i>rule...</i></tt></b><dd>
+<p><dt><b><tt>RULE[S] <i>rule...</i></tt></b><dd>
 	Specifies a DPjudge <a href=<PAGE>Rules><tt>RULE</tt></a> that will be
 	in effect for all games using this map.  For example,
 	<tt>RULE&nbsp;BUILD_ANY</tt> would appear in a map file for the

@@ -412,7 +412,7 @@ class Map:
 			#	----------------------------------
 			#	DPjudge RULEs specific to this map
 			#	----------------------------------
-			elif upword == 'RULE':
+			elif upword in ('RULE', 'RULES'):
 				self.directives.setdefault(variant or 'ALL', []).append(line)
 				#	----------------------------------------------
 				#	Go ahead and add it to self.rules if this rule

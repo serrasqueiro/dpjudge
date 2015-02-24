@@ -796,7 +796,7 @@ class Game:
 			elif upword == 'PRIVATE':
 				if len(word) == 2: self.private = word[1].upper()
 				else: error += ['INVALID PRIVATE STATEMENT']
-			elif upword == 'RULE':
+			elif upword in ('RULE', 'RULES'):
 				for rule in word[1:]:
 					rule = rule.upper()
 					item = rule.replace('!','')
