@@ -129,6 +129,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=BACKSEAT_PRESS>BACKSEAT_PRESS
 <option value=FLEX_SETUP>BLANK_BOARD
 <option value=BLIND>BLIND
+<option value=BROADCAST_JOIN>BROADCAST_JOIN
 <option value=BROADCAST_ORDERS>BROADCAST_ORDERS
 <option value=BUILD_ANY>BUILD_ANY
 <option value=CD_BUILDS>CD_BUILDS
@@ -204,10 +205,9 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=SEE_ALL_SCS>SEE_ALL_SCS (BLIND)
 <option value=SEE_NO_SCS>SEE_NO_SCS (BLIND)
 <option value=SEE_NO_UNITS>SEE_NO_UNITS (BLIND)
-<option value=SILENT_ABSENCES>SILENT_ABSENCES
 <option value=SHARED_VICTORY>SHARED_VICTORY
 <option value=SHOW_PHANTOM>SHOW_PHANTOM
-<option value=SILENT_JOIN>SILENT_JOIN
+<option value=SILENT_ABSENCES>SILENT_ABSENCES
 <option value=SMART_CD>SMART_CD
 <option value=START_MASTER>START_MASTER
 <option value=TEAM_VICTORY>TEAM_VICTORY
@@ -311,9 +311,10 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	be placed on the map as usual.
 <!-- RULE END -->
 
-<a name=SILENT_JOIN></a><p><dt><b><tt>SILENT_JOIN</tt></b></dt><dd>
-<!-- RULE SILENT_JOIN -->
-	With this rule no broadcasts will be sent whenever a player joins a forming game.
+<a name=BROADCAST_JOIN></a><p><dt><b><tt>BROADCAST_JOIN</tt></b></dt><dd>
+<!-- RULE BROADCAST_JOIN -->
+	With this rule broadcasts will be sent out whenever a player joins a
+	forming game.
 <!-- RULE END -->
 
 <a name=START_MASTER></a><p><dt><b><tt>START_MASTER</tt></b></dt><dd>

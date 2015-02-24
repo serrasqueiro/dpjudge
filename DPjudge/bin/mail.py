@@ -454,18 +454,19 @@ class Procmail:
 					if 'START_MASTER' in game.rules:
 						responding = game.begin()
 						if responding: game.mailPress(None, ['MASTER'],
-							'The game cannot start yet because ' +
-							(self.error and  'the following error%s exist%s:\n\t' %
+							'The game cannot start yet because ' + (self.error
+							and 'the following error%s exist%s:\n\t' %
 							[('s', ''), ('', 's')][len(self.error) == 1] +
-							'\n\t'.join(self.error) + '\n\nResolve this first, then '
-							or 'the status is not forming. To begin ') +
+							'\n\t'.join(self.error) +
+							'\n\nResolve this first, then ' or
+							'the status is not forming. To begin ') +
 							'change the game status to active.',
 							subject = 'Diplomacy game %s full' % game.name)
 					game.mailPress(None, ['All!'],
 						'All positions are filled, but you need to wait ' +
 						'for the Master to activate the game.',
 						subject = 'Diplomacy game %s full' % game.name)
-				elif playerType == 'POWER' and not 'SILENT_JOIN' in game.rules:
+				elif playerType == 'POWER' and 'BROADCAST_JOIN' in game.rules:
 					game.mailPress(None, ['All!'],
 						'%s has joined the game. %s %d position%s left.' %
 						(game.anglify(power), ('Only', 'Still')[2 * avail >
