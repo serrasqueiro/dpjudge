@@ -1108,7 +1108,7 @@ def sendPress():
 			message queued for delivery when restored</font>
 		""" * (type(socket.gethostname) is not type(len))))
 #	----------------------------------------------------------------------
-def finished(header = 'Update Made'):
+def finished(header = 'Update Made', subheader = None):
 	if 'receipt' in vars(page):
 		page.game.reportOrders(page.power)
 	page.write(
@@ -1116,6 +1116,13 @@ def finished(header = 'Update Made'):
 		<tr valign=top bgcolor="#CCCCCC">
 		<th bgcolor=yellow class=bodycopy>
 		<font color=red size=3>%s</th></tr>
+		""" % header +
+		"""
+		<tr valign=top bgcolor="#CCCCCC">
+		<th bgcolor=red class=bodycopy>
+		<font color=yellow size=3>%s</th></tr>
+		""" % subheader * (not not subheader) +
+		"""
 		<tr valign=top>
 		<script>window.setTimeout("document.form.submit();",5000);</script>
 		<td align=center width=100%% class=bodycopy>
@@ -1127,15 +1134,14 @@ def finished(header = 'Update Made'):
 		<input type=hidden name=password value=%s>
 		<input type=submit class=inputSubmit
 		value="Return to the Status Page [Automatic in 5 Seconds]"></form>
-		%s
-		</th></tr>
-		""" % (header, page.game.name, page.power.name, page.password,
+		""" % (page.game.name, page.power.name, page.password) +
 		"""
 		<blockquote>Note that if you use your browser's
 		"Back" button to return to the status page<br>(instead of the
 		button above), you will need to "Reload" the screen to see
 		your changes reflected.</blockquote>
-		""" * (header != 'Update Made' or page.power.name == 'MASTER')))
+		""" * (header != 'Update Made' or page.power.name == 'MASTER') +
+		'</th></tr>')
 #	----------------------------------------------------------------------
 def problem(pre = '', post = ''):
 	page.write(

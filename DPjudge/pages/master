@@ -644,8 +644,11 @@ def updateMaster():
 		if page.gameMode == 'active':
 #			page.game = Game(page.game.name)
 			if page.game.phase == 'FORMING': 
-				page.game.begin()
-				return finished()
+				if page.game.status[1] == 'waiting':
+					page.game.status[1] = 'forming'
+				responding = page.game.begin() or ''
+				untouched = responding and 'No ' or ''
+				return finished(untouched + 'Update Made', responding)
 		gameMode[0] = page.gameMode
 		page.game.status[1:] = gameMode
 	if (page.list == 'LIST') == ('unlisted' in gameMode):
