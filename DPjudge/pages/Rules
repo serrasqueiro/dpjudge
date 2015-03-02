@@ -204,10 +204,12 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=SEE_ALL_SCS>SEE_ALL_SCS (BLIND)
 <option value=SEE_NO_SCS>SEE_NO_SCS (BLIND)
 <option value=SEE_NO_UNITS>SEE_NO_UNITS (BLIND)
-<option value=SILENT_ABSENCES>SILENT_ABSENCES
 <option value=SHARED_VICTORY>SHARED_VICTORY
 <option value=SHOW_PHANTOM>SHOW_PHANTOM
+<option value=SILENT_ABSENCES>SILENT_ABSENCES
+<option value=SILENT_JOIN>SILENT_JOIN
 <option value=SMART_CD>SMART_CD
+<option value=START_MASTER>START_MASTER
 <option value=TEAM_VICTORY>TEAM_VICTORY
 <option value=TORN_ALLEGIANCE>TORN_ALLEGIANCE
 <option value=TOUCH_PRESS>TOUCH_PRESS
@@ -307,6 +309,19 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	<a href="<PAGE>about_hundred">Hundred variant</a>,
 	France begins with an army in Provence), these units will indeed
 	be placed on the map as usual.
+<!-- RULE END -->
+
+<a name=SILENT_JOIN></a><p><dt><b><tt>SILENT_JOIN</tt></b></dt><dd>
+<!-- RULE SILENT_JOIN -->
+	With this rule no broadcasts will be sent out whenever a player joins a
+	forming game.
+<!-- RULE END -->
+
+<a name=START_MASTER></a><p><dt><b><tt>START_MASTER</tt></b></dt><dd>
+<!-- RULE START_MASTER -->
+	This rule prevents the game from automatically starting once the last player
+	joined. The Master will need to change the game status to active to begin the
+	game.
 <!-- RULE END -->
 
 <!--
@@ -499,7 +514,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE SHOW_PHANTOM !NO_CHECK -->
 	Supports and convoys offered to non-existent units are announced
 	[note that <tt>SHOW_PHANTOM</tt> implies
-	<a href=#FICTIONAL_OK>the <tt>FICTIONAL_OK</tt> rule</a>, above].
+	the <a href=#FICTIONAL_OK><tt>FICTIONAL_OK</tt></a> rule, above].
 	Without <tt>SHOW_PHANTOM</tt>, all such orders are displayed as
 	<tt>HOLD</tt> orders.  Additionally, <tt>SHOW_PHANTOM</tt>
 	modifies the results in that it suppresses (for all orders, not simply
@@ -812,7 +827,8 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 		powers, provided that the unit started or ended the turn in or adjacent
 		to a home supply center of the player in question (regardless
 		of whether or not that center is currently owned by the player, and
-		&mdash; as in the case of games using the <tt>MOBILIZE</tt> rule &mdash;
+		&mdash; as in the case of games using the
+		<a href=#MOBILIZE><tt>MOBILIZE</tt></a> rule &mdash;
 		even if the center has never been owned by the player).
 	<li>his own list of owned supply centers,
 	<li>the ownership of any foreign-owned supply centers within his
@@ -845,13 +861,19 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	appearing in the results.  However, convoyed armies that were issued
 	orders that would have been <tt>(*void*)</tt> are <i>re-</i>annotated
 	in the results with the <tt>(*no&nbsp;convoy*)</tt> annotation.</li>
-	<li>The <tt>FICTIONAL_OK</tt> rule is in effect.</li>
-	<li>The <tt>HIDE_ABSENTEES</tt> rule is in effect.</li>
-	<li>The <tt>HIDE_DUMMIES</tt> rule is in effect, unless explicitly disabled.</li>
-	<li>The <tt>HIDE_LATE_POWERS</tt> rule is in effect.</li>
-	<li>The <tt>SHOW_PHANTOM</tt> rule is in effect.</li>
-	<li>The <tt>SILENT_ABSENCES</tt> rule is in effect.</li>
-	<li>The <tt>NO_DIAS</tt> rule is disallowed.</li>
+	<li>Sometimes a unit may have fewer retreat options than what he would
+	expect from the information he receives. This happens when a standoff
+	occurs on a space that the player can see, but he can't see either
+	of the bouncing units.</li>
+	<li>In general failure of a foreign unit to move from an invisible space
+	to a visible space will not be revealed.</li>
+	<li>The <a href=#FICTIONAL_OK><tt>FICTIONAL_OK</tt></a> rule is in effect.</li>
+	<li>The <a href=#HIDE_ABSENTEES><tt>HIDE_ABSENTEES</tt></a> rule is in effect.</li>
+	<li>The <a href=#HIDE_DUMMIES><tt>HIDE_DUMMIES</tt></a> rule is in effect, unless explicitly disabled.</li>
+	<li>The <a href=#HIDE_LATE_POWERS><tt>HIDE_LATE_POWERS</tt></a> rule is in effect.</li>
+	<li>The <a href=#SHOW_PHANTOM><tt>SHOW_PHANTOM</tt></a> rule is in effect.</li>
+	<li>The <a href=#SILENT_ABSENCES><tt>SILENT_ABSENCES</tt></a> rule is in effect.</li>
+	<li>The <a href=#NO_DIAS><tt>NO_DIAS</tt></a> rule is disallowed.</li>
 	</ul>
 	Note that visibility is determined by the <i>space</i>, not the coast,
 	on which a unit is located.  A unit is visible to, and can "see," any
@@ -1487,6 +1509,8 @@ the course of the game.
 <!-- RULE TEAM_VICTORY -->
 	With this rule the victory condition is calculated based on the total
 	number of centers owned by a power and all of the dummy powers it controls.
+	<p>
+	<i>Hint: Use the</i> <a href=<PAGE>Map#TEAM><tt>TEAM</tt></a> <i>directive in the Map Morphings box to easily set up teams during game preparation (or</i> <tt>MORPH TEAM &hellip;</tt> <i>in a game creation mail).</i>
 <!-- RULE END -->
 
 <a name=VICTORY_HOMES></a><p><dt><b><tt>VICTORY_HOMES</tt></b><dd>

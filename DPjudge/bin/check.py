@@ -58,7 +58,7 @@ class Check(Status):
 					'disabled. ',
 					'This is probably caused by another server outage. ' +
 					'Automatic deadline checking is still disabled. '][again] + 
-					'Investigate, extend deadlines if necessary, ' +
+					'\n\nInvestigate, extend deadlines if necessary, ' +
 					'and only then run check once more without the ' +
 					'-t option to restart the process.', 75))
 				print(msg)

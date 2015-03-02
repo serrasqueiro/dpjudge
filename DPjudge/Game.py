@@ -69,6 +69,11 @@ class Game:
 		for terrain, changes in self.terrain.items():
 			for site, abuts in changes.items():
 				text += '\n%s %s ' % (terrain, site) + ' '.join(abuts)
+		#	---------------
+		#	Legacy keywords
+		#	---------------
+		if self.judge: text += '\nJUDGE ' + self.judge
+		if self.signon: text += '\nSIGNON ' + self.signon
 		return '\n'.join([x for x in text.split('\n')
 					if x not in self.directives]).encode('latin-1') + '\n'
 	#	----------------------------------------------------------------------
@@ -92,7 +97,7 @@ class Game:
 			except: metaRules, rules = [], []
 			tester = host.tester
 			groups = password = start = ''
-			map = private = zone = None
+			map = private = zone = judge = signon = None
 			timing, terrain, status = {}, {}, Status().dict.get(self.name, [])
 			#	------------------------------------------------------
 			#	When we run out of directory slots, the line below can
@@ -547,6 +552,9 @@ class Game:
 		import Map
 		self.map, phases = Map.Map(mapName, trial), []
 		self.error += self.map.error
+		if self.phase and not ' ' in self.phase and self.phase not in (
+			'FORMING', 'COMPLETED'):
+			self.phase = self.map.phaseLong(self.phase)
 		#	-------------------------------------------
 		#	Have the Game process all lines in the map
 		#	file that were in DIRECTIVES clauses (this
@@ -749,6 +757,7 @@ class Game:
 					if len(word) > 1:
 						if self.phase:
 							error += ['RESULT WHILE PHASE NOT COMPLETED YET']
+						elif not self.map: self.phase = word[1]
 						else: self.phase = self.phaseLong(word[1])
 		#	----------------------------------
 		#	Game-specific information (orders)
@@ -800,7 +809,7 @@ class Game:
 			elif upword == 'PRIVATE':
 				if len(word) == 2: self.private = word[1].upper()
 				else: error += ['INVALID PRIVATE STATEMENT']
-			elif upword == 'RULE':
+			elif upword in ('RULE', 'RULES'):
 				for rule in word[1:]:
 					rule = rule.upper()
 					item = rule.replace('!','')
@@ -811,7 +820,7 @@ class Game:
 						self.norules += [item]
 						continue
 					self.addRule(item)
-					if includeFlags & 8:
+					if self.map and includeFlags & 8:
 						if item not in self.map.rules: self.map.rules += [item]
 						if item not in self.metaRules: self.metaRules += [item]
 			elif upword in ['MAP', 'TRIAL']:
@@ -848,6 +857,15 @@ class Game:
 			elif upword == 'MORPH':
 				if len(word) > 1: self.morphs += [' '.join(word[1:])]
 				else: self.mode, self.modeRequiresEnd = upword, 1
+			#	---------------
+			#	Legacy keywords
+			#	---------------
+			elif upword == 'JUDGE':
+				if self.judge: error += ['TWO JUDGE STATEMENTS']
+				else: self.judge = ' '.join(word[1:])
+			elif upword == 'SIGNON':
+				if self.signon: error += ['TWO SIGNON STATEMENTS']
+				else: self.signon = ' '.join(word[1:])
 			else: found = 0
 		return found
 	#	----------------------------------------------------------------------
@@ -859,8 +877,11 @@ class Game:
 		#	-----------------------------
 		if not self.map: self.loadMap()
 		if self.morphs:
+			error, self.map.error = self.map.error, []
 			self.map.load(self.morphs)
 			self.map.validate(force = 1)
+			self.error += self.map.error
+			self.map.error = error + self.map.error
 		#	-------------------------
 		#	Validate RULE consistency
 		#	-------------------------
@@ -1076,11 +1097,26 @@ class Game:
 						if y in x.homes]]
 					if len(scs) > 1: self.victory = [
 						len(scs) * (len(powers) - 1) // (2 * len(powers)) + 1]
-		if self.phase == 'FORMING': self.avail = [`len(self.map.powers) -
-			len([1 for x in self.powers
-			if x.type == 'POWER' and x.name not in self.map.dummies]) -
-			len(self.map.dummies)`]
 		rules, error = self.rules, self.error
+		if self.phase == 'FORMING':
+			avail = self.available()
+			if avail < 0:
+				error += ['THERE %s %d MORE PLAYER%s THAN THERE ARE POSITIONS AVAILABLE' % [('ARE', -avail, 'S'), ('IS', -avail, '')][avail == -1]]
+				avail = 0
+			self.avail = [`avail`]
+			#	-----------------------------------
+			#	Ensure all controlling powers exist
+			#	-----------------------------------
+			checked = []
+			for controllers in self.map.controls.values():
+				for controller in controllers:
+					if controller in checked: continue
+					checked += [controller]
+					if controller not in self.map.powers + ['MASTER'] + [x.name
+						for x in self.powers if not x.name.startswith('POWER#')]:
+						error += ['CONTROLLING POWER %s IS NOT A POWER' % controller]
+					elif controller in self.map.dummies:
+						error += ['CONTROLLING POWER %s IS A DUMMY' % controller]
 		if self.phase not in ('FORMING', 'COMPLETED') and not self.deadline:
 			error += ['GAME HAS NO DEADLINE!']
 		if 'NO_RESERVES' in rules: self.map.reserves = []
@@ -1268,6 +1304,11 @@ class Game:
 		self.rules = okrules
 		self.metaRules = metaRules
 		self.norules = [x for x in self.norules if x in norules]
+	#	----------------------------------------------------------------------
+	def available(self):
+		return len(self.map.powers) - len(self.map.dummies) - len(
+			[1 for x in self.powers if x.type == 'POWER' and
+			x.name not in self.map.dummies])
 	#	----------------------------------------------------------------------
 	def parseUnit(self, power, unit, retreats):
 		#	-------------------------
@@ -1549,6 +1590,9 @@ class Game:
 		self.powers.sort(Power.compare)
 	#	----------------------------------------------------------------------
 	def begin(self, move1st = 0, roll = 0):
+		if self.status[1] != 'forming' or self.error:
+			return ("To begin the game make sure that it's forming and " +
+				"without errors")
 		if not roll: self.rollin()
 		self.phase = self.map.phase
 		self.phaseType = self.phase.split()[-1][0]
@@ -2035,7 +2079,8 @@ class Game:
 		file.close()
 		try: os.chmod(press, 0666)
 		except: pass
-		if not self.tester and 'suspect' in self.status and host.judgekeeper not in sentTo:
+		if (not self.tester and 'suspect' in self.status and
+			host.judgekeeper not in sentTo):
 			self.deliverPress(sender, 'MASTER', host.judgekeeper,
 				readers, message, claimFrom, claimTo, subject, 1)
 	#	---------------------------------------------------------------------
@@ -2078,6 +2123,7 @@ class Game:
 		#	Begin the mail
 		#	--------------
 		if subject: topic = subject
+		elif not sender: topic = 'Diplomacy game %s notice' % self.name
 		elif reader == sender.name:
 			if recipient == ['All']: topic = 'Diplomacy broadcast sent'
 			else: topic = 'Diplomacy press sent' + self.listReaders(recipient)
@@ -2085,7 +2131,7 @@ class Game:
 		else: topic = 'Diplomacy press from ' + self.anglify(claimFrom)
 		self.openMail(topic, mailTo = email, mailAs = mailAs)
 		mail = self.mail
-		if not subject and email:
+		if not subject and sender and email:
 			#	---------------------------------------
 			#	The message is being sent directly to a
 			#	player e-mail.  So format it ourselves.
@@ -2104,7 +2150,7 @@ class Game:
 		#	---------
 		#	Finish up
 		#	---------
-		if not subject:
+		if not subject and sender:
 			if not email: mail.write('ENDPRESS\nSIGNOFF\n')
 			elif reader == sender.name: mail.write('\nEnd of message.\n')
 		mail.close()
@@ -2112,7 +2158,7 @@ class Game:
 	#							ADJUDICATION METHODS
 	#	----------------------------------------------------------------------
 	def ready(self, process = 0):
-		return self.status[1] == 'active' and (
+		return self.status[1] == 'active' and not self.error and (
 		process == 2 or ((self.deadline and self.deadline <= Time())
 		or process or not ([1 for power in self.powers if power.wait]
 		or ('ALWAYS_WAIT' in self.rules and (self.phaseType == 'M'
@@ -2273,17 +2319,25 @@ class Game:
 		#   Relevant bit values for includeFlags:
 		#		1: include orders for each power
 		#		2: include persistent power data
-		#		16: include completed game (self.tester needs to be set)
+		#		16: force roll, even for inactive games or games with errors
+		#	Bit 8 would remove all rules when saving, so gets masked out.
 		#	Tip: During tests or debugging, use self.tester to send mail to
 		#	yourself only or, if you specify an invalid address like '@', to
 		#	no one in particular. With self.tester, a completed game will
 		#	not be sent to the hall of fame.
 		#	----------------------------------------------------------------
-		complete = includeFlags & 16 and self.phase == 'COMPLETED'
-		if not complete and self.status[1] != 'active':
-			return 'ROLLBACK can only occur on an active game'
-		lines, outphase = [], complete and self.outcome[0] or (
-			self.map.phaseAbbr(self.phase, self.phase))
+		includeFlags &= 247
+		if self.phase == 'FORMING':
+			return 'Cannot ROLLBACK forming game'
+		waiting = self.status[1] == 'waiting'
+		expected = ('active', 'completed')[self.phase == 'COMPLETED']
+		if not includeFlags & 16 and (not waiting and
+			self.status[1] != 'active' or self.error):
+			return ('ROLLBACK can only occur on an active or waiting, ' +
+				'error-free game')
+		if self.status[1] != expected: self.changeStatus(expected)
+		lines, outphase = [], (self.status[1] == 'completed' and
+			self.outcome[0]) or self.map.phaseAbbr(self.phase, self.phase)
 		if phase:
 			phase = phase.upper()
 			if len(phase.split()) > 1: phase = self.phaseAbbr(phase)
@@ -2306,8 +2360,10 @@ class Game:
 					if 'Diplomacy results' not in text: continue
 					word = text.split()
 					try: 
-						unphase = word[word.index(self.name, word.index('results') + 1) + 1]
-						os.rename(self.file('status.' + unphase), self.file('status.' + unphase + '.0'))
+						unphase = word[word.index(self.name,
+							word.index('results') + 1) + 1]
+						os.rename(self.file('status.' + unphase),
+							self.file('status.' + unphase + '.0'))
 					except: pass
 		else:
 			file = open(self.file('results'), 'r', 'latin-1')
@@ -2328,13 +2384,14 @@ class Game:
 			except: pass
 			os.rename(self.file('status'), self.file('status.rollback'))
 		else:
-			os.rename(self.file('status'), self.file('status.' + outphase + '.0'))
+			os.rename(self.file('status'),
+				self.file('status.' + outphase + '.0'))
 		try: os.unlink(self.file('summary'))
 		except: pass
 		if not start:
 			self.reinit(4)
 			self.phase = 'FORMING'
-			self.changeStatus('forming')
+			self.changeStatus(('forming', 'waiting')[waiting])
 			self.save()
 			self.mailPress(None, ['All!'],
 				"Diplomacy game '%s' has been reset to the forming state,\n"
@@ -2357,7 +2414,7 @@ class Game:
 			# Load the phase.
 			self.load('status.' + phase + '.0', includeFlags | 4)
 			self.await = self.skip = None
-			self.changeStatus('active')
+			self.changeStatus(('active', 'waiting')[waiting])
 			self.setDeadline()
 			self.delay = None
 			self.save()
@@ -2393,17 +2450,29 @@ class Game:
 		#		1: include orders for each power
 		#		2: include persistent data
 		#		4: include transient data
+		#		16: force roll, even for inactive games or games with errors
+		#	Bit 8 would remove all rules when saving, so gets masked out.
 		#	Tip: During tests or debugging, use self.tester to send mail to
 		#	yourself only or, if you specify an invalid address like '@', to
 		#	no one in particular.
 		#	----------------------------------------------------------------
-		if self.status[1] not in ('forming', 'active'):
-			return 'ROLLFORWARD can only occur on an active game'
+		includeFlags &= 247
+		if self.phase == 'COMPLETED':
+			return 'Cannot ROLLFORWARD completed game'
+		waiting = self.status[1] == 'waiting'
+		expected = ('active', 'forming')[self.phase == 'FORMING']
+		if not includeFlags & 16 and (not waiting and
+			self.status[1] != expected or self.error):
+			return ('ROLLFORWARD can only occur on an active or waiting, ' +
+				'error-free game')
+		if self.status[1] != expected: self.changeStatus(expected)
 		preview, self.preview = self.preview, 0
 		tester, self.tester = self.tester, '@'
 		if self.phase == 'FORMING':
+			self.status[1] = 'forming'
 			self.begin(roll = 1)
 			if not phase: phase = self.phase
+		elif waiting: self.status[1] = 'active'
 		unphase = outphase = self.map.phaseAbbr(self.phase, self.phase)
 		if not os.path.isfile(self.file('status.' + outphase + '.0')):
 			return 'Invalid ROLLFORWARD phase'
@@ -2455,7 +2524,7 @@ class Game:
 		self.load('status.' + unphase + '.0', includeFlags)
 		self.await = self.skip = None
 		if self.phase != 'COMPLETED':
-			self.changeStatus('active')
+			self.changeStatus(('active', 'waiting')[waiting])
 			self.setDeadline()
 			self.delay = None
 			self.save()
@@ -2479,7 +2548,7 @@ class Game:
 				self.mailPress(None, ['All!'],
 					'The game is over once more. Thank you for playing.')
 		if self.error:
-			return 'Errors during ROLLBACK:\n' + '\n'.join(self.error)
+			return 'Errors during ROLLFORWARD:\n' + '\n'.join(self.error)
 	#	----------------------------------------------------------------------
 	def rollin(self, branch = None):
 		#	-----------------------------------------------------------------
@@ -2961,10 +3030,10 @@ class Game:
 				try: word = {'REMOVE': 'Removes', 'WAIVED': 'waived',
 				 			'HIDDEN': 'hidden',	'-': '->', 'H': 'HOLD'}[word]
 				except:
-					for loc in [x.strip('_')
-						for x,y in self.map.locName.items() +
-						self.map.powName.items()
-						if y.strip('_') == word.strip('_')]:
+					for loc in [y for y, x in self.map.locName.items()
+						if x == word] + [y.strip('_')
+						for x, y in self.map.powName.items()
+						if x.strip('_') == word.strip('_')]:
 						#	----------------------------
 						#	A "roll-our-own" str.title()
 						#	----------------------------

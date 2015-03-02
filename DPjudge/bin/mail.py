@@ -389,6 +389,9 @@ class Procmail:
 				existing.name)
 			if command != 'RESIGN': del game.powers[num]
 			break
+		if playerType == 'POWER' and game.available() <= 0 and command != 'RESIGN':
+			self.respond("The game is already full. " +
+				"Try to join another game or take over an abandoned position")
 		if (self.dppd and game.master[0] == self.dppd.split('|')[0]
 		or self.email.lower() in game.master[1].lower().split(',')):
 			if command != 'RESIGN': self.respond(
@@ -399,7 +402,7 @@ class Procmail:
 		#	----------------------
 		if command != 'RESIGN':
 			if not game.private or command == 'MONITOR':
-				if len(word) != 3: self.respond('Invalid %s command.' % command)
+				if len(word) != 3: self.respond('Invalid %s command' % command)
 			elif len(word) != 4 or word[3].upper() != game.private:
 				self.respond(
 					"Game '%s' is a private game for invited players only.\n"
@@ -444,10 +447,32 @@ class Procmail:
 			game.powers += [self.power]
 			game.sortPowers()
 			game.save()
-			if (command == 'JOIN'
-			and	len([1 for x in game.powers if x.type == 'POWER']) ==
-				len(game.map.powers) - len(game.map.dummies)): game.begin()
-			elif command != 'JOIN' or game.avail: self.response += [
+			responding = ''
+			if command == 'JOIN':
+				avail = game.available()
+				if not avail:
+					if 'START_MASTER' not in game.rules:
+						responding = game.begin()
+						if responding: game.mailPress(None, ['MASTER'],
+							'The game cannot start yet because ' + (self.error
+							and 'the following error%s exist%s:\n\t' %
+							[('s', ''), ('', 's')][len(self.error) == 1] +
+							'\n\t'.join(self.error) +
+							'\n\nResolve this first, then ' or
+							'the status is not forming. To begin ') +
+							'change the game status to active.',
+							subject = 'Diplomacy game %s full' % game.name)
+					game.mailPress(None, ['All!'],
+						'All positions are filled, but you need to wait ' +
+						'for the Master to activate the game.',
+						subject = 'Diplomacy game %s full' % game.name)
+				elif playerType == 'POWER' and not 'SILENT_JOIN' in game.rules:
+					game.mailPress(None, ['All!'],
+						'%s has joined the game. %s %d position%s left.' %
+						(game.anglify(power), ('Only', 'Still')[2 * avail >
+						len(game.map.powers) - len(game.map.dummies)], avail,
+						's'[:avail != 1]))
+			if responding is not None: self.response += [
 				"You are now %s'%s' in game '%s'.\n\n"
 				'Welcome to the DPjudge' % (command not in ('JOIN', 'TAKEOVER')
 				and ('a%s %s with ID ' % ('n'[:playerType[0] in 'AEIOU'],

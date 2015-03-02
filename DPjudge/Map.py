@@ -412,7 +412,7 @@ class Map:
 			#	----------------------------------
 			#	DPjudge RULEs specific to this map
 			#	----------------------------------
-			elif upword == 'RULE':
+			elif upword in ('RULE', 'RULES'):
 				self.directives.setdefault(variant or 'ALL', []).append(line)
 				#	----------------------------------------------
 				#	Go ahead and add it to self.rules if this rule
@@ -448,8 +448,7 @@ class Map:
 				if oldName: self.rename(oldName, word[0])
 				if name in self.locName or name in self.aliases:
 					error += ['DUPLICATE MAP LOCATION: ' + name]
-				self.locName[name] = self.aliases[
-					name.upper().replace(' ', '+')] = word[0]
+				self.locName[name] = self.aliases[self.normPower(name)] = word[0]
 				for alias in word[1:]:
 					if alias[-1] == '?': self.unclear += [alias[:-1]]
 					elif alias in self.aliases:
@@ -524,15 +523,13 @@ class Map:
 				elif power not in self.dummies: error += [
 					'CONTROLLED POWER %s NOT A DUMMY' % power]
 				else:
-					errorLen = len(error)
-					controllers = [x.upper() for x in word[1:]]
-					for controller in controllers:
-						if controller in self.dummies: error += [
-							'CONTROLLING POWER %s IS A DUMMY' % controller]
-						elif controller not in self.powers: error += [
-							'CONTROLLING POWER %s NOT A POWER' % controller]
-					if errorLen == len(error):
-						self.controls[power] = controllers
+					#	----------------------------------------------------
+					#	To allow for non-map powers to control dummies,
+					#	checking if the controller exists and is not a dummy
+					#	is done in Game.validateStatus().
+					#	----------------------------------------------------
+					
+					self.controls[power] = [self.normPower(x) for x in word[1:]]
 			#	-------------------------------
 			#	League affiliation and behavior
 			#	-------------------------------
@@ -557,23 +554,69 @@ class Map:
 						[x for x in units if x[2:5] == unit[2:5]])
 					self.units.setdefault(power, []).append(unit)
 				else: error += ['INVALID UNIT: ' + unit]
-			elif upword == 'DUMMY':
+			#	-------
+			#	Dummies
+			#	-------
+			elif upword in ('DUMMY', 'DUMMIES'):
 				if len(word) > 1: power = None
 				if len(word) == 1:
-					if not power: error += ['DUMMY BEFORE POWER']
+					if upword == 'DUMMIES':
+						error += ['DUMMIES REQUIRES LIST OF POWERS']
+					elif not power: error += ['DUMMY BEFORE POWER']
 					elif power not in self.dummies: self.dummies += [power]
 				elif word[1].upper() == 'ALL':
 					if len(word) == 2: self.dummies = self.powers[:]
 					elif word[2].upper() != 'EXCEPT':
-						error += ['NO EXCEPT AFTER DUMMY ALL']
+						error += ['NO EXCEPT AFTER %s ALL' % upword]
 					elif len(word) == 3:
-						error += ['NO POWER AFTER DUMMY ALL EXCEPT']
+						error += ['NO POWER AFTER %s ALL EXCEPT' % upword]
 					else: self.dummies = [x for x in self.powers if x not in [
-						y.upper().replace('+','') for y in word[3:]]]
-				else: self.dummies.extend([x for x in [y.upper().replace('+','')
+						self.normPower(y) for y in word[3:]]]
+				else: self.dummies.extend([x for x in [self.normPower(y)
 					for y in word[1:]] if x not in self.dummies])
+			#	-----------------------------------------------------------
+			#	Teams, a way to create dummies controlled by a single power
+			#	-----------------------------------------------------------
+			elif upword in ('TEAM', 'TEAMS'):
+				if len(word) == 1: error += ['%s REQUIRES LIST OF TEAMS']
+				else:
+					power = None
+					teams = word[1:2]
+					for team in word[2:]:
+						if team.startswith('-') or teams[-1].endswith('-'):
+							teams[-1] += team
+						else: teams += [team]
+					for team in teams:
+						members = [self.normPower(x) for x in team.split('-')]
+						if [1 for x in members if not x]:
+							error += ['TOO MANY HYPHENS IN %s LINE' % upword]
+							continue
+						if len(members) < 2: continue
+						#	-------------------------------------------------
+						#	To allow for non-map powers to control dummies,
+						#	checking if the leader exists and is not a dummy
+						#	is done in Game.validateStatus().
+						#	-------------------------------------------------
+						leader = members[0]
+						for member in members[1:]:
+							if member not in self.powers:
+								error += ['CONTROLLED POWER %s IS NOT A MAP POWER'
+									% member]
+								break
+						else:
+							for member in members[1:]:
+								if member not in self.dummies: self.dummies += [member]
+								self.controls[member] = [leader]
 			elif upword == 'DROP':
 				for place in [x.upper() for x in word[1:]]: self.drop(place)
+			#	----------------------------------------
+			#	Dynamic map instructions to be processed
+			#	by the game only in specific game phases
+			#	----------------------------------------
+			elif len(word) > 1 and upword == 'IN':
+				data = [x.strip() for x in ' '.join(word[1:]).split(':')]
+				if len(data) != 2: error += ['BAD DYNAMIC MAP INSTRUCTION']
+				else: self.dynamic.setdefault(data[0], []).append(data[1])
 			#	----------------------------------------
 			#	Dynamic map instructions to be processed
 			#	by the game only in specific game phases
@@ -705,19 +748,22 @@ class Map:
 			#	----------------------
 			else:
 				if upword in ('NEUTRAL', 'CENTERS'): upword = 'UNOWNED'
-				oldPower, power = 0, (0, upword)[upword != 'UNOWNED']
+				power = (0, self.normPower(upword))[upword != 'UNOWNED']
 				if len(word) > 2 and word[1] == '->': 
 					oldPower = power
 					word = word[2:]
-					upword = power = word[0].upper()
-					if power in ('NEUTRAL', 'CENTERS', 'UNOWNED'): power = 0
+					upword = word[0].upper()
+					if upword in ('NEUTRAL', 'CENTERS'): upword = 'UNOWNED'
+					power = (0, self.normPower(upword))[upword != 'UNOWNED']
 					if not oldPower or not power:
 						error += ['RENAMING UNOWNED DIRECTIVE NOT ALLOWED']
-					else: self.renamePower(oldPower, power)						
-				if power and upword not in self.powName.values():
-					self.powName[upword] = power = power.replace('+', '')
-				upword = power or 'UNOWNED'
-				if upword != 'UNOWNED' and len(word) > 1 and word[1][0] == '(':
+					elif not self.powName.get(oldPower):
+						error += ['RENAMING UNDEFINED POWER ' + oldPower]
+					else: self.renamePower(oldPower, power)
+				if power and not self.powName.get(power):
+					self.powName[power] = upword
+				upword = power or upword
+				if power and len(word) > 1 and word[1][0] == '(':
 					self.ownWord[upword] = word[1][1:-1] or power
 					if ':' in word[1]:
 						owner, abbrev = self.ownWord[upword].split(':')
@@ -826,10 +872,7 @@ class Map:
 				except: pass
 	#	----------------------------------------------------------------------
 	def renamePower(self, old, new):
-		if old not in self.powName.values(): 
-			return self.error.append('RENAMING UNDEFINED POWER ' + old)
 		self.powName.pop(old, None)
-		old, new = old.replace('+', ''), new.replace('+', '')
 		[x.pop(old, None) for x in (self.ownWord, self.abbrev)]
 		if old == new: return
 		for data in (self.homes, self.units, self.centers,
@@ -848,6 +891,9 @@ class Map:
 				data.remove(old)
 				data.append(new)
 			except: pass
+	#	----------------------------------------------------------------------
+	def normPower(self, power):
+		return power.replace('+', '').replace('-', '').upper()
 	#	----------------------------------------------------------------------
 	def drop(self, place, deCoast = 0):
 		[self.locs.remove(x) for x in self.locs if x.upper().startswith(place)]
