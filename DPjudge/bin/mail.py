@@ -451,7 +451,7 @@ class Procmail:
 			if command == 'JOIN':
 				avail = game.available()
 				if not avail:
-					if 'START_MASTER' in game.rules:
+					if 'START_MASTER' not in game.rules:
 						responding = game.begin()
 						if responding: game.mailPress(None, ['MASTER'],
 							'The game cannot start yet because ' + (self.error

@@ -73,6 +73,11 @@ class Game:
 		for terrain, changes in self.terrain.items():
 			for site, abuts in changes.items():
 				text += '\n%s %s ' % (terrain, site) + ' '.join(abuts)
+		#	---------------
+		#	Legacy keywords
+		#	---------------
+		if self.judge: text += '\nJUDGE ' + self.judge
+		if self.signon: text += '\nSIGNON ' + self.signon
 		return '\n'.join([x for x in text.split('\n')
 					if x not in self.directives]).encode('latin-1') + '\n'
 	#	----------------------------------------------------------------------
@@ -96,7 +101,7 @@ class Game:
 			except: metaRules, rules = [], []
 			tester = host.tester
 			groups = password = start = ''
-			map = private = zone = None
+			map = private = zone = judge = signon = None
 			timing, terrain, status = {}, {}, Status().dict.get(self.name, [])
 			#	------------------------------------------------------
 			#	When we run out of directory slots, the line below can
@@ -551,6 +556,9 @@ class Game:
 		import Map
 		self.map, phases = Map.Map(mapName, trial), []
 		self.error += self.map.error
+		if self.phase and not ' ' in self.phase and self.phase not in (
+			'FORMING', 'COMPLETED'):
+			self.phase = self.map.phaseLong(self.phase)
 		#	-------------------------------------------
 		#	Have the Game process all lines in the map
 		#	file that were in DIRECTIVES clauses (this
@@ -745,6 +753,7 @@ class Game:
 					if len(word) > 1:
 						if self.phase:
 							error += ['RESULT WHILE PHASE NOT COMPLETED YET']
+						elif not self.map: self.phase = word[1]
 						else: self.phase = self.phaseLong(word[1])
 		#	----------------------------------
 		#	Game-specific information (orders)
@@ -807,7 +816,7 @@ class Game:
 						self.norules += [item]
 						continue
 					self.addRule(item)
-					if includeFlags & 8:
+					if self.map and includeFlags & 8:
 						if item not in self.map.rules: self.map.rules += [item]
 						if item not in self.metaRules: self.metaRules += [item]
 			elif upword in ['MAP', 'TRIAL']:
@@ -844,6 +853,15 @@ class Game:
 			elif upword == 'MORPH':
 				if len(word) > 1: self.morphs += [' '.join(word[1:])]
 				else: self.mode, self.modeRequiresEnd = upword, 1
+			#	---------------
+			#	Legacy keywords
+			#	---------------
+			elif upword == 'JUDGE':
+				if self.judge: error += ['TWO JUDGE STATEMENTS']
+				else: self.judge = ' '.join(word[1:])
+			elif upword == 'SIGNON':
+				if self.signon: error += ['TWO SIGNON STATEMENTS']
+				else: self.signon = ' '.join(word[1:])
 			else: found = 0
 		return found
 	#	----------------------------------------------------------------------
@@ -2052,7 +2070,8 @@ class Game:
 		file.close()
 		try: os.chmod(press, 0666)
 		except: pass
-		if not self.tester and 'suspect' in self.status and host.judgekeeper not in sentTo:
+		if (not self.tester and 'suspect' in self.status and
+			host.judgekeeper not in sentTo):
 			self.deliverPress(sender, 'MASTER', host.judgekeeper,
 				readers, message, claimFrom, claimTo, subject, 1)
 	#	---------------------------------------------------------------------

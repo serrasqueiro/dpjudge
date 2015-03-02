@@ -39,16 +39,16 @@ def showEmail(id):
 	page.write(
 		"""
 		<table>
-		<form name=form method=post>
+		<tr><td align=center><form name=form method=post>
 		<input type=hidden name=page value=Email>
 		<input type=hidden name=variant value=dppd>
 		<input type=hidden name=id value=%s>
 		<input type=hidden name=password value=%s>
 		<input type=hidden name=primary value="">
-		<tr><td align=center><table>
+		<table>
 		<tr><td></td>
-			<td align=center class=bodycopy><b><u>Primary</u></td>
-			<td align=center class=bodycopy><b><u>Address</u></td>
+			<td align=center class=bodycopy><b><u>Primary</u></b></td>
+			<td align=center class=bodycopy><b><u>Address</u></b></td>
 		</tr>
 		""" % (id, page.password.encode('latin-1')))
 	for num, addr in enumerate(page.dppd[id]['email']):
@@ -76,8 +76,8 @@ def showEmail(id):
 		<tr><td colspan=3 height=100%>&nbsp;</td></tr>
 		</table>
 		</form></td></tr><tr>
-		<td align=center class=bodycopy><b><u><font color=red>NOTICE</u></td>
-		</tr><tr>
+		<td align=center class=bodycopy><b><u><font color=red>NOTICE</u></b></td>
+		</tr><tr><td>
 			<table><tr>
 			<td></td>
 			<td align=left class=bodycopy width=80%
@@ -95,7 +95,7 @@ def showEmail(id):
 			</td>
 			<td></td>
 			</tr></table>
-		</tr>
+		</td></tr>
 		</table>
 		""")
 #	----------------------------------------------------------------------
