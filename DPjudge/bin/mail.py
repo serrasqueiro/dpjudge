@@ -741,7 +741,7 @@ class Procmail:
 					if param in ('RESTORE', 'RECOVER'): flags |= 1
 					elif param == 'FULL': flags |= 2
 					else: phase = param
-				error = game.rollback(flags, phase)
+				error = game.rollback(phase, flags)
 				if error: self.respond(error)
 				self.response += ['Game rolled back to ' + game.phase]
 			#	---------------------------------
@@ -755,7 +755,7 @@ class Procmail:
 					if param in ('RESTORE', 'RECOVER'): flags |= 1
 					elif param == 'FULL': flags |= 2
 					else: phase = param
-				error = game.rollforward(flags, phase)
+				error = game.rollforward(phase, flags)
 				if error: self.respond(error)
 				self.response += ['Game rolled forward to ' + game.phase]
 			#	--------------------------------------------------------

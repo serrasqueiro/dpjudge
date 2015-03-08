@@ -78,6 +78,7 @@ def showLists():
 		""")
 #	----------------------------------------------------------------------
 if page.file == 'lists': showLists()
+elif page.file == 'results': showResults()
 else: viewFile()
 :>
 </td>

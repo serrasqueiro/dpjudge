@@ -48,7 +48,7 @@ class Inspect:
 			'from DPjudge.variants.dppd import *',
 			'import host',
 			'from DPjudge.bin.inspector import Inspector',
-			'inspect = Inspector()']
+			'self = inspect = Inspector()']
 		if len(argv) > 1:
 			arg1 = argv[1]
 			gameName = arg1.split('.')[0].split('@')[0]
