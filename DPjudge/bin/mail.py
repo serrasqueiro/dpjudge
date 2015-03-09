@@ -462,10 +462,11 @@ class Procmail:
 							'the status is not forming. To begin ') +
 							'change the game status to active.',
 							subject = 'Diplomacy game %s full' % game.name)
-					game.mailPress(None, ['All!'],
-						'All positions are filled, but you need to wait ' +
-						'for the Master to activate the game.',
-						subject = 'Diplomacy game %s full' % game.name)
+					if responding is not None:
+						game.mailPress(None, ['All!'],
+							'All positions are filled, but you need to wait ' +
+							'for the Master to activate the game.',
+							subject = 'Diplomacy game %s full' % game.name)
 				elif playerType == 'POWER' and not 'SILENT_JOIN' in game.rules:
 					game.mailPress(None, ['All!'],
 						'%s has joined the game. %s %d position%s left.' %

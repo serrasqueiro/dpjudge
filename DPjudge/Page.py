@@ -140,6 +140,11 @@ class Page:
 				file.close()
 				break
 			else: return
+		pageURL = self.addURLParam(host.dpjudgeURL, 'page=')
+		dppdURL = host.dppdURL
+		if dppdURL and dppdURL not in (host.dpjudgeURL + host.dppdSubURL,
+			os.path.join(host.dpjudgeURL, host.dppdSubURL)):
+			dppdURL = self.addURLParam(dppdURL, 'dpjudge=' + host.dpjudgeID)
 		page, inCode = self, 0
 		while data:
 			where = data.find(lims[inCode])
@@ -148,14 +153,13 @@ class Page:
 			stuff = (stuff
 				.replace('<URL>',	host.dpjudgeURL)
 				.replace('<MAP>',	host.gameMapURL)
-				.replace('<PAGE>',	self.addURLParam(host.dpjudgeURL, 'page='))
+				.replace('<PAGE>',	pageURL)
 				.replace('<WEB>',	host.dpjudgeDir)
 				.replace('<ID>',	host.dpjudgeID)
 				.replace('<MAIL>',	host.dpjudge)
 				.replace('<KEEPER>',	host.judgekeeper)
 				.replace('<PKG>',	host.packageDir)
-				.replace('<DPPD>',	self.addURLParam(host.dppdURL, 'dpjudge=' +
-					host.dpjudgeID))
+				.replace('<DPPD>',	dppdURL)
 				.replace('<POUCH>',	'http://www.diplom.org'))
 			inCode = not inCode
 			if inCode:

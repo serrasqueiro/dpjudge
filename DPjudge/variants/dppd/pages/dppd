@@ -39,7 +39,15 @@ def login():
 		""" % item)
 	raise SystemExit
 #	--------------------------------------------------------------------------
+def getDPjudgeURL():
+	if 'dpjudge' in vars(page):
+		if page.dppd.db.execute(
+			'select url from Judge where url is not null and id="%s"' %
+			page.dpjudge.upper()): return page.dppd.db.fetchone()['url']
+	return host.dpjudgeURL
+#	--------------------------------------------------------------------------
 def header():
+	dpjudgeURL = getDPjudgeURL()
 	print(
 	"""
 	<table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666"
@@ -57,10 +65,11 @@ def header():
 					<table border=0 cellpadding=5 cellspacing=0 width=100%>
 					<tr>
 						<td class="bodycopy" align=center>
-	""")
-	page.dppd.db.execute('select id, url from Judge where url is not null order by id')
+	""".replace('<URL>', dpjudgeURL))
+	page.dppd.db.execute(
+		'select id, url from Judge where url is not null order by id')
 	judges = ['<a href=%(url)s>%(id)s</a>' % judge
-				for judge in page.dppd.db.fetchall()]
+		for judge in page.dppd.db.fetchall()]
 	page.write("<b>The DPjudges: %s" % '&nbsp;|&nbsp;'.join(judges))
 	page.write(
 	"""
@@ -79,7 +88,7 @@ def header():
 	<tr>
 		<td colspan=3 height=5><!--SPACER--></td>
 	</tr>
-	""")
+	""".replace('<URL>', dpjudgeURL))
 	if id is None: return
 	page.write(
 	"""
@@ -95,6 +104,7 @@ def header():
 	""" % (player.get('name', '?'), id, status))
 #	--------------------------------------------------------------------------
 def leftside():
+	dpjudgeURL = getDPjudgeURL()
 	page.write('<table border=0 cellpadding=10 cellspacing=0>')
 	if id is not None:
 		myGroupButton = ''
@@ -178,6 +188,6 @@ def leftside():
 		</td>
 		</tr>
 		</table>
-		""")
+		""".replace('<URL>', dpjudgeURL))
 #	--------------------------------------------------------------------------
 :>
