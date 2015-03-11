@@ -97,7 +97,7 @@ class Check(DPjudge.Status):
 				elif game.error:
 					print game.name, 'has ERRORS ... notifying the Master'
 					for addr in game.master[1].split(',') + [
-						host.judgekeeper] * (not self.tester):
+						host.judgekeeper] * (not game.tester):
 						mail = DPjudge.Mail(addr,
 							'Diplomacy ERRORS (%s)' % game.name)
 						mail.write("The game '%s' on %s has the following "
