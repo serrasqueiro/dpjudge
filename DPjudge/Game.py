@@ -1204,6 +1204,17 @@ class Game:
 		#	Validate power data
 		#	-------------------
 		for power in self.powers:
+			#	----------------------------------
+			#	Verify that every person is unique
+			#	----------------------------------
+			id = power.player and power.player[0].split('|')[0] or ''
+			if id.startswith('#'):
+				if self.master and id == self.master[0]:
+					error += ['THE MASTER HAS THE SAME ID AS ' + power.name]
+				error += ['%s AND %s HAVE THE SAME ID' % (power.name, x.name)
+					for x in self.powers if x is not power and
+					x.name > power.name and x.player and
+					x.player[0].split('|')[0] == id]
 			#	--------------------
 			#	Validate controllers
 			#	--------------------
@@ -4583,16 +4594,17 @@ class Game:
 		#	Other notices (late, beyond grace and cd)
 		#	-----------------------------------------
 		if not late and after < 0: return
-		receivers, who = ['MASTER'], '\n'.join(textwrap.wrap(
-			', '.join(map(self.anglify, late or ['MASTER'])), 70,
-			subsequent_indent = ' ' * 18))
+		receivers, omnis = ['MASTER'], ['MASTER']
+		who = '\n'.join(textwrap.wrap(', '.join(map(self.anglify,
+			late or ['MASTER'])), 70, subsequent_indent = ' ' * 18))
+		multi = 's' * (len(late) != 1)
 		#	----------------------------
 		#	Turn is processing -- notify
 		#	the master of those in cd
 		#	----------------------------
 		if after < 0:
-			self.mailPress(None, ['MASTER'], '%s%-17s%s\n' %
-				(text, 'Power%-20s ' % 's in CD:'[len(late) == 1:], who)
+			self.mailPress(None, ['MASTER'], text + '%-18s' %
+				('Power%s in CD: ' % multi) + who + '\n'
 				+ '\n\n(This notice is sent ONLY to the GameMaster '
 				+ 'and any omniscient observer.)',
 				subject = 'Diplomacy CD notice')
@@ -4602,8 +4614,8 @@ class Game:
 		#	who is still late and say so
 		#	----------------------------
 		if late and self.graceExpired():
-			self.mailPress(None, ['All'], '%s%-17s%s\n' %
-				(text, 'Dismissed Power%-2s ' % 's:'[len(late) == 1:], who),
+			self.mailPress(None, ['All'], text + '%-18s' %
+				('Dismissed Power%s: ' % multi) + who + '\n',
 				subject = 'Diplomacy player dismissal')
 			for power in [x for x in self.powers if x.name in late]:
 				power.resign()
@@ -4644,17 +4656,31 @@ class Game:
 		#	it to everyone.  Otherwise, only
 		#	bother the late powers.
 		#	-----------------------------------
-		if late and 'HIDE_LATE_POWERS' in self.rules:
-			for power in late: self.mailPress(None, [power],
-				'%sLate Power:       %s%s\n' % (text, self.anglify(power),
-				penalty), subject = 'Diplomacy deadline missed', private = 1)
-		elif now[:10] != self.deadline[:10]: receivers += late
-		else: receivers += [x.name for x in self.powers]
-		for receiver in receivers: self.mailPress(
-			None, [receiver], '%s%-18s%s\n' %
-			(text, 'Late Power%-2s' % 's:'[len(late) == 1:], who + penalty),
-			subject = ('Diplomacy late notice', 'Diplomacy deadline missed')
-			[receiver in late], private = 1)
+		hide = 'HIDE_LATE_POWERS' in self.rules
+		if now[:10] != self.deadline[:10]:
+			receivers += [x.name for x in self.powers
+				if not (x.isDummy() or x.isResigned()) and
+				(x.name in late or [1 for y in x.vassals() if y.name in late])]
+		else:
+			receivers += [x.name for x in self.powers
+				if not (x.isDummy() or x.isResigned())]
+			omnis += [x.name for x in self.powers if x.omniscient]
+		for receiver in receivers:
+			if receiver in omnis: what, many, mate = who, multi, []
+			else:
+				power = [x for x in self.powers if x.name == receiver][0]
+				mate = [receiver] * (receiver in late) + [
+					y.name for y in power.vassals() if y.name in late]
+				if hide:
+					what = '\n'.join(textwrap.wrap(', '.join(map(self.anglify,
+						mate)), 70, subsequent_indent = ' ' * 18))
+					many = 's' * (len(mate) != 1)
+				else: what, many = who, multi
+			self.mailPress(None, [receiver],
+				text + ('%-18s' % ('Late Power%s: ' % many) + what,
+				'One or more powers are late.')[not what] + penalty + '\n',
+				subject = ('Diplomacy deadline missed', 'Diplomacy late notice')
+				[not mate], private = 1)
 	#	----------------------------------------------------------------------
 	def shortList(self):
 		variant = self.map.name

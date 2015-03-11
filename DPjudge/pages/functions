@@ -577,12 +577,15 @@ def gameHeader():
 			', '.join([game.anglify(x[:x.find('-')]) + x[x.find('-'):]
 				for x in game.avail]))
 		elif game.deadline < game.Time():
-			if power and power.name in late: page.write(
-				'<br><font size=+1><blink>You Are Late!</blink></font>')
-			elif late and (power and power.name == 'MASTER'
-			or 'HIDE_LATE_POWERS' not in game.rules): page.write(
-				'<br>(Late Power%s: %s)' % ('s'[len(late) == 1:],
-				', '.join(map(game.anglify, late))))
+			if late:
+				if power and (power.name in late or
+				[1 for x in power.vassals() if x.name in late]): page.write(
+					'<br><font size=+1><blink>You Are Late!</blink></font>')
+				elif (power and (power.name == 'MASTER' or power.omniscient)
+				or 'HIDE_LATE_POWERS' not in game.rules): page.write(
+					'<br>(Late Power%s: %s)' % ('s'[len(late) == 1:],
+					', '.join(map(game.anglify, late))))
+				else: page.write('<br>One or more powers are late.')
 		else:
 			waiters = [game.anglify(x.name) for x in game.powers if x.wait]
 			if waiters:
