@@ -503,4 +503,20 @@ Let's not forget to add the alias to .procmailrc.
 
 And when all that is done, we can send a message to dplodge@uk.diplom.org (not dplodge@spikings.com) with "List" in the body and get a list of all openings on UKDP. Another great feat.
 
+Let's create this dplodge user in MySQL. First we need a password, and for that we can use our scramble tool.
+> $JDG/bin/scramble -n
+The result: b1f9muh5. Because MySQL passwords are case sensitive, we randomly uppercase a few letters, then use that as our password.
+> mysql -u root -p
+mysql> create user 'dplodge'@'localhost' identified by 'B1f9muh5';
+Good, but what privileges do we grant this user? Let's check on USDP.
+> mysql -u dpjudge -p
+mysql> show grants for 'dpjudge'@'localhost';
++------------------------------------------------------------------------------+
+| Grants for dpjudge@localhost                                                 |
++------------------------------------------------------------------------------+
+| GRANT USAGE ON *.* TO 'dpjudge'@'localhost' IDENTIFIED BY PASSWORD '*<hash>' |
+| GRANT ALL PRIVILEGES ON `dpjudge`.* TO 'dpjudge'@'localhost'                 |
++------------------------------------------------------------------------------+
+Well then, those same privileges we grant to our new user dplodge.
+
 """
