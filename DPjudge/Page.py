@@ -141,10 +141,12 @@ class Page:
 				break
 			else: return
 		pageURL = self.addURLParam(host.dpjudgeURL, 'page=')
-		dppdURL = host.dppdURL
-		if dppdURL and dppdURL not in (host.dpjudgeURL + host.dppdSubURL,
-			os.path.join(host.dpjudgeURL, host.dppdSubURL)):
-			dppdURL = self.addURLParam(dppdURL, 'dpjudge=' + host.dpjudgeID)
+		if not host.dppdURL: dppdURL = ''
+		else:
+			dppdURL = host.dppdURL.split(',')[0]
+			if dppdURL not in (host.dpjudgeURL + host.dppdSubURL,
+				os.path.join(host.dpjudgeURL, host.dppdSubURL)):
+				dppdURL = self.addURLParam(dppdURL, 'dpjudge=' + host.dpjudgeID)
 		page, inCode = self, 0
 		while data:
 			where = data.find(lims[inCode])

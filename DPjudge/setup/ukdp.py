@@ -505,9 +505,9 @@ And when all that is done, we can send a message to dplodge@uk.diplom.org (not d
 
 Let's create this dplodge user in MySQL. First we need a password, and for that we can use our scramble tool.
 > $JDG/bin/scramble -n
-The result: b1f9muh5. Because MySQL passwords are case sensitive, we randomly uppercase a few letters, then use that as our password.
+The result: ********. Because MySQL passwords are case sensitive, we randomly uppercase a few letters, then use that as our password.
 > mysql -u root -p
-mysql> create user 'dplodge'@'localhost' identified by 'B1f9muh5';
+mysql> create user 'dplodge'@'localhost' identified by '********';
 Good, but what privileges do we grant this user? Let's check on USDP.
 > mysql -u dpjudge -p
 mysql> show grants for 'dpjudge'@'localhost';
@@ -517,6 +517,21 @@ mysql> show grants for 'dpjudge'@'localhost';
 | GRANT USAGE ON *.* TO 'dpjudge'@'localhost' IDENTIFIED BY PASSWORD '*<hash>' |
 | GRANT ALL PRIVILEGES ON `dpjudge`.* TO 'dpjudge'@'localhost'                 |
 +------------------------------------------------------------------------------+
-Well then, those same privileges we grant to our new user dplodge.
+Well then, the first grant comes automatically when creating the user. It's then those same privileges on the not yet existing dplodge database that we grant to our new user dplodge.
+
+Let's now create the database. Or rather, as with dpforge, we clone the latest backup file of dpjudge, which conveniently is already on this server thanks to the offices of rsynch. Mimicking the backup script from dpforge, we execute:
+> mysql -udplodge -p******** dplodge < ~/rbackup/dpforge/backup/dpjudge.db.bak
+But this results in an error "Unknown database dplodge". Ok, we need to create it.
+> mysql -u dplodge -p
+mysql> create database dplodge;
+We quit and run the former command again, and presto, our database is filled. If you don't believe me, try the following mysql commands:
+mysql> show tables in dplodge;
+mysql> select count(*) from dplodge.Game;
+
+We want to sync this database often, just like we did for dpforge. For that reason we adapt the backup script and add it to crontab. Let's say we do this daily at 5 past midnight:
+> crontab -e
+5 0 * * * $BIN/backup
+
+Of course this would mean that every night whatever updates were made to the dplodge database for games running on UKDP would go lost. To prevent that from happening we extend the host.dppdURL parameter with a second address pointing to the USDP dppd, so that both databases get updated at the same time.
 
 """

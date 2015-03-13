@@ -2,6 +2,6 @@
 page.include('dppd')
 
 #try:
-page.dppd.deleteGame(page.name, page.judge)
+page.dppd.deleteGame(page.name, page.password, page.judge)
 #except: print 'FAILED!'
 :>

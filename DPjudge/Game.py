@@ -4891,21 +4891,25 @@ class Game:
 		header = ('JUDGE:%s|GAME:%s%s|' %
 			(host.dpjudgeID, self.name, result) + header)
 		dict = urllib.urlencode({'status': header.encode('latin-1')})
-		#	I don't know why, but we need to use the query string
-		#	instead of a POST.  Something to look into.
-		query = '?&'['?' in host.dppdURL]
-		page = urllib.urlopen(host.dppdURL + query + 'page=update&' + dict)
-		#   --------------------------------------------------------------------
-		#   Check for an error report and raise an exception if that's the case.
-		#	Double check the DPPD code for any print statements, as it may
-		#	reveal the whole game status info to the unsuspecting player.
-		#   --------------------------------------------------------------------
-		lines = page.readlines()
-		page.close()
-		if [1 for x in lines if 'DPjudge Error' in x]:
-			#	Make absolutely sure it doesn't print the game status!!
-			print '\n'.join(lines) 
-			raise DPPDStatusUpdateFailed
+		for dppdURL in host.dppdURL.split(','):
+			#   -----------------------------------------------------
+			#	I don't know why, but we need to use the query string
+			#	instead of a POST.  Something to look into.
+			#   -----------------------------------------------------
+			query = '?&'['?' in dppdURL]
+			page = urllib.urlopen(dppdURL + query + 'page=update&' + dict)
+			#   ----------------------------------------------------------
+			#   Check for an error report and raise an exception if that's
+			#   the case. Double check the DPPD code for any print
+			#   statements, as it may reveal the whole game status info to
+			#   the unsuspecting player.
+			#   ----------------------------------------------------------
+			lines = page.readlines()
+			page.close()
+			if [1 for x in lines if 'DPjudge Error' in x]:
+				#	Make absolutely sure it doesn't print the game status!!
+				print '\n'.join(lines) 
+				raise DPPDStatusUpdateFailed
 	#	----------------------------------------------------------------------
 	def changeStatus(self, status):
 		self.status[1] = status

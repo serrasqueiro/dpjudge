@@ -105,7 +105,7 @@ class Inspector(object):
 		self.browse(query, host.dpjudgeURL, 2)
 	#	----------------------------------------------------------------------
 	def query(self, query = None):
-		self.browse(query, host.dppdURL, 2)
+		self.browse(query, host.dppdURL.split(',')[0], 2)
 	#	----------------------------------------------------------------------
 	def browse(self, query = None, address = None, depth = 1):
 		if not address: address = host.dpjudgeURL

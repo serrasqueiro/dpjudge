@@ -51,7 +51,8 @@ needIndexWWW	=	False
 #	DPPD used by this judge
 #	-----------------------
 dppd			=	'dppd@diplom.org'
-dppdURL			=	'http://www.floc.net/dpjudge?variant=dppd'
+dppdURL			=	('http://uk.diplom.org/?variant=dppd' +
+					',http://www.floc.net/dpjudge?variant=dppd')
 
 #	-----------------------------------------------------------------------
 #	Domains that are exempt from suspicious activity checks in public games
@@ -61,11 +62,11 @@ publicDomains	=	['.proxy.aol.com', '.mx.aol.com', '.spikings.com']
 #	------------------------------
 #	Database connection parameters
 #	------------------------------
-#dbName			=	'ukdp'
-#dbHost			=	'localhost'
-#dbUser			=	'ukdp'
-#dbPassword		=	'********'
-#dbPort			=	3306
+dbName			=	'dplodge'
+dbHost			=	'localhost'
+dbUser			=	'dplodge'
+dbPassword		=	'********'
+dbPort			=	3306
 
 #	--------------------------------------------------------
 #	Location of game directories (and main game status file)

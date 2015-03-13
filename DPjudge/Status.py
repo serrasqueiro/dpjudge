@@ -77,9 +77,12 @@ class Status:
 				error += ['CREATE is disabled -- ' + \
 					'too many games currently need players']
 		if host.dppdURL:
+			#	--------------------------------------------------------------
 			#	Need to use query string rather than POST it.  Don't know why.
-			query = '?&'['?' in host.dppdURL]
-			page = urllib.urlopen(host.dppdURL + query +
+			#	--------------------------------------------------------------
+			dppdURL = host.dppdURL.split(',')[0]
+			query = '?&'['?' in dppdURL]
+			page = urllib.urlopen(dppdURL + query +
 				'page=whois&email=' + urllib.quote(email, '@'))
 			dppd = unicode(page.read(), 'latin-1').strip().split()
 			page.close()
@@ -137,17 +140,23 @@ class Status:
 					os.path.splitext(mapFileName)[0])[1] + suffix)
 				except: pass
 		# Rename game dir
-		if os.path.exists(self.game.gameDir) and os.path.isdir(self.game.gameDir):
-			toGameDir = os.path.join(os.path.split(self.game.gameDir)[0], toGameName)
+		if os.path.exists(self.game.gameDir) and os.path.isdir(
+			self.game.gameDir):
+			toGameDir = os.path.join(os.path.split(self.game.gameDir)[0],
+				toGameName)
 			try:
 				os.rename(self.game.gameDir, toGameDir)
 				self.game.gameDir = toGameDir
 			except: error += ['Failed to rename the game directory']
 		# Purge from dppd
-		dict = urllib.urlencode({'judge': host.dpjudgeID.encode('latin-1'),
-			'name': gameName.encode('latin-1')})
-		query = '?&'['?' in host.dppdURL]
-		page = urllib.urlopen(host.dppdURL + query + 'page=delete&' + dict)
+		if host.dppdURL:
+			dict = urllib.urlencode({
+				'judge': host.dpjudgeID.encode('latin-1'),
+				'name': gameName.encode('latin-1'),
+				'password': self.game.password.encode('latin-1')})
+			for dppdURL in host.dppdURL.split(','):
+				query = '?&'['?' in dppdURL]
+				page = urllib.urlopen(dppdURL + query + 'page=delete&' + dict)
 		#   --------------------------------------------------------------------
 		#   Check for an error report and raise an exception if that's the case.
 		#   --------------------------------------------------------------------
@@ -196,14 +205,19 @@ class Status:
 				try: os.unlink(mapFileName)
 				except: pass
 		# Remove game dir
-		if os.path.exists(self.game.gameDir) and os.path.isdir(self.game.gameDir):
+		if os.path.exists(self.game.gameDir) and os.path.isdir(
+			self.game.gameDir):
 			try: shutil.rmtree(self.game.gameDir)
 			except: error += ['Failed to remove the game directory']
 		# Purge from dppd
-		dict = urllib.urlencode({'judge': host.dpjudgeID.encode('latin-1'),
-			'name': gameName.encode('latin-1')})
-		query = '?&'['?' in host.dppdURL]
-		page = urllib.urlopen(host.dppdURL + query + 'page=delete&' + dict)
+		if host.dppdURL:
+			dict = urllib.urlencode({
+				'judge': host.dpjudgeID.encode('latin-1'),
+				'name': gameName.encode('latin-1'),
+				'password': self.game.password.encode('latin-1')})
+			for dppdURL in host.dppdURL.split(','):
+				query = '?&'['?' in dppdURL]
+				page = urllib.urlopen(dppdURL + query + 'page=delete&' + dict)
 		#   --------------------------------------------------------------------
 		#   Check for an error report and raise an exception if that's the case.
 		#   --------------------------------------------------------------------
