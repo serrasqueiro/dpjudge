@@ -143,10 +143,10 @@ def showMapButtons():
 			<td class="bodycopy" align=right nowrap>%s (GIF)</td>
 			<td><input type=button class="inputSubmit" onClick=popup()
 				value="View"></td>
-			</tr>
 			</form>
-			""" % (height, width, host.gameMapURL, file, "_"[gif != 2:], noCache, label))
-		if pdf or ps: page.write('<tr><td></td>')
+			""" % (height, width, host.gameMapURL, file, "_"[gif != 2:],
+			noCache, label))
+		if pdf or ps: page.write('</tr><tr><td></td>')
 	if pdf:
 		#	--------------------------------------------------------------
 		#	Add a timestamp to force a refresh even when the browser cache
@@ -163,32 +163,67 @@ def showMapButtons():
 			<td class="bodycopy" align=right nowrap>By Season (PDF)</td>
 			<td><input type=button onClick=showPdf("%s/%s.pdf?t=%d");
 			class="inputSubmit" value='View'></td>
-			</tr></form>
+			</form>
 			""" % (game.name, host.gameMapURL, file,
 				int(os.path.getmtime(map + '.pdf'))))
-		if ps: page.write('<tr><td></td>')
+		if ps: page.write('</tr><tr><td></td>')
 	if ps: page.write(
 			"""
 			<form method=get action=%s/%s.ps>
 			<td class="bodycopy" align=right nowrap>By Season (PS)</td>
 			<td><input type=submit value="View" class="inputSubmit"></td>
-			</tr></form>
+			</form>
 			""" % (host.gameMapURL, file))
 	page.write('</tr>')
 #	----------------------------------------------------------------------
-def showResultsText(list = None, subject = None, align = 1):
+def showResultsText(subject = None, align = 1):
 	game = page.game
-	if not os.path.exists(game.file('results')): return
 	pwdFlag = (isinstance(page.power, Power) and
 		page.power.isValidPassword(page.password))
 	if pwdFlag: power = page.power.name
 	elif 'BLIND' in game.rules: return
 	else: power = ''
-	if not list:
-		file = open(game.file('results'), encoding='latin-1')
-		list = [line[9:-1] for line in file if line[:8] == 'Subject:']
+	backList, forwardList = [], []
+	fileNames = []
+	if os.path.exists(game.file('results')):
+		fileNames += ['results']
+		file = open(game.file(fileNames[-1]), encoding='latin-1')
+		backList = [line[9:-1] for line in file if line[:8] == 'Subject:']
 		file.close()
-	if not list: return
+	if power == 'MASTER':
+		if os.path.exists(game.file('results.0')):
+			fileNames += ['results.0']
+			file = open(game.file(fileNames[-1]), encoding='latin-1')
+			matching = backList and backList[-1]
+			for line in file:
+				if line[:8] != 'Subject:': continue
+				topic = line[9:-1]
+				if matching:
+					if topic == matching: matching = False
+				else:
+					# In case te results file went last.
+					if not backList and topic.split()[-1] == game.phaseAbbr():
+						backList, forwardList = forwardList, []
+					forwardList += [topic]
+			file.close()
+			if not backList and game.phase != 'FORMING':
+				backList, forwardList = forwardList, []
+		else:
+			if backList: phase = game.probeNextPhase()
+			else:
+				# In case there's no results file at all
+				phase = game.probeNextPhase("FORMING")
+				if phase:
+					forwardList = ['Diplomacy game %s forming' % game.name]
+			while phase:
+				# In case there's no results file at all
+				if not backList and phase == game.phase:
+					backList, forwardList = forwardList, []
+				forwardList += ['Diplomacy phase %s %s' %
+					(game.name, game.phaseAbbr(phase))]
+				phase = game.probeNextPhase(phase)
+			if forwardList: forwardList = forwardList[:-1]
+	if not backList and not forwardList: return
 	page.write(
 		"""
 		<form name=results method=post>
@@ -198,11 +233,22 @@ def showResultsText(list = None, subject = None, align = 1):
 		%s<b>Results:</b>
 		%s<select name="subject" class="inputBox"
 		onChange=document.results.submit()>
-		""" % (game.name, '<tr><td class=bodycopy>' * align,
-			'</td><td align=right>' * align))
-	subject = subject or list[-1]
-	for item in list:
-		page.write('<option%s>' % (' selected' * (subject == item)) + item)
+		""" % (game.name, (fileNames and
+			'<input type=hidden name=files value="%s">\n' %
+			'|'.join(fileNames) or '') +
+			 '<tr><td class=bodycopy>' * align,
+			 '</td><td align=right>' * align))
+	match = backList and 1 or 2
+	if backList:
+		subject = subject or backList[-1]
+		for item in backList:
+			page.write('<option%s>' % (' selected' * (subject == item)) + item)
+	if forwardList:
+		page.write('<optgroup label="Rolled Back Phases">')
+		for item in forwardList:
+			page.write('<option%s>' % (' selected' * (subject == item)) + item)
+			if subject == item: match = 2
+		page.write('</optgroup>')
 	page.write('</select>' + '</td>' * align)
 	if pwdFlag: page.write('<input type=hidden name=password value=%s>'
 		'<input type=hidden name=power value=%s>' % (page.password, power))
@@ -213,6 +259,7 @@ def showResultsText(list = None, subject = None, align = 1):
 		%s</form>
 		""" % ('count' in vars(page) and (int(page.count) - 1),
 			'<td class=bodycopy>' * align, '</td></tr>' * align))
+	return match
 #	----------------------------------------------------------------------
 def showDocList(files, beforeEnd = 0):
 	if not beforeEnd and page.game.phase != 'COMPLETED': return
@@ -529,12 +576,15 @@ def gameHeader():
 			', '.join([game.anglify(x[:x.find('-')]) + x[x.find('-'):]
 				for x in game.avail]))
 		elif game.deadline < Time():
-			if power and power.name in late: page.write(
-				'<br><font size=+1><blink>You Are Late!</blink></font>')
-			elif late and (power and power.name == 'MASTER'
-			or 'HIDE_LATE_POWERS' not in game.rules): page.write(
-				'<br>(Late Power%s: %s)' % ('s'[len(late) == 1:],
-				', '.join(map(game.anglify, late))))
+			if late:
+				if power and (power.name in late or
+				[1 for x in power.vassals() if x.name in late]): page.write(
+					'<br><font size=+1><blink>You Are Late!</blink></font>')
+				elif (power and (power.name == 'MASTER' or power.omniscient)
+				or 'HIDE_LATE_POWERS' not in game.rules): page.write(
+					'<br>(Late Power%s: %s)' % ('s'[len(late) == 1:],
+					', '.join(map(game.anglify, late))))
+				else: page.write('<br>One or more powers are late.')
 		else:
 			waiters = [game.anglify(x.name) for x in game.powers if x.wait]
 			if waiters:
@@ -797,12 +847,13 @@ def showReadyNotice():
 #	----------------------------------------------------------------------
 def showPressOptions():
 	readers = page.game.eligiblePressRecipients(page.power)
-	page.write('<form method=post name=press>'
-		'<input type=hidden name=page value=Press>'
-		'<input type=hidden name=game value=%s>'
-		'<input type=hidden name=power value=%s>'
-		'<input type=hidden name=password value=%s>' %
-		(page.game.name, page.power.name, page.password))
+	page.write("""
+		<form method=post name=press>
+		<input type=hidden name=page value=Press>
+		<input type=hidden name=game value=%s>
+		<input type=hidden name=power value=%s>
+		<input type=hidden name=password value=%s>
+		""" % (page.game.name, page.power.name, page.password))
 	#	---------------------------
 	#	Draw and fill the press box
 	#	---------------------------
@@ -1009,47 +1060,84 @@ def showRetreatList():
 	return shown
 #	----------------------------------------------------------------------
 def viewFile():
-	if page.file == 'status': return
+	if not page.file: return
 	pwdFlag = (isinstance(page.power, Power) and
 		page.power.isValidPassword(page.password))
-	page.write(
-		"""
+	if page.file.split('.')[0] in ('access', 'results', 'status') and not (
+		pwdFlag and page.power.name == 'MASTER'):
+		return finished('Forbidden To Read')
+	page.write("""
 		<tr valign=top bgcolor="#CCCCCC">
 		<td align=center class="grey"><b>%s</b></td></tr>
-		<tr valign=top><td><center><table><tr><td>
+		<tr valign=top><td align=center>
 		""" % page.file.title())
-	file, list = open(page.game.file(page.file), encoding='latin-1'), []
-	blind, lastLine = 0, ''
-	if 'subject' in vars(page):
-		showing = 0
-		page.write('<pre>')
-	for line in file:
-		if 'subject' in vars(page):
-			if showing:
-				if line[:5] == 'From ': showing = 0
-				elif page.file == 'results':
-					if line[:2] == '::': showing = 2
-				elif not line.split(): showing = 2
-			elif line[:9] == 'Subject: ':
-				list += [line[9:-1]]
-				showing = line[9:-1] == page.subject
-			if showing < 2: continue
-		if page.file == 'results' and line.startswith('SHOW'):
-			showTo = line[:-1].split()[1:]
-			blind = showTo and not (pwdFlag and page.power.name in showTo)
-		elif not blind and (line[:-1] or lastLine):
-			lastLine = line[:-1]
-			page.write(lastLine)
+	if not os.path.exists(page.game.file(page.file)):
+		return finished('File Not Found')
+	try: file = open(page.game.file(page.file), encoding='latin-1')
+	except: return finished('File Not Readable')
+	lines = ''.join(file.readlines()).strip()
 	file.close()
-	page.write('</td></tr></table>')
-	page.write('<HR><table><tr><td valign=top align=center class=bodycopy>')
-	if list:
-		showResultsText(list, page.subject, 0)
+	if not lines: return finished('File Empty')
+	if lines[0] != '<': lines = '<pre>\n' + lines + '\n</pre>'
+	page.count = ('count' in vars(page) and int(page.count)) - 1
+	page.write(
+		"""
+		<table><tr><td>
+		%s
+		</td></tr></table><hr>
+		<table><tr><td class=bodycopy>
+		<form><input class=inputSubmit type=button
+		onclick=window.history.go(%d) value="Back To Game Page">
+		</form>
+		</td></tr></table>
+		""" % (lines, page.count))
+#	----------------------------------------------------------------------
+def showResults():
+	if 'subject' not in vars(page): return viewFile()
+	page.setdefault('files')
+	pwdFlag = (isinstance(page.power, Power) and
+		page.power.isValidPassword(page.password))
+	page.write("""
+		<tr valign=top bgcolor="#CCCCCC">
+		<td align=center class="grey"><b>Results</b></td></tr>
+		<tr valign=top><td align=center>
+		""")
+	showing = 0
+	if page.file:
+		for fileName in page.files.split('|'):
+			if not os.path.exists(page.game.file(fileName)):
+				return finished('File Not Found')
+			try: file = open(page.game.file(fileName), encoding='latin-1')
+			except: return finished('File Not Readable')
+			blind, lastLine = 0, ''
+			for line in file:
+				if showing:
+					if line[:5] == 'From ': break
+					elif line[:2] == '::': showing = 2
+				elif line[:9] == 'Subject: ':
+					showing = line[9:-1] == page.subject
+					if showing: page.write('<table><tr><td><pre>')
+				if showing < 2: continue
+				if line.startswith('SHOW'):
+					showTo = line[:-1].split()[1:]
+					blind = showTo and not (pwdFlag and
+						page.power.name in showTo)
+				elif not blind and (line[:-1] or lastLine):
+					lastLine = line[:-1]
+					page.write(lastLine)
+			file.close()
+			if showing: break
+	if showing:
+		page.write('</pre></td></tr></table><hr>')
+	page.write('<table><tr><td class=bodycopy>')
+	forward = showResultsText(page.subject, 0)
+	if forward:
 		page.write('</td></tr><tr><td align=center class=bodycopy>')
 		if pwdFlag and page.power.name == 'MASTER':
 			word = page.subject.split()
-			phase = word[1:2] == ['results'] and word[-1] or 'FORMING'
-			addRollback(phase)
+			phase = len(word) > 2 and word[1] in ('results',
+				'phase') and word[-1] or 'FORMING'
+			addRoll(phase, forward-1)
 			page.write('</td></tr><tr><td align=center>')
 	page.count = ('count' in vars(page) and int(page.count)) - 1
 	page.write(
@@ -1057,8 +1145,8 @@ def viewFile():
 		<form><input class=inputSubmit type=button
 		onclick=window.history.go(%d) value="Back To Game Page">
 		</form>
+		</td></tr></table>
 		""" % page.count)
-	page.write('</td></tr></table>')
 #	----------------------------------------------------------------------
 def sendPress():
 	if type(page.recipient) in (str, unicode): page.recipient = [page.recipient]
@@ -1120,7 +1208,8 @@ def finished(header = 'Update Made', subheader = None):
 		<tr valign=top bgcolor="#CCCCCC">
 		<th bgcolor=red class=bodycopy>
 		<font color=yellow size=3>%s</th></tr>
-		""" % subheader * (not not subheader) +
+		""" % subheader * (not not subheader))
+	page.write(
 		"""
 		<tr valign=top>
 		<script>window.setTimeout("document.form.submit();",5000);</script>
@@ -1133,14 +1222,15 @@ def finished(header = 'Update Made', subheader = None):
 		<input type=hidden name=password value=%s>
 		<input type=submit class=inputSubmit
 		value="Return to the Status Page [Automatic in 5 Seconds]"></form>
-		""" % (page.game.name, page.power.name, page.password) +
+		""" % (page.game.name, page.power.name, page.password))
+	page.write(
 		"""
 		<blockquote>Note that if you use your browser's
 		"Back" button to return to the status page<br>(instead of the
 		button above), you will need to "Reload" the screen to see
 		your changes reflected.</blockquote>
-		""" * (header != 'Update Made' or page.power.name == 'MASTER') +
-		'</th></tr>')
+		</th></tr>
+		""" * (header != 'Update Made' or page.power.name == 'MASTER'))
 #	----------------------------------------------------------------------
 def problem(pre = '', post = ''):
 	page.write(

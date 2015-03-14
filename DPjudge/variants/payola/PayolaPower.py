@@ -29,8 +29,11 @@ class PayolaPower(Power):
 		#	Initialize the transient parameters
 		#	-----------------------------------
 		if includeFlags & 4:
-			self.overpaid, self.offers, self.sheet, self.sent = 0, [], [], []
-		self.accept = self.liquid = self.left = None
+			self.overpaid, self.offers, self.sent = 0, [], []
+			self.accept = None
+		if includeFlags & 5:
+			self.sheet = []
+		self.liquid = self.left = None
 		#	-----------------------------------------------
 		#	The three attributes below are ZeroSum-specific
 		#	-----------------------------------------------
@@ -38,7 +41,8 @@ class PayolaPower(Power):
 		#	-------------------------------------------
 		#	And here are two that are Exchange-specific
 		#	-------------------------------------------
-		self.elect, self.state = {}, ''
+		if includeFlags & 4:
+			self.elect, self.state = {}, ''
 	#	----------------------------------------------------------------------
 	def initAccept(self):
 		self.accept = (self.abbrev + '?')[self.isDummy():]

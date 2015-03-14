@@ -44,8 +44,8 @@ class Check(Status):
 						last, again = last2, True
 				hours = int((curr - last) / 3600)
 				days, hours = hours / 24, hours % 24
-				msg = '\n'.join(textwrap.wrap('Attention: ' +
-					['More than ', 'Once again '][again] +
+				msg = '\n'.join(map(lambda x: '\n'.join(textwrap.wrap(x, 75)),
+					('Attention: ' + ['More than ', 'Once again '][again] +
 					(days > 1 and ('%d days ' % days) or
 					days == 1 and 'a day ' or '') +
 					(days > 0 and hours > 0 and 'and ' or '') +
@@ -60,11 +60,12 @@ class Check(Status):
 					'Automatic deadline checking is still disabled. '][again] + 
 					'\n\nInvestigate, extend deadlines if necessary, ' +
 					'and only then run check once more without the ' +
-					'-t option to restart the process.', 75))
+					'-t option to restart the process.').split('\n')))
 				print(msg)
 				# Warn the judgekeeper.
 				if not last2 or again:
-					mail = Mail(host.judgekeeper, '%s server outage' % host.dpjudgeID)
+					mail = Mail(host.judgekeeper,
+						'%s server outage' % host.dpjudgeID)
 					mail.write(msg)
 					mail.close()
 				open(tsf2, 'w').close()
@@ -95,7 +96,8 @@ class Check(Status):
 					'-a' in flags or now[-4:] >= '0020'): pass
 				elif game.error:
 					print game.name, 'has ERRORS ... notifying the Master'
-					for addr in game.master[1].split(','):
+					for addr in game.master[1].split(',') + [
+						host.judgekeeper] * (not game.tester):
 						mail = Mail(addr,
 							'Diplomacy ERRORS (%s)' % game.name)
 						mail.write("The game '%s' on %s has the following "

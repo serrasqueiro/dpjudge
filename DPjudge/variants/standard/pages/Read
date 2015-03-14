@@ -26,7 +26,8 @@ gameHeader()
 <tr><td colspan=3 height=5><!--SPACER--></td>
 </tr>
 <:
-viewFile()
+if page.file == 'results': showResults()
+else: viewFile()
 :>
 </td>
 </tr>

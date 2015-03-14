@@ -153,13 +153,7 @@ class PayolaGame(Game):
 			elif word[0] == 'STATE':		# (exchange, undocumented?)
 				if len(word) == 2: power.state = word[1]
 				else: error += ['BAD STATE FOR ' + power.name]
-			else: found = 0
-		#	--------------------------------
-		#	Power-specific data (persistent)
-		#	--------------------------------
-		if not found and includeFlags & 3:
-			found = 1
-			if word[0] == 'ACCEPT':
+			elif word[0] == 'ACCEPT':
 				if power.accept: self.error += ['TWO ACCEPTS FOR ' + power.name]
 				elif len(word) != 2:
 					self.error += ['BAD ACCEPT FOR ' + power.name]

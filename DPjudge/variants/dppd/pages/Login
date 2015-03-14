@@ -96,15 +96,16 @@ leftside()
 <:
 master, player, observer = [], [], []
 game, which = Game(), 0
+page.setdefault('dpjudge', host.dpjudgeID)
 page.dppd.db.execute("""
 	select	Judge.url, Game.judgeId, Game.name, Game.status,
 			Game.phase, Game.deadline, Game.zone,
 			Role.type, Role.password, Role.name
 			from Judge, Game, Role
 			where Game.id = Role.gameId and Game.judgeId = Judge.id
-			and Role.userId = %d
+			and Judge.id = '%s' and Role.userId = %d
 			and Game.status not in ('COMPLETED', 'TERMINATED')
-			""" % page.id)
+			""" % (page.dpjudge, page.id))
 for info in page.dppd.db.fetchall():
 	game.phase, game.deadline = info['phase'], info['deadline']
 	game.setTimeZone(info['zone'])

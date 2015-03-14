@@ -22,8 +22,8 @@ class StandardPower(Power):
 		#	-----------------------------------
 		#	Initialize the transient parameters
 		#	-----------------------------------
-		if includeFlags & 4:
-			self.orders, self.held = {}, 0
+		if includeFlags & 5:
+			self.orders = {}
 	#	----------------------------------------------------------------------
 	def movesSubmitted(self):
 		return self.orders or not self.units

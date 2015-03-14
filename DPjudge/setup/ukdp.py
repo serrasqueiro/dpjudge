@@ -455,4 +455,83 @@ This did not place a mercurial folder or link in python2.7, but somehow the prob
 Again a chilling surprise today. On visiting http://uk.diplom.org/maps I could see a directory list of all game maps. Imagine playing a blind game and knowing that you can simply download the maps for every player, including the master. That's simply not acceptable!
 
 After searching on the Internet and comparing with USDP, I browsed through this setup file and noticed the extra configuration files I had created, in particular /etc/apache2/sites-available/ukdp. I knew that Options Indexes was the likely culprit, and finally I found a file that had it set. I put a "-" in front of Indexes and restarted the apache2 service. Now this server too displays a "No permission" error page.
+
+---
+Installing MySQL
+
+It couldn't last forever. We'll crack the nut that's called MySQL. I want to set up a database locally so that I can test the DPPD on this machine instead of having to jump to USDP.
+
+First order of the day: Installing MySQL itself.
+> sudo apt-get install mysql-server libapache2-mod-auth-mysql
+I chose my login password for the root password. I removed obsolete packages afterwards with:
+> sudo apt-get autoremove
+Install and set up:
+> sudo mysql_install_db
+> sudo /usr/bin/mysql_secure_installation
+Answering y on all questions, as this is kind of a production system.
+
+Next comes installing MySQLdb for python. A lot is mentioned about pip or easy_istall, but let's see if simply doing an apt-get works.
+> sudo apt-get install python-mysqldb
+
+This installed it alright, but not in python2.7, but 2.6. After lots of frustrations I managed to install it in the right place using easy_install-2.7
+
+> wget --no-check-certificate https://bootstrap.pypa.io/ez_setup.py
+> sudo python ez_setup.py --insecure
+> sudo easy_install-2.7 MySQL-python
+
+I then launch python and import the library, but that generates an annoying warning.
+>>> import MySQLdb
+/usr/local/lib/python2.7/site-packages/setuptools-14.0-py2.7.egg/pkg_resources/__init__.py:1224: UserWarning: /home/ukdp/.python-eggs is writable by group/others and vulnerable to attack when used with get_resource_filename. Consider a more secure location (set with .set_extraction_path or the PYTHON_EGG_CACHE environment variable).
+Turns out to be simply a file permission problem.
+> chmod go-wx ~/.python-eggs
+gets rid of it.
+
+We need to create a new user. We could go for ukdp, but to mimic USDP and DPFG where the users are dpjudge and dpforge resp., let's go for dplodge. This will also be an e-mail alias for ukdp.
+
+To make an e-mail alias, first we edit /etc/aliases, adding:
+> sudo vi /etc/aliases
+...
+dplodge: ukdp
+...
+To make this active this should be written to /etc/mail/aliases.db, which can be achieved by:
+> sudo newaliases
+Let's not forget to add the alias to .procmailrc.
+> vi ~/.procmailrc
+...
+* ^To:.*(ukdp|dplodge|judge|dppd)@
+...
+
+And when all that is done, we can send a message to dplodge@uk.diplom.org (not dplodge@spikings.com) with "List" in the body and get a list of all openings on UKDP. Another great feat.
+
+Let's create this dplodge user in MySQL. First we need a password, and for that we can use our scramble tool.
+> $JDG/bin/scramble -n
+The result: ********. Because MySQL passwords are case sensitive, we randomly uppercase a few letters, then use that as our password.
+> mysql -u root -p
+mysql> create user 'dplodge'@'localhost' identified by '********';
+Good, but what privileges do we grant this user? Let's check on USDP.
+> mysql -u dpjudge -p
+mysql> show grants for 'dpjudge'@'localhost';
++------------------------------------------------------------------------------+
+| Grants for dpjudge@localhost                                                 |
++------------------------------------------------------------------------------+
+| GRANT USAGE ON *.* TO 'dpjudge'@'localhost' IDENTIFIED BY PASSWORD '*<hash>' |
+| GRANT ALL PRIVILEGES ON `dpjudge`.* TO 'dpjudge'@'localhost'                 |
++------------------------------------------------------------------------------+
+Well then, the first grant comes automatically when creating the user. It's then those same privileges on the not yet existing dplodge database that we grant to our new user dplodge.
+
+Let's now create the database. Or rather, as with dpforge, we clone the latest backup file of dpjudge, which conveniently is already on this server thanks to the offices of rsynch. Mimicking the backup script from dpforge, we execute:
+> mysql -udplodge -p******** dplodge < ~/rbackup/dpforge/backup/dpjudge.db.bak
+But this results in an error "Unknown database dplodge". Ok, we need to create it.
+> mysql -u dplodge -p
+mysql> create database dplodge;
+We quit and run the former command again, and presto, our database is filled. If you don't believe me, try the following mysql commands:
+mysql> show tables in dplodge;
+mysql> select count(*) from dplodge.Game;
+
+We want to sync this database often, just like we did for dpforge. For that reason we adapt the backup script and add it to crontab. Let's say we do this daily at 5 past midnight:
+> crontab -e
+5 0 * * * $BIN/backup
+
+Of course this would mean that every night whatever updates were made to the dplodge database for games running on UKDP would go lost. To prevent that from happening we extend the host.dppdURL parameter with a second address pointing to the USDP dppd, so that both databases get updated at the same time.
+
 """

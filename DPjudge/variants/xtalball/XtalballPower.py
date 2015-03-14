@@ -16,7 +16,7 @@ class XtalballPower(Power):
 		#	-----------------------------------
 		#	Initialize the transient parameters
 		#	-----------------------------------
-		if includeFlags & 4:
+		if includeFlags & 5:
 			self.list, self.notes = {'SOONER': [], 'LATER': []}, {}
 	#	----------------------------------------------------------------------
 	def isEliminated(self, public = False, personal = False):

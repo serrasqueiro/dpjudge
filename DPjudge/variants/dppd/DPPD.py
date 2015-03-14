@@ -189,7 +189,7 @@ class DPPD(dict):
 			', '.join(["%s = %%s" % x for (x, y) in newparams]),
 			[y for (x,y) in newparams] + [game['id']])
 	#	----------------------------------------------------------------------
-	def deleteGame(self, gameName, judgeId = None):
+	def deleteGame(self, gameName, gamePass, judgeId = None):
 		#	------------------------------------------------------------
 		#	Deletes a game from the database.
 		#	Note that a call to Game.updateState() can restore the game,
@@ -199,6 +199,12 @@ class DPPD(dict):
 			"select id from Game where judgeId = %s and name = %s",
 			(judgeId or host.dpjudgeID, gameName)): raise NoGameToDelete
 		gameId = self.db.fetchone()['id']
+		if host.judgePassword and host.judgePassword != gamePass:
+			if not self.db.execute(
+				"select password from Role where gameId = %s and "
+				"name = 'MASTER'", (gameId,)): raise NoGamePassword
+			if gamePass != self.db.fetchone()['password']:
+				raise WrongGamePassword
 		self.db.execute("delete from Role where gameId = %s", gameId)
 		self.db.execute("delete from Rule where gameId = %s", gameId)
 		self.db.execute("delete from Game where id = %s", gameId)

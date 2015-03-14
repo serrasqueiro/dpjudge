@@ -120,6 +120,10 @@ class Page:
 				text = slashes[1]
 		return html + self.convertPlainTextToHTML(text)
 	#	----------------------------------------------------------------------
+	def addURLParam(self, url, param):
+		if not url: return ''
+		return url + ('?' in url and '&' or '?') + param
+	#	----------------------------------------------------------------------
 	def include(self, fileName = None, lims = ('<:', ':>'), data = None):
 		global page
 		if not (fileName or data): fileName = self.page
@@ -136,28 +140,39 @@ class Page:
 				file.close()
 				break
 			else: return
+		pageURL = self.addURLParam(host.dpjudgeURL, 'page=')
+		if not host.dppdURL: dppdURL = ''
+		else:
+			dppdURL = host.dppdURL.split(',')[0]
+			if dppdURL not in (host.dpjudgeURL + host.dppdSubURL,
+				os.path.join(host.dpjudgeURL, host.dppdSubURL)):
+				dppdURL = self.addURLParam(dppdURL, 'dpjudge=' + host.dpjudgeID)
 		page, inCode = self, 0
 		while data:
 			where = data.find(lims[inCode])
 			if where < 0: stuff, data = data, ''
 			else: stuff, data = data[:where], data[where + len(lims[inCode]):]
-			stuff = (stuff.replace('<URL>',		host.dpjudgeURL)
-						  .replace('<MAP>',		host.gameMapURL)
-						  .replace('<PAGE>',	host.dpjudgeURL + '?page=')
-						  .replace('<WEB>',		host.dpjudgeDir)
-						  .replace('<ID>',		host.dpjudgeID)
-						  .replace('<MAIL>',	host.dpjudge)
-						  .replace('<KEEPER>',	host.judgekeeper)
-						  .replace('<PKG>',		host.packageDir)
-						  .replace('<DPPD>',	host.dppdURL or '')
-						  .replace('<POUCH>',	'http://www.diplom.org'))
+			stuff = (stuff
+				.replace('<URL>',	host.dpjudgeURL)
+				.replace('<MAP>',	host.gameMapURL)
+				.replace('<PAGE>',	pageURL)
+				.replace('<WEB>',	host.dpjudgeDir)
+				.replace('<ID>',	host.dpjudgeID)
+				.replace('<MAIL>',	host.dpjudge)
+				.replace('<KEEPER>',	host.judgekeeper)
+				.replace('<PKG>',	host.packageDir)
+				.replace('<DPPD>',	dppdURL)
+				.replace('<POUCH>',	'http://www.diplom.org'))
 			inCode = not inCode
-			if inCode: self.write(stuff)
+			if inCode:
+				stuff = stuff.strip()
+				if stuff: self.write(stuff)
 			elif stuff[:1] != '=':
 				try:
 					exec stuff in globals()
 				except:
-					print('<!-- Exception while executing:\n' + stuff.replace('<','&lt;') + '-->')
+					print('<!-- Exception while executing:\n' +
+						stuff.replace('<','&lt;') + '-->')
 					raise
 			else: self.write(eval(stuff[1:]))
 		#	--------------

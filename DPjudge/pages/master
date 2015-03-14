@@ -429,7 +429,8 @@ def showStatusFile():
 				<font color=red>[View Access Log]</a></td>
 			<td nowrap align=right valign=top>
 				<a href=<URL>?page=Rules target=rules>
-				<font color=red>[Game Rules Help]</font></a></td></tr>""")
+				<font color=red>[Game Rules Help]</font></a></td></tr>
+		""")
 	if 'preparation' in page.game.status: page.write("""
 		<tr><td colspan=3 align=center><table border cellpadding=10>
 		<tr><th class=bodycopy bgcolor=yellow><input type=checkbox name=form>
@@ -456,10 +457,17 @@ def addOption(option):
 #
 #
 #	----------------------------------------------------------------------
-def addRollback(phase):
-	if page.power.name != 'MASTER' or page.game.phase == 'COMPLETED' and not (
-		host.judgePassword and host.judgePassword == page.password): return
-	statFile = page.game.file('status')
+def addRoll(phase, forward = 0):
+	game = page.game
+	if page.power.name != 'MASTER' or game.phase == 'COMPLETED' and (
+		forward or not page.password or host.judgePassword != page.password):
+		return
+	if forward:
+		if phase != 'FORMING': phase = game.phaseLong(phase)
+		phase = game.probeNextPhase(phase)
+		if not phase: return
+		phase = game.phaseAbbr(phase)
+	statFile = game.file('status')
 	page.write(
 		"""
 		<script>
@@ -469,9 +477,9 @@ def addRollback(phase):
 				option, 'option', 'width=400,height=120,status=no,' +
 				'toolbar=no,resizable=yes,scrollbars=yes')
 		}
-		function rollback() {
+		function rollto() {
 			var full = "while", restore = "while";
-			confirmation = "Rollback to " + document.roll.phase.value;
+			confirmation = "Roll%s to " + document.roll.phase.value;
 			if (document.roll.phase.value != "FORMING") {
 				if (!document.roll.restore.checked) restore = "without";
 				confirmation += " " + restore + " restoring orders, and";
@@ -491,13 +499,14 @@ def addRollback(phase):
 		<input type=hidden name=power value=MASTER>
 		<input type=hidden name=password value=%s>
 		<input type=hidden name=page value=Update>
-		<input type=hidden name=action value=rollback>
+		<input type=hidden name=action value=roll%s>
 		<input type=hidden name=stamp value=%d>
 		<input type=hidden name=phase value="%s">
-		<input type="button" value="Rollback to %s" class="inputSubmit"
-		onclick="rollback()"> <b>with</b>
-		""" % (page.game.name, page.password,
-			os.path.getmtime(statFile), phase, phase))
+		<input type="button" value="Roll%s to %s" class="inputSubmit"
+		onclick="rollto()"> <b>with</b>
+		""" % (forward and ' forward' or 'back', game.name, page.password,
+			forward and 'forward' or 'back', os.path.getmtime(statFile),
+			phase, forward and ' forward' or 'back', phase))
 	addOption('FULL')
 	if phase != 'FORMING': addOption('RESTORE')
 	page.write('</form>')
@@ -628,10 +637,12 @@ def updateMaster():
 	#	----------
 	#	Roll phase
 	#	----------
-	if page.setdefault('action') == 'rollback':
+	if page.setdefault('action') in ('rollback', 'rollforward'):
 		flags = page.has('restore') * 1 + page.has('full') * 2 + (
 			host.judgePassword and page.password == host.judgePassword) * 16
-		error = page.game.rollback(flags, page.phase)
+		if page.action == 'rollforward':
+			error = page.game.rollforward(page.phase, flags | 4)
+		else: error = page.game.rollback(page.phase, flags)
 		if error: return reportUpdateError(error + '.')
 		return finished()
 	#	----------------------
@@ -698,7 +709,8 @@ def updateMaster():
 	extract('MILITIA', 'defense', 1)
 	page.game.timing = None	# it will be in page.extra if given....
 	page.game.terrain = {}	# ditto this guy as well
-	if page.game.tester[-1:] == '!': page.game.tester = ''	# and this one?
+	if page.game.tester and page.game.tester[-1:] == '!':
+		page.game.tester = ''	# and this one?
 	if 'corrupt' in page.game.status: return finished()
 	#--------------
 	# Write the file
