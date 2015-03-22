@@ -74,7 +74,8 @@ class Check(Status):
 		flags = [x for x in argv[1:] if x.startswith('-')]
 		gameList = [x for x in argv[1:] if not x.startswith('-')]
 		for gameName, data in self.dict.items():
-			if 'completed' in data or 'held' in data: continue
+			if 'completed' in data or 'held' in data or 'terminated' in data:
+				continue
 			if gameList and gameName not in gameList: continue
 			#print('Checking %s' % gameName)
 			try: game = self.load(gameName)

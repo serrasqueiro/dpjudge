@@ -165,7 +165,8 @@ class Map:
 		#	------------------
 		#	Validate game FLOW
 		#	------------------
-		self.phaseAbbrev = abbrev = {	'M': 'MOVEMENT', 'R': 'RETREATS', 'A': 'ADJUSTMENTS' }
+		self.phaseAbbrev = abbrev = {
+			'M': 'MOVEMENT', 'R': 'RETREATS', 'A': 'ADJUSTMENTS' }
 		try:
 			self.seq, hasNewYear = [], 0
 			for item in self.flow:
@@ -182,11 +183,12 @@ class Map:
 				if season == 'NEWYEAR':
 					try: years = int(phases)
 					except: 
-						error += ['THE %s FLOW DIRECTIVE CAN ONLY HAVE A NUMBER AS PARAMETER' % season]
+						error += ['THE %s FLOW DIRECTIVE CAN ONLY HAVE A'
+							' NUMBER AS PARAMETER' % season]
 						continue
 					if years <= 0:
-						error += ['THE %s FLOW DIRECTIVE REQUIRES A NUMBER GREATER THAN 0' + 
-							' INSTEAD OF %d' % (season, years)]
+						error += ['THE %s FLOW DIRECTIVE REQUIRES A NUMBER'
+							' GREATER THAN 0 INSTEAD OF %d' % (season, years)]
 						continue
 					self.seq += [season + ' ' + phases]
 					hasNewYear = 1
@@ -197,25 +199,26 @@ class Map:
 						else:
 							div, mod = int(phases), 0
 					except: 
-						error += ['THE %s FLOW DIRECTIVE SHOULD EITHER HAVE A SINGLE NUMBER,' + 
-							' OR 2 NUMBERS SEPARATED BY AN EQUAL SIGN (=)' + 
-							' INSTEAD OF %s' % (season, phases)]
+						error += ['THE %s FLOW DIRECTIVE SHOULD EITHER HAVE A'
+							' SINGLE NUMBER, OR 2 NUMBERS SEPARATED BY AN'
+							' EQUAL SIGN (=) INSTEAD OF %s' % (season, phases)]
 						continue
 					if div <= 0:
-						error += ['THE %s FLOW DIRECTIVE REQUIRES A DIVISOR GREATER THAN 0' + 
-						' INSTEAD OF %s' % (season, div)]
+						error += ['THE %s FLOW DIRECTIVE REQUIRES A DIVISOR '
+							'GREATER THAN 0 INSTEAD OF %s' % (season, div)]
 						continue
 					if mod < 0 or mod >= div:
-						error += ['THE %s FLOW DIRECTIVE REQUIRES A POSITIVE MODULO SMALLER THAN THE DIVISOR %d' + 
-						' INSTEAD OF %d' % (season, div, mod)]
+						error += ['THE %s FLOW DIRECTIVE REQUIRES A'
+							' POSITIVE MODULO SMALLER THAN THE DIVISOR %d'
+							' INSTEAD OF %d' % (season, div, mod)]
 						continue
 					self.seq += [season + ' ' + phases]
 					if not hasNewYear: self.seq[:0], hasNewYear = ['NEWYEAR'], 1
 				else:
 					for phase in phases.split(','):
 						if abbrev.get(phase[0]) not in (None, phase):
-							error += ['BAD PHASE TYPE IN FLOW (%s IS ALREADY %s)' %
-								(`phase[0]`, `abbrev[phase[0]]`)]
+							error += ['BAD PHASE TYPE IN FLOW (%s IS ALREADY'
+								' %s)' % (`phase[0]`, `abbrev[phase[0]]`)]
 							continue
 						newPhase = season + ' ' + phase
 						if newPhase in self.seq and season != 'NEWYEAR':

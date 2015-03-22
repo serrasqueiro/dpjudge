@@ -888,7 +888,8 @@ class Game:
 		self.validateRules()
 	#	----------------------------------------------------------------------
 	def determinePower(self, word):
-		error, upword = self.error, word[0].upper()
+		error = self.error
+		upword = word[0].replace('+', '').replace('-', '').upper()
 		#	-----------------------
 		#	Powers and other player
 		#	types (observers, etc.)
