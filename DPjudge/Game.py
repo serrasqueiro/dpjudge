@@ -28,6 +28,7 @@ class Game:
 	def __repr__(self):
 		text = ('GAME ' + self.name + (self.await and '\nAWAIT '
 				or self.skip and '\nSKIP ' or '\nPHASE ') + self.phase)
+		if self.judge: text += '\nJUDGE ' + self.judge
 		if self.map: text += '\n%s ' % (
 			['MAP', 'TRIAL'][self.map.trial]) + self.map.name
 		if len(self.morphs) > 3 or [1 for x in self.morphs if not x.strip()]:
@@ -96,7 +97,7 @@ class Game:
 			except: metaRules, rules = [], []
 			tester = host.tester
 			groups = password = start = ''
-			map = private = zone = None
+			map = private = zone = judge = None
 			timing, terrain, status = {}, {}, Status().dict.get(self.name, [])
 			#	------------------------------------------------------
 			#	When we run out of directory slots, the line below can
@@ -551,6 +552,9 @@ class Game:
 		import Map
 		self.map, phases = Map.Map(mapName, trial), []
 		self.error += self.map.error
+		if self.phase and not ' ' in self.phase and self.phase not in (
+			'FORMING', 'COMPLETED'):
+			self.phase = self.map.phaseLong(self.phase)
 		#	-------------------------------------------
 		#	Have the Game process all lines in the map
 		#	file that were in DIRECTIVES clauses (this
@@ -745,6 +749,7 @@ class Game:
 					if len(word) > 1:
 						if self.phase:
 							error += ['RESULT WHILE PHASE NOT COMPLETED YET']
+						elif not self.map: self.phase = word[1]
 						else: self.phase = self.phaseLong(word[1])
 		#	----------------------------------
 		#	Game-specific information (orders)
@@ -796,7 +801,7 @@ class Game:
 			elif upword == 'PRIVATE':
 				if len(word) == 2: self.private = word[1].upper()
 				else: error += ['INVALID PRIVATE STATEMENT']
-			elif upword == 'RULE':
+			elif upword in ('RULE', 'RULES'):
 				for rule in word[1:]:
 					rule = rule.upper()
 					item = rule.replace('!','')
@@ -810,6 +815,9 @@ class Game:
 					if includeFlags & 8:
 						if item not in self.map.rules: self.map.rules += [item]
 						if item not in self.metaRules: self.metaRules += [item]
+			elif upword == 'JUDGE':
+				if self.judge: error += ['TWO JUDGE STATEMENTS']
+				else: self.judge = ' '.join(word[1:])
 			elif upword in ['MAP', 'TRIAL']:
 				if self.map: error += ['TWO MAP STATEMENTS']
 				elif len(word) == 2: self.loadMap(word[1], upword == 'TRIAL')
@@ -1813,8 +1821,10 @@ class Game:
 						for x in centers if x[-1] not in '?*']
 				elif (showing and who != 'UNOWNED'
 				and not who.omniscient and [who.name] != ceo):
+					vassals = [who.name] + [x.name for x in who.vassals()]
 					who.sees += [x for x in centers
-						if x not in who.sees and self.visible(power, x)[who.name] & 2]
+						if x not in who.sees and [1 for y, z in
+						self.visible(power, x).items() if z & 2 and y in vassals]]
 					seen = [x for x in centers if x in who.sees]
 				if not seen: continue
 				if showing:
@@ -3191,8 +3201,10 @@ class Game:
 			#	OR, IF "HOLD_WIN", MUST HAVE HAD A WIN
 			and ('VICTORY_HOMES' in self.rules or centers > lastYear[power],
 			lastYear[power] >= self.win)['HOLD_WIN' in self.rules]
-			#	AND YOU MUST BE ALONE IN THE LEAD (NOT REQUIRED IN CASE OF SHARED_VICTORY)
-			and ('SHARED_VICTORY' in self.rules or (centers, yearCenters.count(centers)) == (max(yearCenters), 1))):
+			#	AND YOU MUST BE ALONE IN THE LEAD (NOT REQUIRED IN CASE OF
+			#	SHARED_VICTORY)
+			and ('SHARED_VICTORY' in self.rules or
+			(centers, yearCenters.count(centers)) == (max(yearCenters), 1))):
 				victors += [power]
 				func = None
 		if victors and not self.preview: self.finish([x.name for x in victors])
@@ -3351,7 +3363,7 @@ class Game:
 		shows, order = {'MASTER': 15}, order or self.command.get(unit, 'H')
 		old = new = unit.split()[-1][:3]
 		if order[0] == '-' and (self.phaseType != 'M'
-		or not self.result.get(unit)): new = order.split()[-1][:3]
+			or not self.result.get(unit)): new = order.split()[-1][:3]
 		rules = self.rules
 		for seer in self.powers:
 			shows[seer.name] = 15 * bool(power is seer or seer.omniscient
@@ -3376,22 +3388,26 @@ class Game:
 					for his in seer.units:
 						if spotters and his[0] not in spotters: continue
 						if (self.command.get(his, 'H')[0] != '-'
-						or self.result.get(his)): after += [his[2:]]
+							or self.result.get(his)): after += [his[2:]]
 						else: after += [self.command[his].split()[-1]]
 				elif self.phaseType == 'R':
 					if 'popped' not in vars(self): self.popped = []
-					after = [x for x in before if x not in
-					[y[2:] for y in seer.retreats.keys()]]
-					for order in seer.adjust:
-						word = order.split()
-						if spotters and word[1][0] not in spotters: continue
-						if word[3][0] == '-' and word[2] not in self.popped:
-							after += [word[-1]]
+					if seer.adjust:
+						after = [x for x in before if x not in
+							[y[2:] for y in seer.retreats.keys()]]
+						for adjusted in seer.adjust:
+							word = adjusted.split()
+							if spotters and word[1][0] not in spotters: continue
+							if word[3][0] == '-' and word[2] not in self.popped:
+								after += [word[-1]]
+					else:
+						after = [x for x in before if x not in
+							[y[2:] for y in self.popped]]
 				elif self.phaseType == 'A':
 					after = [z for z in before if z not in
-					[x[1] for x in [y.split()[1:] for y in seer.adjust]
+						[x[1] for x in [y.split()[1:] for y in seer.adjust]
 					if len(x) > 1]] + [x[1] for x in
-					[y.split()[1:] for y in seer.adjust if y[0] == 'B']
+						[y.split()[1:] for y in seer.adjust if y[0] == 'B']
 					if len(x) > 1 and (not spotters or x[0][0] in spotters)]
 			#	------------------------------------------------
 			#	Get the list of the "seer"s sighted scs (if any)
@@ -3548,6 +3564,7 @@ class Game:
 		#	----------------------
 		for power in self.powers:
 			for unit in filter(self.dislodged.has_key, power.units):
+				power.retreats.setdefault(unit, [])
 				attacker, site = self.dislodged[unit], unit[2:]
 				if self.map.locAbut.get(site): pushee = site
 				else: pushee = site.lower()
@@ -3557,7 +3574,6 @@ class Game:
 					if ((self.abuts(unit[0], site, '-', abut)
 					or	 self.abuts(unit[0], site, '-', where))
 					and not self.combat.get(where) and where != attacker):
-						power.retreats.setdefault(unit, [])
 						#	----------------------------------------
 						#	Armies cannot retreat to specific coasts
 						#	----------------------------------------
@@ -3567,6 +3583,7 @@ class Game:
 		#	--------------------------
 		#	List all possible retreats
 		#	--------------------------
+		destroyed, self.popped = {}, []
 		if self.dislodged:
 			if 'BLIND' in rules: who = (['SHOW', 'MASTER'] +
 				[x.name for x in self.powers if x.omniscient])
@@ -3582,13 +3599,15 @@ class Game:
 					and not power.ceo and ('IMMOBILE_DUMMIES' in rules
 					or 'CD_DUMMIES' in rules > 'CD_RETREATS' in rules)):
 						text += ' was destroyed.'
+						destroyed[unit] = power
+						self.popped += [unit]
 						del self.dislodged[unit]
-						try: del power.retreats[unit]
-						except: pass
 					elif toWhere: text += (' can retreat to %s.' %
 						' or '.join(map(self.anglify, toWhere)))
 					else:
 						text += ' with no valid retreats was destroyed.'
+						destroyed[unit] = power
+						self.popped += [unit]
 						del self.dislodged[unit]
 					#	-----------------------------------------------------
 					#	If this is a BLIND game, add a line before the result
@@ -3620,6 +3639,21 @@ class Game:
 				if self.command[unit][0] == '-' and not self.result[unit]:
 					power.units.remove(unit)
 					power.units += [unit[:2] + self.command[unit].split()[-1]]
+		#	--------------------------------------------------------
+		#	If units were destroyed, other units may go out of sight
+		#	--------------------------------------------------------
+		if destroyed:
+			if 'BLIND' in self.rules:
+				self.phaseType = 'R'
+				for power in self.powers:
+					for unit in power.units:
+						list += self.showLines(power, ['HOLD'] + unit.split(),
+							[])[:-1]
+				list += ['SHOW']
+				self.phaseType = 'M'
+			for unit, power in destroyed.items():
+				try: del power.retreats[unit]
+				except: pass
 		#	------------
 		#	All finished
 		#	------------
@@ -3751,13 +3785,15 @@ class Game:
 		if 'BLIND' in self.rules:
 			for power in self.powers:
 				for unit in power.units:
-					list += self.showLines(power, ['HOLD'] + unit.split(), [])[:-1]
+					list += self.showLines(power, ['HOLD'] + unit.split(),
+						[])[:-1]
 		for power in self.powers:
 			for order in power.adjust or []:
 				word = order.split()
 				if 'BLIND' in self.rules:
 					list += self.showLines(power, word, self.popped)
-					if len(word) > 3 and word[-1] == 'HIDDEN': order = order[:-7]
+					if len(word) > 3 and word[-1] == 'HIDDEN':
+						order = order[:-7]
 				elif len(word) > 3 and word[-1] == 'HIDDEN':
 				 	order = word[0] + ' HIDDEN'
 				list += ['%-11s %s.' %
@@ -3779,7 +3815,8 @@ class Game:
 						power.homes += [sc]
 				elif word[0] == 'REMOVE': power.units.remove(' '.join(word[1:]))
 				elif len(word) == 5:
-					if word[2] in self.popped: list[-1] += '  (*bounce, destroyed*)'
+					if word[2] in self.popped:
+						list[-1] += '  (*bounce, destroyed*)'
 					else: power.units += [word[1] + ' ' + word[-1]]
 			if self.phaseType == 'A':
 				count = len(power.centers) - len(power.units)
@@ -3888,7 +3925,7 @@ class Game:
 			except: return []
 		votes = filter(None, votes)
 		if not votes or len(votes) > min(votes): return []
-		if len(votes) > 1 and 'NO_DIAS' not in self.rules:
+		if len(votes) == 1 or 'NO_DIAS' not in self.rules:
 			self.proposal = ['DIAS']
 		else:
 			self.proposal = ['NO_DIAS']
