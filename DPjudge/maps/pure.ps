@@ -50,11 +50,11 @@
 /x /scale ld
 /y /scalefont ld
 /z /setfont ld
+%%IncludeResource: font Helvetica-Bold
+/MapNameFont /Helvetica-Bold findfont 14 y def
 /Powers 20 dict def
 %%IncludeResource: font Helvetica-Bold
 /MapUnitLetterFont /Helvetica-Bold findfont 14 y def
-%%IncludeResource: font Helvetica-Bold
-/MapNameFont /Helvetica-Bold findfont 14 y def
 %%IncludeResource: font Courier
 /TextFixedFont /Courier findfont def
 %%IncludeResource: font Courier-Bold
@@ -75,29 +75,83 @@
 	FrameMap
 	showpage
 } bd
-/VisitColors {
-	3 dict begin
-	/c xd /r xd /g xd
-	/BorderBlack .1 g
-	/MountainGrey .5 g
-	/IceGrey .9 g
-	/ArrowBlack 0 g
-	/ArrowWhite .9 g
-	/Black 0 g
-	/White .9 g
-	/LandBrown .8 .7 .4 r
-	/SeaBlue .1 .4 .6 r
-	/ArrowRed 1 0 0 r
-	/ArrowBlue .529 .808 .922 r
-	/Brown .6 .45 .2 r
-	/Blue 0 0 1 r
-	/Turquoise .2 .7 .7 r
-	/Yellow 1 1 0 r
-	/Red 1 0 0 r
-	/Green 0 .7 0 r
-	/DarkGreen 0 .4 0 r
+/MapForm <<
+	/FormType 1
+	/Matrix [ 2.1324 0 0 2.1324 22 25 ]
+	/BBox [ 0 0 221.35 204 ]
+	/FormDict 1 dict
+	/PaintProc {
+		dup /Matrix get exch /FormDict get begin
+		s
+		matrix invertmatrix concat
+		SeaBlue 22 25 472 435 rectfill
+		IncludeRays
+		IncludeCore
+		IncludeIslands
+		r
+		end
+	} bind
+>> def
+/DrawMap {
+	PageSetup
+	SwitchToMapMode
+	MapForm execform
+	/Centers << Centers { pop true } forall >> def
+	UNOWNED
+} bd
+/VisitSupplies {
+	1 dict begin
+	/s xd
+	/BER 250 380 s
+	/MOS 367 324 s
+	/CON 396 197 s
+	/VIE 315 95 s
+	/ROM 185 95 s
+	/PAR 104 197 s
+	/LON 133 324 s
 	end
 } def
+/VisitTerritories {
+	1 dict begin
+	/i xd
+	(BER) 250 400 i
+	(CON) 396 217 i
+	(LON) 133 344 i
+	(MOS) 367 344 i
+	(PAR) 104 217 i
+	(ROM) 185 115 i
+	(VIE) 315 115 i
+	end
+} def
+/DrawSupplies {
+	SwitchToMapMode
+	UNOWNEDCENTER
+	{ SupplyCenters 3 1 roll 4 3 roll supply } bind
+	VisitSupplies
+} bd
+/DrawAlias {
+	SwitchToMapMode
+	s
+	3 1 roll t
+	.7 .7 x
+	0 -14 t
+	MapNameFont z
+	dup stringwidth pop -2 div 0 neg m h
+	r
+} bd
+/DrawName {
+	pop pop pop
+} bd
+/DrawAliases {
+	NameTerritories
+} bd
+/NameTerritories {
+	SwitchToMapMode
+	s
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	VisitTerritories
+	r
+} bd
 /VisitPowers {
 	1 dict begin
 	/p xd
@@ -111,6 +165,20 @@
 	/ITALY (I) /Green /Black p
 	end
 } def
+/CreateTroop {
+	<<
+		/BBox 4 3 roll
+		/PaintProc 5 4 roll
+		6 5 roll {} forall
+		/FormType 1
+		/Matrix matrix
+	>>
+} bd
+/CreateTroops {
+	<< 3 1 roll Powers {
+		3 index 3 index CreateTroop 4 2 roll
+	} forall pop pop >>
+} bd
 /PaintFleet {
 	begin
 	.7 .7 x
@@ -137,6 +205,85 @@
 /FleetTroopBBox [
 	-18.9 0 18.2 16.1
 ] def
+/PaintArmy {
+	begin
+	.7 .7 x
+	0 8 t
+	n 0 0 9 0 360 a p % wheel
+	2 w Contrast k
+	-20 7 m 10 7 l 10 3 l 14 3 l
+	14 1 l -16 1 l -16 3 l -20 3 l p % barrel
+	4 2 m 24 -8 l 26 -8 l 18 -8 l -2 2 l % carriage
+	s 2 w Contrast k r Paint f
+	n 0 0 9 0 360 a p % wheel
+	Paint f
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	end
+} bd
+/ArmyTroopBBox [
+	-14.7 -1.4 18.9 12.6
+] def
+/DrawFleet {
+	SwitchToMapMode
+	s t
+	FleetTroops Power get execform
+	r
+} bd
+/DrawArmy {
+	SwitchToMapMode
+	s t
+	ArmyTroops Power get execform
+	r
+} bd
+/DrawRemainingCenters {
+	SwitchToMapMode
+	UNOWNED
+	Centers {
+		{ load exec supply } { pop } ifelse
+	} forall
+} bd
+/PaintSupply {
+	begin
+	.7 .7 x
+	Paint
+	n 0 0 6 0 360 a f
+	end
+} bd
+/SupplyCenterBBox [
+	-4.2 -4.2 4.2 4.2
+] def
+/supply {
+	SwitchToMapMode
+	Centers exch false put
+	s t
+	Power get execform
+	r
+} bd
+/GetControlledPower {
+	1 index dup length string cvs 1 index dup length string cvs
+	1 index length dup 2 index length add 1 add string
+	dup 0 6 5 roll putinterval dup 2 index 124 put dup 3 2 roll 1 add 4 3 roll putinterval cvn
+	3 1 roll Powers 3 index known {
+		pop pop
+	} {
+		8 dict dup begin
+		exch Powers exch get /Paint get /Outer xd
+		Powers 2 index get { def } forall
+		end
+		dup ControlledFleetTroopBBox /PaintControlledFleet load CreateTroop FleetTroops 4 index 3 2 roll put
+		dup ControlledArmyTroopBBox /PaintControlledArmy load CreateTroop ArmyTroops 4 index 3 2 roll put
+		dup ControlledSupplyCenterBBox /PaintControlledSupply load CreateTroop SupplyCenters 4 index 3 2 roll put
+		Powers 2 index 3 2 roll put
+		[ /Power 3 index 4 3 roll {
+			ChangeController {
+				Power GetControlledPower exch
+				/ChangeController false def
+			} if pop
+		} bind /exec load /def load ] cvx 2 index xd
+	} ifelse
+} bd
 /PaintControlledFleet {
 	begin
 	.7 .7 x
@@ -163,32 +310,6 @@
 /ControlledFleetTroopBBox [
 	-20.3 -1.4 19.6 17.5
 ] def
-/DrawFleet {
-	SwitchToMapMode
-	s t
-	FleetTroops Power get execform
-	r
-} bd
-/PaintArmy {
-	begin
-	.7 .7 x
-	0 8 t
-	n 0 0 9 0 360 a p % wheel
-	2 w Contrast k
-	-20 7 m 10 7 l 10 3 l 14 3 l
-	14 1 l -16 1 l -16 3 l -20 3 l p % barrel
-	4 2 m 24 -8 l 26 -8 l 18 -8 l -2 2 l % carriage
-	s 2 w Contrast k r Paint f
-	n 0 0 9 0 360 a p % wheel
-	Paint f
-	Offset aload pop m
-	MapUnitLetterFont z
-	Contrast Letter h
-	end
-} bd
-/ArmyTroopBBox [
-	-14.7 -1.4 18.9 12.6
-] def
 /PaintControlledArmy {
 	begin
 	.7 .7 x
@@ -209,66 +330,6 @@
 /ControlledArmyTroopBBox [
 	-16.1 -2.8 20.3 14
 ] def
-/DrawArmy {
-	SwitchToMapMode
-	s t
-	ArmyTroops Power get execform
-	r
-} bd
-/DrawAlias {
-	SwitchToMapMode
-	s
-	3 1 roll t
-	.7 .7 x
-	0 -14 t
-	MapNameFont z
-	dup stringwidth pop -2 div 0 neg m h
-	r
-} bd
-/DrawName {
-	pop pop pop
-} bd
-/VisitTerritories {
-	1 dict begin
-	/i xd
-	(BER) 250 400 i
-	(CON) 396 217 i
-	(LON) 133 344 i
-	(MOS) 367 344 i
-	(PAR) 104 217 i
-	(ROM) 185 115 i
-	(VIE) 315 115 i
-	end
-} def
-/VisitSupplies {
-	1 dict begin
-	/s xd
-	/BER 250 380 s
-	/MOS 367 324 s
-	/CON 396 197 s
-	/VIE 315 95 s
-	/ROM 185 95 s
-	/PAR 104 197 s
-	/LON 133 324 s
-	end
-} def
-/DrawRemainingCenters {
-	SwitchToMapMode
-	UNOWNED
-	Centers {
-		{ load exec supply } { pop } ifelse
-	} forall
-} bd
-/PaintSupply {
-	begin
-	.7 .7 x
-	Paint
-	n 0 0 6 0 360 a f
-	end
-} bd
-/SupplyCenterBBox [
-	-4.2 -4.2 4.2 4.2
-] def
 /PaintControlledSupply {
 	begin
 	.7 .7 x
@@ -283,12 +344,8 @@
 /ControlledSupplyCenterBBox [
 	-7 -7 7 7
 ] def
-/supply {
-	SwitchToMapMode
-	Centers exch false put
-	s t
-	Power get execform
-	r
+/Controls {
+	/ChangeController true def
 } bd
 /SetArrowStateOk {
 	[] 0 d
@@ -404,57 +461,6 @@
 	k
 	r
 } bd
-/PaintArrowArrive {
-	s
-	t
-	.7 .7 x
-	0 8 t
-	180 rotate 54 ArrowBase add neg 0 t
-	40
-	1 w
-	TraceArrowHead
-	k
-	% now the shaft ...
-	2 w
-	0 0 m
-	0 l
-	k
-	-10 0 m -20 0 l
-	-30 0 m -40 0 l
-	k
-	r
-} bd
-/PaintArrowArriveFleet {
-	2 copy
-	PaintArrowArrive
-	SetArrowStateOk
-	exch 14 ArrowBase add 30 add .7 mul add exch 10.08 add t
-	.8 .8 x
-	FleetTroops Power get execform
-} bd
-/PaintArrowArriveArmy {
-	2 copy
-	PaintArrowArrive
-	SetArrowStateOk
-	exch 14 ArrowBase add 30 add .7 mul add exch 10.08 add t
-	.8 .8 x
-	ArmyTroops Power get execform
-} bd
-/PaintArrowDepart {
-	s
-	t
-	.7 .7 x
-	0 8 t
-	-54 0 t
-	40
-	2 w
-	0 0 m
-	0 l
-	-10 0 m -20 0 l
-	-30 0 m -40 0 l
-	k
-	r
-} bd
 /ArrowMove {
 	SwitchToMapMode
 	s
@@ -485,27 +491,6 @@
 	12 PaintArrowCircle
 	r
 } bd
-/ArrowDepart {
-	SwitchToMapMode
-	s
-	SetArrowState
-	PaintArrowDepart
-	r
-} bd
-/ArrowArriveFleet {
-	SwitchToMapMode
-	s
-	SetArrowState
-	PaintArrowArriveFleet
-	r
-} bd
-/ArrowArriveArmy {
-	SwitchToMapMode
-	s
-	SetArrowState
-	PaintArrowArriveArmy
-	r
-} bd
 /ArrowRetreat {
 	RetreatPhase
 	ArrowMove
@@ -514,21 +499,6 @@
 /ArrowPropose {
 	ProposePhase
 	ArrowMove
-	MovePhase
-} bd
-/ArrowRetreatArriveFleet {
-	RetreatPhase
-	ArrowArriveFleet
-	MovePhase
-} bd
-/ArrowRetreatArriveArmy {
-	RetreatPhase
-	ArrowArriveArmy
-	MovePhase
-} bd
-/ArrowRetreatDepart {
-	RetreatPhase
-	ArrowDepart
 	MovePhase
 } bd
 /BuildUnit {
@@ -570,6 +540,122 @@
 	SwitchToMapMode
 	{ ArrowWhite f } SlashUnit
 } bd
+/QueryUnit {
+	SwitchToMapMode
+	s
+	t
+	ArrowWhite
+	.7 .7 x
+	0 8 t
+	4 w
+	-12 4 m
+	-8 7 -4 7 0 4 c
+	4 1 8 1 12 4 c
+	-12 -4 m
+	-8 -1 -4 -1 0 -4 c
+	4 -7 8 -7 12 -4 c
+	k
+	r
+} bd
+/PaintArrowArrive {
+	s
+	t
+	.7 .7 x
+	0 8 t
+	180 rotate 54 ArrowBase add neg 0 t
+	40
+	1 w
+	TraceArrowHead
+	k
+	% now the shaft ...
+	2 w
+	0 0 m
+	0 l
+	k
+	-10 0 m -20 0 l
+	-30 0 m -40 0 l
+	k
+	r
+} bd
+/PaintArrowArriveFleet {
+	2 copy
+	PaintArrowArrive
+	SetArrowStateOk
+	exch 0 44 ArrowBase add add .7 mul add exch 10.08 add t
+	.8 .8 x
+	FleetTroops Power get execform
+} bd
+/PaintArrowArriveArmy {
+	2 copy
+	PaintArrowArrive
+	SetArrowStateOk
+	exch 0 44 ArrowBase add add .7 mul add exch 10.08 add t
+	.8 .8 x
+	ArmyTroops Power get execform
+} bd
+/PaintArrowDepart {
+	s
+	t
+	.7 .7 x
+	0 8 t
+	-54 0 t
+	40
+	2 w
+	0 0 m
+	0 l
+	-10 0 m -20 0 l
+	-30 0 m -40 0 l
+	k
+	r
+} bd
+/ArrowDepart {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowDepart
+	r
+} bd
+/ArrowArriveFleet {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowArriveFleet
+	r
+} bd
+/ArrowArriveArmy {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowArriveArmy
+	r
+} bd
+/ArrowSupportArrive {
+	2 copy exch 89.6 add exch ArrowSupport
+} bd
+/ArrowSupportDepart {
+	2 copy exch 61.6 sub exch ArrowSupport
+} bd
+/ArrowConvoyArrive {
+	2 copy exch 89.6 add exch ArrowConvoy
+} bd
+/ArrowConvoyDepart {
+	2 copy exch 61.6 sub exch ArrowConvoy
+} bd
+/ArrowRefugeFleet {
+	RetreatPhase
+	ArrowArriveFleet
+	MovePhase
+} bd
+/ArrowRefugeArmy {
+	RetreatPhase
+	ArrowArriveArmy
+	MovePhase
+} bd
+/ArrowFlee {
+	RetreatPhase
+	ArrowDepart
+	MovePhase
+} bd
 /FindUnit {
 	SwitchToMapMode
 	s
@@ -600,102 +686,21 @@
 	k
 	r
 } bd
-/QueryUnit {
+/LoseArriveUnit {
 	SwitchToMapMode
 	s
-	t
-	ArrowWhite
-	.7 .7 x
-	0 8 t
-	4 w
-	-12 4 m
-	-8 7 -4 7 0 4 c
-	4 1 8 1 12 4 c
-	-12 -4 m
-	-8 -1 -4 -1 0 -4 c
-	4 -7 8 -7 12 -4 c
-	k
+	exch 44.8 add exch 10.08 add t
+	.8 .8 x
+	0 0 LoseUnit
 	r
 } bd
-/MapForm <<
-	/FormType 1
-	/Matrix [ 2.1324 0 0 2.1324 22 25 ]
-	/BBox [ 0 0 221.35 204 ]
-	/FormDict 1 dict
-	/PaintProc {
-		dup /Matrix get exch /FormDict get begin
-		s
-		matrix invertmatrix concat
-		SeaBlue 22 25 472 435 rectfill
-		IncludeRays
-		IncludeCore
-		IncludeIslands
-		r
-		end
-	} bind
->> def
-/DrawMap {
-	PageSetup
-	SwitchToMapMode
-	MapForm execform
-	/Centers << Centers { pop true } forall >> def
-	UNOWNED
-} bd
-/DrawSupplies {
-	SwitchToMapMode
-	UNOWNEDCENTER
-	{ SupplyCenters 3 1 roll 4 3 roll supply } bind
-	VisitSupplies
-} bd
-/DrawAliases {
-	NameTerritories
-} bd
-/NameTerritories {
+/LoseRefugeUnit {
 	SwitchToMapMode
 	s
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	VisitTerritories
+	exch 58.66 add exch 10.08 add t
+	.8 .8 x
+	0 0 LoseUnit
 	r
-} bd
-/GetControlledPower {
-	1 index dup length string cvs 1 index dup length string cvs
-	1 index length dup 2 index length add 1 add string
-	dup 0 6 5 roll putinterval dup 2 index 124 put dup 3 2 roll 1 add 4 3 roll putinterval cvn
-	3 1 roll Powers 3 index known {
-		pop pop
-	} {
-		8 dict dup begin
-		exch Powers exch get /Paint get /Outer xd
-		Powers 2 index get { def } forall
-		end
-		dup ControlledFleetTroopBBox /PaintControlledFleet load CreateTroop FleetTroops 4 index 3 2 roll put
-		dup ControlledArmyTroopBBox /PaintControlledArmy load CreateTroop ArmyTroops 4 index 3 2 roll put
-		dup ControlledSupplyCenterBBox /PaintControlledSupply load CreateTroop SupplyCenters 4 index 3 2 roll put
-		Powers 2 index 3 2 roll put
-		[ /Power 3 index 4 3 roll {
-			ChangeController {
-				Power GetControlledPower exch
-				/ChangeController false def
-			} if pop
-		} bind /exec load /def load ] cvx 2 index xd
-	} ifelse
-} bd
-/Controls {
-	/ChangeController true def
-} bd
-/CreateTroop {
-	<<
-		/BBox 4 3 roll
-		/PaintProc 5 4 roll
-		6 5 roll {} forall
-		/FormType 1
-		/Matrix matrix
-	>>
-} bd
-/CreateTroops {
-	<< 3 1 roll Powers {
-		3 index 3 index CreateTroop 4 2 roll
-	} forall pop pop >>
 } bd
 /SplitString {
 	7 dict begin
@@ -1040,6 +1045,29 @@
 	ShapeIslands
 	r
 } bd
+/VisitColors {
+	3 dict begin
+	/c xd /r xd /g xd
+	/BorderBlack .1 g
+	/MountainGrey .5 g
+	/IceGrey .9 g
+	/ArrowBlack 0 g
+	/ArrowWhite .9 g
+	/Black 0 g
+	/White .9 g
+	/LandBrown .8 .7 .4 r
+	/SeaBlue .1 .4 .6 r
+	/ArrowRed 1 0 0 r
+	/ArrowBlue .529 .808 .922 r
+	/Brown .6 .45 .2 r
+	/Blue 0 0 1 r
+	/Turquoise .2 .7 .7 r
+	/Yellow 1 1 0 r
+	/Red 1 0 0 r
+	/Green 0 .7 0 r
+	/DarkGreen 0 .4 0 r
+	end
+} def
 /ShapeRays {
 	250 250 m
 	250 400 l
@@ -1087,12 +1115,7 @@ MapUnitLetterFont z
 	4 dict begin /Contrast xd /Paint xd /Offset xd /Letter xd currentdict end
 	currentdict end 3 1 roll
 	Powers 2 index 3 2 roll put
-	[ /Power 2 index {
-		ChangeController {
-			Power GetControlledPower
-			/ChangeController false def
-		} if
-	} bind /exec load /def load ] cvx def
+	[ /Power 2 index { ChangeController { Power GetControlledPower /ChangeController false def } if } bind /exec load /def load ] cvx def
 	begin
 } VisitPowers
 r
