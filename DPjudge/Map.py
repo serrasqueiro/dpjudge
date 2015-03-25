@@ -6,7 +6,7 @@ import host
 class Map:
 	#	----------------------------------------------------------------------
 	def __init__(self, name = 'standard', trial = 0):
-		victory = phase = validated = textOnly = None
+		victory = phase = validated = textOnly = flowSign = None
 		rootMap = rootMapDir = None
 		homes, locName, locType, locAbut, abutRules = {}, {}, {}, {}, {}
 		ownWord, abbrev, centers, units, powName, flag = {}, {}, {}, {}, {}, {}
@@ -62,21 +62,23 @@ class Map:
 				and not self.abuts('A', x, '-', place)
 				and not self.abuts('F', x, '-', place)]
 		for power, places in self.homes.items():
-			for site in places:
-				if site != '&SC':
-					if site not in self.scs: self.scs += [site]
-					if not self.areatype(site):
-						error += ['BAD HOME FOR %s: ' % power + site]
-				if power == 'UNOWNED' or site == '&SC': continue
-				for other, locs in self.homes.items():
-					if locs.count(site) != (other == power):
-						if other == 'UNOWNED': self.homes['UNOWNED'].remove(site)
-						else: error += ['HOME MULTIPLY OWNED: ' + site]
+			for site in [x for x in places if x != '&SC']:
+				if site not in self.scs: self.scs += [site]
+				if not self.areatype(site):
+					error += ['BAD HOME FOR %s: ' % power + site]
+				#	------------------------------------------------------
+				#	Remove home centers from unowned list.
+				#	It's perfectly ok for 2 powers to share a home center,
+				#	as long as no more than one owns it at the same time.
+				#	------------------------------------------------------
+				if power != 'UNOWNED':
+					try: self.homes['UNOWNED'].remove(site)
+					except: pass
 		for scs in self.centers.values():
 			self.scs.extend([x for x in scs if x not in self.scs])
-		#	-----------------------------------------------------------
+		#	------------------------------------------------------------
 		#	Validate factory and partisan sites (non-SC build locations)
-		#	-----------------------------------------------------------
+		#	------------------------------------------------------------
 		for power, places in self.factory.items():
 			for site in places:
 				if power == 'UNOWNED': error += ['UNOWNED FACTORY: ' + site]
@@ -150,9 +152,15 @@ class Map:
 			'BAD INITIAL OWNED CENTER FOR %s: ' % power + x) for x in places
 			if x not in ('SC!', 'SC?') and not self.areatype(x)]
 		for power in self.powers:
-			if power not in self.owns: self.centers[power] = self.homes[power]
+			if power not in self.owns: self.centers[power] = [
+				x for x in self.homes[power] if x != '&SC']
 			[error.append('BAD INITIAL UNIT FOR %s: ' % power + x)
 				for x in self.units.get(power, []) if not self.isValidUnit(x)]
+		for power, centers in self.centers.items():
+			for site in [x for x in centers if x not in ('SC!', 'SC?')]:
+				for other, locs in self.centers.items():
+					if locs.count(site) != (other == power):
+						error += ['CENTER MULTIPLY OWNED: ' + site]
 		if 'UNOWNED' in self.homes: del self.homes['UNOWNED']
 		#	----------------
 		#	Ensure a default
@@ -168,10 +176,14 @@ class Map:
 		self.phaseAbbrev = abbrev = {
 			'M': 'MOVEMENT', 'R': 'RETREATS', 'A': 'ADJUSTMENTS' }
 		try:
-			self.seq, hasNewYear = [], 0
+			self.seq, self.flowSign = [], 0
 			for item in self.flow:
 				if ':' not in item:
 					if item == 'NEWYEAR':
+						if self.flowSign < 0:
+							error += ['THE %s FLOW DIRECTIVE CANNOT BE BOTH'
+								' POSITIVE AND NEGATIVE' % item]
+						else: self.flowSign = 1
 						self.seq += [item]
 					else:
 						error += ['FLOW %s REQUIRES COLON (:)' % item]
@@ -186,12 +198,14 @@ class Map:
 						error += ['THE %s FLOW DIRECTIVE CAN ONLY HAVE A'
 							' NUMBER AS PARAMETER' % season]
 						continue
-					if years <= 0:
-						error += ['THE %s FLOW DIRECTIVE REQUIRES A NUMBER'
-							' GREATER THAN 0 INSTEAD OF %d' % (season, years)]
+					if years == 0:
+						error += ['THE %s FLOW DIRECTIVE CAN NOT BE 0' % season]
 						continue
+					if self.flowSign * years < 0:
+						error += ['THE %s FLOW DIRECTIVE CANNOT BE BOTH'
+							' POSITIVE AND NEGATIVE' % item]
+					else: self.flowSign = years < 0 and -1 or 1
 					self.seq += [season + ' ' + phases]
-					hasNewYear = 1
 				elif season == 'IFYEARDIV':
 					try:
 						if '=' in phases:
@@ -213,7 +227,8 @@ class Map:
 							' INSTEAD OF %d' % (season, div, mod)]
 						continue
 					self.seq += [season + ' ' + phases]
-					if not hasNewYear: self.seq[:0], hasNewYear = ['NEWYEAR'], 1
+					if not self.flowSign:
+						self.seq[:0], self.flowSign = ['NEWYEAR'], 1
 				else:
 					for phase in phases.split(','):
 						if abbrev.get(phase[0]) not in (None, phase):
@@ -226,7 +241,8 @@ class Map:
 							continue
 						self.seq += [newPhase]
 						abbrev[phase[0]] = phase
-			if not hasNewYear: self.seq[:0] = ['NEWYEAR']
+			if not self.flowSign:
+				self.seq[:0], self.flowSign = ['NEWYEAR'], 1
 		except: error += ['BAD FLOW SPECIFICATION']
 		#	---------------------------
 		#	Validate initial game phase
@@ -1065,16 +1081,21 @@ class Map:
 		return ' '.join([new[0], `year`, new[1]])
 	#	----------------------------------------------------------------------
 	def comparePhases(self, phase1, phase2):
-		if len(phase1.split()) == 1: phase1 = self.phaseLong(phase1, phase1.upper())
-		if len(phase2.split()) == 1: phase2 = self.phaseLong(phase2, phase2.upper())
+		if len(phase1.split()) == 1:
+			phase1 = self.phaseLong(phase1, phase1.upper())
+		if len(phase2.split()) == 1:
+			phase2 = self.phaseLong(phase2, phase2.upper())
 		if phase1 == phase2: return 0
 		now1, now2 = phase1.split(), phase2.split()
 		if len(now1) < 3 or len(now2) < 3: 
-			order1 = len(now1) > 2 and 2 or phase1 == 'FORMING' and 1 or phase1 == 'COMPLETED' and 3 or 0
-			order2 = len(now2) > 2 and 2 or phase2 == 'FORMING' and 1 or phase2 == 'COMPLETED' and 3 or 0
+			order1 = (len(now1) > 2 and 2 or phase1 == 'FORMING' and 1 or
+				phase1 == 'COMPLETED' and 3 or 0)
+			order2 = (len(now2) > 2 and 2 or phase2 == 'FORMING' and 1 or
+				phase2 == 'COMPLETED' and 3 or 0)
 			return order1 > order2 and 1 or order1 < order2 and -1 or 0
 		year1, year2 = int(now1[1]), int(now2[1])
-		if year1 != year2: return year1 > year2 and 1 or -1
+		if year1 != year2:
+			return (year1 > year2 and 1 or -1) * (self.flowSign or 1)
 		which1, which2 = (self.seq.index(now1[0] + ' ' + now1[2]), 
 			self.seq.index(now2[0] + ' ' + now2[2]))
 		if which1 > which2:
