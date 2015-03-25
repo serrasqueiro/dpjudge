@@ -2,6 +2,8 @@ import random, string, os
 
 import host
 
+from Time import Time
+
 class Power:
 	#	----------------------------------------------------------------------
 	def __init__(self, game, name, type = None):

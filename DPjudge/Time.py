@@ -1,3 +1,5 @@
+import time
+
 class Time(str):
 	#	------------------------------------------------------------------
 	def __new__(self, when = None, npar = 5):
