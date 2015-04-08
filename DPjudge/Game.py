@@ -2384,7 +2384,9 @@ class Game:
 			if os.path.isfile(self.file('results.0')):
 				try: os.unlink(self.file('results'))
 				except: pass
-			else: os.rename(self.file('results'), self.file('results.0'))
+			else:
+				try: os.rename(self.file('results'), self.file('results.0'))
+				except: pass
 		if not start:
 			self.reinit(4)
 			self.phase = 'FORMING'
@@ -2432,6 +2434,8 @@ class Game:
 					file = open(self.file('results'), 'w', 'latin-1')
 					file.writelines(lines[:num-1])
 					file.close()
+					try: os.chmod(self.file('results'), 0666)
+					except: pass
 				else: self.error += ['No results file found']
 			if phase != outphase or not glob.glob('%s/%s.*gif' %
 				(host.gameMapDir, self.name)):

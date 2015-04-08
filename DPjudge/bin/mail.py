@@ -75,11 +75,14 @@ class Procmail:
 			if upword in ('CREATE', 'PURGE', 'RENAME'):
 				if len(word) < 2: self.respond('No game name to %s' % upword)
 				if upword[0] != 'R': word = word[:2] + ['X'] + word[2:]
-				elif len(word) < 3: self.respond('No new game name to %s to' % upword)
+				elif len(word) < 3:
+					self.respond('No new game name to %s to' % upword)
 				if len(word) < 4: self.respond('No Master password given')
 				if len(word) < 5: word += ['standard']
-				elif len(word) > 5: self.respond('Unrecognized %s data' % upword)
+				elif len(word) > 5:
+					self.respond('Unrecognized %s data' % upword)
 				game, toGame, password, variant = ' '.join(word[1:]).lower().split()
+				password, variant = self.sanitize(password), self.sanitize(variant)
 				for name in [toGame, game][upword[0] != 'R':]:
 					if name[:0] == ['-']:
 						self.respond("Game name can not begin with '-'")
@@ -164,7 +167,7 @@ class Procmail:
 					power, game = word[1].split('@')
 				else: power, game = word[1][0], word[1][1:]
 				power, game = power[power[0] == '_':].upper(), game.lower()
-				try: password = word[2]
+				try: password = self.sanitize(word[2])
 				except: password = ''
 				if upword == 'TAKEOVER':
 					if '<' in password or '>' in password:
@@ -213,7 +216,7 @@ class Procmail:
 				elif joiner == 'JOIN': power, game = 'POWER', word[1]
 				if game:
 					power, game = power[power[0] == '_':].upper(), game.lower()
-					password = word[2]
+					password = self.sanitize(word[2])
 					if '<' in password or '>' in password:
 						self.respond("Password cannot contain '<' or '>'")
 					del self.message[:lineNo - 1]
@@ -285,9 +288,8 @@ class Procmail:
 		#	requires registration -- need to ask the DPPD for an ID.
 		#	---------------------------------------------------------
 		#	Need to use query string rather than POST it.  Don't know why.
-		dppdURL = host.dppdURL.split(',')[0]
-		query = '?&'['?' in dppdURL]
-		page = urllib.urlopen(dppdURL + query +
+		query = '?&'['?' in host.dppdURL]
+		page = urllib.urlopen(host.dppdURL + query +
 			'page=whois&email=' + urllib.quote(self.email, '@'))
 		response = unicode(page.read(), 'latin-1')
 		page.close()
@@ -296,7 +298,7 @@ class Procmail:
 			'Your e-mail address (%s) is\nnot registered with the DPPD, '
 			'or your DPPD status does\nnot allow you to use the %s command.'
 			'\n\nVisit the DPPD at %s\nfor assistance' %
-			(self.email, command, dppdURL))
+			(self.email, command, host.dppdURL))
 	#	----------------------------------------------------------------------
 	def updatePlayer(self, power, password, command, word):
 		game, self.power, playerType = self.game, None, None
@@ -387,10 +389,11 @@ class Procmail:
 			else: continue
 			if existing.isValidPassword(password) != 1:
 				self.respond("Incorrect password to modify player ID '%s'" %
-				existing.name)
+					existing.name)
 			if command != 'RESIGN': del game.powers[num]
 			break
-		if playerType == 'POWER' and game.available() <= 0 and command != 'RESIGN':
+		if (playerType == 'POWER' and game.available() <= 0 and
+			command != 'RESIGN'):
 			self.respond("The game is already full. " +
 				"Try to join another game or take over an abandoned position")
 		if (self.dppd and game.master[0] == self.dppd.split('|')[0]
@@ -404,7 +407,7 @@ class Procmail:
 		if command != 'RESIGN':
 			if not game.private or command == 'MONITOR':
 				if len(word) != 3: self.respond('Invalid %s command' % command)
-			elif len(word) != 4 or word[3].upper() != game.private:
+			elif len(word) != 4 or self.sanitize(word[3]).upper() != game.private:
 				self.respond(
 					"Game '%s' is a private game for invited players only.\n"
 					'You may %s only by specifying (after your password)\n'
@@ -789,8 +792,8 @@ class Procmail:
 				if command == 'RESIGN': response = goner.resign(1)
 				#modified TAKEOVER format
 				elif command == 'REVIVE':
-					response = goner.takeover(
-						password = len(word) > 2 and word[2] or None)
+					response = goner.takeover(password = len(word) > 2 and
+						self.sanitize(word[2]) or None)
 				else: response = goner.dummy()
 				if response: self.respond(response)
 			#	--------------------------
@@ -900,7 +903,7 @@ class Procmail:
 						except: self.respond('Bad ADDRESS: ' + addr)
 					if power.name == 'MASTER':
 						if word[1][0] == 'A': game.master[1] = word[2]
-						else: game.password = word[2]
+						else: game.password = self.sanitize(word[2])
 					elif word[1][0] == 'A':
 						power.address = power.address or ['']
 						power.address[0] = word[2]
@@ -976,6 +979,11 @@ class Procmail:
 				orders += [line.strip()]
 				del self.message[0]
 		if orders: self.setOrders(orders)
+	#	----------------------------------------------------------------------
+	def sanitize(self, password):
+		if password.upper().endswith('SIGNOFF') and len(password) > 7:
+			return password[:-7]
+		return password
 	#	----------------------------------------------------------------------
 	def setOrders(self, orders):
 		game = self.game
