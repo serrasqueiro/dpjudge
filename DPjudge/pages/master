@@ -221,10 +221,11 @@ def changeButton():
 #	 are implementing.
 #	----------------------------------------------------------------------
 def outStatusFile():
-	hidden = ('GAME', 'START', 'DELAY', 'FINISH', 'RESULT',
-				'PHASE', 'AWAIT', 'NEED')
-	implemented = ('DESC', 'DESCRIPTION', 'GAME', 'DEADLINE', 'ZONE', 'NAME', 'MORPH',
-				'MASTER', 'RULE', 'RULES', 'PRIVATE', 'MAP', 'TRIAL', 'PASSWORD')
+	hidden = ('GAME', 'START', 'DELAY', 'FINISH', 'RESULT', 'PHASE', 'AWAIT',
+		'WAIT', 'SKIP', 'NEED')
+	implemented = ('DESC', 'DESCRIPTION', 'GAME', 'DEADLINE', 'ZONE', 'NAME',
+		'MORPH', 'MASTER', 'RULE', 'RULES', 'PRIVATE', 'MAP', 'TRIAL',
+		'PASSWORD')
 	modal = ('DESC', 'DESCRIPTION', 'NAME', 'MORPH')
 	noshow, mode = hidden + implemented, None
 	file, outfile = open(page.game.file('status'), encoding='latin-1'), ''

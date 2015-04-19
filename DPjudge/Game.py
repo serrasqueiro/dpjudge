@@ -26,7 +26,8 @@ class Game:
 		else: self.reinit()
 	#	----------------------------------------------------------------------
 	def __repr__(self):
-		text = ('GAME ' + self.name + (self.await and '\nAWAIT '
+		text = ('GAME ' + self.name + (self.await == 2 and '\nWAIT '
+				or self.await and '\nAWAIT '
 				or self.skip and '\nSKIP ' or '\nPHASE ') + self.phase)
 		if self.map: text += '\n%s ' % (
 			['MAP', 'TRIAL'][self.map.trial]) + self.map.name
@@ -727,12 +728,12 @@ class Game:
 		#	-------------------------------------
 		if includeFlags & 4:
 			found = 1
-			if upword in ('AWAIT', 'PHASE', 'SKIP'):
-				self.await = upword == 'AWAIT'
+			if upword in ('AWAIT', 'PHASE', 'SKIP', 'WAIT'):
+				self.await = (upword[0] in 'AW') * (6 - len(upword))
 				self.skip = upword == 'SKIP'
 				if len(word) > 1 and word[1].upper() != 'COMPLETED':
 					if self.phase:
-						error += ['TWO AWAIT/PHASE/SKIP STATEMENTS']
+						error += ['TWO AWAIT/PHASE/SKIP/WAIT STATEMENTS']
 					else: self.phase = ' '.join(word[1:]).upper()
 			elif upword == 'DEADLINE':
 				if self.deadline: error += ['TWO DEADLINES']
@@ -1405,9 +1406,10 @@ class Game:
 		except: pass
 		self.logAccess('TO', self.phase, 'ADVANCED')
 	#	----------------------------------------------------------------------
-	def fileSummary(self, reveal = 0):
+	def fileSummary(self, reveal = 0, roll = 0):
 		text, fileName = self.summary(reveal = reveal), self.file('summary')
-		if 'NO_REVEAL' in self.rules and not reveal:
+		if not text: return
+		if roll or self.tester or ('NO_REVEAL' in self.rules and not reveal):
 			file = open(fileName, 'w')
 			temp = '<pre>\n%s</pre>\n' % text
 			file.write(temp.encode('latin-1'))
@@ -1419,7 +1421,7 @@ class Game:
 		#	------------------------------------
 		#	Deliver game summary to Hall of Fame
 		#	------------------------------------
-		if not self.tester:
+		else:
 			try: os.unlink(fileName)
 			except: pass
 			self.openMail('HoF: %s in ' %
@@ -2159,10 +2161,12 @@ class Game:
 	#	----------------------------------------------------------------------
 	def ready(self, process = 0):
 		return self.status[1] == 'active' and not self.error and (
-		process == 2 or ((self.deadline and self.deadline <= self.Time())
-		or process or not ([1 for power in self.powers if power.wait]
-		or ('ALWAYS_WAIT' in self.rules and (self.phaseType == 'M'
-		or 'NO_MINOR_WAIT' not in self.rules)))) and not self.latePowers())
+			process == 2 or ((self.deadline and self.deadline <= self.Time())
+			or process or not (self.await > 1 or
+			[1 for power in self.powers if power.wait]
+			or ('ALWAYS_WAIT' in self.rules and (self.phaseType == 'M'
+			or self.phaseType in 'AR' and 'NO_MINOR_WAIT' not in self.rules))))
+			and not self.latePowers())
 	#	----------------------------------------------------------------------
 	def findGoners(self, phase = 1):
 		if self.phaseType == '-': return
@@ -2260,7 +2264,7 @@ class Game:
 		#	----------------------------------------------------------------
 		if (now > 1 or self.ready(now) or self.preview
 		or	self.graceExpired() and 'CIVIL_DISORDER' in self.rules):
-			if not now:
+			if not now and self.await < 2:
 				if self.deadline and 'REAL_TIME' not in self.rules:
 					#	-------------------------------------------
 					#	If this game has a deadline, the cron job
@@ -2407,7 +2411,8 @@ class Game:
 		else:
 			# Load the phase.
 			self.loadStatus('status.' + phase + '.0', includeFlags | 4)
-			self.await = self.skip = None
+			self.await = self.await > 1 and self.await
+			self.skip = None
 			self.changeStatus(('active', 'waiting')[waiting])
 			self.setDeadline()
 			self.delay = None
@@ -2543,7 +2548,8 @@ class Game:
 		# Load the last phase
 		prephase = self.phase
 		self.loadStatus('status.' + unphase + '.0', includeFlags)
-		self.await = self.skip = None
+		self.await = self.await > 1 and self.await
+		self.skip = None
 		if self.phase != 'COMPLETED':
 			self.changeStatus(('active', 'waiting')[waiting])
 			self.setDeadline()
@@ -2562,7 +2568,7 @@ class Game:
 				self.outcome, self.phase = None, prephase
 				self.proposal = [len(victors) == 1 and victors[0] or
 				('DIAS', 'NO_DIAS')['NO_DIAS' in self.rules]]
-				self.endByAgreement()
+				self.endByAgreement(roll = 1)
 			else:
 				self.changeStatus('completed')
 				self.save()
@@ -3223,7 +3229,7 @@ class Game:
 		#	--------------------------------------
 		#	Other phases.  For now take no action.
 		#	--------------------------------------
-		self.await = 1
+		self.await = 2
 		text += ['The game is waiting for processing of the %s phase.\n' %
 			self.phase.title()]
 	#	----------------------------------------------------------------------
@@ -3971,7 +3977,8 @@ class Game:
 				or phase[2].upper()[0] == self.rotate[how + 1][0]):
 					self.rotateControl(self.rotate[how])
 		else: broadcast += ['The game is over.  Thank you for playing.']
-		self.await, text = 0, [x + '\n' for x in broadcast + ['']]
+		self.await = self.await > 1 and self.await
+		text = [x + '\n' for x in broadcast + ['']]
 		if self.preview:
 			self.mailPress(None, ['MASTER'],
 				''.join(text), subject = 'PREVIEW ' + subject)
@@ -3981,7 +3988,7 @@ class Game:
 		self.finishPhase()
 		self.save()
 		if not roll: self.makeMaps()
-		if self.phase == 'COMPLETED': self.fileSummary()
+		if self.phase == 'COMPLETED': self.fileSummary(roll = roll)
 	#	----------------------------------------------------------------------
 	def checkVotes(self, append = 0):
 		if 'PROPOSE_DIAS' in self.rules: return []
@@ -3997,7 +4004,7 @@ class Game:
 			self.proposal = ['NO_DIAS']
 		return self.endByAgreement(append)
 	#	----------------------------------------------------------------------
-	def endByAgreement(self, append = 0):
+	def endByAgreement(self, append = 0, roll = 0):
 		lines = not append and [x + '\n' for x in self.mapperHeader()] or []
 		result = self.proposal[0]
 		if result in ('DIAS', 'NO_DIAS'):
@@ -4017,7 +4024,7 @@ class Game:
 		if not append:
 			self.mailResults(lines, "Diplomacy game '%s' complete" % self.name)
 		self.finish(victors)
-		self.fileSummary()
+		self.fileSummary(roll = roll)
 		if append: return lines
 	#	----------------------------------------------------------------------
 	def finish(self, victors):
@@ -4308,14 +4315,15 @@ class Game:
 			lines = file.readlines()
 			file.close()
 		except: lines = []
-		show, count, owner, reading, save, years = 1, {}, {}, 0, '', []
-		year = last = None
+		show, reading, save = 1, 0, ''
+		count, owner, last, years = {}, {}, {}, []
+		year = end = None
 		for line in [x.strip() for x in lines]:
 			if not line:
 				if reading and owner.get(year): reading = 0
 			elif line[:26] == 'Subject: Diplomacy results':
 				word = line.split()
-				last, year = word[4], word[4][1:-1]
+				end, year = word[4], word[4][1:-1]
 			elif year and line[:12] == 'Ownership of' and year not in years:
 				years += [year]
 				reading, owner[year], count[year] = 1, {}, {}
@@ -4333,9 +4341,11 @@ class Game:
 					if power == 'UNOWNED': letter = '.'
 					else: letter = self.map.abbrev.get(power, power[0])
 					centers = ' '.join(line[:-1].split()[1:]).split(', ')
+					if not centers: continue
 					for spot in centers: owner[year][self.map.aliases.
 						get(spot.strip().replace(' ', '+'))] = letter
 					count[year][power] = len(centers)
+					last[power] = year
 				else: save = line
 		scs = []
 		for yr in owner: scs += [sc for sc in owner[yr] if sc not in scs]
@@ -4350,7 +4360,7 @@ class Game:
 			return
 		results = ('Summary of game %s through %s.\n\n%s%s\n\n'
 				   'Historical Supply Center Summary\n%s\n    ' %
-			(self.name, last, self.playerRoster(None, forPower, reveal)[:-1],
+			(self.name, end, self.playerRoster(None, forPower, reveal)[:-1],
 			self.parameters(), '-' * 32))
 		scs.sort()
 		for j in (0, 1):
@@ -4365,11 +4375,11 @@ class Game:
 			for year in years[decade * 10:][:10]: results += ('%4s' %
 				("'"[len(year) < 3:] + year[-2:], year)[results[-1] == ' '])
 			for power in powers:
-				if count[years[decade * 10]].get(power):
+				if years[decade * 10] <= last.get(power, -1):
 					results += '\n%-10s' % self.anglify(power)
 					for year in years[decade * 10:][:10]:
-						if count[year].get(power):
-							results += '  %2d' % count[year][power]
+						if year <= last.get(power, -1):
+							results += '  %2d' % count[year].get(power, 0)
 			results += '\nIndex:    '
 			for year in years[decade * 10:][:10]:
 				if (forPower and forPower.name == 'MASTER'

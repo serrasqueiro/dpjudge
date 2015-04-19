@@ -616,6 +616,8 @@ def gameHeader():
 					'One or more powers have not yet submitted orders.')
 			elif not game.await:
 				page.write('<br>All powers have submitted orders.')
+			elif game.await == 2:
+				page.write('<br>Waiting for the Master to process the phase.')
 		page.write('</td></tr>')
 	if game.private: page.write(
 		'<tr><th bgcolor="yellow" align=center class="bodycopy">'
@@ -838,7 +840,7 @@ def footer():
 def showReadyNotice():
 	game = page.game
 	if (game.phase != 'COMPLETED' and game.deadline
-	and game.ready() and not game.await
+	and game.ready() and game.await != 1
 	and (not game.avail or 'CIVIL_DISORDER' not in game.rules)): page.write(
 		'<tr><td class=bodycopy colspan=3>'
 		'<table width=100%><tr><th class=bodycopy bgcolor=yellow>'
@@ -1000,7 +1002,7 @@ def showAdjustList():
 		if who is not power:
 			page.write('</p><font size=2><b>%s</b></font><p>' %
 				game.anglify(who.name))
-		if game.await:
+		if game.await == 1:
 			page.write('<b>%s</b>' % '<br>'.join(who.adjust))
 			continue
 	###		if 'NO_CHECK' in game.rules:
@@ -1037,7 +1039,7 @@ def showRetreatList():
 		if who is not power:
 			page.write('</p><font size=2><b>%s</b></font><p>' %
 				game.anglify(who.name))
-		if game.await:
+		if game.await == 1:
 			for order in who.adjust: page.write(order[8:] + '<br>')
 		else:
 			page.write('<table>')
