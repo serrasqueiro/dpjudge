@@ -81,6 +81,8 @@ showResultsText()
 def showPressArea():
 	if type(page.recipient) in (str, unicode): page.recipient = [page.recipient]
 	if 'ALL' in page.recipient: page.recipient = ['All']
+	rules = page.game.phase in ('FORMING', 'COMPLETED') and [
+		'PUBLIC_PRESS'] or page.game.rules
 	what = 'it'
 	page.write(
 		"""
@@ -107,19 +109,19 @@ def showPressArea():
 		#	-----------------------------------------
 		#	Alternate addressing options (GREY, FAKE)
 		#	-----------------------------------------
-		if ('GREY_PRESS' in page.game.rules
-		or ('YELLOW_PRESS' in page.game.rules
+		if ('GREY_PRESS' in rules
+		or ('YELLOW_PRESS' in rules
 		and page.recipient == ['All'])): page.write(
 			'<b>(Press will be sent Anonymously)</b>'
 			'<input type=hidden name=claimFrom value=(ANON)>')
-		elif 'WHITE_GREY' in page.game.rules: page.write(
+		elif 'WHITE_GREY' in rules: page.write(
 			"""
 			<P><b>Send Press</b>
 			<select name=claimFrom class=inputBox>
 			<option value=%s selected>From %s
 			<option value=(ANON)>Anonymously</select>
 			""" % (page.power.name, page.game.anglify(page.power.name)))
-		elif 'FAKE_PRESS' in page.game.rules:
+		elif 'FAKE_PRESS' in rules:
 			page.write(
 				"""
 				<P><table cellpadding=5 border>
@@ -131,9 +133,9 @@ def showPressArea():
 					(power.name, ' selected' * (power is page.power)) +
 					page.game.anglify(power.name))
 			page.write('<option value=(ANON)>Anonymously</select>')
-			if 'PUBLIC_PRESS' not in page.game.rules:
+			if 'PUBLIC_PRESS' not in rules:
 				eligible = page.game.eligiblePressRecipients(page.power, 1)
-				if 'PRESS_MASTER' in page.game.rules:
+				if 'PRESS_MASTER' in rules:
 					if 'MASTER' in page.recipient: eligible.remove('ALL')
 					else: eligible.remove('MASTER')
 				elif (page.recipient != ['All']
@@ -160,7 +162,7 @@ def showPressArea():
 					if 'MASTER' in eligible: page.write(
 						'document.press.claimTo[%d].checked = true;' %
 						eligible.index('MASTER'))
-					if 'YELLOW_PRESS' in page.game.rules: page.write(
+					if 'YELLOW_PRESS' in rules: page.write(
 						'if(document.press.claimTo[count].checked)'
 						'document.press.claimFrom.selectedIndex=%d;' %
 						len(page.game.powers))
@@ -172,7 +174,8 @@ def showPressArea():
 						or power in page.recipient)
 					if power == 'MASTER':
 						on += ' onClick="this.checked=true"'
-					elif 'ALL' in eligible: on += ' onClick="reclick(%d)"' % (power == 'ALL')
+					elif 'ALL' in eligible:
+						on += ' onClick="reclick(%d)"' % (power == 'ALL')
 					page.write('<input type=checkbox name=claimTo '
 						'class=inputBox value=%s%s>%s<br>' %
 						(power, on, page.game.anglify(power)))

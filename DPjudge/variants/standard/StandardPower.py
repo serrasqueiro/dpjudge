@@ -26,6 +26,7 @@ class StandardPower(Power):
 			self.orders = {}
 	#	----------------------------------------------------------------------
 	def movesSubmitted(self):
+		if self.game.phaseType != 'M': return 1
 		return self.orders or not self.units
 	#	----------------------------------------------------------------------
 
