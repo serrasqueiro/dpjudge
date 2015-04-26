@@ -2051,7 +2051,7 @@ class Game:
 					power = reader.name
 					if reader.address: email = reader.address[0]
 					else:
-						try: email = reader.owner().address[0]
+						try: email = reader.controller().address[0]
 						except: continue
 				#	---------------------------------------------
 				#	Make sure this party should receive the press
@@ -3341,7 +3341,7 @@ class Game:
 			#	-----------------------------------------------------------
 			#	Give the great powers back their centers from their vassals
 			#	-----------------------------------------------------------
-			ceo = power.owner()
+			ceo = power.controller()
 			if ceo: [self.transferCenter(power, ceo, y)
 				for y in power.centers if y in ceo.homes]
 		#	---------------------------------------------------------
@@ -4629,17 +4629,18 @@ class Game:
 		#	who is still late and say so
 		#	----------------------------
 		if late and self.graceExpired():
-			owners = []
+			controllers = []
 			for power in [x for x in self.powers if x.name in late]:
-				owner = power.isDummy() and power.owner() or power
-				if owner.name not in owners: owners += [owner.name]
+				controller = power.isDummy() and power.controller() or power
+				if controller.name not in controllers:
+					controllers += [controller.name]
 			who = '\n'.join(textwrap.wrap(', '.join(map(self.anglify,
-				owners)), 70, subsequent_indent = ' ' * 18))
-			multi = 's' * (len(owners) != 1)
+				controllers)), 70, subsequent_indent = ' ' * 18))
+			multi = 's' * (len(controllers) != 1)
 			self.mailPress(None, ['All'], text + '%-18s' %
 				('Dismissed Power%s: ' % multi) + who + '\n',
 				subject = 'Diplomacy player dismissal')
-			for power in [x for x in self.powers if x.name in owners]:
+			for power in [x for x in self.powers if x.name in controllers]:
 				power.resign()
 				#self.avail += ['%s-(%s)' % (power.name,
 				#	('%d/%d' % (len(power.units), len(power.centers)), '?/?')
@@ -4661,7 +4662,7 @@ class Game:
 			all = (('HIDE_DUMMIES' in self.rules or [1 for x in self.powers
 				if x.name in late and not x.isDummy()]) and 'Powers'
 				or (not cd and [1 for x in self.powers if x.name in late
-				and x.owner()]) and 'Owners'
+				and x.controller()]) and 'Controlling powers'
 				or ('VASSAL_DUMMIES' in self.rules and not [1 for x in
 				self.powers if x.name in late and not x.ceo]) and 'Vassals'
 				or 'Dummies')

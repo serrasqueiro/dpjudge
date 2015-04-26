@@ -244,7 +244,7 @@ class Power:
 			self.game.timeFormat())[not self.game.avail],
 			subject = 'Diplomacy position dummied')
 	#	----------------------------------------------------------------------
-	def owner(self):
+	def controller(self):
 		if not self.ceo or self.ceo[0] == 'MASTER': return None
 		for power in self.game.powers:
 			if power.name == self.ceo[0]: return power
@@ -306,7 +306,7 @@ class Power:
 		#	-------------------------------------------------------------------
 		#	If power is run by controller, password is in the controller's data
 		#	-------------------------------------------------------------------
-		ceo = self.owner()
+		ceo = self.controller()
 		if ceo: return ceo.isValidPassword(password)
 		#	---------------------------
 		#	Determine password validity
