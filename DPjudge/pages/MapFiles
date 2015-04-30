@@ -11,8 +11,10 @@ def sortMaps(one, two):
 	if std[0] != std[1]: return cmp(*std)
 	result = cmp(one.split('.')[0], two.split('.')[0])
 	if result: return result
-	if one.endswith('.map'): return -1
-	if two.endswith('.map'): return 1
+	if one.endswith('.ps'): return -1
+	if two.endswith('.ps'): return 1
+	if two.endswith('.map'): return -1
+	if one.endswith('.map'): return 1
 	return cmp(one, two)
 
 def drawFileListTable(trial, lang):
@@ -23,7 +25,7 @@ def drawFileListTable(trial, lang):
 	files = [x for x in os.listdir(DIR)
 		if '[' not in x and os.path.isfile(DIR + x)
 		and ('_' in x) == lang # <-- hides or displays the language change maps
-		and '.bak' not in x and '.err' not in x
+		and '.bak' not in x and '.err' not in x and '.sw' not in x
 		and x != 'psinfo']
 	variant, num, COLS = '', 0, 5
 	for file in sorted(files, sortMaps):
