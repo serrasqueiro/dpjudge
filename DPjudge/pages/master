@@ -225,7 +225,7 @@ def outStatusFile():
 		'WAIT', 'SKIP', 'NEED')
 	implemented = ('DESC', 'DESCRIPTION', 'GAME', 'DEADLINE', 'ZONE', 'NAME',
 		'MORPH', 'MASTER', 'RULE', 'RULES', 'PRIVATE', 'MAP', 'TRIAL',
-		'PASSWORD')
+		'PASSWORD', 'PROCESSED')
 	modal = ('DESC', 'DESCRIPTION', 'NAME', 'MORPH')
 	noshow, mode = hidden + implemented, None
 	file, outfile = open(page.game.file('status'), encoding='latin-1'), ''
@@ -396,8 +396,11 @@ def showStatusFile():
 	page.write('</select></td></tr>')
 	if page.game.avail: page.write("""
 		<tr><td class="bodycopy" align="left"><b>Powers Needed:</b></td>
-			<td class="bodycopy">%s</tr>
+			<td class="bodycopy">%s</td></tr>
 		""" % ', '.join(page.game.avail))
+	if page.game.processed: page.write("""
+		<tr><td class="bodycopy" align="left" colspan=2>Last processed at %s</td></tr>
+		""" % page.game.processed)
 	powerData()
 	ruleBoxes()
 	page.write("""
@@ -646,6 +649,13 @@ def updateMaster():
 		else: error = page.game.rollback(page.phase, flags)
 		if error: return reportUpdateError(error + '.')
 		return finished()
+	#	----------------
+	#	Process the turn
+	#	----------------
+	if vars(page)['proc_now'] == "now":
+		error = page.game.process(now=1)
+		if error: return reportUpdateError(error + '.')
+		return finished()
 	#	----------------------
 	#	Game mode modification
 	#	----------------------
@@ -706,6 +716,7 @@ def updateMaster():
 		page.game.deadline = ('%d%02d%02d' % (dead[2], dead[0], dead[1]) +
 			page.hour + page.minute)
 	extract('DELAY')
+	extract('PROCESSED')
 	extract('RESERVES', 'extra', 1)
 	extract('MILITIA', 'defense', 1)
 	page.game.timing = None	# it will be in page.extra if given....
@@ -776,8 +787,6 @@ def updateMaster():
 				elif dummy == 'false' and target.isDummy():
 					target.takeover(byMaster = 1)
 	rd_game.save()
-	####################################################
-	if vars(page)['proc_now'] == "now": page.game.process(now=1)
 #	----------------------------------------------------------------------
 #
 #
