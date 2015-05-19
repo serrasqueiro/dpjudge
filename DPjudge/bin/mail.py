@@ -347,7 +347,7 @@ class Procmail:
 				self.respond("Cannot RESIGN '%s' -- no current PLAYER" % power)
 		elif command == 'TAKEOVER':
 			try:
-				if power != 'MASTER' and self.power.player[0] != 'RESIGNED': 1/0
+				if not self.isMaster(power) and self.power.player[0] != 'RESIGNED': 1/0
 			except: self.respond("Cannot TAKEOVER the ID '%s'" % power)
 		else:
 			#	------------------------------------------------------
@@ -359,7 +359,7 @@ class Procmail:
 			else: self.respond("Player type '%s' not allowed" % command)
 			if self.power and self.email != self.power.address[0]:
 				self.respond("Player ID '%s' already exists" % power)
-			elif power == 'MASTER':
+			elif self.isMaster(power):
 				self.respond("A Master already exists in '%s'" % game.name)
 			#	-------------------------------
 			#	Invalidate any name that could
@@ -400,7 +400,7 @@ class Procmail:
 		or self.email.lower() in game.master[1].lower().split(',')):
 			if command != 'RESIGN': self.respond(
 				"You are already Mastering game '%s'" % game.name)
-			if power == 'MASTER': self.respond('The Master may not resign')
+			if self.isMaster(power): self.respond('The Master may not resign')
 		#	----------------------
 		#	Check for private game
 		#	----------------------
@@ -423,7 +423,7 @@ class Procmail:
 		#	Player TAKEOVER
 		#	---------------
 		if command == 'TAKEOVER':
-			if power == 'MASTER':
+			if self.isMaster(power):
 				oldGM, game.master = game.master[1], self.dppd.split('|')
 				game.save()
 				game.openMail('Diplomacy Master TAKEOVER notice',
@@ -503,6 +503,7 @@ class Procmail:
 			None is returned.
 		"""
 		if abbrev in ('M', 'MASTER'): return 'MASTER'
+		if abbrev in ('JK', 'JUDGEKEEPER'): return 'JUDGEKEEPER'
 		for who in self.game.powers:
 			if (abbrev in
 				(who.name, who.name[who.name[0] == '-':],
@@ -514,6 +515,7 @@ class Procmail:
 		self.game = self.game or Game()
 		if not self.power: rightEmail = self.email
 		elif self.power.name == 'MASTER': rightEmail = self.game.master[1]
+		elif self.power.name == 'JUDGEKEEPER': rightEmail = host.judgekeeper
 		elif self.power.address: rightEmail = self.power.address[0]
 		else: rightEmail = self.email
 		wrongMail = 0
@@ -552,6 +554,10 @@ class Procmail:
 			if password.upper() not in (self.game.password.upper(),
 				host.judgePassword.upper()):
 				self.respond('Invalid Master password specified')
+		elif powerName == 'JUDGEKEEPER':
+			power = Power(self.game, 'JUDGEKEEPER')
+			if password.upper() != host.judgePassword.upper():
+				self.respond('Invalid Judgekeeper password specified')
 		else:
 			try: power = [x for x in self.game.powers
 				if x.name[x.name[0] == '_':].replace('+', '') == powerName
@@ -592,7 +598,7 @@ class Procmail:
 				#	------------------------------------------------
 				if not readers: self.respond('No press recipient specified')
 				if claimFrom == '(WHITE)': claimFrom = None
-				if power.name != 'MASTER':
+				if not self.isMaster(power):
 					late = game.latePowers()
 					if (game.deadline and game.deadline <= Game.Time()
 					and ('LATE_SEND' not in game.rules
@@ -657,7 +663,7 @@ class Procmail:
 			#	See if we're starting a press message
 			#	-------------------------------------
 			elif command in ('BROADCAST', 'PRESS'):
-				readers = ['All'][:command[0] == 'B']
+				readers = [self.isMaster(power) and 'All!' or 'All'][:command[0] == 'B']
 				which = claimFrom = claimTo = None
 				wordNum = receipt = 1
 				while wordNum < len(word):
@@ -731,7 +737,7 @@ class Procmail:
 			#	See if this is to be official press
 			#	-----------------------------------
 			elif command == 'OFFICIAL':
-				if power.name != 'MASTER':
+				if not self.isMaster(power):
 					self.respond('Only the Master can send OFFICIAL press')
 				official = ' '.join(line.split()[1:])
 				del self.message[0]
@@ -739,7 +745,7 @@ class Procmail:
 			#	See if we are to do a ROLLBACK
 			#	------------------------------
 			elif command == 'ROLLBACK':
-				if power.name != 'MASTER':
+				if not self.isMaster(power):
 					self.respond('Only the Master can ROLLBACK the game')
 				phase, flags = '', 0
 				for param in [x.upper() for x in word[1:]]:
@@ -753,7 +759,7 @@ class Procmail:
 			#	See if we are to do a ROLLFORWARD
 			#	---------------------------------
 			elif command == 'ROLLFORWARD':
-				if power.name != 'MASTER':
+				if not self.isMaster(power):
 					self.respond('Only the Master can ROLLFORWARD the game')
 				phase, flags = '', 4
 				for param in [x.upper() for x in word[1:]]:
@@ -768,7 +774,7 @@ class Procmail:
 			#	--------------------------------------------------------
 			elif command in ('RESIGN', 'DUMMY', 'REVIVE'):
 				#Only the master can do these things
-				if power.name != 'MASTER':
+				if not self.isMaster(power):
 					self.respond('Only the Master can %s a player' % command)
 				#Must have a power to work with
 				if len(word) == 1:
@@ -811,12 +817,12 @@ class Procmail:
 					self.respond('Bad %s directive' % word[1])
 				if word[1][:2] in ('DE', 'AB'):
 					if (word[1][0] == 'A' and 'NO_ABSENCES' in game.rules
-					and power.name != 'MASTER'):
+					and not self.isMaster(power)):
 						self.respond('SET ABSENCE not allowed in this game')
 					#	----------------------------
 					#	SET DEADLINE and SET ABSENCE
 					#	----------------------------
-					if (word[1][0] == 'D' and power.name != 'MASTER'
+					if (word[1][0] == 'D' and not self.isMaster(power)
 					and 'PLAYER_DEADLINES' not in game.rules):
 						self.respond('Only the Master can SET %s' % word[1])
 					now, dates, oldline = time.localtime(), [word[2:]], 0
@@ -843,7 +849,7 @@ class Procmail:
 						if now > newline: self.respond(
 							'DEADLINE has already past: ' + ' '.join(word[2:]))
 						newline = '%4d%02d%02d%02d%02d' % newline[:5]
-						if (power.name != 'MASTER'
+						if (not self.isMaster(power)
 						and newline < game.deadline): self.respond(
 							'Only the Master may shorten a deadline')
 						game.deadline, game.delay = newline, None
@@ -851,7 +857,7 @@ class Procmail:
 							"The deadline for game '%s' has been changed "
 							'by %s.\n'
 							'The new deadline is %s.\n' % (game.name,
-							power.name == 'MASTER' and 'the Master'
+							self.isMaster(power) and ('the ' + game.anglify(power.name))
 							or 'HIDE_EXTENDERS' in game.rules and 'a power'
 							or game.anglify(power.name), game.timeFormat()),
 							subject = 'Diplomacy deadline changed')
@@ -865,7 +871,7 @@ class Procmail:
 							while nope[-2:] == '00': nope = nope[:-2]
 							length = time.mktime(newline) - time.mktime(oldline)
 						if (length < 0 or newline < time.localtime()
-						or	power.name != 'MASTER' and len(dates) > 1
+						or	not self.isMaster(power) and len(dates) > 1
 						and length > 14 * 24 * 60 * 60):
 							self.respond('Invalid ABSENCE duration')
 						if 'TO' in word: nope += '-'
@@ -877,7 +883,7 @@ class Procmail:
 				#	WAIT and NOWAIT
 				#	---------------
 				elif word[1][0] in 'NW':
-					if power.name == 'MASTER':
+					if self.isMaster(power):
 						self.respond('MASTER has no WAIT flag')
 					if game.await or game.deadline < Game.Time():
 						self.respond('WAIT unavailable after deadline')
@@ -901,7 +907,7 @@ class Procmail:
 								or not where.split('.')[-1].isalpha()
 								or '.' in (where[0], where[-1])): raise
 						except: self.respond('Bad ADDRESS: ' + addr)
-					if power.name == 'MASTER':
+					if self.isMaster(power):
 						if word[1][0] == 'A': game.master[1] = word[2]
 						else: game.password = self.sanitize(word[2])
 					elif word[1][0] == 'A':
@@ -954,7 +960,7 @@ class Procmail:
 			#	REVEAL the game if requested
 			#	----------------------------
 			elif command == 'REVEAL':
-				if power.name != 'MASTER':
+				if not self.isMaster(power):
 					self.respond('Only the Master can REVEAL the game')
 				if game.phase != 'COMPLETED':
 					self.respond('Only a COMPLETED game can be REVEALed')
@@ -965,7 +971,7 @@ class Procmail:
 			#	PROCESS or PREVIEW the game if requested
 			#	----------------------------------------
 			elif command in ('PROCESS', 'PROCESS!', 'PREVIEW'):
-				if power.name != 'MASTER':
+				if not self.isMaster(power):
 					self.respond('Only the Master can PROCESS/PREVIEW the game')
 				game.preview = command == 'PREVIEW'
 				error = game.process(1 + ('!' in command), self.email)
@@ -1004,4 +1010,8 @@ class Procmail:
 				'End of erroneous orders' % '\n'.join(orders))
 			self.respond(text)
 		else: game.reportOrders(self.power, self.email)
+	#	----------------------------------------------------------------------
+	def isMaster(self, power):
+		try: return power.name in ('MASTER', 'JUDGEKEEPER')
+		except: return power in ('MASTER', 'JUDGEKEEPER')
 	#	----------------------------------------------------------------------

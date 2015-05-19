@@ -2044,8 +2044,9 @@ class Game:
 					and 'PRESS_MASTER' in self.rules): continue
 					power, email = reader, self.master[1]
 				elif reader == 'JUDGEKEEPER':
-					if readers in (['All'], ['All!']): continue
-					power, email, fromSender = reader, host.judgekeeper, 1
+					fromSender = sender and sender.name != reader
+					if fromSender and readers in (['All'], ['All!']): continue
+					power, email = reader, host.judgekeeper
 				else:
 					if reader.type == 'MONITOR' and readers != ['All!']: continue
 					power = reader.name
@@ -2087,7 +2088,7 @@ class Game:
 				readers, message, claimFrom, claimTo, subject, 1)
 	#	---------------------------------------------------------------------
 	def pressHeader(self, power, whoTo, reader, sender = 0, recipient = 0):
-		text = ('Message', 'Broadcast message')[whoTo == ['All']]
+		text = ('Message', 'Broadcast message')[whoTo in (['All'], ['All!'])]
 		omniscient = reader and (reader == 'MASTER' or [1 for x in self.powers
 		if x.name == reader and x.omniscient])
 		if sender:
@@ -2101,11 +2102,11 @@ class Game:
 			if text[-1] == ']': text = text[:-1] + ' '
 			else: text += ' ['
 			text += 'sent%s]' % ((self.listReaders(recipient),
-			' as broadcast')[recipient == ['All']])
+			' as broadcast')[recipient in (['All'], ['All!'])])
 		return text
 	#	----------------------------------------------------------------------
 	def listReaders(self, who):
-		if who == ['All']: return ''
+		if who in (['All'], ['All!']): return ''
 		who = map(self.anglify, who)
 		if len(who) > 1: who[-1] = 'and ' + who[-1]
 		return ' to ' + ', '[len(who) < 3:].join(who)
@@ -2127,7 +2128,7 @@ class Game:
 		if subject: topic = subject
 		elif not sender: topic = 'Diplomacy game %s notice' % self.name
 		elif reader == sender.name:
-			if recipient == ['All']: topic = 'Diplomacy broadcast sent'
+			if recipient in (['All'], ['All!']): topic = 'Diplomacy broadcast sent'
 			else: topic = 'Diplomacy press sent' + self.listReaders(recipient)
 		elif claimFrom == '(ANON)': topic = 'Diplomacy press'
 		else: topic = 'Diplomacy press from ' + self.anglify(claimFrom)
@@ -4637,7 +4638,7 @@ class Game:
 			who = '\n'.join(textwrap.wrap(', '.join(map(self.anglify,
 				controllers)), 70, subsequent_indent = ' ' * 18))
 			multi = 's' * (len(controllers) != 1)
-			self.mailPress(None, ['All'], text + '%-18s' %
+			self.mailPress(None, ['All!'], text + '%-18s' %
 				('Dismissed Power%s: ' % multi) + who + '\n',
 				subject = 'Diplomacy player dismissal')
 			for power in [x for x in self.powers if x.name in controllers]:
