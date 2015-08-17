@@ -1970,13 +1970,14 @@ class Game:
 		readers = []
 		for power in who:
 			if type(power) not in (str, unicode):
-				if power.type == 'MONITOR': continue
-				if power.address:
-					if (power.isResigned() or power.isDummy()
-					or sendingPower.ceo[:1] == [power.name]): continue
-				elif power.ceo:
-					if power.ceo[0] in ('MASTER', sendingPower.name): continue
-				elif 'HIDE_DUMMIES' not in self.rules: continue
+				if power.type == 'MONITOR' or power.isResigned(): continue
+				if 'HIDE_DUMMIES' not in self.rules:
+					if power.address:
+						if (power.isDummy()
+						or sendingPower.ceo[:1] == [power.name]): continue
+					elif power.ceo:
+						if power.ceo[0] in ('MASTER', sendingPower.name): continue
+					else: continue
 				power = power.name
 			if includeSelf or power != sendingPower.name: readers += [power]
 		if (self.phase != 'FORMING' and 'NO_LATE_RECEIVE' in self.rules
@@ -2045,7 +2046,7 @@ class Game:
 					power, email = reader, self.master[1]
 				elif reader == 'JUDGEKEEPER':
 					fromSender = sender and sender.name != reader
-					if fromSender and readers in (['All'], ['All!']): continue
+					if (not sender or fromSender) and readers in (['All'], ['All!']): continue
 					power, email = reader, host.judgekeeper
 				else:
 					if reader.type == 'MONITOR' and readers != ['All!']: continue
