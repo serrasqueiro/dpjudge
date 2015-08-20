@@ -32,6 +32,9 @@ class Map:
 		self.load()
 		self.validate()
 	#	----------------------------------------------------------------------
+	def __repr__(self):
+		return self.name
+	#	----------------------------------------------------------------------
 	def validate(self, phases = '', force = 0):
 		if not force and not phases and self.validated: return
 		for phase in phases:

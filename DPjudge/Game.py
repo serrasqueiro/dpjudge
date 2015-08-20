@@ -822,7 +822,7 @@ class Game:
 						if item not in self.metaRules: self.metaRules += [item]
 			elif upword in ['MAP', 'TRIAL']:
 				if self.map: error += ['TWO MAP STATEMENTS']
-				elif len(word) == 2: self.loadMap(word[1], upword == 'TRIAL')
+				elif len(word) == 2: self.loadMap(word[1].lower(), upword == 'TRIAL')
 				else: error += ['BAD MAP STATEMENT']
 			elif upword == 'ROTATE':
 				if self.rotate: error += ['TWO ROTATE STATEMENTS']
