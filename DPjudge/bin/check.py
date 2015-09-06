@@ -109,9 +109,10 @@ class Check(DPjudge.Status):
 							host.dpjudgeURL, game.name))
 						mail.close()
 				elif 'terminated' not in data:
-					reason = ''
+					reason, alertJK = '', 0
 					if 'waiting' in data:
 						state = 'waiting'
+						alertJK = game.deadlineExpired('4W')
 						if game.avail:
 							reason = ' Need to replace %s.' % ', '.join([
 								game.anglify(x[:x.find('-')]) + x[x.find('-'):]
@@ -130,6 +131,16 @@ class Check(DPjudge.Status):
 							'Diplomacy game reminder (%s)' % game.name)
 						mail.write("GameMaster:\n\nThe game '%s' on %s is "
 							'still in the %s state.%s\n\nVisit the game at\n'
+							'   %s?game=%s\nfor more information.\n\n'
+							'Thank you,\nThe DPjudge\n' %
+							(game.name, host.dpjudgeID, state, reason,
+							host.dpjudgeURL, game.name))
+						mail.close()
+					if alertJK:
+						mail = DPjudge.Mail(host.judgekeeper,
+							'Diplomacy game alert (%s)' % game.name)
+						mail.write("JudgeKeeper:\n\nThe game '%s' on %s is "
+							'in the %s state for more than 4 weeks.%s\n\nVisit the game at\n'
 							'   %s?game=%s\nfor more information.\n\n'
 							'Thank you,\nThe DPjudge\n' %
 							(game.name, host.dpjudgeID, state, reason,

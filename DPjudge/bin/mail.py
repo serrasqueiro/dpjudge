@@ -288,8 +288,9 @@ class Procmail:
 		#	requires registration -- need to ask the DPPD for an ID.
 		#	---------------------------------------------------------
 		#	Need to use query string rather than POST it.  Don't know why.
-		query = '?&'['?' in host.dppdURL]
-		page = urllib.urlopen(host.dppdURL + query +
+		dppdURL = host.dppdURL.split(',')[0]
+		query = '?&'['?' in dppdURL]
+		page = urllib.urlopen(dppdURL + query +
 			'page=whois&email=' + urllib.quote(self.email, '@'))
 		response = unicode(page.read(), 'latin-1')
 		page.close()
@@ -298,7 +299,7 @@ class Procmail:
 			'Your e-mail address (%s) is\nnot registered with the DPPD, '
 			'or your DPPD status does\nnot allow you to use the %s command.'
 			'\n\nVisit the DPPD at %s\nfor assistance' %
-			(self.email, command, host.dppdURL))
+			(self.email, command, dppdURL))
 	#	----------------------------------------------------------------------
 	def updatePlayer(self, power, password, command, word):
 		game, self.power, playerType = self.game, None, None
