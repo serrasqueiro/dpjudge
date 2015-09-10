@@ -3437,6 +3437,7 @@ class Game:
 		phase = phase or self.phase
 		if not phase: return ''
 		word, season = phase.title().split(), ''
+		if len(word) < 3: return ''
 		for ch in word[0]:
 			season += season and season[-1] == '.' and ch.upper() or ch
 		return (season + ' ' +
