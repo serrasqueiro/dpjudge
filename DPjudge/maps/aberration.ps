@@ -195,11 +195,11 @@
 /x /scale ld
 /y /scalefont ld
 /z /setfont ld
+%%IncludeResource: font Helvetica-Bold
+/MapNameFont /Helvetica-Bold findfont 14 y def
 /Powers 20 dict def
 %%IncludeResource: font Helvetica-Bold
 /MapUnitLetterFont /Helvetica-Bold findfont 14 y def
-%%IncludeResource: font Helvetica-Bold
-/MapNameFont /Helvetica-Bold findfont 14 y def
 %%IncludeResource: font Courier
 /TextFixedFont /Courier findfont def
 %%IncludeResource: font Courier-Bold
@@ -220,165 +220,88 @@
 	FrameMap
 	showpage
 } bd
-/VisitColors {
-	3 dict begin
-	/c xd /r xd /g xd
-	/BorderBlack .1 g
-	/MountainGrey .5 g
-	/IceGrey .9 g
-	/ArrowBlack 0 g
-	/ArrowWhite .9 g
-	/Black 0 g
-	/White .9 g
-	/Grey .7 g
-	/LandBrown .8 .7 .4 r
-	/SeaBlue .1 .4 .6 r
-	/ArrowRed 1 0 0 r
-	/ArrowBlue .529 .808 .922 r
-	/Brown .6 .45 .2 r
-	/Dred .7 0 0 r
-	/Green 0 .7 0 r
-	/Igreen .7 .8 .3 r
-	/Turquoise .2 .7 .7 r
-	/Yellow 1 1 0 r
-	/Orange 1 .6 0 r
-	/Cyan 0 1 1 r
-	/Dblue 0 0 .7 r
-	/DarkGreen 0 .4 0 r
-	end
-} def
-/VisitPowers {
+/MapForm <<
+	/FormType 1
+	/Matrix [ 2.8123 0 0 2.8123 -59.7 112.3 ]
+	/BBox [ 0 0 262.57 204 ]
+	/FormDict 1 dict
+	/PaintProc {
+		dup /Matrix get exch /FormDict get begin
+		s
+		matrix invertmatrix concat
+		LandBrown -59.7 112.3 738.4 573.7 rectfill
+		IncludeSeas
+		IncludeIslands
+		IncludeInternalBorders
+		IncludeBorders
+		r
+		end
+	} bind
+>> def
+/DrawMap {
+	PageSetup
+	SwitchToMapMode
+	MapForm execform
+	/Centers << Centers { pop true } forall >> def
+	UNOWNED
+} bd
+/VisitSupplies {
 	1 dict begin
-	/p xd
-	/UNOWNED (?) /Brown /White p
-	/BURGUNDY (B) /Dred /White p
-	/SICILY (C) /Green /White p
-	/EIRE (E) /Igreen /Black p
-	/HUNGARY (H) /Turquoise /Black p
-	/ISRAEL (I) /Yellow /Black p
-	/POLAND (P) /Grey /Black p
-	/SPAIN (S) /Orange /Black p
-	/UKRAINE (U) /Cyan /Black p
-	/BYZANTIUM (Z) /Dblue /White p
+	/s xd
+	/ALC 102 482 s
+	/ANA 389 311 s
+	/ARM 457 334 s
+	/ATH 286 272 s
+	/AUS 231 393 s
+	/BAV 194 405 s
+	/BOH 221 414 s
+	/BRI 72 428 s
+	/BRU 144 441 s
+	/BUD 257 387 s
+	/BUL 298 331 s
+	/CAI 379 190 s
+	/CON 335 321 s
+	/CYR 299 212 s
+	/DAM 455 241 s
+	/DEN 207 490 s
+	/DIJ 137 394 s
+	/DUB 71 492 s
+	/EDI 109 510 s
+	/GDA 248 470 s
+	/GEO 472 352 s
+	/HAG 159 464 s
+	/HES 187 445 s
+	/JER 435 215 s
+	/KIE 351 431 s
+	/LAN 139 353 s
+	/MOR -9 266 s
+	/MUS 343 489 s
+	/NAP 213 314 s
+	/NWY 203 546 s
+	/NOV 337 537 s
+	/ODE 345 384 s
+	/PAL 213 274 s
+	/PIE 170 363 s
+	/POR -8 338 s
+	/RIG 296 501 s
+	/ROM 193 330 s
+	/RUM 309 354 s
+	/SAN 17 379 s
+	/SAX 215 449 s
+	/SMY 342 275 s
+	/SWE 249 536 s
+	/SZE 278 381 s
+	/TOL 50 348 s
+	/TUN 161 262 s
+	/TUR 604 384 s
+	/VAL 64 314 s
+	/VEN 192 365 s
+	/WAR 272 448 s
+	/WES 110 455 s
+	/YAL 386 370 s
+	/ZAR 231 350 s
 	end
 } def
-/PaintFleet {
-	begin
-	.5 .5 x
-	0 8 t
-	-26 -7 m -26 -2 l -19 -2 l -19 -1 l % to bow
-	-22 -1 l -22 0 l -15 0 l -15 1 l % A turret
-	-18 1 l -18 2 l -10 2 l -10 0 l % B turret
-	-9 0 l -9 4 l -8 4 l -8 6 l % conn tower
-	-6 6 l -6 5 l -5 5 l -5 9 l % Infra struct
-	-3 9 l -3 14 l -2 14 l -2 9 l % funnel 1
-	0 9 l 0 5 l 1 5 l 1 8 l % funnel 2
-	3 8 l 3 13 l 4 13 l 4 8 l % mast 2
-	6 8 l 6 0 l 8 0 l 8 2 l % funnel 2
-	16 2 l 16 1 l 13 1 l 13 0 l % C turret
-	20 0 l 20 -1 l 17 -1 l 17 -2 l % D turret
-	23 -2 l 23 -3 l 25 -3 l 25 -5 l % stern
-	24 -5 l 24 -7 l p
-	s 2 w Contrast k r Paint f
-	Offset aload pop m
-	MapUnitLetterFont z
-	Contrast Letter h
-	end
-} bd
-/FleetTroopBBox [
-	-13.5 0 13 11.5
-] def
-/PaintControlledFleet {
-	begin
-	.5 .5 x
-	0 8 t
-	-26 -7 m -26 -2 l -19 -2 l -19 -1 l % to bow
-	-22 -1 l -22 0 l -15 0 l -15 1 l % A turret
-	-18 1 l -18 2 l -10 2 l -10 0 l % B turret
-	-9 0 l -9 4 l -8 4 l -8 6 l % conn tower
-	-6 6 l -6 5 l -5 5 l -5 9 l % Infra struct
-	-3 9 l -3 14 l -2 14 l -2 9 l % funnel 1
-	0 9 l 0 5 l 1 5 l 1 8 l % funnel 2
-	3 8 l 3 13 l 4 13 l 4 8 l % mast 2
-	6 8 l 6 0 l 8 0 l 8 2 l % funnel 2
-	16 2 l 16 1 l 13 1 l 13 0 l % C turret
-	20 0 l 20 -1 l 17 -1 l 17 -2 l % D turret
-	23 -2 l 23 -3 l 25 -3 l 25 -5 l % stern
-	24 -5 l 24 -7 l p
-	s s 6 w Outer k r 2 w Contrast k r Paint f
-	Offset aload pop m
-	MapUnitLetterFont z
-	Contrast Letter h
-	end
-} bd
-/ControlledFleetTroopBBox [
-	-14.5 -1 14 12.5
-] def
-/DrawFleet {
-	SwitchToMapMode
-	s t
-	FleetTroops Power get execform
-	r
-} bd
-/PaintArmy {
-	begin
-	.5 .5 x
-	0 8 t
-	n 0 0 9 0 360 a p % wheel
-	2 w Contrast k
-	-20 7 m 10 7 l 10 3 l 14 3 l
-	14 1 l -16 1 l -16 3 l -20 3 l p % barrel
-	4 2 m 24 -8 l 26 -8 l 18 -8 l -2 2 l % carriage
-	s 2 w Contrast k r Paint f
-	n 0 0 9 0 360 a p % wheel
-	Paint f
-	Offset aload pop m
-	MapUnitLetterFont z
-	Contrast Letter h
-	end
-} bd
-/ArmyTroopBBox [
-	-10.5 -1 13.5 9
-] def
-/PaintControlledArmy {
-	begin
-	.5 .5 x
-	0 8 t
-	n 0 0 9 0 360 a p % wheel
-	s 6 w Outer k r 2 w Contrast k
-	-20 7 m 10 7 l 10 3 l 14 3 l
-	14 1 l -16 1 l -16 3 l -20 3 l p % barrel
-	4 2 m 24 -8 l 26 -8 l 18 -8 l -2 2 l % carriage
-	s s 6 w Outer k r 2 w Contrast k r Paint f
-	n 0 0 9 0 360 a p % wheel
-	Paint f
-	Offset aload pop m
-	MapUnitLetterFont z
-	Contrast Letter h
-	end
-} bd
-/ControlledArmyTroopBBox [
-	-11.5 -2 14.5 10
-] def
-/DrawArmy {
-	SwitchToMapMode
-	s t
-	ArmyTroops Power get execform
-	r
-} bd
-/DrawAlias {
-	SwitchToMapMode
-	s
-	3 1 roll t
-	.5 .5 x
-	0 -14 t
-	MapNameFont z
-	dup stringwidth pop -2 div 0 neg m h
-	r
-} bd
-/DrawName {
-	pop pop pop
-} bd
 /VisitTerritories {
 	3 dict begin
 	/w xd
@@ -538,63 +461,124 @@
 	(WMS) 81 292 w
 	end
 } def
-/VisitSupplies {
+/DrawSupplies {
+	SwitchToMapMode
+	UNOWNEDCENTER
+	{ SupplyCenters 3 1 roll 4 3 roll supply } bind
+	VisitSupplies
+} bd
+/DrawAlias {
+	SwitchToMapMode
+	s
+	3 1 roll t
+	.5 .5 x
+	0 -14 t
+	MapNameFont z
+	dup stringwidth pop -2 div 0 neg m h
+	r
+} bd
+/DrawName {
+	pop pop pop
+} bd
+/DrawAliases {
+	NameTerritories
+} bd
+/NameTerritories {
+	SwitchToMapMode
+	s
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ White 3 2 roll DrawAlias } bind
+	VisitTerritories
+	r
+} bd
+/VisitPowers {
 	1 dict begin
-	/s xd
-	/ALC 102 482 s
-	/ANA 389 311 s
-	/ARM 457 334 s
-	/ATH 286 272 s
-	/AUS 231 393 s
-	/BAV 194 405 s
-	/BOH 221 414 s
-	/BRI 72 428 s
-	/BRU 144 441 s
-	/BUD 257 387 s
-	/BUL 298 331 s
-	/CAI 379 190 s
-	/CON 335 321 s
-	/CYR 299 212 s
-	/DAM 455 241 s
-	/DEN 207 490 s
-	/DIJ 137 394 s
-	/DUB 71 492 s
-	/EDI 109 510 s
-	/GDA 248 470 s
-	/GEO 472 352 s
-	/HAG 159 464 s
-	/HES 187 445 s
-	/JER 435 215 s
-	/KIE 351 431 s
-	/LAN 139 353 s
-	/MOR -9 266 s
-	/MUS 343 489 s
-	/NAP 213 314 s
-	/NWY 203 546 s
-	/NOV 337 537 s
-	/ODE 345 384 s
-	/PAL 213 274 s
-	/PIE 170 363 s
-	/POR -8 338 s
-	/RIG 296 501 s
-	/ROM 193 330 s
-	/RUM 309 354 s
-	/SAN 17 379 s
-	/SAX 215 449 s
-	/SMY 342 275 s
-	/SWE 249 536 s
-	/SZE 278 381 s
-	/TOL 50 348 s
-	/TUN 161 262 s
-	/TUR 604 384 s
-	/VAL 64 314 s
-	/VEN 192 365 s
-	/WAR 272 448 s
-	/WES 110 455 s
-	/YAL 386 370 s
-	/ZAR 231 350 s
+	/p xd
+	/UNOWNED (?) /Brown /White p
+	/BURGUNDY (B) /Dred /White p
+	/SICILY (C) /Green /White p
+	/EIRE (E) /Igreen /Black p
+	/HUNGARY (H) /Turquoise /Black p
+	/ISRAEL (I) /Yellow /Black p
+	/POLAND (P) /Grey /Black p
+	/SPAIN (S) /Orange /Black p
+	/UKRAINE (U) /Cyan /Black p
+	/BYZANTIUM (Z) /Dblue /White p
 	end
 } def
+/CreateTroop {
+	<<
+		/BBox 4 3 roll
+		/PaintProc 5 4 roll
+		6 5 roll {} forall
+		/FormType 1
+		/Matrix matrix
+	>>
+} bd
+/CreateTroops {
+	<< 3 1 roll Powers {
+		3 index 3 index CreateTroop 4 2 roll
+	} forall pop pop >>
+} bd
+/PaintFleet {
+	begin
+	.5 .5 x
+	0 8 t
+	-26 -7 m -26 -2 l -19 -2 l -19 -1 l % to bow
+	-22 -1 l -22 0 l -15 0 l -15 1 l % A turret
+	-18 1 l -18 2 l -10 2 l -10 0 l % B turret
+	-9 0 l -9 4 l -8 4 l -8 6 l % conn tower
+	-6 6 l -6 5 l -5 5 l -5 9 l % Infra struct
+	-3 9 l -3 14 l -2 14 l -2 9 l % funnel 1
+	0 9 l 0 5 l 1 5 l 1 8 l % funnel 2
+	3 8 l 3 13 l 4 13 l 4 8 l % mast 2
+	6 8 l 6 0 l 8 0 l 8 2 l % funnel 2
+	16 2 l 16 1 l 13 1 l 13 0 l % C turret
+	20 0 l 20 -1 l 17 -1 l 17 -2 l % D turret
+	23 -2 l 23 -3 l 25 -3 l 25 -5 l % stern
+	24 -5 l 24 -7 l p
+	s 2 w Contrast k r Paint f
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	end
+} bd
+/FleetTroopBBox [
+	-13.5 0 13 11.5
+] def
+/PaintArmy {
+	begin
+	.5 .5 x
+	0 8 t
+	n 0 0 9 0 360 a p % wheel
+	2 w Contrast k
+	-20 7 m 10 7 l 10 3 l 14 3 l
+	14 1 l -16 1 l -16 3 l -20 3 l p % barrel
+	4 2 m 24 -8 l 26 -8 l 18 -8 l -2 2 l % carriage
+	s 2 w Contrast k r Paint f
+	n 0 0 9 0 360 a p % wheel
+	Paint f
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	end
+} bd
+/ArmyTroopBBox [
+	-10.5 -1 13.5 9
+] def
+/DrawFleet {
+	SwitchToMapMode
+	s t
+	FleetTroops Power get execform
+	r
+} bd
+/DrawArmy {
+	SwitchToMapMode
+	s t
+	ArmyTroops Power get execform
+	r
+} bd
 /DrawRemainingCenters {
 	SwitchToMapMode
 	UNOWNED
@@ -612,6 +596,82 @@
 /SupplyCenterBBox [
 	-3 -3 3 3
 ] def
+/supply {
+	SwitchToMapMode
+	Centers exch false put
+	s t
+	Power get execform
+	r
+} bd
+/GetControlledPower {
+	1 index dup length string cvs 1 index dup length string cvs
+	1 index length dup 2 index length add 1 add string
+	dup 0 6 5 roll putinterval dup 2 index 124 put dup 3 2 roll 1 add 4 3 roll putinterval cvn
+	3 1 roll Powers 3 index known {
+		pop pop
+	} {
+		8 dict dup begin
+		exch Powers exch get /Paint get /Outer xd
+		Powers 2 index get { def } forall
+		end
+		dup ControlledFleetTroopBBox /PaintControlledFleet load CreateTroop FleetTroops 4 index 3 2 roll put
+		dup ControlledArmyTroopBBox /PaintControlledArmy load CreateTroop ArmyTroops 4 index 3 2 roll put
+		dup ControlledSupplyCenterBBox /PaintControlledSupply load CreateTroop SupplyCenters 4 index 3 2 roll put
+		Powers 2 index 3 2 roll put
+		[ /Power 3 index 4 3 roll {
+			ChangeController {
+				Power GetControlledPower exch
+				/ChangeController false def
+			} if pop
+		} bind /exec load /def load ] cvx 2 index xd
+	} ifelse
+} bd
+/PaintControlledFleet {
+	begin
+	.5 .5 x
+	0 8 t
+	-26 -7 m -26 -2 l -19 -2 l -19 -1 l % to bow
+	-22 -1 l -22 0 l -15 0 l -15 1 l % A turret
+	-18 1 l -18 2 l -10 2 l -10 0 l % B turret
+	-9 0 l -9 4 l -8 4 l -8 6 l % conn tower
+	-6 6 l -6 5 l -5 5 l -5 9 l % Infra struct
+	-3 9 l -3 14 l -2 14 l -2 9 l % funnel 1
+	0 9 l 0 5 l 1 5 l 1 8 l % funnel 2
+	3 8 l 3 13 l 4 13 l 4 8 l % mast 2
+	6 8 l 6 0 l 8 0 l 8 2 l % funnel 2
+	16 2 l 16 1 l 13 1 l 13 0 l % C turret
+	20 0 l 20 -1 l 17 -1 l 17 -2 l % D turret
+	23 -2 l 23 -3 l 25 -3 l 25 -5 l % stern
+	24 -5 l 24 -7 l p
+	s s 6 w Outer k r 2 w Contrast k r Paint f
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	end
+} bd
+/ControlledFleetTroopBBox [
+	-14.5 -1 14 12.5
+] def
+/PaintControlledArmy {
+	begin
+	.5 .5 x
+	0 8 t
+	n 0 0 9 0 360 a p % wheel
+	s 6 w Outer k r 2 w Contrast k
+	-20 7 m 10 7 l 10 3 l 14 3 l
+	14 1 l -16 1 l -16 3 l -20 3 l p % barrel
+	4 2 m 24 -8 l 26 -8 l 18 -8 l -2 2 l % carriage
+	s s 6 w Outer k r 2 w Contrast k r Paint f
+	n 0 0 9 0 360 a p % wheel
+	Paint f
+	Offset aload pop m
+	MapUnitLetterFont z
+	Contrast Letter h
+	end
+} bd
+/ControlledArmyTroopBBox [
+	-11.5 -2 14.5 10
+] def
 /PaintControlledSupply {
 	begin
 	.5 .5 x
@@ -626,12 +686,8 @@
 /ControlledSupplyCenterBBox [
 	-5 -5 5 5
 ] def
-/supply {
-	SwitchToMapMode
-	Centers exch false put
-	s t
-	Power get execform
-	r
+/Controls {
+	/ChangeController true def
 } bd
 /SetArrowStateOk {
 	[] 0 d
@@ -747,57 +803,6 @@
 	k
 	r
 } bd
-/PaintArrowArrive {
-	s
-	t
-	.5 .5 x
-	0 8 t
-	180 rotate 54 ArrowBase add neg 0 t
-	40
-	1 w
-	TraceArrowHead
-	k
-	% now the shaft ...
-	2 w
-	0 0 m
-	0 l
-	k
-	-10 0 m -20 0 l
-	-30 0 m -40 0 l
-	k
-	r
-} bd
-/PaintArrowArriveFleet {
-	2 copy
-	PaintArrowArrive
-	SetArrowStateOk
-	exch 14 ArrowBase add 30 add .5 mul add exch 7.2 add t
-	.8 .8 x
-	FleetTroops Power get execform
-} bd
-/PaintArrowArriveArmy {
-	2 copy
-	PaintArrowArrive
-	SetArrowStateOk
-	exch 14 ArrowBase add 30 add .5 mul add exch 7.2 add t
-	.8 .8 x
-	ArmyTroops Power get execform
-} bd
-/PaintArrowDepart {
-	s
-	t
-	.5 .5 x
-	0 8 t
-	-54 0 t
-	40
-	2 w
-	0 0 m
-	0 l
-	-10 0 m -20 0 l
-	-30 0 m -40 0 l
-	k
-	r
-} bd
 /ArrowMove {
 	SwitchToMapMode
 	s
@@ -828,27 +833,6 @@
 	12 PaintArrowCircle
 	r
 } bd
-/ArrowDepart {
-	SwitchToMapMode
-	s
-	SetArrowState
-	PaintArrowDepart
-	r
-} bd
-/ArrowArriveFleet {
-	SwitchToMapMode
-	s
-	SetArrowState
-	PaintArrowArriveFleet
-	r
-} bd
-/ArrowArriveArmy {
-	SwitchToMapMode
-	s
-	SetArrowState
-	PaintArrowArriveArmy
-	r
-} bd
 /ArrowRetreat {
 	RetreatPhase
 	ArrowMove
@@ -857,21 +841,6 @@
 /ArrowPropose {
 	ProposePhase
 	ArrowMove
-	MovePhase
-} bd
-/ArrowRetreatArriveFleet {
-	RetreatPhase
-	ArrowArriveFleet
-	MovePhase
-} bd
-/ArrowRetreatArriveArmy {
-	RetreatPhase
-	ArrowArriveArmy
-	MovePhase
-} bd
-/ArrowRetreatDepart {
-	RetreatPhase
-	ArrowDepart
 	MovePhase
 } bd
 /BuildUnit {
@@ -913,6 +882,122 @@
 	SwitchToMapMode
 	{ ArrowWhite f } SlashUnit
 } bd
+/QueryUnit {
+	SwitchToMapMode
+	s
+	t
+	ArrowWhite
+	.5 .5 x
+	0 8 t
+	4 w
+	-12 4 m
+	-8 7 -4 7 0 4 c
+	4 1 8 1 12 4 c
+	-12 -4 m
+	-8 -1 -4 -1 0 -4 c
+	4 -7 8 -7 12 -4 c
+	k
+	r
+} bd
+/PaintArrowArrive {
+	s
+	t
+	.5 .5 x
+	0 8 t
+	180 rotate 54 ArrowBase add neg 0 t
+	40
+	1 w
+	TraceArrowHead
+	k
+	% now the shaft ...
+	2 w
+	0 0 m
+	0 l
+	k
+	-10 0 m -20 0 l
+	-30 0 m -40 0 l
+	k
+	r
+} bd
+/PaintArrowArriveFleet {
+	2 copy
+	PaintArrowArrive
+	SetArrowStateOk
+	exch 0 44 ArrowBase add add .5 mul add exch 7.2 add t
+	.8 .8 x
+	FleetTroops Power get execform
+} bd
+/PaintArrowArriveArmy {
+	2 copy
+	PaintArrowArrive
+	SetArrowStateOk
+	exch 0 44 ArrowBase add add .5 mul add exch 7.2 add t
+	.8 .8 x
+	ArmyTroops Power get execform
+} bd
+/PaintArrowDepart {
+	s
+	t
+	.5 .5 x
+	0 8 t
+	-54 0 t
+	40
+	2 w
+	0 0 m
+	0 l
+	-10 0 m -20 0 l
+	-30 0 m -40 0 l
+	k
+	r
+} bd
+/ArrowDepart {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowDepart
+	r
+} bd
+/ArrowArriveFleet {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowArriveFleet
+	r
+} bd
+/ArrowArriveArmy {
+	SwitchToMapMode
+	s
+	SetArrowState
+	PaintArrowArriveArmy
+	r
+} bd
+/ArrowSupportArrive {
+	2 copy exch 64 add exch ArrowSupport
+} bd
+/ArrowSupportDepart {
+	2 copy exch 44 sub exch ArrowSupport
+} bd
+/ArrowConvoyArrive {
+	2 copy exch 64 add exch ArrowConvoy
+} bd
+/ArrowConvoyDepart {
+	2 copy exch 44 sub exch ArrowConvoy
+} bd
+/ArrowRefugeFleet {
+	RetreatPhase
+	ArrowArriveFleet
+	MovePhase
+} bd
+/ArrowRefugeArmy {
+	RetreatPhase
+	ArrowArriveArmy
+	MovePhase
+} bd
+/ArrowFlee {
+	RetreatPhase
+	ArrowDepart
+	MovePhase
+} bd
 /FindUnit {
 	SwitchToMapMode
 	s
@@ -943,105 +1028,21 @@
 	k
 	r
 } bd
-/QueryUnit {
+/LoseArriveUnit {
 	SwitchToMapMode
 	s
-	t
-	ArrowWhite
-	.5 .5 x
-	0 8 t
-	4 w
-	-12 4 m
-	-8 7 -4 7 0 4 c
-	4 1 8 1 12 4 c
-	-12 -4 m
-	-8 -1 -4 -1 0 -4 c
-	4 -7 8 -7 12 -4 c
-	k
+	exch 32 add exch 7.2 add t
+	.8 .8 x
+	0 0 LoseUnit
 	r
 } bd
-/MapForm <<
-	/FormType 1
-	/Matrix [ 2.8123 0 0 2.8123 -59.7 112.3 ]
-	/BBox [ 0 0 262.57 204 ]
-	/FormDict 1 dict
-	/PaintProc {
-		dup /Matrix get exch /FormDict get begin
-		s
-		matrix invertmatrix concat
-		LandBrown -59.7 112.3 738.4 573.7 rectfill
-		IncludeSeas
-		IncludeIslands
-		IncludeInternalBorders
-		IncludeBorders
-		r
-		end
-	} bind
->> def
-/DrawMap {
-	PageSetup
-	SwitchToMapMode
-	MapForm execform
-	/Centers << Centers { pop true } forall >> def
-	UNOWNED
-} bd
-/DrawSupplies {
-	SwitchToMapMode
-	UNOWNEDCENTER
-	{ SupplyCenters 3 1 roll 4 3 roll supply } bind
-	VisitSupplies
-} bd
-/DrawAliases {
-	NameTerritories
-} bd
-/NameTerritories {
+/LoseRefugeUnit {
 	SwitchToMapMode
 	s
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ White 3 2 roll DrawAlias } bind
-	VisitTerritories
+	exch 41.9 add exch 7.2 add t
+	.8 .8 x
+	0 0 LoseUnit
 	r
-} bd
-/GetControlledPower {
-	1 index dup length string cvs 1 index dup length string cvs
-	1 index length dup 2 index length add 1 add string
-	dup 0 6 5 roll putinterval dup 2 index 124 put dup 3 2 roll 1 add 4 3 roll putinterval cvn
-	3 1 roll Powers 3 index known {
-		pop pop
-	} {
-		8 dict dup begin
-		exch Powers exch get /Paint get /Outer xd
-		Powers 2 index get { def } forall
-		end
-		dup ControlledFleetTroopBBox /PaintControlledFleet load CreateTroop FleetTroops 4 index 3 2 roll put
-		dup ControlledArmyTroopBBox /PaintControlledArmy load CreateTroop ArmyTroops 4 index 3 2 roll put
-		dup ControlledSupplyCenterBBox /PaintControlledSupply load CreateTroop SupplyCenters 4 index 3 2 roll put
-		Powers 2 index 3 2 roll put
-		[ /Power 3 index 4 3 roll {
-			ChangeController {
-				Power GetControlledPower exch
-				/ChangeController false def
-			} if pop
-		} bind /exec load /def load ] cvx 2 index xd
-	} ifelse
-} bd
-/Controls {
-	/ChangeController true def
-} bd
-/CreateTroop {
-	<<
-		/BBox 4 3 roll
-		/PaintProc 5 4 roll
-		6 5 roll {} forall
-		/FormType 1
-		/Matrix matrix
-	>>
-} bd
-/CreateTroops {
-	<< 3 1 roll Powers {
-		3 index 3 index CreateTroop 4 2 roll
-	} forall pop pop >>
 } bd
 /SplitString {
 	7 dict begin
@@ -1340,7 +1341,7 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		21.6 131.24 585 454.52 rectclip .7923 .7923 x 86.96 53.36 t
+		25.1 133.96 578 449.08 rectclip .7828 .7828 x 91.77 58.84 t
 		ArrowColor
 		OkOrder
 	} if
@@ -1348,7 +1349,7 @@
 /FrameMap {
 	s
 	2 w LandBrown
-	20.6 128.24 m 607.6 128.24 l 607.6 588.76 l 20.6 588.76 l
+	22.1 130.96 m 606.1 130.96 l 606.1 586.04 l 22.1 586.04 l
 	p
 	s 8 w Black k r
 	clipsave clip k cliprestore
@@ -1390,6 +1391,35 @@
 	OutlineChartNationalBorder
 	r
 } bd
+/VisitColors {
+	3 dict begin
+	/c xd /r xd /g xd
+	/BorderBlack .1 g
+	/MountainGrey .5 g
+	/IceGrey .9 g
+	/ArrowBlack 0 g
+	/ArrowWhite .9 g
+	/Black 0 g
+	/White .9 g
+	/Grey .7 g
+	/LandBrown .8 .7 .4 r
+	/SeaBlue .1 .4 .6 r
+	/LandGreen 0 .4 0 r
+	/SeaWhite 1 1 1 r
+	/ArrowRed 1 0 0 r
+	/ArrowBlue .529 .808 .922 r
+	/Brown .6 .45 .2 r
+	/Dred .7 0 0 r
+	/Green 0 .7 0 r
+	/Igreen .7 .8 .3 r
+	/Turquoise .2 .7 .7 r
+	/Yellow 1 1 0 r
+	/Orange 1 .6 0 r
+	/Cyan 0 1 1 r
+	/Dblue 0 0 .7 r
+	/DarkGreen 0 .4 0 r
+	end
+} def
 /OutlineChartSeaColor {
 	71.5 367.5 m
 	68.7 367.9 l
@@ -5486,21 +5516,12 @@ MapUnitLetterFont z
 	4 dict begin /Contrast xd /Paint xd /Offset xd /Letter xd currentdict end
 	currentdict end 3 1 roll
 	Powers 2 index 3 2 roll put
-	[ /Power 2 index {
-		ChangeController {
-			Power GetControlledPower
-			/ChangeController false def
-		} if
-	} bind /exec load /def load ] cvx def
+	[ /Power 2 index { ChangeController { Power GetControlledPower /ChangeController false def } if } bind /exec load /def load ] cvx def
 	begin
 } VisitPowers
 r
 /FleetTroops FleetTroopBBox /PaintFleet load CreateTroops def
 /ArmyTroops ArmyTroopBBox /PaintArmy load CreateTroops def
-/Centers <<
-	{ pop pop true } bind
-	VisitSupplies
->> def
 /SupplyCenters SupplyCenterBBox /PaintSupply load CreateTroops def
 { currentdict end 4 1 roll [ SupplyCenters 4 2 roll 4 index ] cvx def begin } bind
 VisitSupplies
@@ -5514,4 +5535,8 @@ VisitSupplies
 /SPAINCENTER /SPAIN ld
 /UKRAINECENTER /UKRAINE ld
 /BYZANTIUMCENTER /BYZANTIUM ld
+/Centers <<
+	{ pop pop true } bind
+	VisitSupplies
+>> def
 %%EndSetup
