@@ -130,6 +130,7 @@ leftside()
 				return false;
 			}
 			if (confirm(
+/*
 "NOTICE: By continuing you agree to abide by DPjudge rules and regulations " +
 "(house rules).  A link to these rules is provided at the top of this " +
 "Webpage.  If you have not read them yet, you are strongly encouraged to " +
@@ -189,8 +190,29 @@ leftside()
 "know one thing.  You will be caught.  Quickly.  You will be exposed. " +
 "Completely.  And you will blacklisted.  Permanently.\n\n" +
 "IF YOU CHEAT, YOU WILL BE CAUGHT AND BLACKLISTED.  BELIEVE IT.\n\n" +
-"Continue ONLY if you understand and agree to this.\n\n") == false
-				) return false;
+"Continue ONLY if you understand and agree to this.\n\n"
+*/
+"NOTICE: By continuing you agree to abide by DPjudge rules and regulations " +
+"(house rules).  A link to these rules is provided at the top of this " +
+"Webpage.  If you have not read them yet, you are strongly encouraged to " +
+"click Cancel and do so now.  Be especially aware of the following:\n\n" +
+" 1.  Register once and only once for all the DPjudges, using your full, " +
+"REAL name.  Multiple registrations can be an indication that you intend " +
+"to join a game as more than one power, which is cheating.  Contact the " +
+"judgekeeper if you can no longer access your old e-mail account and forgot " +
+"your DPPD password.\n\n" +
+" 2.  Never join a public game with a friend or acquaintance, as this may " +
+"give you an unfair advantage over other players.  Set up a private game " +
+"instead. If by chance you end up in a public game with someone living in " +
+"the same neighborhood, the GM may ask one of you to leave the game.\n\n" +
+" 3.  A GM can never be a player in his own game.  Contact the judgekeeper " +
+"or post on the DPjudge Yahoo Group if you need one.\n\n" +
+"Violation of any of these rules may lead to BLACKLISTING.  You will " +
+"thereafter never be able to play on any of the DPjudges again!  Don't take " +
+"this light-heartedly, as the DPjudge has several devices built in to " +
+"detect infractions and a team of detectives to enforce them.\n\n" +
+"Continue only if you understand and agree to this.\n\n"
+				) == false) return false;
 			document.reg.submit();
 		}
 		</script>
