@@ -293,18 +293,11 @@ class PayolaGame(Game):
 				word[0:1] = [word[0][:ch], word[0][ch:]]
 				break
 		if len(word[1]) > 1: word[1:2] = [word[1][0], word[1][1:]]
-		#	---------------------------------------------------
-		#	Convert all words in the offer to recognized tokens
-		#	---------------------------------------------------
-		word, detail = self.expandOrder(word), []
-		#	-----------------------------------------------------------------
-		#	Now finish normalizing the offer by adding all missing unit types
-		#	-----------------------------------------------------------------
-		word = word[:2] + self.addUnitTypes(word[2:])
 		#	-----------------------------------------
 		#	Validate the bribe amount, which may have
 		#	the format rep*max#plateau+(another)+...
 		#	-----------------------------------------
+		detail = []
 		for each in word[0].split('+'):
 			if not each: return self.error.append(
 				'ADDITIONAL BRIBE NOT GIVEN:&nbsp;' + word[0])
@@ -337,13 +330,23 @@ class PayolaGame(Game):
 		#	Now see if it is a bribe line
 		#	-----------------------------
 		elif word[1] in list(':!@>&'):
+			if len(word) < 3:
+				return self.error.append('INCOMPLETE OFFER: ' + ' '.join(word))
+			parts = [x.strip().split() for x in ' '.join(word[2:]).split('|')]
+			#	--------------------------------------------------
+			#	Convert all words in the first order to recognized 
+			#	tokens and add all missing unit types and any
+			#	missing coasts (RUM-BUL becomes RUM-BUL/EC)
+			#	--------------------------------------------------
+			first = self.map.defaultCoast(self.addUnitTypes(
+				self.expandOrder(parts[0])))
 			#	---------------------------------------------------
 			#	Validate the unit and check for disallowed wildcard
 			#	orders and and for 0 AgP bribes to foreign units.
 			#	---------------------------------------------------
-			if len(word) < 4:
+			if len(first) < 2:
 				return self.error.append('INCOMPLETE OFFER: ' + ' '.join(word))
-			unit, orders, newline = ' '.join(word[2:4]), [], word[:4]
+			unit, orders, newline = ' '.join(first[:2]), [], word[:2] + first[:2]
 			#	---------------------------------------
 			#	Check for 'Payola Classic' restrictions
 			#	---------------------------------------
@@ -384,7 +387,19 @@ class PayolaGame(Game):
 			#	--------------------------------------------------
 			#	Go through all bribes (separated by vertical bars)
 			#	--------------------------------------------------
-			for order in [x.strip() for x in ' '.join(word[4:]).split('|')]:
+			for part in parts:
+				#	--------------------------------------------------
+				#	Convert all words in the next orders to recognized 
+				#	tokens and add all missing unit types and any
+				#	missing coasts (RUM-BUL becomes RUM-BUL/EC)
+				#	--------------------------------------------------
+				if not orders: part = first[2:]
+				else: part = self.map.defaultCoast(self.addUnitTypes(
+					self.expandOrder(first[:2] + part)))[2:]
+				if part and len(part[-1]) == 1 and not part[-1].isalpha():
+					part = part[:-1]
+				if not part: return self.error.append('NO %sORDER GIVEN: ' %
+					('|' in ' '.join(word) and 'ALTERNATIVE ' or '') + unit)
 				#	--------------------------------------------------
 				#	The Payola Mailing List voted to outlaw duplicate
 				#	orders in offers (i.e. "5 : F TYS - ION | - ION").
@@ -397,17 +412,12 @@ class PayolaGame(Game):
 				#	reason to for this rule is to provide semantics
 				#	consistent with that required for negative offers.
 				#	--------------------------------------------------
-				if not order: return self.error.append('NO %sORDER GIVEN: ' %
-					('|' in ' '.join(word) and 'ALTERNATIVE ' or '') + unit)
-				if order in orders: return self.error.append(
-					'DUPLICATE ORDER IN OFFER: %s ' % unit + order)
-				#	---------------------------------------------------
-				#	Add any missing coasts (RUM-BUL becomes RUM-BUL/EC)
-				#	---------------------------------------------------
-				order = ' '.join(self.map.defaultCoast(
-					unit.split() + order.split())[2:])
-				if len(newline) > 4: newline += ['|']
-				newline += order.split()
+				order = ' '.join(part)
+				if order in orders or (order + ' ?') in orders:
+					return self.error.append(
+						'DUPLICATE ORDER IN OFFER: %s ' % unit + order)
+				if orders: newline += ['|']
+				newline += part
 				#	--------------------------------------------------
 				#	Validate and (if valid) add the order to the offer
 				#	--------------------------------------------------
@@ -416,6 +426,7 @@ class PayolaGame(Game):
 				if not valid and 'FICTIONAL_OK' not in self.rules:
 					return self.error.append(
 						'NON-EXISTENT UNIT IN ORDER: %s ' % unit + order)
+				elif valid == -1: newline += ['?']
 				whose = self.unitOwner(unit)
 				if (('TOUCH_BRIBE' in self.rules
 				or   'REMOTE_BRIBE' in self.rules)
@@ -424,13 +435,13 @@ class PayolaGame(Game):
 					owner = whose or power
 					if power is not owner:
 						bad = [x for x in power.units
-							if self.validOrder(power, x, 'S ' + unit, report=0)
-							or self.validOrder(owner, unit, 'S ' + x, report=0)]
+							if self.validOrder(power, x, 'S ' + unit, report=0) == 1
+							or self.validOrder(owner, unit, 'S ' + x, report=0) == 1]
 						if 'TOUCH_BRIBE' in self.rules: bad = not bad
 						if bad: return self.error.append(
 							'BRIBED UNIT M%sT BE ADJACENT: ' %
 							('AY NO', 'US')['TOUCH_BRIBE' in self.rules] + unit)
-				orders += [order]
+				orders += [order + ' ?' * (valid == -1)]
 			#	-----------------------------------------------------
 			#	Add the offer repeatedly (according to the "*" count)
 			#	-----------------------------------------------------

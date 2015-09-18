@@ -533,8 +533,16 @@ class Procmail:
 			self.message = None
 		if type(copyTo) != list: copyTo = [copyTo]
 		for email in [self.email] + copyTo:
-			self.game.openMail('DPjudge e-mail reply', mailTo = email,
-				mailAs = host.dpjudge)
+			#	--------------------
+			#	Prevent e-mail loops
+			#	--------------------
+			if email == host.dpjudge:
+				self.game.openMail('DPjudge e-mail reply' +
+					' (redirected from %s)' % email,
+					mailTo = host.judgekeeper, mailAs = host.dpjudge)
+			else:
+				self.game.openMail('DPjudge e-mail reply', mailTo = email,
+					mailAs = host.dpjudge)
 			mail = self.game.mail
 			for line in self.response: mail.write(line + '.\n\n')
 			if error and self.message:

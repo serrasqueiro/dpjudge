@@ -8,6 +8,10 @@ class PayolaPower(Power):
 			num = power.seq()
 			vars(self).update(locals())
 		#	------------------------------------------------------------------
+		def __repr__(self):
+			return ' '.join((self.power.name, self.code, self.unit, self.order,
+							`self.amt`, `self.plateau`, `self.num`))
+		#	------------------------------------------------------------------
 	#	----------------------------------------------------------------------
 	def __init__(self, game, name, type = None):
 		Power.__init__(self, game, name, type)

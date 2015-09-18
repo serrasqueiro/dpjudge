@@ -172,11 +172,20 @@ class Game:
 		"""
 		This function has three return values:
 			None	- the order is NOT valid at all
+			-1		- it is NOT valid BUT it does not get reported because it
+					may be used to signal support
 			0		- it is valid BUT some unit mentioned does not exist
 			1		- it is completely valid
 		"""
 		if not order: return
 		word, owner, rules = order.split(), self.unitOwner(unit), self.rules
+		#	--------------------------------------------------
+		#	Strip any final punctuation, as is common in DPeye
+		#	syntax to denote results. A '?' is also used for
+		#	invalid orders with the SIGNAL_SUPPORT rule.
+		#	--------------------------------------------------
+		if len(word[-1]) == 1 and not word[-1].isalpha(): word = word[:-1]
+		if not word: return
 		error = ([], self.error)[report]
 		map, status = self.map, owner != None
 		unitType, unitLoc, orderType = unit[0], unit[2:], word[0]
@@ -208,7 +217,8 @@ class Game:
 		#	Validate that anything in a SHUT location is only ordered to HOLD
 		#	-----------------------------------------------------------------
 		if map.areatype(unitLoc) == 'SHUT' and orderType != 'H':
-			return error.append('UNIT MAY ONLY BE ORDERED TO HOLD: ' + unit)
+			if 'SIGNAL_SUPPORT' in rules: status = -1
+			else: return error.append('UNIT MAY ONLY BE ORDERED TO HOLD: ' + unit)
 		#	----------------------------------
 		#	Validate support and convoy orders
 		#	----------------------------------
@@ -250,7 +260,7 @@ class Game:
 			if not self.unitOwner(rcvr, 0):
 				if 'FICTIONAL_OK' not in rules: return error.append(
 					orderText + ' RECIPIENT DOES NOT EXIST: %s ' % unit + order)
-				status = 0
+				if status > 0: status = 0
 			#	-------------------------------
 			#	Check that the recipient is not
 			#	the same unit as the supporter.
@@ -282,7 +292,8 @@ class Game:
 				elif (not self.abuts(word[1], word[2], orderType, dest)
 				and	 (rcvr[0] == 'F' and 'PORTAGE_CONVOY' not in rules
 				or not self.canConvoy(word[1], word[2][:3], dest, 0, unitLoc))):
-					return error.append(
+					if 'SIGNAL_SUPPORT' in rules: status = -1
+					else: return error.append(
 						'SUPPORTED UNIT CANNOT REACH DESTINATION: %s ' %
 						unit + order)
 				#	----------------------------------
@@ -292,7 +303,8 @@ class Game:
 				#	----------------------------------
 				elif ((unitLoc, dest) in map.abutRules.get('*', []) +
 										 map.abutRules.get('~', [])):
-					return error.append(
+					if 'SIGNAL_SUPPORT' in rules: status = -1
+					else: return error.append(
 						'UNIT CANNOT PROVIDE SUPPORT TO DESTINATION: %s ' %
 						unit + order)
 			#	----------------------------------------------------
@@ -314,7 +326,8 @@ class Game:
 				if (not self.abuts(unitType, unitLoc, orderType, dest)
 				or (unitLoc, dest) in map.abutRules.get('*', []) +
 									  map.abutRules.get('~', [])):
-					return error.append(
+					if 'SIGNAL_SUPPORT' in rules: status = -1
+					else: return error.append(
 						'UNIT CANNOT DELIVER SUPPORT TO DESTINATION: %s ' %
 						unit + order)
 			#	-----------------------------------------------------
@@ -327,7 +340,11 @@ class Game:
 			#	Make sure support or convoy is kosher with any LEAGUE
 			#	-----------------------------------------------------
 			if 'FICTIONAL_OK' not in self.rules:
-				self.checkLeague(owner, unit, order, word, orderText)
+				signal = orderType == 'S' and 'SIGNAL_SUPPORT' in self.rules
+				if not self.checkLeague(owner, unit, order, word,
+				orderText, report and not signal):
+					if signal: status = -1
+					else: return
 		#	---------------------
 		#	Validate a move order
 		#	---------------------
@@ -427,7 +444,7 @@ class Game:
 		#	--------
 		return status
 	#	----------------------------------------------------------------------
-	def checkLeague(self, owner, unit, order, word, orderText):
+	def checkLeague(self, owner, unit, order, word, orderText, report):
 		#	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		#	At present, this method is not called during order input
 		#	validation for games that use the FICTIONAL_OK rule.
@@ -436,10 +453,10 @@ class Game:
 		#	next turn.  Probably what should happen is this method
 		#	should be called at adjudication time from somewhere
 		#	in the XtalballGame object to drive whether an ordered
-		#	unit should HOLD instead (of violate its league rules).
+		#	unit should HOLD instead (of violating its league rules).
 		#	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		error = self.error
-		if not owner or len(self.map.leagues.get(owner.name, [])) <= 1: return
+		error = report and self.error or []
+		if not owner or len(self.map.leagues.get(owner.name, [])) <= 1: return 1
 		league, behave = self.map.leagues[owner.name][:2]
 		supportee = self.unitOwner(word[1] + ' ' + word[2]) or owner
 		his = self.map.leagues.get(supportee.name, [''])[0]
@@ -454,6 +471,7 @@ class Game:
 			if vic and self.map.leagues.get(vic.name, [''])[0] in ours:
 				return error.append('LEAGUE FORBIDS %s: %s ' %
 					(orderText, unit) + order)
+		return 1
 	#	----------------------------------------------------------------------
 	def expandOrder(self, word):
 		#	---------------------------------
@@ -467,6 +485,12 @@ class Game:
 				result += ' '
 				if result[-2] + ch == '->': continue
 			result += ch
+		#	--------------------------------------
+		#	Isolate a punctuation mark at the end,
+		#	commonly found in DPeye syntax
+		#	--------------------------------------
+		if len(result) > 1 and result[-2] != ' ' and result[-1] in '?+*!|~':
+			result = result[:-1] + ' ' + result[-1]
 		#	------------------------------------
 		#	Convert aliases to recognized tokens
 		#	------------------------------------
@@ -1944,8 +1968,8 @@ class Game:
 			for power in self.powers:
 				if not (power is sendingPower
 				or [x for y in sendingPower.units for x in power.units
-					if (self.validOrder(sendingPower, y, 'S ' + x, 0)
-					or self.validOrder(power, x, 'S ' + y, 0))
+					if (self.validOrder(sendingPower, y, 'S ' + x, 0) == 1
+					or self.validOrder(power, x, 'S ' + y, 0) == 1)
 					and self.visible(sendingPower, y, 'H')[power.name] & 1
 					and self.visible(power, x, 'H')[sendingPower.name] & 1]):
 					if power in who: who.remove(power)
@@ -2847,6 +2871,14 @@ class Game:
 		for unit, order in self.command.items():
 			if order[0] != 'S': continue
 			word = order.split()
+			#	----------------------------------------------
+			#	See if the unit is allowed to give the support
+			#	----------------------------------------------
+			if 'SIGNAL_SUPPORT' in self.rules:
+				if word[-1] == '?':
+					self.result[unit] += ['void']
+					self.command[unit] = ' '.join(word[:-1])
+					continue
 			#	------------------------------------------------------
 			#	Remove any trailing "H" from a support-in-place order.
 			#	------------------------------------------------------
