@@ -1,4 +1,5 @@
 import random, os
+from codecs import open
 
 from DPjudge import Game, host, Map
 
@@ -37,7 +38,7 @@ class PayolaGame(Game):
 			#	an important caution about the effect this can have.
 			#
 			#	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			if offer.power.type: which = -1
+			if offer.power.type or not self.power.fullAccept: which = -1
 			else: which = self.power.fullAccept.find(offer.power.abbrev)
 			if self.seqs[which] is None: self.seqs[which] = offer.num
 			else: self.seqs[which] = min(self.seqs[which], offer.num)
@@ -132,7 +133,7 @@ class PayolaGame(Game):
 		#	-------------------
 		#	Offers and comments
 		#	-------------------
-		elif word[0][0] in '0123456789%':
+		elif word[0][0] in '0123456789%' or word[0] in ('A', 'F'):
 			if not includeFlags & 1: return -1
 			power.sheet += [upline]
 			if word[0][0] != '%': power.held = 1
@@ -164,6 +165,35 @@ class PayolaGame(Game):
 	def finishPowerData(self, power):
 		Game.finishPowerData(self, power)
 		power.liquid = power.balance
+	#	----------------------------------------------------------------------
+	def rollback(self, phase = None, includeFlags = 0):
+		error = Game.rollback(self, phase, includeFlags)
+		if error: return error
+		#	-----------------------
+		#	Truncate the chart file
+		#	-----------------------
+		phase = self.phaseType == 'M' and self.phase or self.findNextPhase('M')
+		if len(phase.split()) == 3 and os.path.isfile(self.file('chart')):
+			file = open(self.file('chart'), 'r', 'latin-1')
+			lines = file.readlines()
+			file.close()
+			for num, text in enumerate(lines):
+				if phase == text.strip(): break
+			else:
+				num = len(lines)
+			if num == len(lines): pass
+			elif num < 3:
+				try: os.unlink(self.file('chart'))
+				except: pass
+			else:
+				file = open(self.file('chart'), 'w', 'latin-1')
+				file.writelines(lines[:num-2])
+				file.close()
+				try: os.chmod(self.file('chart'), 0666)
+				except: pass
+		#	-------------------------------------------------
+		#	Ledgers are a kind of press, so we leave it as is
+		#	-------------------------------------------------
 	#	----------------------------------------------------------------------
 	def processExchangeReportsPhase(self):
 		for power in self.powers:
@@ -326,6 +356,7 @@ class PayolaGame(Game):
 			if '#' in word[0]:
 				return self.error.append('PLATEAU AMOUNT ON SAVINGS REQUEST')
 			for rep, amt, plateau in detail: power.reserve(rep * amt)
+			newline = word
 		#	-----------------------------
 		#	Now see if it is a bribe line
 		#	-----------------------------
@@ -346,7 +377,8 @@ class PayolaGame(Game):
 			#	---------------------------------------------------
 			if len(first) < 2:
 				return self.error.append('INCOMPLETE OFFER: ' + ' '.join(word))
-			unit, orders, newline = ' '.join(first[:2]), [], word[:2] + first[:2]
+			unit, orders, newline = ' '.join(first[:2]), [], first[:2]
+			if word[:2] != ['0', ':']: newline = word[:2] + newline
 			#	---------------------------------------
 			#	Check for 'Payola Classic' restrictions
 			#	---------------------------------------
@@ -426,8 +458,26 @@ class PayolaGame(Game):
 				if not valid and 'FICTIONAL_OK' not in self.rules:
 					return self.error.append(
 						'NON-EXISTENT UNIT IN ORDER: %s ' % unit + order)
-				elif valid == -1: newline += ['?']
 				whose = self.unitOwner(unit)
+				if valid == -1:
+					if 'RESTRICT_SIGNAL' in self.rules:
+						if word[:2] != ['0', ':']:
+							return self.error.append(
+								'SIGNAL_SUPPORT ORDER MUST BE 0 AgP DIRECT ' +
+								'BRIBE: ' + ' '.join(word))
+						elif not whose or power not in (whose, whose.controller()):
+							return self.error.append(
+								'SIGNAL_SUPPORT ORDER TO FOREIGN UNIT: %s ' %
+								unit + order) 
+						elif len(parts) > 1:
+							return self.error.append(
+								'BRANCHING NOT ALLOWED IN SIGNAL_SUPPORT ORDER: ' + 
+								' '.join(word))
+						elif self.signalOrder(whose, unit):
+							return self.error.append(
+								'MORE THAN ONE SIGNAL_SUPPORT ORDER FOR UNIT: %s ' %
+								unit + order) 
+					newline += ['?']
 				if (('TOUCH_BRIBE' in self.rules
 				or   'REMOTE_BRIBE' in self.rules)
 				and not ('CD_DUMMIES' in self.rules
@@ -445,12 +495,11 @@ class PayolaGame(Game):
 			#	-----------------------------------------------------
 			#	Add the offer repeatedly (according to the "*" count)
 			#	-----------------------------------------------------
-			word = newline
 			for rep, amt, plateau in detail:
 				for repeat in range(int(rep)):
 					power.addOffer(word[1], unit, orders, amt, plateau)
 		else: return self.error.append('BAD OFFER TYPE: ' + offer)
-		return ' '.join(word) + (comment and (' %' + comment) or '')
+		return ' '.join(newline) + (comment and (' %' + comment) or '')
 	#	----------------------------------------------------------------------
 	def bestOffer(self, power, unit):
 		orders = {}
@@ -478,6 +527,8 @@ class PayolaGame(Game):
 			for offer in offerer.offers:
 				if offer.unit != unit or offer.code == ':': continue
 				for order, key in orders.items():
+					if 'RESTRICT_SIGNAL' in self.rules and order[-1:] == '?':
+						continue
 					if ((offer.code == '!' and order not in offer.order)
 					or  '@>'.find(offer.code) == (order[0] == '-')
 					or	offer.code == '&'): key.add(offer)
@@ -497,6 +548,12 @@ class PayolaGame(Game):
 		#
 		#	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		self.orders[unit] = best = self.offers[unit][0]
+		#	--------------------------------------------------------
+		#	When the RESTRICT_SIGNAL rule is in play, substitute a HOLD
+		#	order with its SIGNAL_SUPPORT alternative, ifpresent.
+		#	--------------------------------------------------------
+		if 'RESTRICT_SIGNAL' in self.rules and best.order == 'H':
+			best.order = self.signalOrder(power, unit) or 'H'
 		#	--------------------------------------------------------
 		#	If the eBayola rule is being used, the winning briber(s)
 		#	will only be charged the sum of the highest NON-winning
@@ -528,7 +585,7 @@ class PayolaGame(Game):
 		#	the unit HOLD.  Find and accept the unit's HOLD offer, and set
 		#	its total (for appearances) to one AgP better than the best.
 		#	--------------------------------------------------------------
-		if power.isDummy() and power.accept == '?':
+		if power.isDummy() and not power.controller() and power.accept == '?':
 			id = [not x for x in self.orders[unit].seqs]
 			for guy in self.offers[unit][1:]:
 				if self.orders[unit].total != guy.total: return
@@ -541,6 +598,10 @@ class PayolaGame(Game):
 			except: hold = self.Key(power, unit, 'H')
 			hold.total, self.orders[unit] = tops, hold
 			self.offers[unit].insert(0, hold)
+	#	----------------------------------------------------------------------
+	def signalOrder(self, power, unit):
+		signals = [x.order for x in power.offers if x.unit == unit and x.order[-2:] == ' ?']
+		if signals: return signals[0]
 	#	----------------------------------------------------------------------
 	def determineOrders(self):
 		#	------------------------------------------------------------------
@@ -635,7 +696,9 @@ class PayolaGame(Game):
 			file.write('\n')
 			for unit in power.units:
 				for offer in self.offers[unit]:
-					temp = '%-35s' % (unit + ' ' + offer.order)
+					order = ('RESTRICT_SIGNAL' in self.rules and offer.total and
+						offer.order[-1:] == '?') and 'H' or offer.order
+					temp = '%-35s' % (unit + ' ' + order)
 					file.write(temp.encode('latin-1'))
 					for payer in bribers:
 						player = [x for x in self.powers if x.name == payer]
@@ -722,8 +785,12 @@ class PayolaGame(Game):
 					self.mail.write('NONE OF YOUR BRIBES WERE ACCEPTED\n')
 				self.mail.write('YOUR OFFER SHEET WAS:\n')
 				for offer in power.sheet:
+					if not offer[:1].isdigit(): offer = '0 : ' + offer
 					if 'PAY_DUMMIES' in self.rules and offer[:1] == '0':
 						continue
+					if ('RESTRICT_SIGNAL' in self.rules and offer[:1] != '0' and
+						offer[-1:] == '?'):
+						offer = ' '.join(offer.split()[:2]) + ' H'
 					self.mail.write(
 						'%*s%s\n' % (6 - offer.find(' '), '', offer))
 				self.mail.write(

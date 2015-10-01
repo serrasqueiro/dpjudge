@@ -34,13 +34,13 @@ class PayolaPower(Power):
 		#	-----------------------------------
 		if includeFlags & 4:
 			self.overpaid, self.offers, self.sent = 0, [], []
-			self.accept = None
+			self.accept = self.fullAccept = None
 		if includeFlags & 5:
 			self.sheet = []
 		self.liquid = self.left = None
-		#	-----------------------------------------------
-		#	The three attributes below are ZeroSum-specific
-		#	-----------------------------------------------
+		#	----------------------------------------------
+		#	The two attributes below are ZeroSum-specific
+		#	----------------------------------------------
 		self.gained, self.lost = [], []
 		#	-------------------------------------------
 		#	And here are two that are Exchange-specific

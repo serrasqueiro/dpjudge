@@ -251,6 +251,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=PAY_DUMMIES>PAY_DUMMIES</option>
 <option value=PUBLIC_TOTALS>PUBLIC_TOTALS</option>
 <option value=REMOTE_BRIBE>REMOTE_BRIBE</option>
+<option value=RESTRICT_SIGNAL>RESTRICT_SIGNAL</option>
 <option value=TOUCH_BRIBE>TOUCH_BRIBE</option>
 <option value=VASSAL_TRANSFERS>VASSAL_DUMMIES</option>
 <option value=ZEROSUM>ZEROSUM</option>
@@ -499,10 +500,23 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE SIGNAL_SUPPORT !NO_CHECK -->
 	Players may order support to any unit and any destination on the 
 	board, including <tt>SHUT</tt>s (impassable areas defined in the
-	map file, such as Switzerland on the Standard map). This is useful
-	in NO_PRESS games to signal a player's intention or stance towards
-	other players. Invalid orders are marked with a question mark (?)
-	in the order box after submitting them.
+	map file, such as Switzerland on the Standard map). They will be
+	treated as void support orders in the results and on the map. This
+	is useful in NO_PRESS games to signal a player's intention or stance
+	towards other players. Invalid orders are marked with a question
+	mark (?) in the order box after submitting them.
+	<br><br>Here are some examples and their possible interpretation:
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;England: A LVP S F NTH ?</tt>
+	<br>This could be a taunt. "I dare you to attack my home island when
+	I have both my front and back covered."
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;France: A MAR S A VIE - ROM ?</tt>
+	<br>This is a cry for help. "Austria, Italy is heading my way. Stab
+	him now to get him off my back."
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Austria: A VIE S A VEN - SWI ?</tt>
+	<br>This is the Austrian reply. "Italy, I'm coming after you after I
+	finish some business here. Better run and hide!"
+	<br><br>See also <a href="#RESTRICT_SIGNAL"><tt>RESTRICT_SIGNAL</tt></a> for
+	a related Payola rule.
 <!-- RULE END -->
 
 <a name=FICTIONAL_OK></a><p><dt><b><tt>FICTIONAL_OK</tt></b><dd>
@@ -1833,6 +1847,45 @@ the course of the game.
 	Only one offer may be made by any player to any given unit.  Additionally,
 	wildcard bribes (<tt>&gt;</tt>, <tt>@</tt>, <tt>!</tt>, <tt>&amp;</tt>)
 	are not allowed.
+<!-- RULE END -->
+
+<a name=RESTRICT_SIGNAL></a><p><dt><b><tt>RESTRICT_SIGNAL</tt></b><dd>
+<!-- RULE RESTRICT_SIGNAL +SIGNAL_SUPPORT -->
+	With this rule in effect, <a href="#SIGNAL_SUPPORT"><tt>SIGNAL_SUPPORT</tt></a>
+	orders may only be issued by the power owning the unit or its
+	controller. Bribes should always be 0 AgP. There can be only one
+	such order per unit. It gets substituted in when the winning bet
+	for the unit is a <tt>HOLD</tt> order. 
+	Unlike unrestricted <tt>SIGNAL_SUPPORT</tt> orders, players know who
+	issued the order (even if they may not know who paid for the
+	<tt>HOLD</tt> order), making it a more valuable tool for communication
+	in <tt>NO_PRESS</tt> games.
+	<br><br>Let's illustrate the difference with the following example.
+	Italy has moved towards France (intentionally or not), and France
+	wants Austria to stab Italy by attacking Venice from Trieste.
+	<br>Here are the bid sheets for fleet Trieste when <tt>RESTRICT_SIGNAL</tt>
+	is <b>not</b> active (only <tt>SIGNAL_SUPPORT</tt> is):
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Austria: 2 : F TRI - VEN</tt>
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Austria: 0 : F TRI S A VEN - SWI ?</tt>
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;France:&nbsp; 3 : F TRI - VEN</tt>
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;France:&nbsp; 1 : F TRI S A VIE - ROM ?</tt>
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Italy:&nbsp;&nbsp; 5 ! F TRI - VEN</tt>
+	<br>The result is that Fleet Trieste makes the void support order
+	for Vienna to Rome, as dictated by France, but no one except France
+	knows this.
+	<br>The same sheets, but now with <tt>RESTRICT_SIGNAL</tt>:
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Austria: 2 : F TRI - VEN</tt>
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Austria: 0 : F TRI S A VEN - SWI ?</tt>
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;France:&nbsp; 3 : F TRI - VEN</tt>
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;France:&nbsp; 1 : F TRI H</tt>
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Italy:&nbsp;&nbsp; 5 ! F TRI - VEN</tt>
+	<br>The only difference is that, in case the attack bid on Venice
+	fails, France pays Trieste to hold instead of supporting, as the rule
+	forbids France to issue an invalid support order to a foreign unit.
+	The bid indeed fails, with the result that Fleet Trieste gives void
+	support to Venice to Switzerland, which is Austria's default order.
+	Although France and Italy paid for it, it's Austria choosing the
+	message, much to the delight of France and the chagrin of Italy.
 <!-- RULE END -->
 
 <a name=PAY_DUMMIES></a><p><dt><b><tt>PAY_DUMMIES</tt></b><dd>

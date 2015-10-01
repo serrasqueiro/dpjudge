@@ -111,11 +111,12 @@ class Check(DPjudge.Status):
 				if line and game.deadlineExpired('4W'):
 					mail = DPjudge.Mail(host.judgekeeper,
 						'Diplomacy game alert (%s)' % game.name)
-					mail.write("JudgeKeeper:\n\nThe game '%s' on %s is "
+					mail.write("JudgeKeeper:\n\nThe %s game '%s' on %s is "
 						'past its deadline for more than 4 weeks.\n\nVisit the game at\n'
 						'   %s?game=%s\nfor more information.\n\n'
 						'Thank you,\nThe DPjudge\n' %
-						(game.name, host.dpjudgeID, host.dpjudgeURL, game.name))
+						(game.private and 'private' or 'public',
+						game.name, host.dpjudgeID, host.dpjudgeURL, game.name))
 					mail.close()
 			elif 'terminated' not in data:
 				reason = ''
@@ -128,11 +129,12 @@ class Check(DPjudge.Status):
 					if game.deadlineExpired('8W'):
 						mail = DPjudge.Mail(host.judgekeeper,
 							'Diplomacy game alert (%s)' % game.name)
-						mail.write("JudgeKeeper:\n\nThe game '%s' on %s is "
+						mail.write("JudgeKeeper:\n\nThe %s game '%s' on %s is "
 							'in the %s state for more than 8 weeks.%s\n\nVisit the game at\n'
 							'   %s?game=%s\nfor more information.\n\n'
 							'Thank you,\nThe DPjudge\n' %
-							(game.name, host.dpjudgeID, state, reason,
+							(game.private and 'private' or 'public',
+							game.name, host.dpjudgeID, state, reason,
 							host.dpjudgeURL, game.name))
 						mail.close()
 				elif 'forming' in data:
