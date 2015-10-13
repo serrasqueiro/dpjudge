@@ -1,4 +1,4 @@
-MAP slovenia
+USE slovenia
 
 COAST	GOR		ABUTS	mos MUR STP ura VOL 
 COAST	MUR		ABUTS	fin GOR LAP STP URA BRN WHI 
