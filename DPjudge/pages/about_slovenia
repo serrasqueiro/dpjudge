@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title><ID>: Modern-Up Overview</title>
+<title><ID>: Slovenia Overview</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <:
 page.include('stylesheet')
@@ -21,7 +21,7 @@ page.include('functions')
 	<td width=1 class="border"><img src="<URL>/images/spacer.gif" width=1></td>
 	<td class="gameheader" align=center>
 		<!--HEADER GOES HERE-->
-		<b>The Modern-Up Variant</b>
+		<b>The Slovenia Variant</b>
 		<!--INFORMATION LINKS TABLE BEGINS HERE-->
 		<table border=0 cellpadding=5 cellspacing=0 width=100%>
 		<tr>
@@ -57,11 +57,19 @@ page.include('functions')
 		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
 		<!--QUESTIONS LIST TABLE ENDS HERE-->
 		<p>
-		<form action=<URL> target=modern-up>
+		<form action=<URL> target=slovenia>
 		<input type=hidden name=page value=DPmapit>
-		<input type=hidden name=map value=modern-up>
+		<input type=hidden name=map value=slovenia>
 		<input type=hidden name=make value=1>
 		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+		<p>
+		<form action=<URL> target=volga>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=volga>
+		<input type=hidden name=trial value=1>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Trial Map">
 		</form>
 	</td>
 	</tr>
@@ -75,10 +83,7 @@ page.include('functions')
 		<!--BODYCOPY BEGINS HERE-->
 
 
-The same rules as for <a href=<PAGE>about_modern>Modern</a> apply, except as noted below.
-<ol>
-<li>Britain starts with an army in Liverpool instead of a fleet.
-</ol>
+The same rules as for <a href=<PAGE>about_modern-up>Modern-Up</a> apply.
 		<!--BODYCOPY ENDS HERE-->
 </td></tr></table>
 
@@ -95,14 +100,12 @@ The same rules as for <a href=<PAGE>about_modern>Modern</a> apply, except as not
 	<td class="bodycopy">
 		<!--BODYCOPY BEGINS HERE-->
 
-The Modern-Up map is the same as for <a href=<PAGE>about_modern>Modern</a> with the following modifications.
+The Slovenia map is the same as for <a href=<PAGE>about_modern-up>Modern-Up</a> with the following modifications.
 <ol>
 <li>
-Addition of Ulster (Northern Ireland). Ulster is a canal province like Denmark or Istanbul, bordering Ireland, Liverpool and Clyde and separating the North-Atlantic Ocean from the Irish Sea.
+Addition of Slovenia. Slovenia is a non-sc country hemmed in between Austria, Hungary, Croatia and Venice. Slovenia has no coastline, so that Venice still borders Croatia.
 <p><li>
-The North- and South-Atlantic Ocean now touch each other, while Ireland borders the Mid-Atlantic Ocean.
-<p><li>
-Addition of Central Sahara (Libya's desert area). Central Sahara is a landlocked province bordering Western Sahara, Libya, Eastern Sahara and Aswan. Aswan stretches eastwards towards the Libyan border.
+(Trial version only) Addition of the Volga-Baltic Sea waterway branching off of the Volga-Don waterway already present, with an additional branch to the White Sea, connecting all Russia's coastlines. The lake where these three new canal systems meet (Lake Onega, but unnamed on the map as it's not a space in its own right) is on the corner of St. Petersburg, Murmansk and Gorky, so fleets can move directly between any two of these spaces. Gorky is now a Russian port, capable of building fleets as well as armies.
 </ol>
 
 		<!--BODYCOPY ENDS HERE-->
@@ -123,8 +126,7 @@ Addition of Central Sahara (Libya's desert area). Central Sahara is a landlocked
 	<td class="bodycopy">
 		<!--BODYCOPY BEGINS HERE-->
 <p>
-The Modern variant was created by Vincent Mous. The Modern-Up modifications were proposed and implemented by Mario Huys in collaboration with Vincent.
-Mario described these modifications in the <a href=<POUCH>>Diplomatic Pouch</A> Zine articles <a href=<POUCH>/Zine/F2013M/Huys/troubles.htm>A Modern Look at 'The Troubles'</a> and <a href=<POUCH>/Zine/S2015M/Huys/modern.htm>The Modern Art of War</a>.
+Whereas Modern-Up was a collaboration between Mario Huys and Vincent Mous (creator of the Modern variant), Slovenia is what Vincent calls <i>"a different variant"</i>. The addition of Slovenia was first proposed by Chris Fridrich and put in its definite form by Mario, who describes this in the <a href=<POUCH>>Diplomatic Pouch</A> Zine article <a href=<POUCH>/Zine/S2015R/Huys/slovenia.htm>The Modern Art of Love</a>, with a <a href=<POUCH>/Zine/F2015M/Mous/war.htm>riposte</a> by Vincent in the next Zine.
 
 		<!--BODYCOPY ENDS HERE-->
 	</td>
