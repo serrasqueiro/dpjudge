@@ -1,0 +1,13 @@
+MAP modern-up
+
+Slovenia				= sln slv
+
+LAND	SLN		ABUTS	AUS CRO HUN VEN 
+
+AMEND	AUS		ABUTS	-CRO SLN 
+AMEND	CRO		ABUTS	-aus sln 
+AMEND	HUN		ABUTS	SLN 
+AMEND	VEN		ABUTS	sln 
+
+BRITAIN
+A LIV
