@@ -41,28 +41,29 @@ def listGames(variant = 'standard'):
 			""")
 		if games[state]:
 ##			if state[0] in 'FW': page.write('(Private games listed in gray)')
+			page.write('<form name=%s method=post>' % state)
+			apprise('page', 'Login')
 			page.write(
 				"""
-				<form name=%s method=post>
-				<input type=hidden name=page value=Login>
 				<input type=submit value="View Game:" 
 				class="inputSubmit">&nbsp;
 				<select name=game onchange=document.%s.submit()
 				class="inputBox">
-				""" % (state, state))
+				""" % state)
 			for private in 0, 1:
 				shown = 0
 				for gamename in games[state]:
-					if private == ('private' in gameDict[gamename]):
-						if not shown:
-							page.write('<optgroup label="%s Games">' %
-								('Public', 'Private')[private])
-							shown = 1
-						page.write('<option value=%s>' % gamename + gamename)
+					if private != ('private' in gameDict[gamename]): continue
+					if not shown:
+						page.write('<optgroup label="%s Games">' %
+							('Public', 'Private')[private])
+						shown = 1
+					page.write('<option>%s</option>' % gamename)
 #					page.write('<option style="background:%s" value=%s>' %
 #						(('white', '#dddddd')[state[0] in 'FW'
 #							and 'private' in gameDict[gamename]], gamename) +
 #						gamename)
+				if shown: page.write('</optgroup>')
 			page.write('</select></form>')
 		else:
 			page.write('(Currently None)')
@@ -225,20 +226,16 @@ def showResultsText(subject = None, align = 1):
 				phase = game.probeNextPhase(phase)
 			if forwardList: forwardList = forwardList[:-1]
 	if not backList and not forwardList: return
-	page.write(
-		"""
-		<form name=results method=post>
-		<input type=hidden name=game value=%s>
-		<input type=hidden name=page value=Read>
-		<input type=hidden name=file value=results>
+	page.write('<form name=results method=post>')
+	hideBack('Read')
+	apprise('file', 'results')
+	if fileNames: apprise('files', '|'.join(fileNames))
+	page.write("""
 		%s<b>Results:</b>
 		%s<select name="subject" class="inputBox"
 		onChange=document.results.submit()>
-		""" % (game.name, (fileNames and
-			'<input type=hidden name=files value="%s">\n' %
-			'|'.join(fileNames) or '') +
-			 '<tr><td class=bodycopy>' * align,
-			 '</td><td align=right>' * align))
+		""" % ('<tr><td class=bodycopy>' * align,
+		'</td><td align=right>' * align))
 	match = backList and 1 or 2
 	if backList:
 		subject = subject or backList[-1]
@@ -247,19 +244,15 @@ def showResultsText(subject = None, align = 1):
 	if forwardList:
 		page.write('<optgroup label="Rolled Back Phases">')
 		for item in forwardList:
-			page.write('<option%s>' % (' selected' * (subject == item)) + item)
+			page.write('<option%s>%s</option>' %
+				(' selected' * (subject == item), item))
 			if subject == item: match = 2
 		page.write('</optgroup>')
 	page.write('</select>' + '</td>' * align)
-	if pwdFlag: page.write('<input type=hidden name=password value=%s>'
-		'<input type=hidden name=power value=%s>' % (page.password, power))
-	page.write(
-		"""
-		<input type=hidden name=count value=%d>
+	page.write("""
 		%s<input type="submit" value="Read" class="inputSubmit">
 		%s</form>
-		""" % ('count' in vars(page) and (int(page.count) - 1),
-			'<td class=bodycopy>' * align, '</td></tr>' * align))
+		""" % ('<td class=bodycopy>' * align, '</td></tr>' * align))
 	return match
 #	----------------------------------------------------------------------
 def showDocList(files, beforeEnd = 0):
@@ -267,18 +260,17 @@ def showDocList(files, beforeEnd = 0):
 	shown = 0
 	for file, desc in files:
 		if os.path.isfile(page.game.file(file)):
-			if not shown: page.write(
-				"""
-				<form method=post name=docread>
-				<input type=hidden name=page value=Read>
-				<input type=hidden name=game value=%s>
-				<tr><td class="bodycopy"><b>Analysis:</b></td>
-				<td align=right>
-				<select class="inputBox"
-				onchange=document.docread.submit() name=file>
-				""" % page.game.name)
-			shown = 1
-			page.write('<option value=%s>' % file + desc)
+			if not shown:
+				page.write('<form method=post name=docread>')
+				hideBack('Read')
+				page.write("""
+					<tr><td class="bodycopy"><b>Analysis:</b></td>
+					<td align=right>
+					<select class="inputBox"
+					onchange=document.docread.submit() name=file>
+					""")
+				shown = 1
+			page.write('<option value="%s">%s</option>' % (file, desc))
 	if shown: page.write(
 		"""
 		</select>
@@ -363,10 +355,9 @@ def showAbsenceInput():
 		}
 		</script>
 		<form method=post name=setabsence>
-		<input type=hidden name=page value=Status>
-		<input type=hidden name=game value=%s>
-		<input type=hidden name=power value=%s>
-		<input type=hidden name=password value=%s>
+		""")
+	hideBack('Status')
+	page.write("""
 		<tr><td class="bodycopy"><b>Absence:</b></td>
 		<input type=hidden name=startdate value="">
 		<td class="bodycopy" align=right nowrap>
@@ -388,26 +379,27 @@ def showAbsenceInput():
 		class="inputSubmit">
 		</td></tr>
 		</form>
-		""" % (page.game.name, page.power.name, page.password))
+		""")
 #	----------------------------------------------------------------------
 #	LoginPage
 #	----------------------------------------------------------------------
 def showLoginForm(showElimPowers = 0):
 	game, powers, others = page.game, [], []
-	page.write(
-		"""
+	page.write("""
 		<script>function maySubmit(){
 		if(document.powerForm.password.value==""){
 		document.powerForm.password.focus();
 		document.powerForm.password.select();}
 		else document.powerForm.submit();}</script>
 		<form name=powerForm method=post onSubmit=maySubmit()>
-		<input type=hidden name=page value=Status>
-		<input type=hidden name=game value=%s>
+		""")
+	apprise('page', 'Status')
+	reprise(['game'])
+	page.write("""
 		<tr valign=bottom><td height=10 colspan=3><!hr></td></tr>
 		<tr><td colspan=2 class="bodycopy" nowrap><b>Log in as:</b>&nbsp;
 		<select name=power class="inputBox" onchange=maySubmit()>
-		""" % game.name)
+		""")
 	for power in game.powers:
 		if ((power.ceo or power.player and power.player[0] == 'DUMMY')
 		and 'HIDE_DUMMIES' not in game.rules) or power.type == 'MONITOR': pass
@@ -676,72 +668,64 @@ def showProposal():
 		vote = min(int(power.vote), dias)
 		options = (2, dias)['NO_DIAS' in game.rules]
 		now = (min(vote, options) - 1, options)[vote == 0]
-		page.write(
-			"""
+		page.write("""
 			<script>function makeProp(){
 			if(confirm('Are you sure about this change?'))
 			document.proposalForm.submit();
 			else document.proposalForm.proposal.selectedIndex=%d;}</script>
 			<form name=proposalForm %s>
-			<input type=hidden name=page value=Status>
-			<input type=hidden name=game value=%s>
-			<input type=hidden name=power value=%s>
-			<input type=hidden name=password value=%s>
+			""" % (now,
+			('onSubmit="return false"', 'method=post')[page.pwdFlag == 1]))
+		hideBack('Status')
+		page.write("""
 			<tr valign=top><td class="bodycopy">
 			<b>Goal:</b></td><td align=right class="bodycopy">
 			<select name=proposal onchange=makeProp() class="inputBox">
-			""" % (now,
-			('onSubmit="return false"', 'method=post')[page.pwdFlag == 1],
-			game.name, power.name, page.password))
+			""")
 		if 1 in (vote, page.pwdFlag):
-			page.write('<option value=1%s>A solo victory for %s\n' %
+			page.write('<option value=1%s>A solo victory for %s</option>' %
 				(' selected' * (vote == 1), powerName))
 		for way in range((dias, 2)['NO_DIAS' in game.rules], dias + 1):
 			if vote == way or page.pwdFlag == 1: page.write(
-				'<option value=%d%s>A %sdraw including ' %
+				'<option value=%d%s>A %sdraw including %s</option>' %
 				(way == dias and -1 or way, ' selected' * (vote == way),
-				('%d-way ' % way, '')['BLIND' in game.rules]) +
-				powerName + ' (DIAS)' * (way == dias))
+				('%d-way ' % way, '')['BLIND' in game.rules],
+				powerName + ' (DIAS)' * (way == dias)))
 		if vote == 0 or page.pwdFlag == 1: page.write(
-			'<option value=0%s>' % (' selected' * (vote == 0)) +
+			'<option value=0%s>%s</option>' % (' selected' * (vote == 0),
 			('A concession to another power',
 			'Any result NOT including ' + powerName)
-			['NO_DIAS' in game.rules])
+			['NO_DIAS' in game.rules]))
 		page.write('</select></td><td></td></tr></form>')
 	#	-------------------------------
 	#	PROPOSE_DIAS.  Request player's
 	#	vote on any current proposal.
 	#	-------------------------------
-	elif game.proposal: page.write(
-		"""
-		<form name=proposalForm method=post>
-		<input type=hidden name=page value=Status>
-		<input type=hidden name=game value=%s>
-		<input type=hidden name=power value=%s>
-		<input type=hidden name=password value=%s>
-		<tr><td class="bodycopy" colspan=2 align=right>
-		<b><font color=red>A %s<br>Has Been Proposed%s:</font>
-		</td><td>
-		"""
-		'<select class="inputBox" name=vote onchange="'
-		"if(confirm('Are you sure about this vote on the proposal?'))"
-		'document.proposalForm.submit();"'
-		'else document.proposalForm.vote.selectedIndex=0;">'
-		'%s<option value=YES>AGREE<option value=NO>VETO</select></b>'
-		'</td><td></td></tr></form>'
-		% (game.name, power.name, page.password,
-		('Concession to ' + game.anglify(game.proposal[0]),
-		'Draw Including All Survivors')[game.proposal[0] == 'DIAS'],
-		(' by ' + game.anglify(game.proposal[1]), '')
-		['HIDE_PROPOSER' in game.rules], '<option>(NVR)' * (not power.vote)))
+	elif game.proposal:
+		page.write('<form name=proposalForm method=post>')
+		hideBack('Status')
+		page.write("""
+			<tr><td class="bodycopy" colspan=2 align=right>
+			<b><font color=red>A %s<br>Has Been Proposed%s:</font>
+			</td><td>
+			<select class="inputBox" name=vote onchange="if(confirm(
+			'Are you sure about this vote on the proposal?'))
+			document.proposalForm.submit();
+			else document.proposalForm.vote.selectedIndex=0;">
+			%s<option value=YES>AGREE</option>
+			<option value=NO>VETO</option></select></b>
+			</td><td></td></tr></form>
+			""" % (('Concession to ' + game.anglify(game.proposal[0]),
+			'Draw Including All Survivors')[game.proposal[0] == 'DIAS'],
+			(' by ' + game.anglify(game.proposal[1]), '')
+			['HIDE_PROPOSER' in game.rules], '<option>(NVR)' * (not power.vote)))
 	#	---------------------------------------
 	#	Or pop up a window with a select list
 	#	requesting the type of game termination
 	#	(DIAS or concession) to be proposed.
 	#	---------------------------------------
 	else:
-		page.write(
-			"""
+		page.write("""
 			<script>function propose(){win=window.open("","%s_proposal",
 			"width=430,height=40,resizable=no,menubar=no,status=no," +
 			"directories=no,scrollbars=no,toolbar=no,location=no");
@@ -760,21 +744,19 @@ def showProposal():
 		[page.write("win.document.write('<option value=%s>"
 			"a concession to %s');" % (who.name, game.anglify(who.name)))
 			for who in game.powers if who.canVote()]
-		page.write(
-			"""
+		page.write("""
 			win.document.write('</select></form>');win.document.close();}
 			function makeProposal(){document.proposalForm.submit();}
 			</script><form name=proposalForm method=post>
-			<input type=hidden name=page value=Status>
-			<input type=hidden name=game value=%s>
-			<input type=hidden name=power value=%s>
-			<input type=hidden name=password value=%s>
-			<input type=hidden name=proposal value="">
+			""")
+		hideBack('Status')
+		apprise('proposal', '')
+		page.write("""
 			<tr><td class=bodycopy><b>Endgame:</td>
 			<td colspan=2 align=right>
 			<input class=inputSubmit type=button value="Propose Game Conclusion"
 			onclick=propose()></td></tr></form>
-			""" % (game.name, power.name, page.password))
+			""")
 #	----------------------------------------------------------------------
 def showMessages():
 	pwdFlag = (isinstance(page.power, Power) and
@@ -787,34 +769,32 @@ def showMessages():
 #	----------------------------------------------------------------------
 def showControlInfo():
 	game, power = page.game, page.power
-	if power.ceo: return page.write(
-		"""
-		<form name=ceoForm method=post>
-		<input type=hidden name=page value=Status>
-		<input type=hidden name=game value=%s>
-		<input type=hidden name=power value=%s>
-		<input type=hidden name=password value=%s>
-		<tr><td class=bodycopy><b>Controller:</b></td>
-		<td class=bodycopy align=right>%s</font>
-		<td><input class=inputSubmit type=submit value="Log In">
-		</td></tr></form>
-		""" %
-		(game.name, power.ceo[0], page.password, game.anglify(power.ceo[0])))
+	if power.ceo:
+		page.write('<form name=ceoForm method=post>')
+		apprise('page', 'Status')
+		reprise(['game', 'password'])
+		apprise('power', power.ceo[0])
+		page.write("""
+			<tr><td class=bodycopy><b>Controller:</b></td>
+			<td class=bodycopy align=right>%s</td>
+			<td><input class=inputSubmit type=submit value="Log In">
+			</td></tr></form>
+			""" % game.anglify(power.ceo[0]))
+		return
 	headsUp = [x.name for x in power.vassals(all = True)]
 	if headsUp:
-		page.write(
-			"""
-			<form name=ceoForm method=post>
-			<input type=hidden name=page value=Status>
-			<input type=hidden name=game value=%s>
-			<input type=hidden name=password value=%s>
+		page.write('<form name=ceoForm method=post>')
+		apprise('page', 'Status')
+		reprise(['game', 'password'])
+		page.write("""
 			<tr><td class=bodycopy nowrap><b>Controller Of:</b></td>
 			<td align=right>
 			<select class=inputBox
 			name=power onChange=document.ceoForm.submit()>
-			""" % (game.name, page.password))
-		for country in headsUp: page.write('<option value="%s">%s' %
-			(country, game.anglify(country)))
+			""")
+		for country in headsUp:
+			page.write('<option value="%s">%s</option>' %
+				(country, game.anglify(country)))
 		page.write(
 			"""
 			</select></td>
@@ -850,13 +830,8 @@ def showReadyNotice():
 #	----------------------------------------------------------------------
 def showPressOptions():
 	readers = page.game.eligiblePressRecipients(page.power)
-	page.write("""
-		<form method=post name=press>
-		<input type=hidden name=page value=Press>
-		<input type=hidden name=game value=%s>
-		<input type=hidden name=power value=%s>
-		<input type=hidden name=password value=%s>
-		""" % (page.game.name, page.power.name, page.password))
+	page.write('<form method=post name=press>')
+	hideBack('Press')
 	#	---------------------------
 	#	Draw and fill the press box
 	#	---------------------------
@@ -902,12 +877,12 @@ def showPressOptions():
 </td></tr>
 </table></td>
 			""")
-	elif readers: page.write(
-		"""
-		<input type=hidden name=recipient value=%s>
-		<th><input class=inputSubmit type=submit value="Mail the %s">
-		</th>
-		""" % (readers[0], page.game.anglify(readers[0])))
+	elif readers:
+		apprise('recipient', readers[0])
+		page.write("""
+			<th><input class=inputSubmit type=submit value="Mail the %s">
+			</th>
+			""" % page.game.anglify(readers[0]))
 	else: page.write('<td class=bodycopy align=center>(None&nbsp;available)</td>')
 	page.write('</form>')
 #	----------------------------------------------------------------------
@@ -933,10 +908,7 @@ def showWaitNotice():
 def showReceiptFlag():
 	if not page.power.address: return
 	if 'ALWAYS_CONFIRM' in page.game.rules:
-		page.write(
-			"""
-			<input type=hidden name=receipt value=1>
-			""")
+		apprise('receipt', 1)
 	else:
 		page.write(
 			"""
@@ -1082,18 +1054,14 @@ def viewFile():
 	file.close()
 	if not lines: return finished('File Empty')
 	if lines[0] != '<': lines = '<pre>\n' + lines + '\n</pre>'
-	page.count = ('count' in vars(page) and int(page.count)) - 1
-	page.write(
-		"""
+	page.write("""
 		<table><tr><td>
 		%s
 		</td></tr></table><hr>
 		<table><tr><td class=bodycopy>
-		<form><input class=inputSubmit type=button
-		onclick=window.history.go(%d) value="Back To Game Page">
-		</form>
-		</td></tr></table>
-		""" % (lines, page.count))
+		""" % lines)
+	goBack()
+	page.write('</td></tr></table>')
 #	----------------------------------------------------------------------
 def showResults():
 	if 'subject' not in vars(page): return viewFile()
@@ -1142,14 +1110,8 @@ def showResults():
 				'phase') and word[-1] or 'FORMING'
 			addRoll(phase, forward-1)
 			page.write('</td></tr><tr><td align=center>')
-	page.count = ('count' in vars(page) and int(page.count)) - 1
-	page.write(
-		"""
-		<form><input class=inputSubmit type=button
-		onclick=window.history.go(%d) value="Back To Game Page">
-		</form>
-		</td></tr></table>
-		""" % page.count)
+	goBack()
+	page.write('</td></tr></table>')
 #	----------------------------------------------------------------------
 def sendPress():
 	if type(page.recipient) in (str, unicode): page.recipient = [page.recipient]
@@ -1161,14 +1123,9 @@ def sendPress():
 	message, okay = '', page.game.eligiblePressRecipients(page.power)
 	if (page.power.name != 'MASTER'
 	and [1 for x in page.recipient if x.upper() not in okay]):
-		page.write(
-			"""
-			<th class=bodycopy bgcolor=red>
-			<font color=yellow><b><font size=2>Message Cannot Be Sent<br>
-			</font>The settings of this game dictate
-			that your message cannot be sent at this time.</font>
-			</td>
-			""")
+		finished('Message Cannot Be Sent',
+			'The settings of this game dictate that your message cannot ' +
+			'be sent at this time.')
 		return
 	for line in page.message.split('\n'):
 		while len(line) > 72:
@@ -1187,49 +1144,84 @@ def sendPress():
 	#	socket.gethostname object to a lambda function instead
 	#	of letting it stay the built_in_function it usually is.
 	#	-------------------------------------------------------
-	page.write(
-		"""
-		<th class=bodycopy align=center bgcolor=yellow>
-		<b><font color=red size=2>Message Sent</font></b>
-		%s
-		</th>
-		""" % (
-		"""<br><font color=red><b><u>NOTICE:</u> E-mail service down;
-			message queued for delivery when restored</font>
-		""" * (type(socket.gethostname) is not type(len))))
+	finished('Message Sent', ('<u>NOTICE:</u> ' +
+		'E-mail service down; message queued for delivery when restored') *
+		(type(socket.gethostname) is not type(len)))
 #	----------------------------------------------------------------------
-def finished(header = 'Update Made', subheader = None):
+def apprise(option, value):
+	try: value = value.name
+	except: pass
+	page.write('<input type=hidden name="%s" value="%s">' % (option, value))
+#	----------------------------------------------------------------------
+def comprise(options):
+	for option in options:
+		page.write('<input type=hidden name="%s">' % option)
+#	----------------------------------------------------------------------
+def surprise(option, fallBack):
+	try: apprise(option, vars(page)[option])
+	except: apprise(option, fallBack)
+#	----------------------------------------------------------------------
+def reprise(options):
+	for option in options:
+		try: apprise(option, vars(page)[option])
+		except: pass
+#	----------------------------------------------------------------------
+def hideBack(target):
+	apprise('page', target)
+	surprise('backpage', page.page)
+	reprise(['game', 'power', 'password'])
+#	----------------------------------------------------------------------
+def goBack(caption = None, auto = 0):
+	if 'backpage' in vars(page):
+		if not caption: caption = 'Return To The %s Page' % page.backpage
+		if auto: caption += ' [Automatic In %d Seconds]' % auto
+		page.write('<form method=post name=form>')
+		apprise('page', page.backpage)
+		reprise(['game', 'power', 'password'])
+		page.write("""
+			<input type=submit class=inputSubmit value="%s">
+			</form>
+			""" % caption)
+	else:
+		if not caption: caption = 'Go Back To The Previous Page'
+		page.write("""
+			<form method = post>
+			<input type=button class=inputSubmit value="%s"
+			onclick="alert('No backpage'); window.history.back()">
+			</form>
+			""" % caption)
+#	----------------------------------------------------------------------
+def finished(header = 'Update Made', subheader = None, body = None):
 	if 'receipt' in vars(page):
 		page.game.reportOrders(page.power)
 	page.write(
 		"""
 		<tr valign=top bgcolor="#CCCCCC">
 		<th bgcolor=yellow class=bodycopy>
-		<font color=red size=3>%s</th></tr>
+		<font color=red size=3>%s</font></th></tr>
 		""" % header +
 		"""
 		<tr valign=top bgcolor="#CCCCCC">
 		<th bgcolor=red class=bodycopy>
-		<font color=yellow size=3>%s</th></tr>
-		""" % subheader * (not not subheader))
+		<font color=yellow size=3>%s</font></th></tr>
+		""" % subheader * (not not subheader) +
+		"""
+		<tr valign=top bgcolor="#CCCCCC">
+		<th bgcolor=yellow class=bodycopy>
+		<font size=2>%s</font></th></tr>
+		""" % body * (not not body))
 	page.write(
 		"""
 		<tr valign=top>
 		<script>window.setTimeout("document.form.submit();",5000);</script>
 		<td align=center width=100%% class=bodycopy>
 		&nbsp;<br>
-		<form method=post name=form>
-		<input type=hidden name=page value=Status>
-		<input type=hidden name=game value=%s>
-		<input type=hidden name=power value=%s>
-		<input type=hidden name=password value=%s>
-		<input type=submit class=inputSubmit
-		value="Return to the Status Page [Automatic in 5 Seconds]"></form>
-		""" % (page.game.name, page.power.name, page.password))
+		""")
+	goBack(auto = 5)
 	page.write(
 		"""
 		<blockquote>Note that if you use your browser's
-		"Back" button to return to the status page<br>(instead of the
+		"Back" button to return to the status page (instead of the
 		button above), you will need to "Reload" the screen to see
 		your changes reflected.</blockquote>
 		</th></tr>
@@ -1330,22 +1322,17 @@ def problem(pre = '', post = ''):
 		<li>Other than waived builds, you may not enter the same order in
 			more than one of the pulldowns.
 		""")
-	page.write(
-		"""
+	page.write("""
 		</ul></td></tr>
 		<tr><th>
-		<form><input type=button onClick=history.back() class=inputSubmit
-			value="Return to Status Page">
-		</th></tr></form>
 		""")
+	goBack()
+	page.write('</th></tr>')
 #	----------------------------------------------------------------------
 def lockedUp():
-	page.write(
-		"""
-		<form name=form method=post><input type=hidden name=page value=Status>
-		<input type=hidden name=game value=%s>
-		<input type=hidden name=power value=%s>
-		<input type=hidden name=password value=%s>
+	page.write('<form name=form method=post>')
+	hideBack('Status')
+	page.write("""
 		</form>
 		<script>
 		alert("            Too Late!\\n\\n" +
@@ -1354,7 +1341,7 @@ def lockedUp():
 			  "Nothing to do now but wait.");
 		document.form.submit();
 		</script>
-		""" % (page.game.name, page.power.name, page.password))
+		""")
 	raise SystemExit
 #	----------------------------------------------------------------------
 def updateOffPhases():
@@ -1471,37 +1458,6 @@ def checkAbsence():
 def normDate(date):
 	dots = date.split('-')
 	return '%04d%02d%02d' % (int(dots[2]), int(dots[0]), int(dots[1]))
-#	----------------------------------------------------------------------
-def showAccessLog():
-	access = page.game.file('access')
-	try:
-		file = open(access, encoding='latin-1')
-		contents = ''.join([x for x in reversed(file.readlines())]) # file.read()
-		file.close()
-	except: contents = '(No Accesses Logged)'
-	page.write(
-		"""
-		<tr valign=top bgcolor="#CCCCCC">
-		<td align=center class="grey"><b>Game Access Log</b></td>
-		</tr>
-		<tr><td align=center class=bodycopy>
-		<blockquote><b><p align=justify>&nbsp;<br>
-		The DPjudge game access log is only one of a large number
-		of methods by which potential problem players (cheaters) can
-		be detected.  If you suspect that any person is playing more
-		than one power, you can check the IP addresses and times at
-		which those powers have logged in at the Website, and
-		<a href="mailto:%s?subject=CHEATING in %s"><font color=red>report
-		any issue to the judgekeeper!!</font></a>
-		Again, a number of other automatic checks are continually
-		occurring -- it is possible that the judgekeeper may already
-		be aware of and monitoring an issue.</p></b></blockquote>
-		<form ><textarea cols=88 rows=20>%s</textarea><p>
-		<input type=button onclick=window.history.back() class=inputSubmit
-		value="Go Back To The Status File"><br>&nbsp;<BR></td></tr></form>
-		""" % (host.judgekeeper, page.game.name, contents))
-	footer()
-	raise SystemExit
 #	----------------------------------------------------------------------
 def powerInfo():
 	game = page.game
@@ -1629,24 +1585,15 @@ def showPressArchive(selected = 0, filter = 0):
 	b = ''
 	for x in items: b += x.decode('latin-1') + '\n'
 	b = b.encode('latin-1')
+	page.write('<form name=archive method=post>')
+	hideBack('PressArchive')
 	page.write("""
-		<form name=archive method=post>
-		<input type=hidden name=game value=%s>
-		<input type=hidden name=page value=PressArchive>
-		<input type=hidden name=power value="%s">
-		<input type=hidden name=password value="%s">
-		<input type=hidden name=count value=%d>
 		<tr><td class=bodycopy><b>%s:</b></td>
 		<td align=right><select name=message class=inputBox 
 			onChange=document.archive.submit()>
-		""" % (page.game.name, power, page.password,
-			int('count' in vars(page) and page.count) - 1,
-			('Message' + 's' * (not selected), 'Broadcasts')[not power]))
-	page.write("""
 			%s
 		</select></td>
-			""" %
-			b)
+		""" % (('Message' + 's' * (not selected), 'Broadcasts')[not power], b))
 	if selected:
 		involved = [x for x in sorted(dict.fromkeys(involved))]
 		if 'ALL' in involved: involved.remove('ALL')

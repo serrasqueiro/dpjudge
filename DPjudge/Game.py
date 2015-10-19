@@ -3921,9 +3921,11 @@ class Game:
 					and sc not in power.homes):
 						power.homes.remove('&SC')
 						power.homes += [sc]
-				elif word[0] == 'REMOVE': power.units.remove(' '.join(word[1:]))
+				elif word[0] == 'REMOVE':
+					power.units.remove(' '.join(word[1:]))
 				elif len(word) == 5:
-					if word[2] in self.popped: list[-1] += '  (*bounce, destroyed*)'
+					if word[2] in self.popped:
+						list[-1] += '  (*bounce, destroyed*)'
 					else: power.units += [word[1] + ' ' + word[-1]]
 			if self.phaseType == 'A':
 				count = len(power.centers) - len(power.units)
@@ -4257,7 +4259,7 @@ class Game:
 			who, parsed = self.getPower(word)
 			if who:
 				if who.name not in adjusts:
-					if who.ceo[:1] != [power.name]:
+					if not power.controls(who):
 						self.error.append('NO CONTROL OVER ' + who.name)
 						return
 					powers += [who]
@@ -4492,7 +4494,7 @@ class Game:
 		if not orders:
 			power.adjust, power.cd = [], 0
 			return
-		adjust, places = [], []
+		adjust, kept, places = [], [], []
 		need, sites = len(power.centers) - len(power.units), 0
 		if [x for x in power.centers if x in power.homes]:
 			need += (self.map.reserves.count(power.name) +
@@ -4505,22 +4507,33 @@ class Game:
 			need = min(need, self.buildLimit(power, sites))
 			alternatives = self.buildAlternatives(power, sites)
 		for order in orders:
-			word = self.addUnitTypes(self.expandOrder([order]))
-			if word[-1] in '+*R-': word = word[-1:] + word[:-1]
+			order = order.strip()
+			if not order: continue
+			word = self.expandOrder([order])
+			if word[-1] in '+*-!': word = word[-1:] + word[:-1]
+			if word[-1] in 'RH': word = word[-1:] + word[:-1]
 			if word[0] == '+': word[0] = 'BUILD'
 			elif word[0] in '*R-': word[0] = 'REMOVE'
+			elif word[0] in '!H': word[0] = 'KEEP'
 			if word[0] == orderType: pass
 			elif word[0] in ('BUILD', 'REMOVE'):
 				self.error += [word[0] + ' NOT ALLOWED: ' + order]
 				continue
-			else: word[:0] = [orderType]
+			elif word[0] != 'KEEP': word[:0] = [orderType]
+			if word[0] != 'BUILD':
+				word = word[:1] + self.addUnitTypes(word[1:])
 			if len(word) == 4 and word[3] == 'HIDDEN': word = word[:-1]
 			order = ' '.join(word)
-			if need < 0:
+			if word[0] in ('REMOVE', 'KEEP'):
 				if len(word) == 3:
-					if (' '.join(word[1:]) in power.units
-					and order not in adjust): adjust += [order]
-					else: self.error += ['INVALID REMOVE ORDER: ' + order]
+					unit = ' '.join(word[1:])
+					if unit not in power.units:
+						self.error += ['NO SUCH UNIT: ' + unit]
+					elif word[0] == 'KEEP' and (order not in kept
+					and ('REMOVE ' + unit) not in adjust): kept += [order]
+					elif word[0] == 'REMOVE' and (order not in adjust
+					and ('KEEP ' + unit) not in kept): adjust += [order]
+					else: self.error += ['MULTIPLE ORDERS FOR UNIT: ' + unit]
 				else: self.error += ['BAD ADJUSTMENT ORDER: ' + order]
 			elif len(word) == 2 and word[1] in ('WAIVE', 'WAIVED'):
 				if len(adjust) < need: adjust += ['BUILD WAIVED']
@@ -4553,6 +4566,9 @@ class Game:
 		while 0 < need < len(adjust):
 			try: adjust.remove('BUILD WAIVED')
 			except: break
+		if 'BUILD WAIVED' in adjust or power.isDummy() and not power.ceo:
+			while len(adjust) < need:
+				adjust.append('BUILD WAIVED')
 		if len(adjust) != abs(need):
 			self.error += ['ADJUSTMENT ORDERS IGNORED (MISCOUNTED)']
 			return
@@ -4778,8 +4794,8 @@ class Game:
 	#	----------------------------------------------------------------------
 	def reportOrders(self, power, email = None):
 		if not email and 'BROADCAST_ORDERS' in self.rules:
-			return self.mailPress(None, ['All'],
-				self.playerOrders(power), subject = 'Diplomacy orders')
+			return self.mailPress(None, ['All'], self.playerOrders(power),
+				subject = 'Diplomacy orders %s ' % self.name + self.phaseAbbr())
 		if email:
 			whoTo = email
 			if power.address and not [
@@ -4787,7 +4803,8 @@ class Game:
 				if x in power.address[0].upper().split(',')]:
 				whoTo += ',' + power.address[0]
 		else: whoTo = power.address[0]
-		self.openMail('Diplomacy orders', mailTo = whoTo, mailAs = host.dpjudge)
+		self.openMail('Diplomacy orders %s ' % self.name + self.phaseAbbr(),
+			mailTo = whoTo, mailAs = host.dpjudge)
 		self.mail.write(self.playerOrders(power))
 		self.mail.close()
 	#	----------------------------------------------------------------------
@@ -4974,8 +4991,19 @@ class Game:
 		self.status[1] = status
 		Status().changeStatus(self.name, status)
 	#	----------------------------------------------------------------------
-	def setState(self, status):
-		self.changeStatus(status)
+	def setState(self, mode):
+		if self.status[1] == mode: return
+		if self.status[1] == 'preparation' and mode != 'forming':
+			return 'Please allow the game to form first'
+		if self.phase == 'FORMING':
+			if mode == 'active': return self.begin()
+		elif self.phase == 'COMPLETED':
+			return ('Please discuss with the judgekeeper why ' +
+				'you consider changing the state of a completed game')
+		elif mode == 'forming':
+			return ('You can only go back to the forming state ' +
+				'by performing a ROLLBACK to the FORMING phase')
+		self.changeStatus(mode)
 	#	----------------------------------------------------------------------
 	def loadRules(self):
 		rule = group = variant = ''

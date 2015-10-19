@@ -205,8 +205,8 @@ class DPPD(dict):
 				"name = 'MASTER'", (gameId,)): raise NoGamePassword
 			if gamePass != self.db.fetchone()['password']:
 				raise WrongGamePassword
-		self.db.execute("delete from Role where gameId = %s", gameId)
-		self.db.execute("delete from Rule where gameId = %s", gameId)
-		self.db.execute("delete from Game where id = %s", gameId)
+		self.db.execute("delete from Role where gameId = %s", (gameId,))
+		self.db.execute("delete from Rule where gameId = %s", (gameId,))
+		self.db.execute("delete from Game where id = %s", (gameId,))
 	#	----------------------------------------------------------------------
 

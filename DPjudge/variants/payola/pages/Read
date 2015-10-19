@@ -5,6 +5,7 @@
 <:
 page.include('stylesheet')
 page.include('functions')
+page.include('payola')
 import codecs
 open = codecs.open
 loadGame()
@@ -44,31 +45,38 @@ def showPrices():
 		</tr>
 		<tr valign=top>
 		<td>
-		<center><table><tr><td>
+		<center><table><tr><td align=center><table>
 		""" % (page.phase, 'Completed Game')[done])
-	page.write('<pre>')
+	showPricesButton(page.phase)
+	page.write('</table></td></tr></table><hr>')
+	page.write('<table><tr><td><pre>')
 	file, show = open(page.game.file(page.file), encoding='latin-1'), 0
+	lines = []
 	for line in file:
 		if not done and 'MOVEMENT' in line:
-			show = line.strip().title() == page.phase
+			if line.strip().title() == page.phase:
+				show = 1
+			elif show:
+				lines = lines[:-2]
+				break
 		elif show:
 			word = line.split()
-			if not word: page.write()
+			if not word: lines += ['']
 			elif pwdFlag and page.power.name == 'MASTER' or done:
-				page.write(line[:-1])
+				lines += [line.rstrip()]
 			else:
 				if line[0] != ' ': unit = ' '.join(word[:2])
 				if len(word[0]) == 1 and word[-1][0].isdigit():
-					page.write('%3s : %s ' %
-						(word[-1], unit) + line[len(unit):35].strip())
+					lines += ['%3s : %s ' %
+						(word[-1], unit) + line[len(unit):35].strip()]
 	file.close()
-	page.write(
-		"""</pre>
-		</th></tr></table>
-		<form><input type=button class=inputSubmit
-			onclick=window.history.back()
-			value="Return To The Status Page"></form></center>
-		""")
+	page.write('\n'.join(lines))
+	page.write('</pre></td></tr></table><hr>')
+	page.write('<table><tr><td align=center><table>')
+	showPricesButton(page.phase)
+	page.write('</table><tr><td align=center>')
+	goBack()
+	page.write('</td></tr></table></center>')
 #	----------------------------------------------------------------------
 def showLedger():
 	pwdFlag = (isinstance(page.power, Power) and
@@ -103,13 +111,9 @@ def showLedger():
 		else: page.write(line[:-1])
 	file.close()
 	if not text: page.write('(You Currently Have An Empty Ledger)')
-	page.write(
-		"""</pre>
-		</th></tr></table>
-		<form><input type=button class=inputSubmit
-			onclick=window.history.back()
-			value="Return To The Status Page"></form></center>
-		""")
+	page.write('</pre></th></tr></table>')
+	goBack()
+	page.write('</center>')
 #	----------------------------------------------------------------------
 if page.file == 'ledgers': showLedger()
 elif page.file == 'chart': showPrices()

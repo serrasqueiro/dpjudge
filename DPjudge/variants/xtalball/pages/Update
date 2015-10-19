@@ -88,7 +88,9 @@ powerHeader()
 		<!--MAPS, RESULTS, ENDGAME TABLE BEGINS HERE-->
 		<table border=0 align=center width=100%>
 <:
-if page.power.name != 'MASTER':
+if 'message' in vars(page):
+	sendPress()
+elif page.power.name != 'MASTER':
 	if page.game.error: problem()
 	else: finished(untouched + 'Update Made')
 :>
@@ -100,7 +102,8 @@ if page.power.name != 'MASTER':
 	</table>
 </td>
 <:
-if page.power.name == 'MASTER': updateMaster()
+if 'message' in vars(page): pass
+elif page.power.name == 'MASTER': updateMaster()
 elif page.game.error and page.game.phase not in ('FORMING', 'COMPLETED'):
 	showOrders()
 :>

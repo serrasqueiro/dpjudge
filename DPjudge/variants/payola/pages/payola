@@ -17,18 +17,12 @@ def showPowerData():
 	game, power = page.game, page.power
 	if power.balance is None: return
 	page.write('<td><table border=0 cellpadding=2 cellspacing=2 width=100%>')
-	if not game.await: page.write(
-		"""
-		<form %s><input type=hidden name=page value=Update>
-		<input type=hidden name=game value=%s>
-		<input type=hidden name=power value=%s>
-		<input type=hidden name=password value=%s>
-		<input type=hidden name=balance value=%d>
-		<input type=hidden name=phase value=%s>
-		""" % (('onSubmit="return false"',
-		'method=post name=UpdateForm')[page.pwdFlag == 1],
-		game.name, power.name, page.password, power.balance,
-		game.phaseAbbr()))
+	if not game.await:
+		page.write('<form %s>' % ('onSubmit="return false"',
+		'method=post name=UpdateForm')[page.pwdFlag == 1])
+		hideBack('Update')
+		apprise('balance', power.balance)
+		apprise('phase', game.phaseAbbr())
 	showAcceptList()
 	if game.await:
 		showWaitNotice()
@@ -89,5 +83,73 @@ def showOfferList():
 	map(page.write, map(cgi.escape, text))
 	page.write('</textarea></td></tr>')
 	return 1
+#	----------------------------------------------------------------------
+def showPricesButton(selected = ''):
+	if (((page.power and page.power.name == 'MASTER')
+	or 'PUBLIC_TOTALS' in page.game.rules)
+	and os.path.isfile(page.game.file('chart'))):
+		page.write('<form name=price method=post>')
+		hideBack('Read')
+		apprise('file', 'chart')
+		page.write("""
+			<tr><td class=bodycopy><b>Bribes:</b></td>
+			<td align=right class=bodycopy><select name=phase class=inputBox
+			onChange=document.price.submit()>
+			""")
+		chart = open(page.game.file('chart'))
+		phases = [x.title().strip() for x in chart if 'MOVEMENT' in x]
+		if not selected: selected = phases[-1]
+		chart.close()
+		[page.write('<option' + ('>', ' selected>')[x == selected] + x)
+			for x in phases]
+		page.write("""
+			</select></td>
+			<td><input class=inputSubmit type=submit value="Read"></td></tr>
+			""")
+		page.write('</form>')
+#	----------------------------------------------------------------------
+def doTransfer():
+	getter = [x for x in page.game.powers if page.beneficiary == x.name][0]
+	page.game.transferCash(page.power, getter, page.amount)
+	if 'ONE_TRANSFER' in page.game.rules:
+		page.power.countTransfer(page.beneficiary)
+	page.game.save()
+#	----------------------------------------------------------------------
+def makeTransfer():
+	try: page.amount, page.balance = int(page.amount), int(page.balance)
+	except: page.amount, page.balance = 0, page.power.balance
+	header = 'Transfer Not Made!'
+	subheader = body = None
+	if page.balance != page.power.balance:
+		subheader, body = 'Your Balance Has Changed!', """
+			Your balance is not the same as it was when you first
+			requested this transfer.  This could be because you
+			have reposted a successful request, or because the
+			moves have just been processed, impoverishing you a bit,
+			or maybe someone has sent you some money.
+			"""
+	elif page.amount > page.balance:
+		subheader, body = 'You Only Wish You Were That Rich!', """
+			It sure would be nice to be able to throw that kind of money
+			around, but it's not a luxury you currently have.
+			"""
+	elif page.amount < 0:
+		subheader, body = 'Nice Try, Though!', """
+			Play With Your Own Money!  Trying to transfer a negative
+			amount is a clever way to steal money.  Unfortunately for
+			you, I'm just as clever.  I thought of it too and made sure
+			you couldn't do it.
+			"""
+	elif page.amount > 0:
+		doTransfer()
+		header, body = 'Transfer Made', """
+			Notice of the transfer has been sent to %s.
+			""" % page.game.anglify(page.beneficiary)
+	else:
+		subheader, body = 'Transferring Zero AgP is Silly!', """
+			How Generous Of You! Does it make you feel good to pretend
+			to give money away? Did you fool yourself?
+			"""
+	finished(header, subheader, body)
 #	----------------------------------------------------------------------
 :>

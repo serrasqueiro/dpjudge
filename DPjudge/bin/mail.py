@@ -54,6 +54,14 @@ class Procmail:
 				if eol.isalnum(): eol = '\n'
 				msg.extend(line.split(eol)[1:])
 			else: msg += [line]
+		#	----------------------------------------
+		#	Some mailers try to be html compliant by
+		#	ending all lines with <br>. Strip them.
+		#	----------------------------------------
+		for line in msg:
+			if line.rstrip() and line.rstrip()[-4:].lower() != '<br>': break
+		else:
+			msg = [x.rstrip()[:-4] for x in msg]
 		self.message = msg[:]
 		#file = open(host.gameDir + '/message', 'w')
 		#file.write('\n'.join(self.message).encode('latin-1'))
@@ -113,9 +121,10 @@ class Procmail:
 					#		'too many games currently need players')
 					if game in games.dict:
 						self.respond("Game name '%s' already used" % game)
-					try: desc = __import__('DPjudge.variants.' + variant, globals(),
-						locals(), `variant`).VARIANT
-					except: self.respond('Unrecognized rule variant: ' + variant)
+					try: desc = __import__('DPjudge.variants.' + variant,
+						globals(), locals(), `variant`).VARIANT
+					except: self.respond('Unrecognized rule variant: ' +
+						variant)
 					self.dppdMandate(upword)
 					dir, onmap = host.gameDir + '/' + game, ''
 					os.mkdir(dir)
@@ -127,9 +136,10 @@ class Procmail:
 					for info in self.message[1:]:
 						word = ''.join(info.upper().split()[:1])
 						if word == 'DESC': break
-						if word in ('MAP', 'TRIAL'): onmap = ' on the %s%s map' % (
-							''.join(info.split()[1:2]).title(),
-							('', ' trial')[word == 'TRIAL'])
+						if word in ('MAP', 'TRIAL'):
+							onmap = ' on the %s%s map' % (
+								''.join(info.split()[1:2]).title(),
+								('', ' trial')[word == 'TRIAL'])
 					else:
 						temp = 'DESC A %s game%s.\n' % (desc, onmap)
 						file.write(temp.encode('latin-1'))
@@ -149,13 +159,14 @@ class Procmail:
 					if self.game.private:
 						games.dict[game] += ['private']
 						games.save()
-					observers = host.observers
+					observers = host.observers or []
 					if type(observers) is not list: observers = [observers]
 					self.respond("Game '%s' has been created.  %s at:\n"
-						'   %s%s?game=%s\n\nWelcome to the DPjudge' %
+						'   %s%s?game=%s\n\nWelcome to the %s' %
 						(game, ('Finish preparation', 'Game is now forming')
 						[mode == 'forming'], host.dpjudgeURL,
-						'/index.cgi' * (os.name == 'nt'), game),
+						'/index.cgi' * (os.name == 'nt'), game,
+						host.dpjudgeNick),
 						copyTo = observers + self.game.map.notify)
 			#	---------------------------------------------------
 			#	Detect player message (SIGNON, RESIGN, or TAKEOVER)
@@ -480,9 +491,10 @@ class Procmail:
 						's'[:avail != 1]))
 			if responding is not None: self.response += [
 				"You are now %s'%s' in game '%s'.\n\n"
-				'Welcome to the DPjudge' % (command not in ('JOIN', 'TAKEOVER')
+				'Welcome to the %s' % (command not in ('JOIN', 'TAKEOVER')
 				and ('a%s %s with ID ' % ('n'[:playerType[0] in 'AEIOU'],
-				playerType.title())) or '', game.anglify(power), game.name)]
+				playerType.title())) or '', game.anglify(power), game.name,
+				host.dpjudgeNick)]
 		#	----------------------------------------------------
 		#	Process the rest of the message for press to be sent
 		#	----------------------------------------------------
@@ -532,11 +544,13 @@ class Procmail:
 				 '(you sent from %s)' % (rightEmail, self.email)]
 			self.message = None
 		if type(copyTo) != list: copyTo = [copyTo]
+		emails = []
 		for email in [self.email] + copyTo:
 			#	--------------------
 			#	Prevent e-mail loops
 			#	--------------------
-			if email == host.dpjudge:
+			if email in emails: continue
+			elif email == host.dpjudge:
 				self.game.openMail('DPjudge e-mail reply' +
 					' (redirected from %s)' % email,
 					mailTo = host.judgekeeper, mailAs = host.dpjudge)
@@ -552,6 +566,7 @@ class Procmail:
 				mail.write('Unprocessed portion of message follows:\n\n' +
 					'\n'.join(self.message))
 			mail.close()
+			emails += [email]
 		os._exit(os.EX_OK)
 	#	----------------------------------------------------------------------
 	def locatePower(self, powerName, password, mustBe = 1, newPass = 0):
@@ -672,7 +687,8 @@ class Procmail:
 			#	See if we're starting a press message
 			#	-------------------------------------
 			elif command in ('BROADCAST', 'PRESS'):
-				readers = [self.isMaster(power) and 'All!' or 'All'][:command[0] == 'B']
+				readers = [self.isMaster(power) and 'All!' or 'All'][
+					:command[0] == 'B']
 				which = claimFrom = claimTo = None
 				wordNum = receipt = 1
 				while wordNum < len(word):
@@ -750,6 +766,22 @@ class Procmail:
 					self.respond('Only the Master can send OFFICIAL press')
 				official = ' '.join(line.split()[1:])
 				del self.message[0]
+			#	---------------------
+			#	Change the game state
+			#	---------------------
+			elif command in ('FORM', 'ACTIVATE', 'WAIT', 'TERMINATE'):
+				if not self.isMaster(power):
+					self.respond('Only the Master can change the game state')
+				mode = {'F': 'forming', 'A': 'active', 'W': 'waiting',
+					'T': 'terminated'}[command[0]]
+				if game.status[1] == mode:
+					self.response += ['The game is already in the %s state' %
+						mode]
+				else:
+					reply = game.setState(mode)
+					if reply: self.respond(reply)
+					self.response += ['The game state has been changed to %s' %
+						mode]
 			#	------------------------------
 			#	See if we are to do a ROLLBACK
 			#	------------------------------
@@ -866,7 +898,8 @@ class Procmail:
 							"The deadline for game '%s' has been changed "
 							'by %s.\n'
 							'The new deadline is %s.\n' % (game.name,
-							self.isMaster(power) and ('the ' + game.anglify(power.name))
+							self.isMaster(power) and ('the ' +
+							game.anglify(power.name))
 							or 'HIDE_EXTENDERS' in game.rules and 'a power'
 							or game.anglify(power.name), game.timeFormat()),
 							subject = 'Diplomacy deadline changed')
@@ -1011,7 +1044,7 @@ class Procmail:
 		else:
 			try: game.updateOrders(self.power, orders)
 			except:
-				self.message = [x + '\n' for x in orders] + ['']
+				self.message = orders + ['']
 				self.respond('Improper e-mail order submission')
 		text = '\n'.join(game.error)
 		if text:

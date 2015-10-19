@@ -246,10 +246,10 @@ class XtalballGame(Game):
 			nmr = len(word) == 1 and word[0][word[0][:1] in '([':len(
 				word[0]) - (word[0][-1:] in '])')].upper() in ('NMR', 'CLEAR')
 			if who not in powers:
-				if who is not power and who.ceo[:1] != [power.name]:
-					return self.error.append('NO CONTROL OVER ' + who.name + (
-						'PROXY_OK' in self.rules and 
-						' (NO NEED TO SPECIFY THE POWER FOR PROXIED UNITS)' or ''))
+				if not power.controls(who): return self.error.append(
+					'NO CONTROL OVER ' + who.name + (
+					'PROXY_OK' in self.rules and 
+					' (NO NEED TO SPECIFY THE POWER FOR PROXIED UNITS)' or ''))
 				#	----------------------------------------
 				#	Empty the order list and then stick each
 				#	order (if any) into it, if it is valid.

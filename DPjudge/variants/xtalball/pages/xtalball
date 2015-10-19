@@ -1,27 +1,20 @@
 <:
 #	----------------------------------------------------------------------
 def showOrdersButton():
-	game, power, which, data = page.game, page.power, 'The', ''
+	game, power, which = page.game, page.power, 'The'
 	if game.phase == 'FORMING' or not os.path.isfile(game.file('lists')):
 		return
 	if game.phase != 'COMPLETED' and 'PUBLIC_LISTS' not in game.rules:
 		if not power or power.type == 'OBSERVER': return
-	page.write('<form method=post><input type=hidden name=page value=Read>')
-	if power:
-		data = """
-		<input type=hidden name=power value=%s>
-		<input type=hidden name=password value=%s>
-		""" % (power.name, page.password)
-		if power.name != 'MASTER': which = "My Power's"
-	page.write(
-		"""
-		<input type=hidden name=file value=lists>
-		<input type=hidden name=game value=%s>
-		%s
+	page.write('<form method=post>')
+	hideBack('Read')
+	if power and power.name != 'MASTER': which = "My Power's"
+	apprise('file', 'lists')
+	page.write("""
 		<tr><td class=bodycopy><b>Orders:</b>
 		<td class=bodycopy align=right>%s Complete Order List History</b>
 		<td><input class=inputSubmit type=submit value="Read"></td></form>
-		""" % (game.name, data, which))
+		""" % which)
 #	----------------------------------------------------------------------
 def showOrders():
 	import json, cgi
@@ -38,15 +31,11 @@ def showOrders():
 	if (('MOBILIZE' in game.rules or 'BLANK_BOARD' in game.rules)
 		and 'SKIP_FIRST' in game.rules): which = 'LATER'
 	page.write('<p>')
-	if not game.await: page.write(
-		'<form %s><input type=hidden name=page value=Update>'
-		'<input type=hidden name=game value=%s>'
-		'<input type=hidden name=power value=%s>'
-		'<input type=hidden name=password value=%s>'
-		'<input type=hidden name=phase value=%s>' %
-		(('onSubmit="return false"',
-		'method=post name=UpdateForm')[page.pwdFlag == 1],
-		game.name, power.name, page.password, game.phaseAbbr()))
+	if not game.await:
+		page.write('<form %s>' % ('onSubmit="return false"',
+			'method=post name=UpdateForm')[page.pwdFlag == 1])
+		hideBack('Update')
+		apprise('phase', game.phaseAbbr())
 	if game.phaseType != 'M':
 		if game.phaseType == 'A': shown = showAdjustList()
 		elif game.phaseType == 'R': shown = showRetreatList()

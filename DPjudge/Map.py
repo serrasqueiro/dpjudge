@@ -19,9 +19,10 @@ class Map:
 			notify = [host.judgekeeper]
 		aliases = {			'-': '-',		'H': 'H',		'P': 'P',
 			'A': 'A',		'F': 'F',		'S': 'S',		'C': 'C',
-			'B': '+',		'D': '*',		'R': 'R',
+			'B': '+',		'D': '*',		'K': '!',		'R': 'R',
 			'BUILD': '+',	'BUILDS': '+',	'DISBAND': '*',	'DISBANDS': '*',
-			'REMOVE': '*',	'REMOVES': '*',	'RETREATS':		'RETREAT',
+			'REMOVE': '*',	'REMOVES': '*',	'KEEP': '!',	'KEEPS': '!',
+			'RETREATS':		'RETREAT',
 			'ARMY': 'A',	'FLEET': 'F',	'SUPPORT': 'S',	'SUPPORTS': 'S',
 			'CONVOY': 'C',	'CONVOYS': 'C', 'HOLD': 'H',	'HOLDS': 'H',
 			'TO': '',		'MOVE': '-',	'MOVES': '-',	'M': '-',

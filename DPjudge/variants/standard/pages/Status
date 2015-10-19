@@ -101,9 +101,6 @@ if not page.game.error:
 			<table border=0 align=center width=100%>
 			<tr>
 		""")
-	if 'message' in vars(page):
-		sendPress()
-		page.write('</tr><tr>')
 	showPressOptions()
 	page.write(
 		"""

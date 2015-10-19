@@ -513,8 +513,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	<br>This is a cry for help. "Austria, Italy is heading my way. Stab
 	him now to get him off my back."
 	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Austria: A VIE S A VEN - SWI ?</tt>
-	<br>This is the Austrian reply. "Italy, I'm coming after you after I
-	finish some business here. Better run and hide!"
+	<br>The Austrian reply. "Italy, let's keep the peace. Sorry, France."
 	<br><br>See also <a href="#RESTRICT_SIGNAL"><tt>RESTRICT_SIGNAL</tt></a> for
 	a related Payola rule.
 <!-- RULE END -->
@@ -1885,7 +1884,8 @@ the course of the game.
 	The bid indeed fails, with the result that Fleet Trieste gives void
 	support to Venice to Switzerland, which is Austria's default order.
 	Although France and Italy paid for it, it's Austria choosing the
-	message, much to the delight of France and the chagrin of Italy.
+	message, proclaiming his desire to seek peace with Italy, much to
+	the chagrin of France.
 <!-- RULE END -->
 
 <a name=PAY_DUMMIES></a><p><dt><b><tt>PAY_DUMMIES</tt></b><dd>

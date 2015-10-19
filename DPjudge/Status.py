@@ -60,7 +60,7 @@ class Status:
 					game = self.load(gameName)
 					if not game.private: results += game.shortList()
 				except: pass
-		mail = Mail.Mail(email, subject)
+		mail = Mail.Mail(email, subject, mailAs = host.openingsAddress)
 		mail.write((':: Judge: %s\n:: URL: %s%s\n\n' %
 			(host.dpjudgeID, host.dpjudgeURL,
 			'/index.cgi' * (os.name == 'nt'))) + (results or 'No Openings!'))
@@ -114,8 +114,8 @@ class Status:
 			self.game = Game.Game(gameName)
 			self.announce('Game creation', 
 				"Game '%s' has been created.  Finish preparation at:\n  %s"
-				'\n\nWelcome to the DPjudge.' %
-				(gameName, self.gameLink()))
+				'\n\nWelcome to the %s.' %
+				(gameName, self.gameLink(), host.dpjudgeNick))
 		return error
 	#	----------------------------------------------------------------------
 	def renameGame(self, gameName, toGameName, forced = 1, gamePass = None):

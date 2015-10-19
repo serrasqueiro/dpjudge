@@ -84,19 +84,16 @@ def showPressArea():
 	rules = page.game.phase in ('FORMING', 'COMPLETED') and [
 		'PUBLIC_PRESS'] or page.game.rules
 	what = 'it'
-	page.write(
-		"""
+	page.write("""
 		<script>function sendit(){
 		if(document.press.message.value!="")document.press.submit();
 		else alert('Empty press message. Not sent.');}</script>
 		<center><form method=post name=press>
-		<input type=hidden name=page value=Status>
-		<input type=hidden name=game value=%s>
-		<input type=hidden name=power value=%s>
-		<input type=hidden name=password value=%s>
-		""" % (page.game.name, page.power.name, page.password))
+		""")
+	hideBack('Update')
+	apprise('phase', page.game.phaseAbbr())
 	for power in page.recipient:
-		page.write('<input type=hidden name=recipient value=%s>' % power)
+		apprise('recipient', power)
 	if page.recipient == ['All']: header = 'Broadcast Message'
 	else: header = 'Press ' + page.game.listReaders(page.recipient)
 	page.write(
@@ -111,9 +108,9 @@ def showPressArea():
 		#	-----------------------------------------
 		if ('GREY_PRESS' in rules
 		or ('YELLOW_PRESS' in rules
-		and page.recipient == ['All'])): page.write(
-			'<b>(Press will be sent Anonymously)</b>'
-			'<input type=hidden name=claimFrom value=(ANON)>')
+		and page.recipient == ['All'])):
+			page.write('<b>(Press will be sent Anonymously)</b>')
+			apprise('claimFrom', '(ANON)')
 		elif 'WHITE_GREY' in rules: page.write(
 			"""
 			<P><b>Send Press</b>

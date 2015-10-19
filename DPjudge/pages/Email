@@ -86,7 +86,7 @@ page.include('functions')
 		<a href=mailto:<MAIL>><tt><MAIL></tt></a>
 
 		<P><b>If I send an e-mail to the DPjudge, what commands may I include in that e-mail?</b><br>
-		The DPjudge recognizes only the following thirty-five commands:
+		The DPjudge recognizes only the following thirty-eight commands:
 	
 			<P><table border=0 cellpadding=0 align=center>
 			<tr valign=top>
@@ -110,9 +110,9 @@ page.include('functions')
 			</tr>
 			</table>
 
-		<P><b>Hey, you said there were <i>thirty-five</i> recognized commands!
+		<P><b>Hey, you said there were <i>thirty-eight</i> recognized commands!
 		That's only twenty-one!</b><br>
-		Okay, you're right.  I left out the fourteen "Master commands"
+		Okay, you're right.  I left out the seventeen "Master commands"
 		(those that may be used only by a game's Master). These are:
 	
 			<P><table border=0 cellpadding=0 align=center>
@@ -120,20 +120,24 @@ page.include('functions')
 			<td class="bodycopy" valign=top>&middot;<a href=#create>CREATE</a>
 			<br>&middot;<a href=#purge>PURGE</a>
 			<br>&middot;<a href=#rename>RENAME</a>
+			<br>&middot;<a href=#reveal>REVEAL</a>
+			<td width=20></td>
+			<td class="bodycopy">&middot;<a href=#state>FORM</a>
+			<br>&middot;<a href=#state>ACTIVATE</a>
+			<br>&middot;<a href=#state>WAIT</a>
+			<br>&middot;<a href=#state>TERMINATE</a>
 			<td width=20></td>
 			<td class="bodycopy">&middot;<a href=#process>PROCESS</a>
 			<br>&middot;<a href=#preview>PREVIEW</a>
-			<br>&middot;<a href=#status>SET STATUS</a></td>
+			<br>&middot;<a href=#rollback>ROLLBACK</a>
+			<br>&middot;<a href=#rollforward>ROLLFORWARD</a></td>
 			<td width=20></td>
 			<td class="bodycopy">&middot;<a href=#m_resign>RESIGN</a>
 			<br>&middot;<a href=#m_dummy>DUMMY</a>
-			<br>&middot;<a href=#deadline>SET DEADLINE</a></td>
+			<br>&middot;<a href=#revive>REVIVE</a></td>
 			<td width=20></td>
 			<td class="bodycopy">&middot;<a href=#official>OFFICIAL</a>
-			<br>&middot;<a href=#reveal>REVEAL</a>
-			<br>&middot;<a href=#revive>REVIVE</a></td>
-			<td class="bodycopy" valign=top>&middot;<a href=#rollback>ROLLBACK</a>
-			<br>&middot;<a href=#rollforward>ROLLFORWARD</a></td>
+			<br>&middot;<a href=#deadline>SET DEADLINE</a></td>
 			</tr>
 			</table>
 	
@@ -164,6 +168,7 @@ page.include('functions')
 			&nbsp;&middot;Submitting Orders<br>
 			&nbsp;&middot;Setting Absences<br>
 			&nbsp;&middot;Changing <tt>WAIT</tt> Status<br>
+			&nbsp;&middot;Changing the Game State<br>
 			&nbsp;&middot;Obtaining a Phase <tt>HISTORY</tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
 			&nbsp;&middot;Obtaining a Game <tt>SUMMARY</tt><br>
 			&nbsp;&middot;Obtaining a Game <tt>MAP</tt></font><br>
@@ -179,6 +184,7 @@ page.include('functions')
 			&nbsp;&middot;Submitting Orders<br>
 			&nbsp;&middot;Setting Absences<br>
 			&nbsp;&middot;Changing <tt>WAIT</tt> Status<br>
+			&nbsp;&middot;Changing the Game State<br>
 			&nbsp;&middot;Viewing Phase <tt>HISTORY</tt><br>
 			&nbsp;&middot;Viewing a Completed Game's <tt>SUMMARY</tt>&nbsp;<br>
 			&nbsp;&middot;Viewing a Game <tt>MAP</tt></font>&nbsp;<br>
@@ -1070,13 +1076,13 @@ does, but tell me anyway.</b><br>
 		RENAME <i>gamename newgamename password</i></tt><br>
 	Avoid as much as possible using this command after the game already started, as players may not notice the name change message until after they entered their new orders, leading to all kinds of unnecessary frustrations.
 
-<a name=status></a>
-<P><b>Can I change the game status?</b><br>
-	Yes, you can, in a variety of ways. The command you're looking for is <tt>SET STATUS</tt>, followed by one of the valid status modes: <tt>FORMING</tt>, <tt>ACTIVE</tt>, <tt>WAITING</tt> or <tt>TERMINATED</tt>.
-	The following single word commands may also be used: <tt>FORM</tt>, <tt>ACTIVATE</tt>, <tt>WAIT</tt> and <tt>TERMINATE</tt>.
-	Any other status, like <tt>PREPARATION</tt> or <tt>COMPLETED</tt>, can not be set in this way, but must be reached by the normal game mechanics.
-	Nor can a completed game be changed to a different status, unless with the assistance of the judgekeeper, who will need a damn good reason to do so.
-	For a game that already started to go back to the <tt>FORMING</tt> status, you first need to <tt>ROLLBACK</tt> to the starting phase. Afterwards you need to explicitly set the status to <tt>ACTIVE</tt> to get going again, or <tt>ROLLFORWARD</tt> to the desired phase. All players will still have the same powers assigned to them.
+<a name=state></a>
+<P><b>Can I change the game state?</b><br>
+	<!-- The command you're looking for is <tt>SET STATE</tt>, followed by one of the valid status modes: <tt>FORMING</tt>, <tt>ACTIVE</tt>, <tt>WAITING</tt> or <tt>TERMINATED</tt>.-->
+	Yes, you can, by way of the following single word commands: <tt>FORM</tt>, <tt>ACTIVATE</tt>, <tt>WAIT</tt> and <tt>TERMINATE</tt>.
+	Any other state, like <tt>PREPARATION</tt> or <tt>COMPLETED</tt>, can not be set in this way, but must be reached by the normal game mechanics.
+	Nor can a completed game be changed to a different state, unless with the assistance of the judgekeeper, who will need a damn good reason to do so.
+	For a game that already started to go back to the <tt>FORMING</tt> state, you first need to <tt>ROLLBACK</tt> to the starting phase. Afterwards you need to explicitly set the state to <tt>ACTIVE</tt> to get going again, or <tt>ROLLFORWARD</tt> to the desired phase. All players will still have the same powers assigned to them.
 
 <a name=deadline></a>
 <P><b>What is the syntax of the <tt>SET DEADLINE</tt> command?</b><br>
