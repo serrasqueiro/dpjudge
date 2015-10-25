@@ -863,9 +863,12 @@ class Procmail:
 					#	----------------------------
 					#	SET DEADLINE and SET ABSENCE
 					#	----------------------------
-					if (word[1][0] == 'D' and not self.isMaster(power)
-					and 'PLAYER_DEADLINES' not in game.rules):
-						self.respond('Only the Master can SET %s' % word[1])
+					if word[1][0] == 'D':
+						if 'NO_DEADLINE' in game.rules:
+							self.respond('No deadlines can be set in this game')
+						elif (not self.isMaster(power)
+						and 'PLAYER_DEADLINES' not in game.rules):
+							self.respond('Only the Master can SET %s' % word[1])
 					now, dates, oldline = time.localtime(), [word[2:]], 0
 					if word[1][0] == 'A' and 'TO' in word:
 						where = word.index('TO')

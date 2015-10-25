@@ -168,6 +168,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option value=MUTE_OBSERVERS>MUTE_OBSERVERS</option>
 <option value=MYOPIC>MYOPIC (BLIND)</option>
 <option value=NO_ABSENCES>NO_ABSENCES</option>
+<option value=NO_DEADLINE>NO_DEADLINE</option>
 <option value=NO_DIAS>NO_DIAS</option>
 <option value=NO_DRAW>NO_DRAW</option>
 <option value=NO_EOG>NO_EOG</option>
@@ -1356,6 +1357,11 @@ the course of the game.
 <p><HR><br><dt><b>1.9 Deadline Handling and Phase Processing</b>
 <!-- RULE GROUP 9 Deadline Handling and Phase Processing -->
 <dl>
+<a name=NO_DEADLINE></a><p><dt><b><tt>NO_DEADLINE</tt></b><dd>
+<!-- RULE NO_DEADLINE !NO_LATE_CHANGES !LATE_CHANGES !PLAYER_DEADLINES -->
+	In certain cases, e.g. for testing and solving Diplomacy puzzles (solitaire games), there's no need for a deadline, and thus also not for a Timing line. It's up to the GM to process each turn after all (relevant) orders are submitted, or for all players to submit their orders without setting their <tt>WAIT</tt> flag. This behavior can be influenced with the <tt>NO_WAIT</tt> and <tt>ALWAYS_WAIT</tt> options.
+<!-- RULE END -->
+
 <a name=NO_QUARTER></a><p><dt><b><tt>NO_QUARTER</tt></b><dd>
 <!-- RULE NO_QUARTER +NO_RETREAT +NO_DRAW -->
 	This rule enforces both of the rules <tt>NO_RETREAT</tt>
@@ -1363,13 +1369,13 @@ the course of the game.
 <!-- RULE END -->
 
 <a name=NO_LATE_CHANGES></a><p><dt><b><tt>NO_LATE_CHANGES</tt></b><dd>
-<!-- RULE NO_LATE_CHANGES -LATE_CHANGES -->
+<!-- RULE NO_LATE_CHANGES -LATE_CHANGES !NO_DEADLINE -->
 	In games using this rule, no changes can be made to any
 	<i>already-submitted</i> orders after a deadline has passed.
 <!-- RULE END -->
 
 <a name=LATE_CHANGES></a><p><dt><b><tt>LATE_CHANGES</tt></b><dd>
-<!-- RULE LATE_CHANGES -NO_LATE_CHANGES -->
+<!-- RULE LATE_CHANGES -NO_LATE_CHANGES !NO_DEADLINE -->
 	This rule (which is in use by default, and therefore need not
 	be stated, in all games that do <i>not</i> use the <tt>CIVIL_DISORDER</tt>
 	rule) allows players to make changes to submitted
@@ -1404,7 +1410,7 @@ the course of the game.
 <!-- RULE END -->
 
 <a name=PLAYER_DEADLINES></a><p><dt><b><tt>PLAYER_DEADLINES</tt></b><dd>
-<!-- RULE PLAYER_DEADLINES -->
+<!-- RULE PLAYER_DEADLINES !NO_DEADLINE -->
 	This rule allows any participant in the game to issue the
 	<tt>SET&nbsp;DEADLINE</tt> command.  (Without this rule, only
 	a game's Master may modify the current deadline.)  Only the

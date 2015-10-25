@@ -90,8 +90,10 @@ class Check(DPjudge.Status):
 			#	Master of any errors or any forming, waiting, or unprepared
 			#	games he has.
 			#	-----------------------------------------------------------
-			line = game.deadline
-			if 'active' in data and not line: game.error += ['NO DEADLINE']
+			if 'NO_DEADLINE' in game.rules: line = None
+			else:
+				line = game.deadline
+				if 'active' in data and not line: game.error += ['NO DEADLINE']
 			if '-r' not in flags and (
 				'-a' in flags or now[-4:] >= '0020'): pass
 			elif game.error:
@@ -126,7 +128,7 @@ class Check(DPjudge.Status):
 						reason = ' Need to replace %s.' % ', '.join([
 							game.anglify(x[:x.find('-')]) + x[x.find('-'):]
 							for x in game.avail])
-					if game.deadlineExpired('8W'):
+					if line and game.deadlineExpired('8W'):
 						mail = DPjudge.Mail(host.judgekeeper,
 							'Diplomacy game alert (%s)' % game.name)
 						mail.write("JudgeKeeper:\n\nThe %s game '%s' on %s is "
