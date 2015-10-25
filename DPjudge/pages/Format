@@ -313,6 +313,15 @@ No, not at all. You're allowed to mix them up, even to write them at the front o
 	RETREAT F STP/SC - BOT
 	</tt>
 <br>If you don't believe me, try it.
+<P>
+<dt><b>Do I really need to <tt>WAIVE</tt> each and every build separately?</b>
+<dd>
+No, only one <tt>WAIVE</tt> will suffice to indicate that you don't plan to build any more units than those listed, even though you might still have build centers available.
+If you're playing a solitaire game (such as Last Man Standing), where waiving builds is more common, you're not even required to enter any <tt>WAIVE</tt> order.
+<P>
+<dt><b>Are there any other commands accepted besides <tt>BUILD/DISBAND/WAIVE</tt> during adjustments?</b>
+<dd>
+Funny you'd ask. In order to comply to DPeye syntax, the DPjudge also accepts a <tt>KEEP</tt> or <tt>HOLD</tt> order followed by the name of an existing unit, e.g. <tt>KEEP F MAO</tt>. This has no actual effect other than to check that you don't both try to keep and disband the same unit in the same order set.
 	</td>
 	</tr>
 	</table>

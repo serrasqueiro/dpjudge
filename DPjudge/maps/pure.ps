@@ -763,9 +763,9 @@
 } bd
 /Owner <<
 	/Steps [
-		{ /Count 0 def /Y 147.36 def false true } bind
+		{ /Count 0 def /Y 135.36 def false true } bind
 		{
-			Count 9 ge { false true } {
+			Count 8 ge { false true } {
 				65 SplitString
 				/Count Count 1 add def /Y Y 12 sub def
 				21.6 Y m h
@@ -1002,7 +1002,7 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		27.6 162 456 420 rectclip .9788 .9788 x 3.13 137.55 t
+		26.6 154.95 458 422.1 rectclip .9703 .9703 x 5.41 134.69 t
 		ArrowColor
 		OkOrder
 	} if
@@ -1010,7 +1010,7 @@
 /FrameMap {
 	s
 	2 w LandBrown
-	24.6 159.11 m 486.6 159.11 l 486.6 584.89 l 24.6 584.89 l
+	23.6 151.95 m 487.6 151.95 l 487.6 580.05 l 23.6 580.05 l
 	p
 	s 8 w Black k r
 	clipsave clip k cliprestore
@@ -1057,6 +1057,8 @@
 	/White .9 g
 	/LandBrown .8 .7 .4 r
 	/SeaBlue .1 .4 .6 r
+	/LandGreen 0 .4 0 r
+	/SeaWhite 1 1 1 r
 	/ArrowRed 1 0 0 r
 	/ArrowBlue .529 .808 .922 r
 	/Brown .6 .45 .2 r
@@ -1121,10 +1123,6 @@ MapUnitLetterFont z
 r
 /FleetTroops FleetTroopBBox /PaintFleet load CreateTroops def
 /ArmyTroops ArmyTroopBBox /PaintArmy load CreateTroops def
-/Centers <<
-	{ pop pop true } bind
-	VisitSupplies
->> def
 /SupplyCenters SupplyCenterBBox /PaintSupply load CreateTroops def
 { currentdict end 4 1 roll [ SupplyCenters 4 2 roll 4 index ] cvx def begin } bind
 VisitSupplies
@@ -1136,4 +1134,8 @@ VisitSupplies
 /TURKEYCENTER /TURKEY ld
 /AUSTRIACENTER /AUSTRIA ld
 /ITALYCENTER /ITALY ld
+/Centers <<
+	{ pop pop true } bind
+	VisitSupplies
+>> def
 %%EndSetup

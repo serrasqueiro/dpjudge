@@ -4,53 +4,12 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <:
 #	----------------------------------------------------------------------
-def doTransfer():
-	getter = [x for x in page.game.powers if page.beneficiary == x.name][0]
-	page.game.transferCash(page.power, getter, page.amount)
-	if 'ONE_TRANSFER' in page.game.rules:
-		page.power.countTransfer(page.beneficiary)
-	page.game.save()
-#	----------------------------------------------------------------------
-def makeTransfer():
-	if page.balance != page.power.balance: error = (
-		"     Transfer Not Made! Your Balance Has Changed!\n\n"
-	    "Your balance is not the same as it was when you first\n"
-	    "requested this transfer.  This could be because you\n"
-	    "have reposted a successful request, or because the\n"
-		"moves have just been processed, impoverishing you a bit,\n"
-		"or maybe someone has sent you some money.")
-	elif page.amount > page.balance: error = (
-		"    Transfer Not Made! You Only Wish You Were That Rich!\n\n"
-	    "It sure would be nice to be able to throw that kind of money\n"
-		"around, but it's not a luxury you currently have.")
-	elif page.amount < 0: error = (
-		"          Transfer Not Made! Nice Try, Though!\n\n"
-		"Play With Your Own Money!  Trying to transfer a negative\n"
-		"amount is a clever way to steal money.  Unfortunately for\n"
-		"you, I'm just as clever.  I thought of it too and made sure\n"
-		"you couldn't do it.")
-	elif page.amount > 0: return doTransfer()
-	else: error = (
-		"    Transfer Not Made! Transferring Zero AgP is Silly!\n\n"
-	    "How Generous Of You! Does it make you feel good to pretend\n"
-	    "to give money away? Did you fool yourself?")
-	page.write(
-		"""
-		<script>
-		alert(%s);
-		window.history.back();
-		</script>
-		""" % `error`)
-	raise SystemExit
-#	----------------------------------------------------------------------
 
 page.include('stylesheet')
 page.include('functions')
+page.include('payola')
 loadGame()
 checkPassword()
-try: page.amount, page.balance = int(page.amount), int(page.balance)
-except: page.amount, page.balance = 0, page.power.balance
-makeTransfer()
 :>
 
 <body bgcolor="#ffffff">
@@ -96,8 +55,7 @@ powerHeader()
 		<!--MAPS, RESULTS, ENDGAME TABLE BEGINS HERE-->
 		<table border=0 align=center width=100%>
 <:
-finished('Transfer Made', 'Notice of the transfer has been sent to %s.' %
-	page.game.anglify(page.beneficiary))
+makeTransfer()
 :>
 		</td></tr>
 		</table>

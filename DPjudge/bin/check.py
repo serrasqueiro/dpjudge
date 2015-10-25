@@ -89,53 +89,76 @@ class Check(Status):
 			#	Master of any errors or any forming, waiting, or unprepared
 			#	games he has.
 			#	-----------------------------------------------------------
-			line = game.deadline
-			if 'active' in data and not line: game.error += ['NO DEADLINE']
-			if game.error or 'active' not in data:
-				if '-r' not in flags and (
-					'-a' in flags or now[-4:] >= '0020'): pass
-				elif game.error:
-					print game.name, 'has ERRORS ... notifying the Master'
-					for addr in game.master[1].split(',') + [
-						host.judgekeeper] * (not game.tester):
+			if 'NO_DEADLINE' in game.rules: line = None
+			else:
+				line = game.deadline
+				if 'active' in data and not line: game.error += ['NO DEADLINE']
+			if '-r' not in flags and (
+				'-a' in flags or now[-4:] >= '0020'): pass
+			elif game.error:
+				print game.name, 'has ERRORS ... notifying the Master'
+				for addr in game.master[1].split(',') + [
+					host.judgekeeper] * (not game.tester):
 						mail = Mail(addr,
-							'Diplomacy ERRORS (%s)' % game.name)
-						mail.write("The game '%s' on %s has the following "
-							'errors in its status file:\n\n%s\n\nLog in at\n'
-							'   %s?game=%s\nto correct the errors!\n\n'
-							'Thank you,\nThe DPjudge\n' %
-							(game.name, host.dpjudgeID, '\n'.join(game.error),
-							host.dpjudgeURL, game.name))
-						mail.close()
-				elif 'terminated' not in data:
-					reason = ''
-					if 'waiting' in data:
-						state = 'waiting'
-						if game.avail:
-							reason = ' Need to replace %s.' % ', '.join([
-								game.anglify(x[:x.find('-')]) + x[x.find('-'):]
-								for x in game.avail])
-					elif 'forming' in data:
-						state = 'forming'
-						spots = game.avail and int(game.avail[0]) or (
-							len(game.map.powers) - len(game.map.dummies))
-						reason = ' %d position%s remain%s.' % (
-							spots, 's'[spots == 1:], 's'[spots != 1:])
-					else: state = 'preparation'
-					print game.name, 'is in the %s state' % state,
-					print '... reminding the Master'
-					for addr in game.master[1].split(','):
-						mail = Mail(addr,
-							'Diplomacy game reminder (%s)' % game.name)
-						mail.write("GameMaster:\n\nThe game '%s' on %s is "
-							'still in the %s state.%s\n\nVisit the game at\n'
+						'Diplomacy ERRORS (%s)' % game.name)
+					mail.write("The game '%s' on %s has the following "
+						'errors in its status file:\n\n%s\n\nLog in at\n'
+						'   %s?game=%s\nto correct the errors!\n\n'
+						'Thank you,\nThe DPjudge\n' %
+						(game.name, host.dpjudgeID, '\n'.join(game.error),
+						host.dpjudgeURL, game.name))
+					mail.close()
+			elif 'active' in data:
+				if line and game.deadlineExpired('4W'):
+					mail = DPjudge.Mail(host.judgekeeper,
+						'Diplomacy game alert (%s)' % game.name)
+					mail.write("JudgeKeeper:\n\nThe %s game '%s' on %s is "
+						'past its deadline for more than 4 weeks.\n\nVisit the game at\n'
+						'   %s?game=%s\nfor more information.\n\n'
+						'Thank you,\nThe DPjudge\n' %
+						(game.private and 'private' or 'public',
+						game.name, host.dpjudgeID, host.dpjudgeURL, game.name))
+					mail.close()
+			elif 'terminated' not in data:
+				reason = ''
+				if 'waiting' in data:
+					state = 'waiting'
+					if game.avail:
+						reason = ' Need to replace %s.' % ', '.join([
+							game.anglify(x[:x.find('-')]) + x[x.find('-'):]
+							for x in game.avail])
+					if line and game.deadlineExpired('8W'):
+						mail = DPjudge.Mail(host.judgekeeper,
+							'Diplomacy game alert (%s)' % game.name)
+						mail.write("JudgeKeeper:\n\nThe %s game '%s' on %s is "
+							'in the %s state for more than 8 weeks.%s\n\nVisit the game at\n'
 							'   %s?game=%s\nfor more information.\n\n'
 							'Thank you,\nThe DPjudge\n' %
-							(game.name, host.dpjudgeID, state, reason,
+							(game.private and 'private' or 'public',
+							game.name, host.dpjudgeID, state, reason,
 							host.dpjudgeURL, game.name))
 						mail.close()
-				continue
-			elif '-r' in flags and '-a' not in flags: continue
+				elif 'forming' in data:
+					state = 'forming'
+					spots = game.avail and int(game.avail[0]) or (
+						len(game.map.powers) - len(game.map.dummies))
+					reason = ' %d position%s remain%s.' % (
+						spots, 's'[spots == 1:], 's'[spots != 1:])
+				else: state = 'preparation'
+				print game.name, 'is in the %s state' % state,
+				print '... reminding the Master'
+				for addr in game.master[1].split(','):
+						mail = Mail(addr,
+						'Diplomacy game reminder (%s)' % game.name)
+					mail.write("GameMaster:\n\nThe game '%s' on %s is "
+						'still in the %s state.%s\n\nVisit the game at\n'
+						'   %s?game=%s\nfor more information.\n\n'
+						'Thank you,\nThe DPjudge\n' %
+						(game.name, host.dpjudgeID, state, reason,
+						host.dpjudgeURL, game.name))
+					mail.close()
+			if game.error or 'active' not in data or (
+				'-r' in flags and '-a' not in flags): continue
 			#	---------------------------------------------------
 			#	Check for expired grace periods (auto-CD or RESIGN)
 			#	---------------------------------------------------

@@ -1341,7 +1341,7 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		21.6 131.24 585 454.52 rectclip .7923 .7923 x 86.96 53.36 t
+		25.1 133.96 578 449.08 rectclip .7828 .7828 x 91.77 58.84 t
 		ArrowColor
 		OkOrder
 	} if
@@ -1349,7 +1349,7 @@
 /FrameMap {
 	s
 	2 w LandBrown
-	20.6 128.24 m 607.6 128.24 l 607.6 588.76 l 20.6 588.76 l
+	22.1 130.96 m 606.1 130.96 l 606.1 586.04 l 22.1 586.04 l
 	p
 	s 8 w Black k r
 	clipsave clip k cliprestore
@@ -1404,6 +1404,8 @@
 	/Grey .7 g
 	/LandBrown .8 .7 .4 r
 	/SeaBlue .1 .4 .6 r
+	/LandGreen 0 .4 0 r
+	/SeaWhite 1 1 1 r
 	/ArrowRed 1 0 0 r
 	/ArrowBlue .529 .808 .922 r
 	/Brown .6 .45 .2 r
@@ -5520,10 +5522,6 @@ MapUnitLetterFont z
 r
 /FleetTroops FleetTroopBBox /PaintFleet load CreateTroops def
 /ArmyTroops ArmyTroopBBox /PaintArmy load CreateTroops def
-/Centers <<
-	{ pop pop true } bind
-	VisitSupplies
->> def
 /SupplyCenters SupplyCenterBBox /PaintSupply load CreateTroops def
 { currentdict end 4 1 roll [ SupplyCenters 4 2 roll 4 index ] cvx def begin } bind
 VisitSupplies
@@ -5537,4 +5535,8 @@ VisitSupplies
 /SPAINCENTER /SPAIN ld
 /UKRAINECENTER /UKRAINE ld
 /BYZANTIUMCENTER /BYZANTIUM ld
+/Centers <<
+	{ pop pop true } bind
+	VisitSupplies
+>> def
 %%EndSetup

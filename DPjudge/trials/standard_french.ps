@@ -361,10 +361,10 @@
 /NameTerritories {
 	SwitchToMapMode
 	s
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ White 3 2 roll DrawAlias } bind
-	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ LandGreen 3 2 roll DrawAlias } bind
+	{ LandGreen 3 2 roll DrawAlias } bind
+	{ SeaWhite 3 2 roll DrawAlias } bind
+	{ LandGreen 3 2 roll DrawAlias } bind
 	{ pop pop pop } bind
 	{ pop pop pop } bind
 	VisitTerritories
@@ -1247,7 +1247,7 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		27.6 118.11 525.6 463.79 rectclip .8417 .8417 x 9.01 115.32 t
+		26.6 118.54 527.6 462.91 rectclip .8401 .8401 x 9.66 116.1 t
 		ArrowColor
 		OkOrder
 	} if
@@ -1255,7 +1255,7 @@
 /FrameMap {
 	s
 	2 w LandBrown
-	26.1 118.11 m 554.7 118.11 l 554.7 581.89 l 26.1 581.89 l
+	23.6 115.54 m 557.2 115.54 l 557.2 584.46 l 23.6 584.46 l
 	p
 	s 8 w Black k r
 	clipsave clip k cliprestore
@@ -1321,6 +1321,8 @@
 	/White .9 g
 	/LandBrown .8 .7 .4 r
 	/SeaBlue .1 .4 .6 r
+	/LandGreen 0 .4 0 r
+	/SeaWhite 1 1 1 r
 	/ArrowRed 1 0 0 r
 	/ArrowBlue .529 .808 .922 r
 	/Red 1 0 0 r
@@ -1329,7 +1331,6 @@
 	/Green 0 .7 0 r
 	/Yellow 1 1 0 r
 	/Brown .6 .45 .2 r
-	/DarkGreen 0 .4 0 r
 	end
 } def
 /OutlineChartLandBrown {
@@ -2791,10 +2792,6 @@ MapUnitLetterFont z
 r
 /FleetTroops FleetTroopBBox /PaintFleet load CreateTroops def
 /ArmyTroops ArmyTroopBBox /PaintArmy load CreateTroops def
-/Centers <<
-	{ pop pop true } bind
-	VisitSupplies
->> def
 /SupplyCenters SupplyCenterBBox /PaintSupply load CreateTroops def
 { currentdict end 4 1 roll [ SupplyCenters 4 2 roll 4 index ] cvx def begin } bind
 VisitSupplies
@@ -2806,4 +2803,8 @@ VisitSupplies
 /RUSSIECENTER /RUSSIE ld
 /TURQUIECENTER /TURQUIE ld
 /UNOWNEDCENTER /UNOWNED ld
+/Centers <<
+	{ pop pop true } bind
+	VisitSupplies
+>> def
 %%EndSetup

@@ -44,13 +44,11 @@ if page.message not in validCodes and validCodes: page.message = validCodes[-1]
 showPress(page.message in validCodes and page.message)
 :>
 </table><hr><table>
-<form><tr><td align=center>
+<tr><td align=center>
 <:
-page.write("""<input class=inputSubmit type=button
-	onclick=window.history.go(%s) value="Back To Game Page"><p>
-	""" % page.count)
+goBack()
 :>
-</form></td></tr></table>
+</td></tr></table>
 </td></tr>
 <script>
 document.archive.message.focus();

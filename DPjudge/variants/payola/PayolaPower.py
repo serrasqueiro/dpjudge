@@ -8,6 +8,10 @@ class PayolaPower(Power):
 			num = power.seq()
 			vars(self).update(locals())
 		#	------------------------------------------------------------------
+		def __repr__(self):
+			return ' '.join((self.power.name, self.code, self.unit, self.order,
+							`self.amt`, `self.plateau`, `self.num`))
+		#	------------------------------------------------------------------
 	#	----------------------------------------------------------------------
 	def __init__(self, game, name, type = None):
 		Power.__init__(self, game, name, type)
@@ -30,13 +34,13 @@ class PayolaPower(Power):
 		#	-----------------------------------
 		if includeFlags & 4:
 			self.overpaid, self.offers, self.sent = 0, [], []
-			self.accept = None
+			self.accept = self.fullAccept = None
 		if includeFlags & 5:
 			self.sheet = []
 		self.liquid = self.left = None
-		#	-----------------------------------------------
-		#	The three attributes below are ZeroSum-specific
-		#	-----------------------------------------------
+		#	----------------------------------------------
+		#	The two attributes below are ZeroSum-specific
+		#	----------------------------------------------
 		self.gained, self.lost = [], []
 		#	-------------------------------------------
 		#	And here are two that are Exchange-specific

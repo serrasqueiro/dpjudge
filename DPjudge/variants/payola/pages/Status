@@ -67,47 +67,16 @@ powerHeader()
 <:
 #	----------------------------------------------------------------------
 def showLedgerButton():
-	if os.path.isfile(page.game.file('ledgers')): page.write(
-		"""
-		<form method=post>
-		<input type=hidden name=page value=Read>
-		<input type=hidden name=file value=ledgers>
-		<input type=hidden name=game value=%s>
-		<input type=hidden name=power value=%s>
-		<input type=hidden name=password value=%s>
-		<tr><td class=bodycopy><b>Ledger:</b></td>
-		<td align=right class=bodycopy>Complete account ledger history</td>
-		<td><input class=inputSubmit type=submit value="Read"></td></tr>
-		</form>
-		""" % (page.game.name, page.power.name, page.password))
-#	----------------------------------------------------------------------
-def showPricesButton():
-	if (((page.power and page.power.name == 'MASTER')
-	or 'PUBLIC_TOTALS' in page.game.rules)
-	and os.path.isfile(page.game.file('chart'))):
-		page.write(
-			"""
-			<form method=post><input type=hidden name=page value=Read>
-			<input type=hidden name=file value=chart>
-			<input type=hidden name=game value=%s>
-			<tr><td class=bodycopy><b>Bribes:</b></td>
-			<td align=right class=bodycopy><select name=phase class=bodycopy>
-			""" % page.game.name)
-		chart = open(page.game.file('chart'))
-		phases = [x.title() for x in chart if 'MOVEMENT' in x]
-		chart.close()
-		[page.write('<option' + ('>', ' selected>')[x == phases[-1]] + x)
-			for x in phases]
+	if os.path.isfile(page.game.file('ledgers')):
+		page.write('<form method=post>')
+		hideBack('Read')
+		apprise('file', 'ledgers')
 		page.write("""
-			</select></td>
+			<tr><td class=bodycopy><b>Ledger:</b></td>
+			<td align=right class=bodycopy>Complete account ledger history</td>
 			<td><input class=inputSubmit type=submit value="Read"></td></tr>
+			</form>
 			""")
-		if page.power: page.write(
-			"""
-			<input type=hidden name=power value=%s>
-			<input type=hidden name=password value=%s>
-			""" % (page.power.name, page.password))
-		page.write('</form>')
 #	----------------------------------------------------------------------
 def showTransferForm():
 	page.game.findGoners()
@@ -120,22 +89,17 @@ def showTransferForm():
 		or len(page.power.sent) != (len(page.game.powers) - 1))
 	and ('NO_LOOTING' not in page.game.rules or not page.power.isDummy())
 	and (not page.power.ceo)): return
-	page.write(
-		"""
-		<form name=transferForm method=post>
-		<input type=hidden name=page value=Transfer>
-		<input type=hidden name=game value=%s>
-		<input type=hidden name=power value=%s>
-		<input type=hidden name=balance value=%d>
-		<input type=hidden name=password value=%s>
+	page.write('<form name=transferForm method=post>')
+	hideBack('Transfer')
+	apprise('balance', page.power.balance)
+	page.write("""
 		<tr><td class=bodycopy><b>Transfer:</b></td>
 		<td class=bodycopy align=right>Send
 		<input class=inputBox name=amount size=3 value=0>
-		AgP %s to
+		AgP%s to
 		<select class=inputBox name=beneficiary>
-		""" % (page.game.name, page.power.name, page.power.balance,
-			page.password, 'ANON_TRANSFER' in page.game.rules and
-			'(anonymously)' or ''))
+		""" % ('ANON_TRANSFER' in page.game.rules and
+			' (anonymously)' or ''))
 	powers, others = [], []
 	for power in page.game.powers:
 		if 'VASSAL_DUMMIES' in page.game.rules and power.isDummy(): continue
@@ -234,9 +198,6 @@ if not page.game.error:
 				<table border=0 align=center>
 				<tr>
 		""")
-	if 'message' in vars(page):
-		sendPress()
-		page.write('</tr><tr>')
 	showPressOptions()
 	page.write(
 		"""

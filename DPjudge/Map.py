@@ -19,9 +19,10 @@ class Map:
 			notify = [host.judgekeeper]
 		aliases = {			'-': '-',		'H': 'H',		'P': 'P',
 			'A': 'A',		'F': 'F',		'S': 'S',		'C': 'C',
-			'B': '+',		'D': '*',		'R': 'R',
+			'B': '+',		'D': '*',		'K': '!',		'R': 'R',
 			'BUILD': '+',	'BUILDS': '+',	'DISBAND': '*',	'DISBANDS': '*',
-			'REMOVE': '*',	'REMOVES': '*',	'RETREATS':		'RETREAT',
+			'REMOVE': '*',	'REMOVES': '*',	'KEEP': '!',	'KEEPS': '!',
+			'RETREATS':		'RETREAT',
 			'ARMY': 'A',	'FLEET': 'F',	'SUPPORT': 'S',	'SUPPORTS': 'S',
 			'CONVOY': 'C',	'CONVOYS': 'C', 'HOLD': 'H',	'HOLDS': 'H',
 			'TO': '',		'MOVE': '-',	'MOVES': '-',	'M': '-',
@@ -31,6 +32,9 @@ class Map:
 		vars(self).update(locals())
 		self.load()
 		self.validate()
+	#	----------------------------------------------------------------------
+	def __repr__(self):
+		return self.name
 	#	----------------------------------------------------------------------
 	def validate(self, phases = '', force = 0):
 		if not force and not phases and self.validated: return

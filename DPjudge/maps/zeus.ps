@@ -1414,6 +1414,8 @@
 	/Grey .7 g
 	/LandBrown .8 .7 .4 r
 	/SeaBlue .1 .4 .6 r
+	/LandGreen 0 .4 0 r
+	/SeaWhite 1 1 1 r
 	/ArrowRed 1 0 0 r
 	/ArrowBlue .529 .808 .922 r
 	/Blue 0 0 1 r
@@ -2975,10 +2977,6 @@ MapUnitLetterFont z
 r
 /FleetTroops FleetTroopBBox /PaintFleet load CreateTroops def
 /ArmyTroops ArmyTroopBBox /PaintArmy load CreateTroops def
-/Centers <<
-	{ pop pop true } bind
-	VisitSupplies
->> def
 /SupplyCenters SupplyCenterBBox /PaintSupply load CreateTroops def
 { currentdict end 4 1 roll [ SupplyCenters 4 2 roll 4 index ] cvx def begin } bind
 VisitSupplies
@@ -2991,4 +2989,8 @@ VisitSupplies
 /USSRCENTER /USSR ld
 /INDIACENTER /INDIA ld
 /UNOWNEDCENTER /UNOWNED ld
+/Centers <<
+	{ pop pop true } bind
+	VisitSupplies
+>> def
 %%EndSetup

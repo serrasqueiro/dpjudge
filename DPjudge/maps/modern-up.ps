@@ -46,9 +46,10 @@
 %  509  -48 CAI    Cairo
 %  699  180 CAS    Caspian Sea
 %  645  184 CAU    Caucasus
-%  524  285 CEN    Central Russian Plateau
 %  165  387 CLY    Clyde
 %  315  175 CRO    Croatia
+%  524  285 CRP    Central Russian Plateau
+%  331  -84 CSA    Central Sahara
 %  324  244 CZE    Czech Republic
 %  280  352 DEN    Denmark
 %  529  236 DON    Donbas
@@ -136,7 +137,7 @@
 %  321  273 SIL    Silesia
 %  531  -35 SIN    Sinai
 %  280  378 SKA    Skagerrak
-%  356  222 SLO    Slovakia
+%  356  222 SLK    Slovakia
 %   83   98 SOG    Straits of Gibraltar
 %  445  385 STP    St-Petersburg
 %   68  142 SVE    Seville
@@ -397,7 +398,8 @@
 	(AUS) 314 214 l
 	(BIE) 420 287 l
 	(BOS) 337 176 l
-	(CEN) 524 285 l
+	(CRP) 524 285 l
+	(CSA) 331 -84 l
 	(CZE) 324 244 l
 	(FRA) 277 275 l
 	(GOR) 536 391 l
@@ -418,7 +420,7 @@
 	(SAX) 288 253 l
 	(SIB) 714 436 l
 	(SIL) 321 273 l
-	(SLO) 356 222 l
+	(SLK) 356 222 l
 	(SWI) 251 220 l
 	(WAR) 353 291 l
 	(WSA) 81 -21 l
@@ -485,10 +487,10 @@
 /NameTerritories {
 	SwitchToMapMode
 	s
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ DarkGreen 3 2 roll DrawAlias } bind
-	{ White 3 2 roll DrawAlias } bind
-	{ DarkGreen 3 2 roll DrawAlias } bind
+	{ LandGreen 3 2 roll DrawAlias } bind
+	{ LandGreen 3 2 roll DrawAlias } bind
+	{ SeaWhite 3 2 roll DrawAlias } bind
+	{ LandGreen 3 2 roll DrawAlias } bind
 	{ pop pop pop } bind
 	VisitTerritories
 	r
@@ -1450,7 +1452,7 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		26.1 134.18 454.2 441.64 rectclip .552 .552 x 73.66 343.06 t
+		25.1 135.14 456.2 439.71 rectclip .5496 .5496 x 75.67 345.88 t
 		ArrowColor
 		OkOrder
 	} if
@@ -1458,7 +1460,7 @@
 /FrameMap {
 	s
 	2 w LandBrown
-	23.1 131.18 m 483.3 131.18 l 483.3 578.82 l 23.1 578.82 l
+	22.1 132.14 m 484.3 132.14 l 484.3 577.86 l 22.1 577.86 l
 	p
 	s 8 w Black k r
 	clipsave clip k cliprestore
@@ -1519,6 +1521,8 @@
 	/White .9 g
 	/LandBrown .8 .7 .4 r
 	/SeaBlue .1 .4 .6 r
+	/LandGreen 0 .4 0 r
+	/SeaWhite 1 1 1 r
 	/ArrowRed 1 0 0 r
 	/ArrowBlue .529 .808 .922 r
 	/Brown .6 .45 .2 r
@@ -1530,7 +1534,6 @@
 	/Orange 1 .6 0 r
 	/Yellow 1 1 0 r
 	/Cyan 0 1 1 r
-	/DarkGreen 0 .4 0 r
 	end
 } def
 /OutlineChartSeawater {
@@ -1823,7 +1826,7 @@
 	308 179 l
 	302 180 l
 	298 184 l
-	297 195 l
+	295 195 l
 	286 189 l
 	285 180 l
 	282 176 l
@@ -3055,7 +3058,10 @@
 	456 -19 l
 	fk
 	473 -79 m
-	472 -100 l
+	433 -79 l
+	fk
+	230 -65 m
+	434 -65 l
 	fk
 	452 549 m
 	464 580 l
@@ -3409,9 +3415,9 @@
 	333 148 l
 	fk
 	347 178 m
-	328 182 l
-	324 174 l
-	339 159 l
+	324 182 l
+	318 174 l
+	336 153 l
 	fk
 	348 188 m
 	362 190 l
@@ -3613,13 +3619,16 @@
 	fk
 } bd
 /OutlineChartCanalLine {
-	560 -95 m
-	762 -95 l
-	762 -65 l
-	fk
 	536 191 m
 	573 224 l
 	657 217 l
+	fk
+	272 326 m
+	284 327 l
+	fk
+	560 -95 m
+	762 -95 l
+	762 -65 l
 	fk
 	517 -31 m
 	514 -14 l
@@ -3648,10 +3657,6 @@ r
 /FleetTroops FleetTroopBBox /PaintFleet load CreateTroops def
 /WingTroops WingTroopBBox /PaintWing load CreateTroops def
 /ArmyTroops ArmyTroopBBox /PaintArmy load CreateTroops def
-/Centers <<
-	{ pop pop true } bind
-	VisitSupplies
->> def
 /SupplyCenters SupplyCenterBBox /PaintSupply load CreateTroops def
 { currentdict end 4 1 roll [ SupplyCenters 4 2 roll 4 index ] cvx def begin } bind
 VisitSupplies
@@ -3666,4 +3671,8 @@ VisitSupplies
 /SPAINCENTER /SPAIN ld
 /TURKEYCENTER /TURKEY ld
 /UKRAINECENTER /UKRAINE ld
+/Centers <<
+	{ pop pop true } bind
+	VisitSupplies
+>> def
 %%EndSetup

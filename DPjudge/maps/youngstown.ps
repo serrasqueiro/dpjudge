@@ -972,30 +972,94 @@
 	SwitchToMapMode
 	s
 	SetArrowState
-	PaintArrowMove
+	HVDoubleLine {
+		PaintArrowMove
+	} if PaintArrowMove
 	r
+} bd
+/HVDoubleLine {
+	6 dict begin
+	/y1 xd /x1 xd /y0 xd /x0 xd
+	/hWrap x1 x0 gt {
+		x0 309.9 lt x1 309.9 ge and { x1 x0 sub 516.5 div } { 0 } ifelse
+	} {
+		x1 309.9 lt x0 309.9 ge and { x0 x1 sub 516.5 div } { 0 } ifelse
+	} ifelse def
+	/vWrap y1 y0 gt {
+		y0 639.0999999999999 lt y1 639.0999999999999 ge and { y1 y0 sub 456.5 div } { 0 } ifelse
+	} {
+		y1 639.0999999999999 lt y0 639.0999999999999 ge and { y0 y1 sub 456.5 div } { 0 } ifelse
+	} ifelse def
+	hWrap 1 gt vWrap 1 gt and {
+		vWrap hWrap lt { /hWrap } { /vWrap } ifelse 0 def
+	} if
+	hWrap 1 gt {
+		x0 y0 x1 x0 gt {
+			x1 1033 sub y1 x0 1033 add y0
+		} {
+			x1 1033 add y1 x0 1033 sub y0
+		} ifelse x1 y1 true
+	} {
+		vWrap 1 gt {
+			y1 y0 gt {
+				x0 y0 x1 y1 913 sub x0 y0 913 add x1 y1 true
+			} {
+				x0 y0 x1 y1 913 add x0 y0 913 sub x1 y1 true
+			} ifelse
+		} {
+			x0 y0 x1 y1 false
+		} ifelse
+	} ifelse
+	end
 } bd
 /ArrowHold {
 	SwitchToMapMode
 	s
 	SetArrowState
-	24 PaintArrowCircle
+	HVDoubleLine {
+		24 PaintArrowCircle
+	} if 24 PaintArrowCircle
 	r
 } bd
 /ArrowSupport {
 	SwitchToMapMode
 	s
 	SetArrowState
-	center
-	8 PaintArrowCircle
+	HVDoublePointToMidLine {
+		8 PaintArrowCircle
+	} if 8 PaintArrowCircle
 	r
+} bd
+/HVDoublePointToMidLine {
+	6 dict begin
+	/y2 xd /x2 xd /y1 xd /x1 xd
+	/hWrap x2 x1 gt {
+		x1 309.9 lt x2 309.9 ge and { x2 x1 sub 516.5 div } { 0 } ifelse
+	} {
+		x2 309.9 lt x1 309.9 ge and { x1 x2 sub 516.5 div } { 0 } ifelse
+	} ifelse def
+	/vWrap y2 y1 gt {
+		y1 639.0999999999999 lt y2 639.0999999999999 ge and { y2 y1 sub 456.5 div } { 0 } ifelse
+	} {
+		y2 639.0999999999999 lt y1 639.0999999999999 ge and { y1 y2 sub 456.5 div } { 0 } ifelse
+	} ifelse def
+	hWrap 1 gt vWrap 1 gt and {
+		vWrap hWrap lt { /hWrap } { /vWrap } ifelse 0 def
+	} if
+	x1 x2 add hWrap 1 gt {
+		1033 1 index 1033 gt { sub } { add } ifelse
+	} if 2 div y1 y2 add vWrap 1 gt {
+		913 1 index 913 gt { sub } { add } ifelse
+	} if 2 div HVDoubleLine
+	end
 } bd
 /ArrowConvoy {
 	SwitchToMapMode
 	s
 	SetArrowState
-	center
-	12 PaintArrowCircle
+	HVDoublePointToMidLine {
+		12 PaintArrowCircle
+	} if 12 PaintArrowCircle
 	r
 } bd
 /ArrowRetreat {
@@ -1536,7 +1600,7 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		19.7 120.4 491.8 438.2 rectclip .48 .48 x 36.88 250.85 t
+		20.7 123.05 489.8 432.9 rectclip .4742 .4742 x 43.66 259.51 t
 		ArrowColor
 		OkOrder
 	} if
@@ -1544,7 +1608,7 @@
 /FrameMap {
 	s
 	2 w LandBrown
-	17.7 120.4 m 513.5 120.4 l 513.5 558.6 l 17.7 558.6 l
+	17.7 120.05 m 513.5 120.05 l 513.5 558.95 l 17.7 558.95 l
 	p
 	s 8 w Black k r
 	clipsave clip k cliprestore
@@ -1664,6 +1728,8 @@
 	/Grey .7 g
 	/LandBrown .8 .7 .4 r
 	/SeaBlue .1 .4 .6 r
+	/LandGreen 0 .4 0 r
+	/SeaWhite 1 1 1 r
 	/ArrowRed 1 0 0 r
 	/ArrowBlue .529 .808 .922 r
 	/Red 1 0 0 r
@@ -3444,10 +3510,6 @@ MapUnitLetterFont z
 r
 /FleetTroops FleetTroopBBox /PaintFleet load CreateTroops def
 /ArmyTroops ArmyTroopBBox /PaintArmy load CreateTroops def
-/Centers <<
-	{ pop pop true } bind
-	VisitSupplies
->> def
 /SupplyCenters SupplyCenterBBox /PaintSupply load CreateTroops def
 { currentdict end 4 1 roll [ SupplyCenters 4 2 roll 4 index ] cvx def begin } bind
 VisitSupplies
@@ -3462,4 +3524,8 @@ VisitSupplies
 /RUSSIACENTER /RUSSIA ld
 /TURKEYCENTER /TURKEY ld
 /UNOWNEDCENTER /UNOWNED ld
+/Centers <<
+	{ pop pop true } bind
+	VisitSupplies
+>> def
 %%EndSetup

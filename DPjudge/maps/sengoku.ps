@@ -339,7 +339,7 @@
 	1 dict begin
 	/p xd
 	/SHIMAZU (S) /@Green /White p
-	/MORI (R) /@Olive /White p
+	/MORI (R) /@Chocolate /White p
 	/CHOSOKABE (C) /@Purple /White p
 	/ASAKURA (A) /@Orange /White p
 	/ODA (D) /@Maroon /White p
@@ -1221,7 +1221,7 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		27.6 116 540 468 rectclip .4827 .4827 x 54.05 234.11 t
+		28.38 115 538.44 470 rectclip .4786 .4786 x 59.29 240.28 t
 		ArrowColor
 		OkOrder
 	} if
@@ -1229,7 +1229,7 @@
 /FrameMap {
 	s
 	2 w LandBrown
-	26.09 113 m 569.11 113 l 569.11 587 l 26.09 587 l
+	25.38 112 m 569.82 112 l 569.82 588 l 25.38 588 l
 	p
 	s 8 w Black k r
 	clipsave clip k cliprestore
@@ -1284,10 +1284,12 @@
 	/White .9 g
 	/LandBrown .8 .7 .4 r
 	/SeaBlue .1 .4 .6 r
+	/LandGreen 0 .4 0 r
+	/SeaWhite 1 1 1 r
 	/ArrowRed 1 0 0 r
 	/ArrowBlue .529 .808 .922 r
 	/@Green 0 .502 0 r
-	/@Olive .502 .502 0 r
+	/@Chocolate .824 .412 .118 r
 	/@Purple .502 0 .502 r
 	/@Orange 1 .647 0 r
 	/@Maroon .502 0 0 r
@@ -2468,10 +2470,6 @@ MapUnitLetterFont z
 r
 /FleetTroops FleetTroopBBox /PaintFleet load CreateTroops def
 /ArmyTroops ArmyTroopBBox /PaintArmy load CreateTroops def
-/Centers <<
-	{ pop pop true } bind
-	VisitSupplies
->> def
 /SupplyCenters SupplyCenterBBox /PaintSupply load CreateTroops def
 { currentdict end 4 1 roll [ SupplyCenters 4 2 roll 4 index ] cvx def begin } bind
 VisitSupplies
@@ -2485,4 +2483,8 @@ VisitSupplies
 /HOJOCENTER /HOJO ld
 /NEUTRALCENTER /NEUTRAL ld
 /UNOWNEDCENTER /UNOWNED ld
+/Centers <<
+	{ pop pop true } bind
+	VisitSupplies
+>> def
 %%EndSetup

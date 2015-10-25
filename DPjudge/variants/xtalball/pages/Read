@@ -69,13 +69,12 @@ def showLists():
 		elif not flag: page.write()
 		flag = line[0] == '=' or not word
 	file.close()
-	page.write(
-		"""</pre>
+	page.write("""
+		</pre>
 		</th></tr></table>
-		<form><input type=button class=inputSubmit
-			onclick=window.history.back()
-			value="Return To The Status Page"></form></center>
 		""")
+	goBack()
+	page.write('</center>')
 #	----------------------------------------------------------------------
 if page.file == 'lists': showLists()
 elif page.file == 'results': showResults()

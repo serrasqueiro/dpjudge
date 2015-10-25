@@ -20,7 +20,7 @@ v8 21,22,579,510
 void 21,20,584,508
 
 # Expansions to the standard map
-loeb9 17,16,587,516
+loeb9 20,21,579,509
 youngstown 15,31,516,480 A4
 
 # Europe
@@ -32,6 +32,7 @@ classical 17,75,583,461
 hundred 21,24,396,528
 modern 20,22,487,492
 modern-up 20,22,487,492
+slovenia 20,22,487,492
 
 # Asia
 canton 21,22,584,454
@@ -47,5 +48,5 @@ zeus 20,22,537,520
 # Uncategorized
 # Imaginary
 chromatic 42,28,545,530
-pure 21,24,490,456
+pure 21,24,490,468
 sailho 21,24,490,480

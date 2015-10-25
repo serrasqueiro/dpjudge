@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title><ID>: Sengoku Jidai Overview</title>
+<title><ID>: Slovenia Overview</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <:
 page.include('stylesheet')
@@ -13,7 +13,7 @@ page.include('functions')
 
 <table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
 <tr valign=top>
-<td colspan=3>
+<td colspan=4>
 	<!--BANNER TABLE BEGINS HERE-->
 	<table border=0 cellpadding=0 cellspacing=0 width=100%>
 	<tr>
@@ -21,14 +21,14 @@ page.include('functions')
 	<td width=1 class="border"><img src="<URL>/images/spacer.gif" width=1></td>
 	<td class="gameheader" align=center>
 		<!--HEADER GOES HERE-->
-		<b>The Sengoku Jidai Variant</b>
+		<b>The Slovenia Variant</b>
 		<!--INFORMATION LINKS TABLE BEGINS HERE-->
 		<table border=0 cellpadding=5 cellspacing=0 width=100%>
 		<tr>
 		<td class="bodycopy" align=center>
-		<a href="<PAGE>About">about the DPjudge</a> |
+		<a href="<URL>?page=About">about the DPjudge</a> |
 		<a href="<DPPD>">the DPPD</a> |
-		<a href="<PAGE>Questions">common questions</a></td>
+		<a href="<URL>?page=Questions">common questions</a></td>
 		</tr>
 		</table>
 		<!--INFORMATION LINKS TABLE ENDS HERE-->
@@ -39,7 +39,7 @@ page.include('functions')
 	<!--BANNER TABLE ENDS HERE-->
 </td>
 </tr>
-<tr><td colspan=3 height=5><!--SPACER--></td>
+<tr><td colspan=2 height=5><!--SPACER--></td>
 </tr>
 <tr valign=top bgcolor="#CCCCCC">
 <td align=center class="grey"><b>Contents</b></td>
@@ -52,16 +52,24 @@ page.include('functions')
 	<tr valign=top>
 	<td nowrap class="bodycopy">
 		<!--QUESTIONS LIST BEGINS HERE-->
-		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br>
+<!--		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br> -->
 		<b>&middot;</b>&nbsp;<a href="#2">Map Notes</a><br>
 		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
 		<!--QUESTIONS LIST TABLE ENDS HERE-->
 		<p>
-		<form action=<URL> target=sailho>
+		<form action=<URL> target=slovenia>
 		<input type=hidden name=page value=DPmapit>
-		<input type=hidden name=map value=sengoku>
+		<input type=hidden name=map value=slovenia>
 		<input type=hidden name=make value=1>
 		<input type=submit class=inputSubmit value="Variant Map">
+		</form>
+		<p>
+		<form action=<URL> target=volga>
+		<input type=hidden name=page value=DPmapit>
+		<input type=hidden name=map value=volga>
+		<input type=hidden name=trial value=1>
+		<input type=hidden name=make value=1>
+		<input type=submit class=inputSubmit value="Trial Map">
 		</form>
 	</td>
 	</tr>
@@ -72,82 +80,33 @@ page.include('functions')
 <!--MOVEMENT ORDERS TABLES GO HERE-->
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr><td class=bodycopy>
-	<!ol>
-<!li>
-The normal rules of the game of Diplomacy apply, with the following additions,
-exceptions, and clarifications.
+		<!--BODYCOPY BEGINS HERE-->
 
-<p><!li>
-The map that is used is a map of medieval Japan.  There are eight powers
-in the game.  Each of these powers begins with two units.
 
-<p><table align=center border>
-<tr><th class=bodycopy bgcolor=#ffa500><font color=white>Asakura
-<td><tt>Army Omi
-<td><tt>Fleet Echizen
-</tr>
-<tr><th class=bodycopy bgcolor=#800080><font color=white>Chosokabe
-<td><tt>Fleet Iyo
-<td><tt>Fleet Tosa
-</tr>
-<tr><th class=bodycopy bgcolor=#ff69b4><font color=white>Hojo
-<td><tt>Army Sagami
-<td><tt>Fleet Izu
-</tr>
-<tr><th class=bodycopy bgcolor=#d2691e><font color=white>Mori (R)
-<td><tt>Army Iwami
-<td><tt>Fleet Nagato
-</tr>
-<tr><th class=bodycopy bgcolor=#800000><font color=white>Oda (D)
-<td><tt>Army Owari
-<td><tt>Fleet Mikawa
-</tr>
-<tr><th class=bodycopy bgcolor=#008000><font color=white>Shimazu
-<td nowrap><tt>Army Satsuma
-<td><tt>Fleet Osumi
-</tr>
-<tr><th class=bodycopy bgcolor=#000000><font color=white>Takeda
-<td><tt>Army Kai
-<td><tt>Army South Shinano
-</tr>
-<tr><th class=bodycopy bgcolor=#000080><font color=white>Uesegi
-<td><tt>Army Kozuke
-<td><tt>Fleet Echigo
-</tr>
-</table><p>
-The power abbreviation for Mori is R, and for Oda is D.
-<p>
-Additionally, six of the 21
-neutral centres begin the game occupied by an unowned army, which
-<tt>HOLD</tt>s on each turn and may be supported by any player.  When
-this army is dislodged, it does not retreat; it is destroyed.
+The same rules as for <a href=<PAGE>about_modern-up>Modern-Up</a> apply.
+		<!--BODYCOPY ENDS HERE-->
+</td></tr></table>
 
-Players may build new units on any owned supply center.
-<p>
-The map contains 37 supply centers; control of 15 is required for victory.
-The game is to be played until a solo victor is determined (no draws are
-allowed).
-<p>
-The first turn is Spring 1570.
-</td>
-</tr>
-</table>
-</td>
-</tr>
+	</td>
+	</tr>
 <tr valign=top bgcolor="#CCCCCC">
 <td align=center class="grey"><a name="2"></a><b>Map Notes</b></td>
 </tr>
 <tr valign=top>
-<td class=bodycopy>
+<td>
+<!--MAIN TABLES GO HERE-->
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
-The spaces Bitchu and Sanuki are considered land contiguous,
-as are Nagato and Chikuzen, and Iyo and Bungo,
-though they all appear separated by water on the map.
-Both armies and fleets may cross from one of these territories directly
-to the other in each pair.
-Movement by fleets through the surrounding sea zones is unaffected.
+		<!--BODYCOPY BEGINS HERE-->
+
+The Slovenia map is the same as for <a href=<PAGE>about_modern-up>Modern-Up</a> with the following modifications.
+<ol>
+<li>
+Addition of Slovenia. Slovenia is a non-sc country hemmed in between Austria, Hungary, Croatia and Venice. Slovenia has no coastline, so that Venice still borders Croatia.
+<p><li>
+(Trial version only, codenamed "Volga") Addition of the Volga-Baltic Sea waterway branching off of the Volga-Don waterway already present, with an additional branch to the White Sea, connecting all Russia's coastlines. The lake where these three new canal systems meet (Lake Onega, but unnamed on the map as it's not a space in its own right) is on the corner of St. Petersburg, Murmansk and Gorky, so fleets can move directly between any two of these spaces. Gorky is now a Russian port, capable of building fleets as well as armies.
+</ol>
 
 		<!--BODYCOPY ENDS HERE-->
 	</td>
@@ -167,7 +126,8 @@ Movement by fleets through the surrounding sea zones is unaffected.
 	<td class="bodycopy">
 		<!--BODYCOPY BEGINS HERE-->
 <p>
-The Sengoku Jidai variant was created by Benjamin Hester.
+Whereas Modern-Up was a collaboration between Mario Huys and Vincent Mous (creator of the Modern variant), Slovenia is what Vincent calls <i>"a different variant"</i>. The addition of Slovenia was first proposed by Chris Fridrich and put in its definite form by Mario, who describes this in the <a href=<POUCH>>Diplomatic Pouch</A> Zine article <a href=<POUCH>/Zine/S2015R/Huys/slovenia.htm>The Modern Art of Love</a>, with a <a href=<POUCH>/Zine/F2015M/Mous/war.htm>riposte</a> by Vincent in the next Zine.
+
 		<!--BODYCOPY ENDS HERE-->
 	</td>
 	</tr>

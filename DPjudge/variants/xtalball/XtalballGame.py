@@ -42,22 +42,28 @@ class XtalballGame(Game):
 		if parsed: return parsed
 		word = [x.upper() for x in word]
 		upline = ' '.join(word)
-		#	-----------------------------------------
+		#	-------------------------------------------
 		#	Power-specific data (SOONER and/or LATER)
-		#	-----------------------------------------
-		#	Note that SOONER are orders entered during a previous turn and
-		#	thus should be included even if includeFlags & 1 is 0, because the
+		#	-------------------------------------------
+		#	Note that SOONER are orders entered during
+		#	a previous turn and thus should be included
+		#	even if includeFlags & 1 is 0, because the
 		#	latter is only concerned with LATER orders.
+		#	-------------------------------------------
 		if word[0] in ('SOONER', 'LATER') and len(word) == 1: 
 			self.mode, self.modeRequiresEnd = word[0], None
 		elif self.mode == 'LATER' and not includeFlags & 1:
 			return -1
 		elif self.mode and word[0] in ('A', 'F'):
 			word = self.expandOrder(word)
+			if len(word[-1]) == 1 and not word[-1].isalpha():
+				word = word[:-1]
+				upline = upline[:-2]
 			if len(word) < 3: return self.error.append('BAD ORDER: ' + upline)
 			unit, order = ' '.join(word[:2]), ' '.join(word[2:])
-			if self.validOrder(power, unit, order) != None:
-				power.list[self.mode] += [upline]
+			valid = self.validOrder(power, unit, order)
+			if valid != None:
+				power.list[self.mode] += [upline + ' ?' * (valid == -1)]
 			if self.mode == 'LATER': power.held = 1
 		else: return 0
 		return 1
@@ -240,10 +246,10 @@ class XtalballGame(Game):
 			nmr = len(word) == 1 and word[0][word[0][:1] in '([':len(
 				word[0]) - (word[0][-1:] in '])')].upper() in ('NMR', 'CLEAR')
 			if who not in powers:
-				if who is not power and who.ceo[:1] != [power.name]:
-					return self.error.append('NO CONTROL OVER ' + who.name + (
-						'PROXY_OK' in self.rules and 
-						' (NO NEED TO SPECIFY THE POWER FOR PROXIED UNITS)' or ''))
+				if not power.controls(who): return self.error.append(
+					'NO CONTROL OVER ' + who.name + (
+					'PROXY_OK' in self.rules and 
+					' (NO NEED TO SPECIFY THE POWER FOR PROXIED UNITS)' or ''))
 				#	----------------------------------------
 				#	Empty the order list and then stick each
 				#	order (if any) into it, if it is valid.
@@ -257,12 +263,15 @@ class XtalballGame(Game):
 				hasOrders = [x for x in hasOrders if x is not who]
 				continue
 			word = self.expandOrder(word)
+			if word and len(word[-1]) == 1 and not word[-1].isalpha():
+				word = word[:-1]
 			if len(word) < 3:
 				self.error += ['BAD ORDER: ' + line]
 				continue
 			unit, order = ' '.join(word[:2]), ' '.join(word[2:])
-			if self.validOrder(who, unit, order) != None:
-				who.list[which] += [' '.join(word)]
+			valid = self.validOrder(who, unit, order)
+			if valid != None:
+				who.list[which] += [' '.join(word + ['?'] * (valid == -1))]
 				if who not in hasOrders: hasOrders += [who]
 		#	------------------------------------------
 		#	Make sure the player can update his orders

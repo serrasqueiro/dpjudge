@@ -122,142 +122,145 @@ page.include('functions')
 <form name=find>
 <select class=inputBox name=rule
 onchange=document.location.replace('#'+document.find.rule.options[document.find.rule.selectedIndex].value);document.find.rule.selectedIndex=0>
-<option>Look Up A Rule...
+<option>Look Up A Rule...</option>
 <optgroup label="Rules for All Variants">
-<option value=ALWAYS_CONFIRM>ALWAYS_CONFIRM
-<option value=ALWAYS_WAIT>ALWAYS_WAIT
-<option value=BACKSEAT_PRESS>BACKSEAT_PRESS
-<option value=FLEX_SETUP>BLANK_BOARD
-<option value=BLIND>BLIND
-<option value=BROADCAST_ORDERS>BROADCAST_ORDERS
-<option value=BUILD_ANY>BUILD_ANY
-<option value=CD_BUILDS>CD_BUILDS
-<option value=CD_DUMMIES>CD_DUMMIES
-<option value=CD_RETREATS>CD_RETREATS
-<option value=CIVIL_DISORDER>CIVIL_DISORDER
-<option value=CIVIL_PREVIEW>CIVIL_PREVIEW
-<option value=COASTAL_CONVOY>COASTAL_CONVOY
-<option value=COASTAL_CRAWL>COASTAL_CRAWL
-<option value=DEFAULT_UNORDERED>DEFAULT_UNORDERED
-<option value=DUMMY_FIRE>DUMMY_FIRE
-<option value=EAVESDROP>EAVESDROP
-<option value=FAKE_PRESS>FAKE_PRESS
-<option value=FICTIONAL_OK>FICTIONAL_OK
-<option value=FLEX_SETUP>FLEX_SETUP
-<option value=FRIENDLY_FIRE>FRIENDLY_FIRE
-<option value=FTF_PRESS>FTF_PRESS
-<option value=GARRISON>GARRISON
-<option value=GREEK>GREEK (BLIND)
-<option value=GREY_PRESS>GREY_PRESS
-<option value=HIBERNATE>HIBERNATE
-<option value=HIDE_ABSENTEES>HIDE_ABSENTEES
-<option value=HIDE_BUILDS>HIDE_BUILDS
-<option value=HIDE_DUMMIES>HIDE_DUMMIES
-<option value=HIDE_EXTENDERS>HIDE_EXTENDERS
-<option value=HIDE_LATE_POWERS>HIDE_LATE_POWERS
-<option value=HIDE_PROPOSER>HIDE_PROPOSER
-<option value=HOLD_WIN>HOLD_WIN
-<option value=HOME_BUILDS>HOME_BUILDS
-<option value=IMMOBILE_DUMMIES>IMMOBILE_DUMMIES
-<option value=LATE_CHANGES>LATE_CHANGES
-<option value=LATE_SEND>LATE_SEND
-<option value=LIST_UNORDERED>LIST_UNORDERED
-<option value=LIST_WAITERS>LIST_WAITERS
-<option value=MOBILIZE>MOBILIZE
-<option value=MUST_ORDER>MUST_ORDER
-<option value=MUTE_OBSERVERS>MUTE_OBSERVERS
-<option value=MYOPIC>MYOPIC (BLIND)
-<option value=NO_ABSENCES>NO_ABSENCES
-<option value=NO_DIAS>NO_DIAS
-<option value=NO_DRAW>NO_DRAW
-<option value=NO_EOG>NO_EOG
-<option value=NO_FACTORIES>NO_FACTORIES
-<option value=NO_LATE_CHANGES>NO_LATE_CHANGES
-<option value=NO_LATE_RECEIVE>NO_LATE_RECEIVE
-<option value=NO_MILITIA>NO_MILITIA
-<option value=NO_MINOR_WAIT>NO_MINOR_WAIT
-<option value=PUBLIC_PRESS>NO_PARTIAL (PUBLIC_PRESS)
-<option value=NO_PARTISANS>NO_PARTISANS
-<option value=NO_PRESS>NO_PRESS
-<option value=NO_PROXY>NO_PROXY
-<option value=NO_QUARTER>NO_QUARTER
-<option value=NO_RESERVES>NO_RESERVES
-<option value=NO_RETREAT>NO_RETREAT
-<option value=NO_RETURN>NO_RETURN
-<option value=NO_REVEAL>NO_REVEAL
-<option value=NO_SCS_SEE>NO_SCS_SEE (BLIND)
-<option value=NO_UNITS_SEE>NO_UNITS_SEE (BLIND)
-<option value=ORDER_ANY>ORDER_ANY
-<option value=OWN_SCS_SEE>OWN_SCS_SEE (BLIND)
-<option value=PLAYER_DEADLINES>PLAYER_DEADLINES
-<option value=PORTAGE_CONVOY>PORTAGE_CONVOY
-<option value=POWER_CHOICE>POWER_CHOICE
-<option value=PRESS_MASTER>PRESS_MASTER
-<option value=PREVIEW>PREVIEW
-<option value=PROPOSE_DIAS>PROPOSE_DIAS
-<option value=PROXY_OK>PROXY_OK
-<option value=PUBLIC_PRESS>PUBLIC_PRESS
-<option value=REAL_TIME>REAL_TIME
-<option value=REMOTE_BUILDS>REMOTE_BUILDS
-<option value=REMOTE_PRESS>REMOTE_PRESS
-<option value=SAFE_CONVOYS>SAFE_CONVOYS
-<option value=SEE_ALL_SCS>SEE_ALL_SCS (BLIND)
-<option value=SEE_NO_SCS>SEE_NO_SCS (BLIND)
-<option value=SEE_NO_UNITS>SEE_NO_UNITS (BLIND)
-<option value=SHARED_VICTORY>SHARED_VICTORY
-<option value=SHOW_PHANTOM>SHOW_PHANTOM
-<option value=SILENT_ABSENCES>SILENT_ABSENCES
-<option value=SILENT_JOIN>SILENT_JOIN
-<option value=SMART_CD>SMART_CD
-<option value=START_MASTER>START_MASTER
-<option value=TEAM_VICTORY>TEAM_VICTORY
-<option value=TORN_ALLEGIANCE>TORN_ALLEGIANCE
-<option value=TOUCH_PRESS>TOUCH_PRESS
-<option value=TROJAN>TROJAN (BLIND)
-<option value=UNITS_ADAPT>UNITS_ADAPT
-<option value=UNITS_SEE_OTHER>UNITS_SEE_OTHER (BLIND)
-<option value=UNITS_SEE_SAME>UNITS_SEE_SAME (BLIND)
-<option value=VASSAL_DUMMIES>VASSAL_DUMMIES
-<option value=VENETIAN>VENETIAN (BLIND)
-<option value=VICTORY_HOMES>VICTORY_HOMES
-<option value=WEAK_BOUNCES>WEAK_BOUNCES
-<option value=WEAK_CONVOYS>WEAK_CONVOYS
-<option value=WHITE_GREY>WHITE_GREY
-<option value=YELLOW_PRESS>YELLOW_PRESS
+<option value=ALWAYS_CONFIRM>ALWAYS_CONFIRM</option>
+<option value=ALWAYS_WAIT>ALWAYS_WAIT</option>
+<option value=BACKSEAT_PRESS>BACKSEAT_PRESS</option>
+<option value=FLEX_SETUP>BLANK_BOARD</option>
+<option value=BLIND>BLIND</option>
+<option value=BROADCAST_ORDERS>BROADCAST_ORDERS</option>
+<option value=BUILD_ANY>BUILD_ANY</option>
+<option value=CD_BUILDS>CD_BUILDS</option>
+<option value=CD_DUMMIES>CD_DUMMIES</option>
+<option value=CD_RETREATS>CD_RETREATS</option>
+<option value=CIVIL_DISORDER>CIVIL_DISORDER</option>
+<option value=CIVIL_PREVIEW>CIVIL_PREVIEW</option>
+<option value=COASTAL_CONVOY>COASTAL_CONVOY</option>
+<option value=COASTAL_CRAWL>COASTAL_CRAWL</option>
+<option value=DEFAULT_UNORDERED>DEFAULT_UNORDERED</option>
+<option value=DUMMY_FIRE>DUMMY_FIRE</option>
+<option value=EAVESDROP>EAVESDROP</option>
+<option value=FAKE_PRESS>FAKE_PRESS</option>
+<option value=FICTIONAL_OK>FICTIONAL_OK</option>
+<option value=FLEX_SETUP>FLEX_SETUP</option>
+<option value=FRIENDLY_FIRE>FRIENDLY_FIRE</option>
+<option value=FTF_PRESS>FTF_PRESS</option>
+<option value=GARRISON>GARRISON</option>
+<option value=GREEK>GREEK (BLIND)</option>
+<option value=GREY_PRESS>GREY_PRESS</option>
+<option value=HIBERNATE>HIBERNATE</option>
+<option value=HIDE_ABSENTEES>HIDE_ABSENTEES</option>
+<option value=HIDE_BUILDS>HIDE_BUILDS</option>
+<option value=HIDE_DUMMIES>HIDE_DUMMIES</option>
+<option value=HIDE_EXTENDERS>HIDE_EXTENDERS</option>
+<option value=HIDE_LATE_POWERS>HIDE_LATE_POWERS</option>
+<option value=HIDE_PROPOSER>HIDE_PROPOSER</option>
+<option value=HOLD_WIN>HOLD_WIN</option>
+<option value=HOME_BUILDS>HOME_BUILDS</option>
+<option value=IMMOBILE_DUMMIES>IMMOBILE_DUMMIES</option>
+<option value=LATE_CHANGES>LATE_CHANGES</option>
+<option value=LATE_SEND>LATE_SEND</option>
+<option value=LIST_UNORDERED>LIST_UNORDERED</option>
+<option value=LIST_WAITERS>LIST_WAITERS</option>
+<option value=MOBILIZE>MOBILIZE</option>
+<option value=MUST_ORDER>MUST_ORDER</option>
+<option value=MUTE_OBSERVERS>MUTE_OBSERVERS</option>
+<option value=MYOPIC>MYOPIC (BLIND)</option>
+<option value=NO_ABSENCES>NO_ABSENCES</option>
+<option value=NO_DEADLINE>NO_DEADLINE</option>
+<option value=NO_DIAS>NO_DIAS</option>
+<option value=NO_DRAW>NO_DRAW</option>
+<option value=NO_EOG>NO_EOG</option>
+<option value=NO_FACTORIES>NO_FACTORIES</option>
+<option value=NO_LATE_CHANGES>NO_LATE_CHANGES</option>
+<option value=NO_LATE_RECEIVE>NO_LATE_RECEIVE</option>
+<option value=NO_MILITIA>NO_MILITIA</option>
+<option value=NO_MINOR_WAIT>NO_MINOR_WAIT</option>
+<option value=PUBLIC_PRESS>NO_PARTIAL (PUBLIC_PRESS)</option>
+<option value=NO_PARTISANS>NO_PARTISANS</option>
+<option value=NO_PRESS>NO_PRESS</option>
+<option value=NO_PROXY>NO_PROXY</option>
+<option value=NO_QUARTER>NO_QUARTER</option>
+<option value=NO_RESERVES>NO_RESERVES</option>
+<option value=NO_RETREAT>NO_RETREAT</option>
+<option value=NO_RETURN>NO_RETURN</option>
+<option value=NO_REVEAL>NO_REVEAL</option>
+<option value=NO_SCS_SEE>NO_SCS_SEE (BLIND)</option>
+<option value=NO_UNITS_SEE>NO_UNITS_SEE (BLIND)</option>
+<option value=ORDER_ANY>ORDER_ANY</option>
+<option value=OWN_SCS_SEE>OWN_SCS_SEE (BLIND)</option>
+<option value=PLAYER_DEADLINES>PLAYER_DEADLINES</option>
+<option value=PORTAGE_CONVOY>PORTAGE_CONVOY</option>
+<option value=POWER_CHOICE>POWER_CHOICE</option>
+<option value=PRESS_MASTER>PRESS_MASTER</option>
+<option value=PREVIEW>PREVIEW</option>
+<option value=PROPOSE_DIAS>PROPOSE_DIAS</option>
+<option value=PROXY_OK>PROXY_OK</option>
+<option value=PUBLIC_PRESS>PUBLIC_PRESS</option>
+<option value=REAL_TIME>REAL_TIME</option>
+<option value=REMOTE_BUILDS>REMOTE_BUILDS</option>
+<option value=REMOTE_PRESS>REMOTE_PRESS</option>
+<option value=SAFE_CONVOYS>SAFE_CONVOYS</option>
+<option value=SEE_ALL_SCS>SEE_ALL_SCS (BLIND)</option>
+<option value=SEE_NO_SCS>SEE_NO_SCS (BLIND)</option>
+<option value=SEE_NO_UNITS>SEE_NO_UNITS (BLIND)</option>
+<option value=SHARED_VICTORY>SHARED_VICTORY</option>
+<option value=SHOW_PHANTOM>SHOW_PHANTOM</option>
+<option value=SIGNAL_SUPPORT>SIGNAL_SUPPORT</option>
+<option value=SILENT_ABSENCES>SILENT_ABSENCES</option>
+<option value=SILENT_JOIN>SILENT_JOIN</option>
+<option value=SMART_CD>SMART_CD</option>
+<option value=START_MASTER>START_MASTER</option>
+<option value=TEAM_VICTORY>TEAM_VICTORY</option>
+<option value=TORN_ALLEGIANCE>TORN_ALLEGIANCE</option>
+<option value=TOUCH_PRESS>TOUCH_PRESS</option>
+<option value=TROJAN>TROJAN (BLIND)</option>
+<option value=UNITS_ADAPT>UNITS_ADAPT</option>
+<option value=UNITS_SEE_OTHER>UNITS_SEE_OTHER (BLIND)</option>
+<option value=UNITS_SEE_SAME>UNITS_SEE_SAME (BLIND)</option>
+<option value=VASSAL_DUMMIES>VASSAL_DUMMIES</option>
+<option value=VENETIAN>VENETIAN (BLIND)</option>
+<option value=VICTORY_HOMES>VICTORY_HOMES</option>
+<option value=WEAK_BOUNCES>WEAK_BOUNCES</option>
+<option value=WEAK_CONVOYS>WEAK_CONVOYS</option>
+<option value=WHITE_GREY>WHITE_GREY</option>
+<option value=YELLOW_PRESS>YELLOW_PRESS</option>
 
 <optgroup label="Rules for the Standard Variant">
-<option value=CD_SUPPORTS>CD_SUPPORTS
-<option value=NO_CHECK>NO_CHECK
+<option value=CD_SUPPORTS>CD_SUPPORTS</option>
+<option value=NO_CHECK>NO_CHECK</option>
 
 <optgroup label="Rules for the Payola Variant">
-<option value=ANON_TRANSFER>ANON_TRANSFER
-<option value=TINCUP>BLIND
-<option value=DIRECT_ONLY>DIRECT_ONLY
-<option value=EBAYOLA>EBAYOLA
-<option value=EXCHANGE>EXCHANGE
-<option value=FLAT_TAX>FLAT_TAX
-<option value=HIDE_COST>HIDE_COST
-<option value=HIDE_OFFERS>HIDE_OFFERS
-<option value=LIMIT_OFFERS>LIMIT_OFFERS
-<option value=NO_DONATIONS>NO_DONATIONS
-<option value=NO_HOARDING>NO_HOARDING
-<option value=NO_LEDGERS>NO_LEDGERS
-<option value=NO_PLATEAU>NO_PLATEAU
-<option value=NO_SAVINGS>NO_SAVINGS
-<option value=NO_TRANSFER>NO_TRANSFER
-<option value=ONE_TRANSFER>ONE_TRANSFER
-<option value=PAYOLA_CLASSIC>PAYOLA_CLASSIC
-<option value=PAY_DUMMIES>PAY_DUMMIES
-<option value=PUBLIC_TOTALS>PUBLIC_TOTALS
-<option value=REMOTE_BRIBE>REMOTE_BRIBE
-<option value=TOUCH_BRIBE>TOUCH_BRIBE
-<option value=VASSAL_TRANSFERS>VASSAL_DUMMIES
-<option value=ZEROSUM>ZEROSUM
-<option value=ZERO_FOREIGN>ZERO_FOREIGN
+<option value=ANON_TRANSFER>ANON_TRANSFER</option>
+<option value=TINCUP>BLIND</option>
+<option value=DIRECT_ONLY>DIRECT_ONLY</option>
+<option value=EBAYOLA>EBAYOLA</option>
+<option value=EXCHANGE>EXCHANGE</option>
+<option value=FLAT_TAX>FLAT_TAX</option>
+<option value=HIDE_COST>HIDE_COST</option>
+<option value=HIDE_OFFERS>HIDE_OFFERS</option>
+<option value=LIMIT_OFFERS>LIMIT_OFFERS</option>
+<option value=NO_DONATIONS>NO_DONATIONS</option>
+<option value=NO_HOARDING>NO_HOARDING</option>
+<option value=NO_LEDGERS>NO_LEDGERS</option>
+<option value=NO_PLATEAU>NO_PLATEAU</option>
+<option value=NO_SAVINGS>NO_SAVINGS</option>
+<option value=NO_TRANSFER>NO_TRANSFER</option>
+<option value=ONE_TRANSFER>ONE_TRANSFER</option>
+<option value=PAYOLA_CLASSIC>PAYOLA_CLASSIC</option>
+<option value=PAY_DUMMIES>PAY_DUMMIES</option>
+<option value=PUBLIC_TOTALS>PUBLIC_TOTALS</option>
+<option value=REMOTE_BRIBE>REMOTE_BRIBE</option>
+<option value=RESTRICT_SIGNAL>RESTRICT_SIGNAL</option>
+<option value=TOUCH_BRIBE>TOUCH_BRIBE</option>
+<option value=VASSAL_TRANSFERS>VASSAL_DUMMIES</option>
+<option value=ZEROSUM>ZEROSUM</option>
+<option value=ZERO_FOREIGN>ZERO_FOREIGN</option>
 
 <optgroup label="Rules for the Crystal Ball Variant">
-<option value=LIMIT_LISTS>LIMIT_LISTS
-<option value=PUBLIC_LISTS>PUBLIC_LISTS
+<option value=LIMIT_LISTS>LIMIT_LISTS</option>
+<option value=PUBLIC_LISTS>PUBLIC_LISTS</option>
 </select>
 </form>
 	</td>
@@ -492,6 +495,28 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	Orders are broadcast to all players immediately after being entered.
 	Mostly useful for educational purposes, when secrecy is not a concern.
 	This rule automatically adds the <tt>ALWAYS_CONFIRM</tt> rule.
+<!-- RULE END -->
+
+<a name=SIGNAL_SUPPORT></a><p><dt><b><tt>SIGNAL_SUPPORT</tt></b><dd>
+<!-- RULE SIGNAL_SUPPORT !NO_CHECK -->
+	Players may order support to any unit and any destination on the 
+	board, including <tt>SHUT</tt>s (impassable areas defined in the
+	map file, such as Switzerland on the Standard map). They will be
+	treated as void support orders in the results and on the map. This
+	is useful in NO_PRESS games to signal a player's intention or stance
+	towards other players. Invalid orders are marked with a question
+	mark (?) in the order box after submitting them.
+	<br><br>Here are some examples and their possible interpretation:
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;England: A LVP S F NTH ?</tt>
+	<br>This could be a taunt. "I dare you to attack my home island when
+	I have both my front and back covered."
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;France: A MAR S A VIE - ROM ?</tt>
+	<br>This is a cry for help. "Austria, Italy is heading my way. Stab
+	him now to get him off my back."
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Austria: A VIE S A VEN - SWI ?</tt>
+	<br>The Austrian reply. "Italy, let's keep the peace. Sorry, France."
+	<br><br>See also <a href="#RESTRICT_SIGNAL"><tt>RESTRICT_SIGNAL</tt></a> for
+	a related Payola rule.
 <!-- RULE END -->
 
 <a name=FICTIONAL_OK></a><p><dt><b><tt>FICTIONAL_OK</tt></b><dd>
@@ -1332,6 +1357,11 @@ the course of the game.
 <p><HR><br><dt><b>1.9 Deadline Handling and Phase Processing</b>
 <!-- RULE GROUP 9 Deadline Handling and Phase Processing -->
 <dl>
+<a name=NO_DEADLINE></a><p><dt><b><tt>NO_DEADLINE</tt></b><dd>
+<!-- RULE NO_DEADLINE !NO_LATE_CHANGES !LATE_CHANGES !PLAYER_DEADLINES -->
+	In certain cases, e.g. for testing and solving Diplomacy puzzles (solitaire games), there's no need for a deadline, and thus also not for a Timing line. It's up to the GM to process each turn after all (relevant) orders are submitted, or for all players to submit their orders without setting their <tt>WAIT</tt> flag. This behavior can be influenced with the <tt>NO_WAIT</tt> and <tt>ALWAYS_WAIT</tt> options.
+<!-- RULE END -->
+
 <a name=NO_QUARTER></a><p><dt><b><tt>NO_QUARTER</tt></b><dd>
 <!-- RULE NO_QUARTER +NO_RETREAT +NO_DRAW -->
 	This rule enforces both of the rules <tt>NO_RETREAT</tt>
@@ -1339,13 +1369,13 @@ the course of the game.
 <!-- RULE END -->
 
 <a name=NO_LATE_CHANGES></a><p><dt><b><tt>NO_LATE_CHANGES</tt></b><dd>
-<!-- RULE NO_LATE_CHANGES -LATE_CHANGES -->
+<!-- RULE NO_LATE_CHANGES -LATE_CHANGES !NO_DEADLINE -->
 	In games using this rule, no changes can be made to any
 	<i>already-submitted</i> orders after a deadline has passed.
 <!-- RULE END -->
 
 <a name=LATE_CHANGES></a><p><dt><b><tt>LATE_CHANGES</tt></b><dd>
-<!-- RULE LATE_CHANGES -NO_LATE_CHANGES -->
+<!-- RULE LATE_CHANGES -NO_LATE_CHANGES !NO_DEADLINE -->
 	This rule (which is in use by default, and therefore need not
 	be stated, in all games that do <i>not</i> use the <tt>CIVIL_DISORDER</tt>
 	rule) allows players to make changes to submitted
@@ -1380,7 +1410,7 @@ the course of the game.
 <!-- RULE END -->
 
 <a name=PLAYER_DEADLINES></a><p><dt><b><tt>PLAYER_DEADLINES</tt></b><dd>
-<!-- RULE PLAYER_DEADLINES -->
+<!-- RULE PLAYER_DEADLINES !NO_DEADLINE -->
 	This rule allows any participant in the game to issue the
 	<tt>SET&nbsp;DEADLINE</tt> command.  (Without this rule, only
 	a game's Master may modify the current deadline.)  Only the
@@ -1572,7 +1602,9 @@ the course of the game.
 	This rule emulates face-to-face play, in which players could (by
 	accident or design) issue invalid orders to their units.  This rule
 	is also useful in <tt>NO_PRESS</tt> games to allow for limited
-	player communication.
+	player communication (see
+	<a href=#SIGNAL_SUPPORT><tt>SIGNAL_SUPPORT</tt></a> for a more
+	controlled alternative).
 	When they are entered, movement phase orders are only very minimally
 	checked for validity.  The <i>only</i> checks that are made at
 	the time an order is entered are:
@@ -1820,6 +1852,46 @@ the course of the game.
 	Only one offer may be made by any player to any given unit.  Additionally,
 	wildcard bribes (<tt>&gt;</tt>, <tt>@</tt>, <tt>!</tt>, <tt>&amp;</tt>)
 	are not allowed.
+<!-- RULE END -->
+
+<a name=RESTRICT_SIGNAL></a><p><dt><b><tt>RESTRICT_SIGNAL</tt></b><dd>
+<!-- RULE RESTRICT_SIGNAL +SIGNAL_SUPPORT -->
+	With this rule in effect, <a href="#SIGNAL_SUPPORT"><tt>SIGNAL_SUPPORT</tt></a>
+	orders may only be issued by the power owning the unit or its
+	controller. Bribes should always be 0 AgP. There can be only one
+	such order per unit. It gets substituted in when the winning bet
+	for the unit is a <tt>HOLD</tt> order. 
+	Unlike unrestricted <tt>SIGNAL_SUPPORT</tt> orders, players know who
+	issued the order (even if they may not know who paid for the
+	<tt>HOLD</tt> order), making it a more valuable tool for communication
+	in <tt>NO_PRESS</tt> games.
+	<br><br>Let's illustrate the difference with the following example.
+	Italy has moved towards France (intentionally or not), and France
+	wants Austria to stab Italy by attacking Venice from Trieste.
+	<br>Here are the bid sheets for fleet Trieste when <tt>RESTRICT_SIGNAL</tt>
+	is <b>not</b> active (only <tt>SIGNAL_SUPPORT</tt> is):
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Austria: 2 : F TRI - VEN</tt>
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Austria: 0 : F TRI S A VEN - SWI ?</tt>
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;France:&nbsp; 3 : F TRI - VEN</tt>
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;France:&nbsp; 1 : F TRI S A VIE - ROM ?</tt>
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Italy:&nbsp;&nbsp; 5 ! F TRI - VEN</tt>
+	<br>The result is that Fleet Trieste makes the void support order
+	for Vienna to Rome, as dictated by France, but no one except France
+	knows this.
+	<br>The same sheets, but now with <tt>RESTRICT_SIGNAL</tt>:
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Austria: 2 : F TRI - VEN</tt>
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Austria: 0 : F TRI S A VEN - SWI ?</tt>
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;France:&nbsp; 3 : F TRI - VEN</tt>
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;France:&nbsp; 1 : F TRI H</tt>
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Italy:&nbsp;&nbsp; 5 ! F TRI - VEN</tt>
+	<br>The only difference is that, in case the attack bid on Venice
+	fails, France pays Trieste to hold instead of supporting, as the rule
+	forbids France to issue an invalid support order to a foreign unit.
+	The bid indeed fails, with the result that Fleet Trieste gives void
+	support to Venice to Switzerland, which is Austria's default order.
+	Although France and Italy paid for it, it's Austria choosing the
+	message, proclaiming his desire to seek peace with Italy, much to
+	the chagrin of France.
 <!-- RULE END -->
 
 <a name=PAY_DUMMIES></a><p><dt><b><tt>PAY_DUMMIES</tt></b><dd>

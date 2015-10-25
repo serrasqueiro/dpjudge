@@ -207,6 +207,8 @@ class StandardGame(Game):
 		#	If not, self.error will say why
 		#	-------------------------------
 		word = self.map.defaultCoast(self.addUnitTypes(self.expandOrder(word)))
+		if word and len(word[-1]) == 1 and not word[-1].isalpha():
+			word = word[:-1]
 		if len(word) < 2:
 			return self.error.append('BAD ORDER: ' + ' '.join(word))
 		unit, order = ' '.join(word[:2]), ' '.join(word[2:])
@@ -214,22 +216,25 @@ class StandardGame(Game):
 		if (('FICTIONAL_OK' not in self.rules and not owner)
 		or	('ORDER_ANY' not in self.rules and owner is not power)):
 			self.error += ['UNORDERABLE UNIT: ' + ' '.join(word)]
-		elif order and self.validOrder(power, unit, order) != None:
-			#	------------------------------------------------------
-			#	Valid order.  But is it to a unit already ordered?
-			#	This is okay in a NO_CHECK game, and we HOLD the unit.
-			#	If not, pack it back into the power's order list.
-			#	------------------------------------------------------
-			power.cd = 0
-			if unit not in power.orders: power.orders[unit] = order
-			elif 'NO_CHECK' in self.rules:
-				count = len(power.orders)
-				if power.orders[unit] not in ('H', order):
-					power.orders['REORDER %d' % count] = power.orders[unit]
-					count += 1
-					power.orders[unit] = 'H'
-				power.orders['REORDER %d' % count] = ' '.join(word)
-			else: self.error += ['UNIT REORDERED: ' + unit]
+		elif order:
+			valid = self.validOrder(power, unit, order)
+			if valid != None:
+				#	------------------------------------------------------
+				#	Valid order.  But is it to a unit already ordered?
+				#	This is okay in a NO_CHECK game, and we HOLD the unit.
+				#	If not, pack it back into the power's order list.
+				#	------------------------------------------------------
+				power.cd = 0
+				if valid == -1: order += ' ?'
+				if unit not in power.orders: power.orders[unit] = order
+				elif 'NO_CHECK' in self.rules:
+					count = len(power.orders)
+					if power.orders[unit] not in ('H', order):
+						power.orders['REORDER %d' % count] = power.orders[unit]
+						count += 1
+						power.orders[unit] = 'H'
+					power.orders['REORDER %d' % count] = ' '.join(word)
+				else: self.error += ['UNIT REORDERED: ' + unit]
 	#	----------------------------------------------------------------------
 	def process(self, now = 0, email = None, roll = 0):
 		#	-------------------------------------------------------------
@@ -263,10 +268,10 @@ class StandardGame(Game):
 			nmr = len(word) == 1 and word[0][word[0][:1] in '([':len(
 				word[0]) - (word[0][-1:] in '])')].upper() in ('NMR', 'CLEAR')
 			if who not in powers:
-				if who is not power and who.ceo[:1] != [power.name]:
-					return self.error.append('NO CONTROL OVER ' + who.name + (
-						'PROXY_OK' in self.rules and 
-						' (NO NEED TO SPECIFY THE POWER FOR PROXIED UNITS)' or ''))
+				if not power.controls(who): return self.error.append(
+					'NO CONTROL OVER ' + who.name + (
+					'PROXY_OK' in self.rules and 
+					' (NO NEED TO SPECIFY THE POWER FOR PROXIED UNITS)' or ''))
 				#	--------------------------------------------------
 				#	Empty orders before sticking any new orders in it.
 				#	--------------------------------------------------

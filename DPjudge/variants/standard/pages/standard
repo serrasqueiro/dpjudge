@@ -80,19 +80,11 @@ def showLists(orders = 0):
 		""")
 	if page.game.await: shown = 0
 	else:
-		page.write(
-			"""
-			<form %s>
-			<input type=hidden name=page value=Update>
-			<input type=hidden name=game value=%s>
-			<input type=hidden name=power value=%s>
-			<input type=hidden name=password value=%s>
-			<input type=hidden name=phase value=%s>
-			""" %
-			(('onSubmit="return false"',
-			  'method=post name=UpdateForm')[page.pwdFlag == 1],
-			page.game.name, page.power.name,
-			page.password, page.game.phaseAbbr()))
+		page.write('<form %s>' %
+			('onSubmit="return false"',
+			'method=post name=UpdateForm')[page.pwdFlag == 1])
+		hideBack('Update')
+		apprise('phase', page.game.phaseAbbr())
 		if page.game.phaseType == 'M': shown = showOrderList()
 		elif page.game.phaseType == 'A': shown = showAdjustList()
 		elif page.game.phaseType == 'R': shown = showRetreatList()

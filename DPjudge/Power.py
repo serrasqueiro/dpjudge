@@ -198,8 +198,9 @@ class Power:
 				"You are %s %s in game '%s'.\n" %
 				(('now', 'again')[revived],
 				self.game.anglify(self.name), self.game.name) +
-				("Your password is '%s'.\n" % password) * (generated or byMaster) +
-				"Welcome %sto the DPjudge.\n" % ('back ' * revived))
+				("Your password is '%s'.\n" % password) *
+				(generated or byMaster) + "Welcome %sto the %s.\n" %
+				('back ' * revived, host.dpjudgeNick))
 			self.game.mail.close()
 		if resigned: self.game.avail = [x for x in self.game.avail
 			if not x.startswith(self.name + '-')]
@@ -246,14 +247,19 @@ class Power:
 			self.game.timeFormat())[not self.game.avail],
 			subject = 'Diplomacy position dummied')
 	#	----------------------------------------------------------------------
-	def boss(self):
+	def controller(self):
 		if not self.ceo or self.ceo[0] == 'MASTER': return None
 		for power in self.game.powers:
 			if power.name == self.ceo[0]: return power
 		return None
 	#	----------------------------------------------------------------------
+	def controls(self, power):
+		return (power is self or power.controller() is self or
+			self.name == 'MASTER')
+	#	----------------------------------------------------------------------
 	def vassals(self, public = False, all = False):
-		return [x for x in self.game.powers if x.ceo[:1] == [self.name] and
+		return [x for x in self.game.powers if
+			(x.ceo[:1] == [self.name] or self.name == 'MASTER') and
 			(all or not x.isEliminated(public, True))]
 	#	----------------------------------------------------------------------
 	def isResigned(self):
@@ -309,7 +315,7 @@ class Power:
 		#	-------------------------------------------------------------------
 		#	If power is run by controller, password is in the controller's data
 		#	-------------------------------------------------------------------
-		ceo = self.boss()
+		ceo = self.controller()
 		if ceo: return ceo.isValidPassword(password)
 		#	---------------------------
 		#	Determine password validity

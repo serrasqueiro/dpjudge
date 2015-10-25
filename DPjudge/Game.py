@@ -168,11 +168,20 @@ class Game:
 		"""
 		This function has three return values:
 			None	- the order is NOT valid at all
+			-1		- it is NOT valid BUT it does not get reported because it
+					may be used to signal support
 			0		- it is valid BUT some unit mentioned does not exist
 			1		- it is completely valid
 		"""
 		if not order: return
 		word, owner, rules = order.split(), self.unitOwner(unit), self.rules
+		#	--------------------------------------------------
+		#	Strip any final punctuation, as is common in DPeye
+		#	syntax to denote results. A '?' is also used for
+		#	invalid orders with the SIGNAL_SUPPORT rule.
+		#	--------------------------------------------------
+		if len(word[-1]) == 1 and not word[-1].isalpha(): word = word[:-1]
+		if not word: return
 		error = ([], self.error)[report]
 		map, status = self.map, owner != None
 		unitType, unitLoc, orderType = unit[0], unit[2:], word[0]
@@ -204,7 +213,8 @@ class Game:
 		#	Validate that anything in a SHUT location is only ordered to HOLD
 		#	-----------------------------------------------------------------
 		if map.areatype(unitLoc) == 'SHUT' and orderType != 'H':
-			return error.append('UNIT MAY ONLY BE ORDERED TO HOLD: ' + unit)
+			if 'SIGNAL_SUPPORT' in rules: status = -1
+			else: return error.append('UNIT MAY ONLY BE ORDERED TO HOLD: ' + unit)
 		#	----------------------------------
 		#	Validate support and convoy orders
 		#	----------------------------------
@@ -246,7 +256,7 @@ class Game:
 			if not self.unitOwner(rcvr, 0):
 				if 'FICTIONAL_OK' not in rules: return error.append(
 					orderText + ' RECIPIENT DOES NOT EXIST: %s ' % unit + order)
-				status = 0
+				if status > 0: status = 0
 			#	-------------------------------
 			#	Check that the recipient is not
 			#	the same unit as the supporter.
@@ -278,7 +288,8 @@ class Game:
 				elif (not self.abuts(word[1], word[2], orderType, dest)
 				and	 (rcvr[0] == 'F' and 'PORTAGE_CONVOY' not in rules
 				or not self.canConvoy(word[1], word[2][:3], dest, 0, unitLoc))):
-					return error.append(
+					if 'SIGNAL_SUPPORT' in rules: status = -1
+					else: return error.append(
 						'SUPPORTED UNIT CANNOT REACH DESTINATION: %s ' %
 						unit + order)
 				#	----------------------------------
@@ -288,7 +299,8 @@ class Game:
 				#	----------------------------------
 				elif ((unitLoc, dest) in map.abutRules.get('*', []) +
 										 map.abutRules.get('~', [])):
-					return error.append(
+					if 'SIGNAL_SUPPORT' in rules: status = -1
+					else: return error.append(
 						'UNIT CANNOT PROVIDE SUPPORT TO DESTINATION: %s ' %
 						unit + order)
 			#	----------------------------------------------------
@@ -310,7 +322,8 @@ class Game:
 				if (not self.abuts(unitType, unitLoc, orderType, dest)
 				or (unitLoc, dest) in map.abutRules.get('*', []) +
 									  map.abutRules.get('~', [])):
-					return error.append(
+					if 'SIGNAL_SUPPORT' in rules: status = -1
+					else: return error.append(
 						'UNIT CANNOT DELIVER SUPPORT TO DESTINATION: %s ' %
 						unit + order)
 			#	-----------------------------------------------------
@@ -323,7 +336,11 @@ class Game:
 			#	Make sure support or convoy is kosher with any LEAGUE
 			#	-----------------------------------------------------
 			if 'FICTIONAL_OK' not in self.rules:
-				self.checkLeague(owner, unit, order, word, orderText)
+				signal = orderType == 'S' and 'SIGNAL_SUPPORT' in self.rules
+				if not self.checkLeague(owner, unit, order, word,
+				orderText, report and not signal):
+					if signal: status = -1
+					else: return
 		#	---------------------
 		#	Validate a move order
 		#	---------------------
@@ -423,7 +440,7 @@ class Game:
 		#	--------
 		return status
 	#	----------------------------------------------------------------------
-	def checkLeague(self, owner, unit, order, word, orderText):
+	def checkLeague(self, owner, unit, order, word, orderText, report):
 		#	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		#	At present, this method is not called during order input
 		#	validation for games that use the FICTIONAL_OK rule.
@@ -432,10 +449,10 @@ class Game:
 		#	next turn.  Probably what should happen is this method
 		#	should be called at adjudication time from somewhere
 		#	in the XtalballGame object to drive whether an ordered
-		#	unit should HOLD instead (of violate its league rules).
+		#	unit should HOLD instead (of violating its league rules).
 		#	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		error = self.error
-		if not owner or len(self.map.leagues.get(owner.name, [])) <= 1: return
+		error = report and self.error or []
+		if not owner or len(self.map.leagues.get(owner.name, [])) <= 1: return 1
 		league, behave = self.map.leagues[owner.name][:2]
 		supportee = self.unitOwner(word[1] + ' ' + word[2]) or owner
 		his = self.map.leagues.get(supportee.name, [''])[0]
@@ -450,6 +467,7 @@ class Game:
 			if vic and self.map.leagues.get(vic.name, [''])[0] in ours:
 				return error.append('LEAGUE FORBIDS %s: %s ' %
 					(orderText, unit) + order)
+		return 1
 	#	----------------------------------------------------------------------
 	def expandOrder(self, word):
 		#	---------------------------------
@@ -463,6 +481,12 @@ class Game:
 				result += ' '
 				if result[-2] + ch == '->': continue
 			result += ch
+		#	--------------------------------------
+		#	Isolate a punctuation mark at the end,
+		#	commonly found in DPeye syntax
+		#	--------------------------------------
+		if len(result) > 1 and result[-2] != ' ' and result[-1] in '?+*!|~':
+			result = result[:-1] + ' ' + result[-1]
 		#	------------------------------------
 		#	Convert aliases to recognized tokens
 		#	------------------------------------
@@ -828,7 +852,7 @@ class Game:
 				else: self.judge = ' '.join(word[1:])
 			elif upword in ['MAP', 'TRIAL']:
 				if self.map: error += ['TWO MAP STATEMENTS']
-				elif len(word) == 2: self.loadMap(word[1], upword == 'TRIAL')
+				elif len(word) == 2: self.loadMap(word[1].lower(), upword == 'TRIAL')
 				else: error += ['BAD MAP STATEMENT']
 			elif upword == 'ROTATE':
 				if self.rotate: error += ['TWO ROTATE STATEMENTS']
@@ -1126,7 +1150,8 @@ class Game:
 					elif controller in self.map.dummies:
 						error += ['CONTROLLING POWER %s IS A DUMMY' %
 							controller]
-		if self.phase not in ('FORMING', 'COMPLETED') and not self.deadline:
+		if self.phase not in ('FORMING', 'COMPLETED') and not (
+			self.deadline or 'NO_DEADLINE' in self.rules):
 			error += ['GAME HAS NO DEADLINE!']
 		if 'NO_RESERVES' in rules: self.map.reserves = []
 		if 'NO_MILITIA' in rules: self.map.militia = []
@@ -1956,8 +1981,8 @@ class Game:
 			for power in self.powers:
 				if not (power is sendingPower
 				or [x for y in sendingPower.units for x in power.units
-					if (self.validOrder(sendingPower, y, 'S ' + x, 0)
-					or self.validOrder(power, x, 'S ' + y, 0))
+					if (self.validOrder(sendingPower, y, 'S ' + x, 0) == 1
+					or self.validOrder(power, x, 'S ' + y, 0) == 1)
 					and self.visible(sendingPower, y, 'H')[power.name] & 1
 					and self.visible(power, x, 'H')[sendingPower.name] & 1]):
 					if power in who: who.remove(power)
@@ -1982,13 +2007,14 @@ class Game:
 		readers = []
 		for power in who:
 			if type(power) not in (str, unicode):
-				if power.type == 'MONITOR': continue
-				if power.address:
-					if (power.isResigned() or power.isDummy()
-					or sendingPower.ceo[:1] == [power.name]): continue
-				elif power.ceo:
-					if power.ceo[0] in ('MASTER', sendingPower.name): continue
-				elif 'HIDE_DUMMIES' not in self.rules: continue
+				if power.type == 'MONITOR' or power.isResigned(): continue
+				if 'HIDE_DUMMIES' not in self.rules:
+					if power.address:
+						if (power.isDummy()
+						or sendingPower.ceo[:1] == [power.name]): continue
+					elif power.ceo:
+						if power.ceo[0] in ('MASTER', sendingPower.name): continue
+					else: continue
 				power = power.name
 			if includeSelf or power != sendingPower.name: readers += [power]
 		if (self.phase != 'FORMING' and 'NO_LATE_RECEIVE' in self.rules
@@ -2056,14 +2082,15 @@ class Game:
 					and 'PRESS_MASTER' in self.rules): continue
 					power, email = reader, self.master[1]
 				elif reader == 'JUDGEKEEPER':
-					if readers in (['All'], ['All!']): continue
-					power, email, fromSender = reader, host.judgekeeper, 1
+					fromSender = sender and sender.name != reader
+					if (not sender or fromSender) and readers in (['All'], ['All!']): continue
+					power, email = reader, host.judgekeeper
 				else:
 					if reader.type == 'MONITOR' and readers != ['All!']: continue
 					power = reader.name
 					if reader.address: email = reader.address[0]
 					else:
-						try: email = reader.boss().address[0]
+						try: email = reader.controller().address[0]
 						except: continue
 				#	---------------------------------------------
 				#	Make sure this party should receive the press
@@ -2099,7 +2126,7 @@ class Game:
 				readers, message, claimFrom, claimTo, subject, 1)
 	#	---------------------------------------------------------------------
 	def pressHeader(self, power, whoTo, reader, sender = 0, recipient = 0):
-		text = ('Message', 'Broadcast message')[whoTo == ['All']]
+		text = ('Message', 'Broadcast message')[whoTo in (['All'], ['All!'])]
 		omniscient = reader and (reader == 'MASTER' or [1 for x in self.powers
 		if x.name == reader and x.omniscient])
 		if sender:
@@ -2113,11 +2140,11 @@ class Game:
 			if text[-1] == ']': text = text[:-1] + ' '
 			else: text += ' ['
 			text += 'sent%s]' % ((self.listReaders(recipient),
-			' as broadcast')[recipient == ['All']])
+			' as broadcast')[recipient in (['All'], ['All!'])])
 		return text
 	#	----------------------------------------------------------------------
 	def listReaders(self, who):
-		if who == ['All']: return ''
+		if who in (['All'], ['All!']): return ''
 		who = map(self.anglify, who)
 		if len(who) > 1: who[-1] = 'and ' + who[-1]
 		return ' to ' + ', '[len(who) < 3:].join(who)
@@ -2139,7 +2166,7 @@ class Game:
 		if subject: topic = subject
 		elif not sender: topic = 'Diplomacy game %s notice' % self.name
 		elif reader == sender.name:
-			if recipient == ['All']: topic = 'Diplomacy broadcast sent'
+			if recipient in (['All'], ['All!']): topic = 'Diplomacy broadcast sent'
 			else: topic = 'Diplomacy press sent' + self.listReaders(recipient)
 		elif claimFrom == '(ANON)': topic = 'Diplomacy press'
 		else: topic = 'Diplomacy press from ' + self.anglify(claimFrom)
@@ -2857,6 +2884,14 @@ class Game:
 		for unit, order in self.command.items():
 			if order[0] != 'S': continue
 			word = order.split()
+			#	----------------------------------------------
+			#	See if the unit is allowed to give the support
+			#	----------------------------------------------
+			if 'SIGNAL_SUPPORT' in self.rules:
+				if word[-1] == '?':
+					self.result[unit] += ['void']
+					self.command[unit] = ' '.join(word[:-1])
+					continue
 			#	------------------------------------------------------
 			#	Remove any trailing "H" from a support-in-place order.
 			#	------------------------------------------------------
@@ -3355,7 +3390,7 @@ class Game:
 			#	-----------------------------------------------------------
 			#	Give the great powers back their centers from their vassals
 			#	-----------------------------------------------------------
-			ceo = power.boss()
+			ceo = power.controller()
 			if ceo: [self.transferCenter(power, ceo, y)
 				for y in power.centers if y in ceo.homes]
 		#	---------------------------------------------------------
@@ -3449,6 +3484,7 @@ class Game:
 		phase = phase or self.phase
 		if not phase: return ''
 		word, season = phase.title().split(), ''
+		if len(word) < 3: return ''
 		for ch in word[0]:
 			season += season and season[-1] == '.' and ch.upper() or ch
 		return (season + ' ' +
@@ -3922,7 +3958,8 @@ class Game:
 					if '&SC' in power.homes and sc not in power.homes:
 						power.homes.remove('&SC')
 						power.homes += [sc]
-				elif word[0] == 'REMOVE': power.units.remove(' '.join(word[1:]))
+				elif word[0] == 'REMOVE':
+					power.units.remove(' '.join(word[1:]))
 				elif len(word) == 5:
 					if word[2] in self.popped:
 						list[-1] += '  (*bounce, destroyed*)'
@@ -4118,6 +4155,7 @@ class Game:
 		return grace and self.deadlineExpired(grace)
 	#	----------------------------------------------------------------------
 	def deadlineExpired(self, grace = '0H'):
+		if 'NO_DEADLINE' in self.rules: return
 		try: return self.getTime() >= self.deadline.offset(grace)
 		except: pass
 	#	----------------------------------------------------------------------
@@ -4150,6 +4188,9 @@ class Game:
 		return deadline
 	#	----------------------------------------------------------------------
 	def setDeadline(self, firstPhase = 0):
+		if 'NO_DEADLINE' in self.rules:
+			self.deadline = None
+			return
 		now = self.getTime()
 		at, days = self.timing.get('AT'), self.timing.get('DAYS', '-MTWTF-')
 		try: delay = [y for x,y in self.timing.items()
@@ -4276,7 +4317,7 @@ class Game:
 			who, parsed = self.getPower(word)
 			if who:
 				if who.name not in adjusts:
-					if who.ceo[:1] != [power.name]:
+					if not power.controls(who):
 						self.error.append('NO CONTROL OVER ' + who.name)
 						return
 					powers += [who]
@@ -4511,7 +4552,7 @@ class Game:
 		if not orders:
 			power.adjust, power.cd = [], 0
 			return
-		adjust, places = [], []
+		adjust, kept, places = [], [], []
 		need, sites = len(power.centers) - len(power.units), 0
 		if [x for x in power.centers if x in power.homes]:
 			need += (self.map.reserves.count(power.name) +
@@ -4524,22 +4565,33 @@ class Game:
 			need = min(need, self.buildLimit(power, sites))
 			alternatives = self.buildAlternatives(power, sites)
 		for order in orders:
-			word = self.addUnitTypes(self.expandOrder([order]))
-			if word[-1] in '+*R-': word = word[-1:] + word[:-1]
+			order = order.strip()
+			if not order: continue
+			word = self.expandOrder([order])
+			if word[-1] in '+*-!': word = word[-1:] + word[:-1]
+			if word[-1] in 'RH': word = word[-1:] + word[:-1]
 			if word[0] == '+': word[0] = 'BUILD'
 			elif word[0] in '*R-': word[0] = 'REMOVE'
+			elif word[0] in '!H': word[0] = 'KEEP'
 			if word[0] == orderType: pass
 			elif word[0] in ('BUILD', 'REMOVE'):
 				self.error += [word[0] + ' NOT ALLOWED: ' + order]
 				continue
-			else: word[:0] = [orderType]
+			elif word[0] != 'KEEP': word[:0] = [orderType]
+			if word[0] != 'BUILD':
+				word = word[:1] + self.addUnitTypes(word[1:])
 			if len(word) == 4 and word[3] == 'HIDDEN': word = word[:-1]
 			order = ' '.join(word)
-			if need < 0:
+			if word[0] in ('REMOVE', 'KEEP'):
 				if len(word) == 3:
-					if (' '.join(word[1:]) in power.units
-					and order not in adjust): adjust += [order]
-					else: self.error += ['INVALID REMOVE ORDER: ' + order]
+					unit = ' '.join(word[1:])
+					if unit not in power.units:
+						self.error += ['NO SUCH UNIT: ' + unit]
+					elif word[0] == 'KEEP' and (order not in kept
+					and ('REMOVE ' + unit) not in adjust): kept += [order]
+					elif word[0] == 'REMOVE' and (order not in adjust
+					and ('KEEP ' + unit) not in kept): adjust += [order]
+					else: self.error += ['MULTIPLE ORDERS FOR UNIT: ' + unit]
 				else: self.error += ['BAD ADJUSTMENT ORDER: ' + order]
 			elif len(word) == 2 and word[1] in ('WAIVE', 'WAIVED'):
 				if len(adjust) < need: adjust += ['BUILD WAIVED']
@@ -4572,6 +4624,9 @@ class Game:
 		while 0 < need < len(adjust):
 			try: adjust.remove('BUILD WAIVED')
 			except: break
+		if 'BUILD WAIVED' in adjust or power.isDummy() and not power.ceo:
+			while len(adjust) < need:
+				adjust.append('BUILD WAIVED')
 		if len(adjust) != abs(need):
 			self.error += ['ADJUSTMENT ORDERS IGNORED (MISCOUNTED)']
 			return
@@ -4683,10 +4738,18 @@ class Game:
 		#	who is still late and say so
 		#	----------------------------
 		if late and self.graceExpired():
-			self.mailPress(None, ['All'], text + '%-18s' %
+			controllers = []
+			for power in [x for x in self.powers if x.name in late]:
+				controller = power.isDummy() and power.controller() or power
+				if controller.name not in controllers:
+					controllers += [controller.name]
+			who = '\n'.join(textwrap.wrap(', '.join(map(self.anglify,
+				controllers)), 70, subsequent_indent = ' ' * 18))
+			multi = 's' * (len(controllers) != 1)
+			self.mailPress(None, ['All!'], text + '%-18s' %
 				('Dismissed Power%s: ' % multi) + who + '\n',
 				subject = 'Diplomacy player dismissal')
-			for power in [x for x in self.powers if x.name in late]:
+			for power in [x for x in self.powers if x.name in controllers]:
 				power.resign()
 				#self.avail += ['%s-(%s)' % (power.name,
 				#	('%d/%d' % (len(power.units), len(power.centers)), '?/?')
@@ -4705,11 +4768,12 @@ class Game:
 		if late and self.timing.get('GRACE'):
 			cd = len([1 for x in self.powers if x.name in late and x.isCD(1)])
 			resign, cd = len(late) - cd > 0, cd > 0
-			all = ([1 for x in self.powers if x.name in late
-				and not x.isDummy()] and 'Powers'
-				or 'VASSAL_DUMMIES' in self.rules
-				and not [1 for x in self.powers if x.name in late
-				and not x.ceo] and 'Vassals'
+			all = (('HIDE_DUMMIES' in self.rules or [1 for x in self.powers
+				if x.name in late and not x.isDummy()]) and 'Powers'
+				or (not cd and [1 for x in self.powers if x.name in late
+				and x.controller()]) and 'Controlling powers'
+				or ('VASSAL_DUMMIES' in self.rules and not [1 for x in
+				self.powers if x.name in late and not x.ceo]) and 'Vassals'
 				or 'Dummies')
 			count = int(self.timing['GRACE'][:-1])
 			penalty = ('\n\n%s who are still late %d %s%s after the\n'
@@ -4788,8 +4852,8 @@ class Game:
 	#	----------------------------------------------------------------------
 	def reportOrders(self, power, email = None):
 		if not email and 'BROADCAST_ORDERS' in self.rules:
-			return self.mailPress(None, ['All'],
-				self.playerOrders(power), subject = 'Diplomacy orders')
+			return self.mailPress(None, ['All'], self.playerOrders(power),
+				subject = 'Diplomacy orders %s ' % self.name + self.phaseAbbr())
 		if email:
 			whoTo = email
 			if power.address and not [
@@ -4797,7 +4861,8 @@ class Game:
 				if x in power.address[0].upper().split(',')]:
 				whoTo += ',' + power.address[0]
 		else: whoTo = power.address[0]
-		self.openMail('Diplomacy orders', mailTo = whoTo, mailAs = host.dpjudge)
+		self.openMail('Diplomacy orders %s ' % self.name + self.phaseAbbr(),
+			mailTo = whoTo, mailAs = host.dpjudge)
 		self.mail.write(self.playerOrders(power))
 		self.mail.close()
 	#	----------------------------------------------------------------------
@@ -5000,8 +5065,19 @@ class Game:
 		self.status[1] = status
 		Status().changeStatus(self.name, status)
 	#	----------------------------------------------------------------------
-	def setState(self, status):
-		self.changeStatus(status)
+	def setState(self, mode):
+		if self.status[1] == mode: return
+		if self.status[1] == 'preparation' and mode != 'forming':
+			return 'Please allow the game to form first'
+		if self.phase == 'FORMING':
+			if mode == 'active': return self.begin()
+		elif self.phase == 'COMPLETED':
+			return ('Please discuss with the judgekeeper why ' +
+				'you consider changing the state of a completed game')
+		elif mode == 'forming':
+			return ('You can only go back to the forming state ' +
+				'by performing a ROLLBACK to the FORMING phase')
+		self.changeStatus(mode)
 	#	----------------------------------------------------------------------
 	def loadRules(self):
 		rule = group = variant = ''

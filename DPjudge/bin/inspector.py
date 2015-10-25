@@ -131,7 +131,8 @@ class Inspector(object):
 	def updateVars(self, game = None, depth = 2):
 		self.game, self.vars, self.varNames = game, dict(), dict()
 		if game:
-			self.vars[self.makeVar(game.name, 'G')] = self.vars['game'] = game
+			self.vars[self.makeVar(game.name, 'G')] = self
+			self.vars['game'] = game
 			for power in game and game.powers or []:
 				self.vars[self.makeVar(power.name, 'P')] = power
 			self.makeGlob(self.vars, depth + 1)

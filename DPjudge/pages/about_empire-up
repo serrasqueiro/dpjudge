@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title><ID>: Modern-Up Overview</title>
+<title><ID>: Empire-Up Overview</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <:
 page.include('stylesheet')
@@ -13,15 +13,15 @@ page.include('functions')
 
 <table border=0 cellpadding=0 cellspacing=1 bgcolor="#666666" width=750 align=center>
 <tr valign=top>
-<td colspan=4>
+<td colspan=3>
 	<!--BANNER TABLE BEGINS HERE-->
 	<table border=0 cellpadding=0 cellspacing=0 width=100%>
 	<tr>
 	<td width=225 align=center><a href=<URL>><img border=0 src="<URL>/images/dpjudge_logo.gif" height=43 width=205 vspace=10></a></td>
-	<td width=1 class="border"><img src="<URL>/images/spacer.gif" width=1></td>
+	<td width=1 class="border"></td>
 	<td class="gameheader" align=center>
 		<!--HEADER GOES HERE-->
-		<b>The Modern-Up Variant</b>
+		<b>The Empire-Up Variant</b>
 		<!--INFORMATION LINKS TABLE BEGINS HERE-->
 		<table border=0 cellpadding=5 cellspacing=0 width=100%>
 		<tr>
@@ -39,27 +39,26 @@ page.include('functions')
 	<!--BANNER TABLE ENDS HERE-->
 </td>
 </tr>
-<tr><td colspan=2 height=5><!--SPACER--></td>
+<tr><td colspan=3 height=5><!--SPACER--></td>
 </tr>
 <tr valign=top bgcolor="#CCCCCC">
 <td align=center class="grey"><b>Contents</b></td>
 <td align=center class="grey"><a name="1"></a><b>Basic Rules</b></td>
 </tr>
 <tr valign=top>
-<td rowspan=5>
+<td rowspan=3>
 <!--GAME INFORMATION TABLES BEGIN HERE-->
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td nowrap class="bodycopy">
 		<!--QUESTIONS LIST BEGINS HERE-->
-<!--		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br> -->
-		<b>&middot;</b>&nbsp;<a href="#2">Map Notes</a><br>
+		<b>&middot;</b>&nbsp;<a href="#1">Basic Rules</a><br>
 		<b>&middot;</b>&nbsp;<a href="#3">Design Notes</a><br>
 		<!--QUESTIONS LIST TABLE ENDS HERE-->
 		<p>
-		<form action=<URL> target=modern-up>
+		<form action=<URL> target=empire-up>
 		<input type=hidden name=page value=DPmapit>
-		<input type=hidden name=map value=modern-up>
+		<input type=hidden name=map value=empire-up>
 		<input type=hidden name=make value=1>
 		<input type=submit class=inputSubmit value="Variant Map">
 		</form>
@@ -72,39 +71,12 @@ page.include('functions')
 <!--MOVEMENT ORDERS TABLES GO HERE-->
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr><td class=bodycopy>
-		<!--BODYCOPY BEGINS HERE-->
 
-
-The same rules as for <a href=<PAGE>about_modern>Modern</a> apply, except as noted below.
+The same rules as for <a href=<PAGE>about_empire>Empire</a> apply, except as noted below.
 <ol>
-<li>Britain starts with an army in Liverpool instead of a fleet.
+<li> Cuba starts with a fleet in each of its home centers, including Holguin.
+<li> Quebec starts with an army in Ungava instead of a fleet.
 </ol>
-		<!--BODYCOPY ENDS HERE-->
-</td></tr></table>
-
-	</td>
-	</tr>
-<tr valign=top bgcolor="#CCCCCC">
-<td align=center class="grey"><a name="2"></a><b>Map Notes</b></td>
-</tr>
-<tr valign=top>
-<td>
-<!--MAIN TABLES GO HERE-->
-	<table border=0 cellpadding=10 cellspacing=0 width=100%>
-	<tr valign=top>
-	<td class="bodycopy">
-		<!--BODYCOPY BEGINS HERE-->
-
-The Modern-Up map is the same as for <a href=<PAGE>about_modern>Modern</a> with the following modifications.
-<ol>
-<li>
-Addition of Ulster (Northern Ireland). Ulster is a canal province like Denmark or Istanbul, bordering Ireland, Liverpool and Clyde and separating the North-Atlantic Ocean from the Irish Sea.
-<p><li>
-The North- and South-Atlantic Ocean now touch each other, while Ireland borders the Mid-Atlantic Ocean.
-<p><li>
-Addition of Central Sahara (Libya's desert area). Central Sahara is a landlocked province bordering Western Sahara, Libya, Eastern Sahara and Aswan. Aswan stretches eastwards towards the Libyan border.
-</ol>
-
 		<!--BODYCOPY ENDS HERE-->
 	</td>
 	</tr>
@@ -122,9 +94,11 @@ Addition of Central Sahara (Libya's desert area). Central Sahara is a landlocked
 	<tr valign=top>
 	<td class="bodycopy">
 		<!--BODYCOPY BEGINS HERE-->
+
 <p>
-The Modern variant was created by Vincent Mous. The Modern-Up modifications were proposed and implemented by Mario Huys in collaboration with Vincent.
-Mario described these modifications in the <a href=<POUCH>>Diplomatic Pouch</A> Zine articles <a href=<POUCH>/Zine/F2013M/Huys/troubles.htm>A Modern Look at 'The Troubles'</a> and <a href=<POUCH>/Zine/S2015M/Huys/modern.htm>The Modern Art of War</a>.
+These changes are an attempt by Mario Huys to create a more balanced Empire map, where no power is seen as the top dog or the underdog right from the outset.
+Vincent Mous, the creator of the Empire map, has the following to say about this:<p>
+<i>"Empire is not as well balanced as Modern. I feel a 3 fleet Cuba may be ok, but Ungava shouldn't be an army. Too drastic a step. Ungava is not really a city and doesn't make sense as an army outpost, though it does for a fleet. Note that I have not noticed Cuba being too weak on the matches I played back then. However they were 10 player games, not 5x2 team games, so the dynamic would be different."</i>
 
 		<!--BODYCOPY ENDS HERE-->
 	</td>

@@ -225,7 +225,7 @@ def outStatusFile():
 		'WAIT', 'SKIP', 'NEED')
 	implemented = ('DESC', 'DESCRIPTION', 'GAME', 'DEADLINE', 'ZONE', 'NAME',
 		'MORPH', 'MASTER', 'RULE', 'RULES', 'PRIVATE', 'MAP', 'TRIAL',
-		'PASSWORD', 'PROCESSED')
+		'PASSWORD')
 	modal = ('DESC', 'DESCRIPTION', 'NAME', 'MORPH')
 	noshow, mode = hidden + implemented, None
 	file, outfile = open(page.game.file('status'), encoding='latin-1'), ''
@@ -246,27 +246,21 @@ def outStatusFile():
 #	----------------------------------------------------------------------
 def showStatusFile():
 	statFile = page.game.file('status')
-	page.write(
-		"""
-		<form method=post name=master>
-		<input type=hidden name=page value=Update>
-		<input type=hidden name=game value=%s>
-		<input type=hidden name=power value=MASTER>
-		<input type=hidden name=password value=%s>
-		<input type=hidden name=stamp value=%d>
-		<input type=hidden name=dataresigned>
-		<input type=hidden name=datadummy>
-		<input type=hidden name=currpower value="NO POWERS">
-		<input type=hidden name=proc_now>
-		""" % (page.game.name, page.password, os.path.getmtime(statFile)))
+	page.write('<form method=post name=master>')
+	hideBack('Update')
+	apprise('stamp', int(os.path.getmtime(statFile)))
+	apprise('currpower', 'NO POWERS')
+	comprise(['dataresigned', 'datadummy', 'proc_now'])
 	# This is the new section
 	#print '<tr><td colspan=3><hr></td></tr>'
 
 	if 'preparation' not in page.game.status:
 		page.write('<tr><td class=bodycopy><b>Current&nbsp;Game&nbsp;State:</b>'
 			'</td><td><select class=inputBox name=gameMode>')
-		for mode in ('forming', 'active', 'waiting',
-					'completed', 'terminated'):
+		for mode in (['forming'] * (page.game.phase == 'FORMING') +
+			['active', 'waiting'] * (page.game.phase != 'COMPLETED') +
+			['completed'] * (page.game.phase == 'COMPLETED') +
+			['terminated']):
 			page.write('<option value=%s%s>%s' %
 				(mode, ' selected' * (mode in page.game.status), mode.title()))
 		page.write("""
@@ -336,21 +330,28 @@ def showStatusFile():
 			'selected' * selected,
 			{'xtalball': 'Crystal Ball'}.get(dir, dir.title())))
 	page.write('</select></td></tr>')
-	if varLocked: page.write('<input type=hidden name=curVariant value=%s>' %
-		curVariant)
+	if varLocked: apprise('curVariant', curVariant)
 	page.write("<tr class=bodycopy><td><b>%sMap:</b><td>" %
 		('Trial ' * page.game.map.trial))
 	if page.game.phase == 'FORMING':
-		DIR = "<PKG>/" + ["maps", "trials"][page.game.map.trial]
+		gameFile  = page.game.map.name + '.map'
 		page.write('<select class=bodycopy name=map>')
-		files, gameFile = os.listdir(DIR), page.game.map.name + '.map'
-		if gameFile not in files: files += [gameFile]
-		for file in sorted(files):
-			if not file.endswith('.map'): continue
-			map = file.split('.')[0]
-			page.write("<option value=%s%s>%s</option>" %
-				(map, ' selected' * (gameFile == file),
-				('(%s)' % map, map)[os.path.isfile(DIR + '/' + file)]))
+		for trial in range(2):
+			dir = '<PKG>/' + ['maps', 'trials'][trial]
+			if page.game.map.trial: same = trial
+			else: same = not trial
+			files = os.listdir(dir)
+			if same and gameFile not in files: files += [gameFile]
+			if not files: continue
+			if trial: page.write('<optgroup label="Trial Maps">')
+			for file in sorted(files):
+				if not file.endswith('.map'): continue
+				map = file.split('.')[0]
+				page.write('<option value=%s%s>%s</option>' %
+					('*' * trial + map,
+					' selected' * (same and gameFile == file),
+					('(%s)' % map, map)[os.path.isfile(dir + '/' + file)]))
+			if trial: page.write('</optgroup>')
 		page.write("</select>")
 	else: page.write(page.game.map.name)
 	page.write("</td></tr>")
@@ -376,7 +377,9 @@ def showStatusFile():
 			<script language="javascript" type="text/javascript"
 			src="<URL>/scripts/dater"></script>
 			<b>Deadline:</b></td>
-			<input type=hidden name=date value="%s">
+			""")
+		apprise('date', dead)
+		page.write("""
 			<td class="bodycopy" colspan=2><b><input disabled name=deadline
 			id=deadline type=text size=12 value="%s" class=bodycopy>
 			<a onmouseover=this.style.cursor='pointer'
@@ -386,26 +389,18 @@ def showStatusFile():
 			class=bodycopy value=%s>:<input class=bodycopy
 			type=text size=2 maxlength=2 name=minute value=%s>
 			Time Zone:&nbsp;
-			""" % (dead, dead, page.game.deadline[8:10],
+			""" % (dead, page.game.deadline[8:10],
 				page.game.deadline[-2:]))
 	else: page.write("<b>Time Zone:</b></td><td>")
 	page.write("<select class=bodycopy name=zone>")
 	if not page.game.zone: page.game.setTimeZone()
-	zoneGroups = TimeZone().groupZones()
-	for label in sorted(zoneGroups.keys(),
-		key=lambda x: not x and 10000 or int(x[3:].ljust(5, '0')), reverse=1):
-		if label: page.write('<optgroup label="%s">' % label)
-		for zone in sorted(zoneGroups[label]):
-			page.write('<option %s>%s</option>' %
-				(' selected' * (zone == page.game.zone), zone))
+	for zone in sorted(page.game.zones): page.write('<option %s>%s</option>' %
+		(' selected' * (zone == page.game.zone), zone))
 	page.write('</select></td></tr>')
 	if page.game.avail: page.write("""
 		<tr><td class="bodycopy" align="left"><b>Powers Needed:</b></td>
-			<td class="bodycopy">%s</td></tr>
+			<td class="bodycopy">%s</tr>
 		""" % ', '.join(page.game.avail))
-	if page.game.processed: page.write("""
-		<tr><td class="bodycopy" align="left" colspan=2>Last processed on %s</td></tr>
-		""" % page.game.processed.format(1))
 	powerData()
 	ruleBoxes()
 	page.write("""
@@ -431,10 +426,13 @@ def showStatusFile():
 	page.write("""
 		<tr><td nowrap valign=top><a href=<URL>?page=StatusHelp target=status>
 				<font color=red>[Status File Help]</font></a></td>
-			<td nowrap align=center><input type=hidden value=LIST name=list>
-				<input type=hidden value="" name=access>
-				<a href=# onclick="document.master.access.value=1;"""
-				"""document.master.submit();return false;">
+			<td nowrap align=center>
+		""")
+	apprise('list', 'LIST')
+	apprise('access', '')
+	page.write("""
+				<a href=# onclick="document.master.access.value=1;
+				document.master.submit();return false;">
 				<font color=red>[View Access Log]</a></td>
 			<td nowrap align=right valign=top>
 				<a href=<URL>?page=Rules target=rules>
@@ -450,6 +448,39 @@ def showStatusFile():
 	changeButton()
 	page.write('</td>') #</tr>')
 	# End of Buttons and links Section
+#	----------------------------------------------------------------------
+#
+#
+#	----------------------------------------------------------------------
+def showAccessLog():
+	access = page.game.file('access')
+	try:
+		file = open(access, encoding='latin-1')
+		contents = ''.join([x for x in reversed(file.readlines())]) # file.read()
+		file.close()
+	except: contents = '(No Accesses Logged)'
+	page.write("""
+		<tr valign=top bgcolor="#CCCCCC">
+		<td align=center class="grey"><b>Game Access Log</b></td>
+		</tr>
+		<tr><td align=center class=bodycopy>
+		<blockquote><b><p align=justify>&nbsp;<br>
+		The DPjudge game access log is only one of a large number
+		of methods by which potential problem players (cheaters) can
+		be detected.  If you suspect that any person is playing more
+		than one power, you can check the IP addresses and times at
+		which those powers have logged in at the Website, and
+		<a href="mailto:%s?subject=CHEATING in %s"><font color=red>report
+		any issue to the judgekeeper!!</font></a>
+		Again, a number of other automatic checks are continually
+		occurring -- it is possible that the judgekeeper may already
+		be aware of and monitoring an issue.</p></b></blockquote>
+		<textarea cols=88 rows=20>%s</textarea><p>
+		""" % (host.judgekeeper, page.game.name, contents))
+	goBack()
+	page.write('<br>&nbsp;<BR></td></tr>')
+	footer()
+	raise SystemExit
 #	----------------------------------------------------------------------
 #
 #
@@ -504,18 +535,15 @@ def addRoll(phase, forward = 0):
 		}
 		</script>
 		<form name=roll method=post>
-		<input type=hidden name=game value=%s>
-		<input type=hidden name=power value=MASTER>
-		<input type=hidden name=password value=%s>
-		<input type=hidden name=page value=Update>
-		<input type=hidden name=action value=roll%s>
-		<input type=hidden name=stamp value=%d>
-		<input type=hidden name=phase value="%s">
+		""" % (forward and ' forward' or 'back'))
+	hideBack('Update')
+	apprise('action', 'roll' + (forward and 'forward' or 'back'))
+	apprise('stamp', int(os.path.getmtime(statFile)))
+	apprise('phase', phase)
+	page.write("""
 		<input type="button" value="Roll%s to %s" class="inputSubmit"
 		onclick="rollto()"> <b>with</b>
-		""" % (forward and ' forward' or 'back', game.name, page.password,
-			forward and 'forward' or 'back', os.path.getmtime(statFile),
-			phase, forward and ' forward' or 'back', phase))
+		""" % (forward and ' forward' or 'back', phase))
 	addOption('FULL')
 	if phase != 'FORMING': addOption('RESTORE')
 	page.write('</form>')
@@ -526,7 +554,7 @@ def addRoll(phase, forward = 0):
 def powerData():
 	if not page.game.powers: return
 	for num, power in enumerate(page.game.powers):
-		page.write('<input type=hidden name=powerData%s value="">' % `num`)
+		apprise('powerData%d' % num, '')
 	page.write(
 		"""
 		<script>
@@ -610,26 +638,21 @@ def powerData():
 #
 #	----------------------------------------------------------------------
 def reportUpdateError(error):
-	page.write(
-		"""
+	page.write("""
 		<tr><th align=left class=bodycopy bgcolor=red><font color=yellow>
 		<center><font size=2>&nbsp;<br>Update Aborted</font>
 		</center><blockquote> %s
 		</blockquote><center>
-		<form method=post name=form>
-		<input type=hidden name=page value=Status>
-		<input type=hidden name=game value=%s>
-		<input type=hidden name=power value=%s>
-		<input type=hidden name=password value=%s>
-		<input type=submit class=inputSubmit
-		value="Return to the Status Page"></form>
+		""" % error)
+	goBack()
+	page.write("""
 		</center><blockquote>Note that if you use your browser's
 		"Back" button to return to the status page (rather than the
 		button above), you will need to "Reload" the screen to see
 		the latest contents of the status file before making
 		changes.</blockquote>
 		</th></tr>
-		""" % (error, page.game.name, page.power.name, page.password))
+		""")
 #	----------------------------------------------------------------------
 #
 #
@@ -652,13 +675,6 @@ def updateMaster():
 		if page.action == 'rollforward':
 			error = page.game.rollforward(page.phase, flags | 4)
 		else: error = page.game.rollback(page.phase, flags)
-		if error: return reportUpdateError(error + '.')
-		return finished()
-	#	----------------
-	#	Process the turn
-	#	----------------
-	if vars(page)['proc_now'] == "now":
-		error = page.game.process(now=1)
 		if error: return reportUpdateError(error + '.')
 		return finished()
 	#	----------------------
@@ -689,7 +705,9 @@ def updateMaster():
 	#	Update status file
 	#	------------------
 	#	NEW STUFF (TO BE USED TO UPDATE WITH)
-	if 'map' in vars(page): page.game.map = Map(page.map, page.game.map.trial)
+	if 'map' in vars(page):
+		trial = page.map[:1] == '*'
+		page.game.map = Map(page.map[trial:], trial)
 	if page.password == page.game.password: page.password = page.newPassword
 	page.game.password = page.newPassword
 	if page.privacy == 'public': page.game.private = None
@@ -698,6 +716,7 @@ def updateMaster():
 	else: page.game.desc = []
 	if page.origin: page.game.origin = page.origin.split('\n')
 	else: page.game.origin = []
+	page.game.zone = page.zone != 'GMT' and page.zone or ''
 	if page.morphs: page.game.morphs = page.morphs.split('\n')
 	else: page.game.morphs = []
 	page.extra = page.status.split('\n')
@@ -715,26 +734,13 @@ def updateMaster():
 	extract('FLOW', isList = 1)
 	extract('VICTORY', isList = 1)
 	extract('PROPOSAL', isList = 1)
-	deathnote = None
-	if page.zone != (page.game.zone or 'GMT'):
-		page.game.setTimeZone(page.zone)
-		deathnote = "The Master has changed the time zone for game '%s' to %s (%s).\n" % (
-			page.game.name, page.zone, TimeZone(page.zone).gmtlabel())
-	if 'date' in vars(page):
+	if 'NO_DEADLINE' in page.game.rules: page.game.deadline = None
+	elif 'date' in vars(page):
 		dead = map(int, page.date.split('-'))
-		deadline = ('%d%02d%02d' % (dead[2], dead[0], dead[1]) +
+		page.game.deadline = ('%d%02d%02d' % (dead[2], dead[0], dead[1]) +
 			page.hour + page.minute)
-		if deadline != page.game.deadline:
-			page.game.deadline = page.game.getTime(deadline)
-			if not deathnote:
-				deathnote = "The deadline for game '%s' has been changed by the Master.\n" % (
-					page.game.name)
-	if deathnote and page.game.deadline:
-		deathnote += 'The deadline is now %s.\n' % page.game.timeFormat()
-		page.game.mailPress(None, ['All!'], deathnote,
-			subject = 'Diplomacy deadline changed')
+	else: page.game.setDeadline()
 	extract('DELAY')
-	extract('PROCESSED')
 	extract('RESERVES', 'extra', 1)
 	extract('MILITIA', 'defense', 1)
 	page.game.timing = None	# it will be in page.extra if given....
@@ -805,6 +811,8 @@ def updateMaster():
 				elif dummy == 'false' and target.isDummy():
 					target.takeover(byMaster = 1)
 	rd_game.save()
+	####################################################
+	if vars(page)['proc_now'] == "now": page.game.process(now=1)
 #	----------------------------------------------------------------------
 #
 #
