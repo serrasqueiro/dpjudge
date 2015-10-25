@@ -109,7 +109,7 @@ page.dppd.db.execute("""
 for info in page.dppd.db.fetchall():
 	game.phase, game.deadline = info['phase'], info['deadline']
 	game.setTimeZone(info['zone'])
-	when = game.timeFormat(shortForm=1).split()
+	when = game.timeFormat(1).split()
 	info['late'] = game.deadlineExpired()
 	info['deadline'] = ' '.join(when[:-2]) + '<br>' + ' '.join(when[-2:])
 	if info['type'] == 'MASTER': master += [info]

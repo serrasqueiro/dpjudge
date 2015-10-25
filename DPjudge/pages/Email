@@ -745,15 +745,36 @@ game knows where I now am?</b><br>
 	Any player may use the <tt>SET&nbsp;ABSENCE</tt> command; however, only
 	the Master may introduce any absence longer than fourteen days.  To
 	set an absence, give a date in the same format as used for deadlines (for
-	example, <tt>23 JUL 2003</tt>), then optionally the word <tt>TO</tt> and
+	example, <tt>23 JUL 2003 0:00</tt>, but this can be abbreviated),
+	then optionally the word <tt>TO</tt> and
 	another date.  Deadlines will not be set on any of the days included in
 	the date range.  You may omit the first date (and begin with the word
 	<tt>TO</tt> to specify all dates from the current day to the specified
 	date.  Here are some examples:<br><tt>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SET ABSENCE 2 AUG 2003<br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SET ABSENCE 2 AUG TO 8 AUG 2003<br>
-	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SET ABSENCE TO 8 AUG 2003</tt>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SET ABSENCE 8 AUG 2003<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SET ABSENCE 24 DEC TO 6 JAN<br>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SET ABSENCE TO 13:00</tt>
 	<br>
+	Notice how we shortened each line. You normally won't add the time,
+	because absences typically span multiple days without a specific
+	start or end time (midnight is good enough an approximation). Be 
+	aware though that it's midnight in the game's time zone, which
+	could be significantly different from yours. If that's the case,
+	add an extra day as a buffer or add a specific time.
+	<br><br>
+	We can also drop the year, because you're not likely to set absences
+	more than a year in advance. Notice that this even works in and 
+	around the New Year, as shown in the Christmas Holiday example.
+	In fact, you could even drop the months if the absence is set less
+	than a month in advance. So any day after Nov. 24, you can shorten
+	this further to
+	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SET ABSENCE 24 TO 6</tt><br>
+	Short and sweet.
+	The last example is more likely to be useful for <tt>REAL_TIME</tt>
+	games with very short deadlines in the order of 10 minutes, where
+	you want to take a break for lunch. In that case just enter the
+	time, not the date, as this could only be today.
+	<br><br>
 	Note that the game's current deadline is completely unaffected by a
 	<tt>SET&nbsp;ABSENCE</tt> command.  To change the current deadline in
 	any way, you must use the <tt>SET&nbsp;DEADLINE</tt> command.  Note
@@ -1082,13 +1103,24 @@ does, but tell me anyway.</b><br>
 <P><b>What is the syntax of the <tt>SET DEADLINE</tt> command?</b><br>
 	This command (which sets the current deadline) has the following form:
 	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	SET DEADLINE <i>day month</i> [[<i>year</i>] [<i>hour</i>:<i>minute</i>]]
-	</tt><br>
-	That is, you <u>must</u> specify both a <tt><i>day</i></tt> (from 1 to
-	31) and a <tt><i>month</i></tt>
-	(this must be an <u>abbreviation</u>, such as <tt>JAN</tt> or <tt>NOV</tt>).
-	The <tt><i>year</i></tt>, if omitted, will be set to the current year,
-	and the time (<tt><i>hour</i>:<i>minute</i></tt>) will be set either to the
+	SET DEADLINE [<i>weekday</i>] [<i>day</i> [<i>month</i> [<i>year</i>]]]
+	[<i>hour</i>:<i>minute</i>]</tt><br>
+	That is, you must at least specify a <tt><i>weekday</i></tt> (either
+	in full or abbreviated as <tt>MON</tt>, <tt>TUE</tt>, etc.) or a 
+	<tt><i>day</i></tt> of the month (from 1 to 31) or a time or any
+	combination thereof. The DPjudge assumes that you're trying to set a
+	deadline in the future, so if you omit a certain part it will replace it
+	with the first appropriate date component following the time of the
+	message. If you only specify a time, the date will be set either as today or
+	tomorrow, depending on whether the given time is past or before the
+	current time, i.e. within the next 24 hours. If only the <tt><i>day</i></tt>
+	is given, the <tt><i>month</i></tt> is set to either this month (counting
+	from today onwards) or next month (if smaller than today). If set
+	the <tt><i>month</i></tt> must be written in full or as an abbreviation, such
+	as <tt>JAN</tt> or <tt>NOV</tt>. Likewise, if the <tt><i>year</i></tt>
+	(two or four digits) is omitted, it will be set to either the current
+	year or the next one. But when omitting the time
+	(<tt><i>hour</i>:<i>minute</i></tt>), this will be set either to the
 	"<tt>AT</tt>" parameter from <a href=<URL>?page=Status#timing>the
 	<tt>TIMING</tt> line</a> of the game's status file, or (if the game
 	has no such timing parameter) to midnight (<tt>0:00</tt>).  A notice will

@@ -76,7 +76,7 @@ def showGameHeader():
 	game = page.game
 	page.write('<title>Game %s</title>' % game.name)
 	if 'active' not in game.status or not game.deadline: return
-	when, now = Time(game.deadline).seconds(), Time(npar=6).seconds()
+	when, now = game.deadline.seconds(), game.getTime(npar=6).seconds()
 	if when <= now: return
 	page.write(
 	"""
@@ -497,7 +497,7 @@ def showGameInfo():
 	showInfo('<a target=rules href=<URL>?page=Status#timing>Timing</a>',
 			'<tt><b>' + timing)
 	if game.avail: showInfo('Last Accessed',
-		time.ctime(os.path.getmtime(game.file('status'))))
+		Time('GMT', os.path.getmtime(game.file('status'))).cformat())
 	if game.start: showInfo('Game Started', game.start)
 	if game.phase == 'COMPLETED':
 		showInfo('Game Ended', game.end)
@@ -532,7 +532,7 @@ def showGameInfo():
 			'Terminated by GameMaster</blink></font>')
 	elif game.phase not in ('FORMING', 'COMPLETED'):
 		if (game.deadline and 'HIDE_LATE_POWERS' in game.rules
-		and Time() > game.deadline and not game.avail):
+		and game.getTime() > game.deadline and not game.avail):
 			late = game.latePowers()
 			if late: showInfo('Late Power' + 's'[len(late) < 2:],
 				'(Identit%s Concealed by Rule)' % ('ies', 'y')[len(late) == 1])
@@ -575,7 +575,7 @@ def gameHeader():
 			'<br><font color=yellow size=2>-- Waiting to replace %s --' %
 			', '.join([game.anglify(x[:x.find('-')]) + x[x.find('-'):]
 				for x in game.avail]))
-		elif game.deadline < Time():
+		elif game.deadline < game.getTime():
 			if late:
 				if power and (power.name in late or
 				[1 for x in power.vassals() if x.name in late]): page.write(
@@ -834,7 +834,7 @@ def footer():
 		</table>
 		</body>
 		</html>
-		""" % time.gmtime()[0])
+		""" % Time('GMT').tuple()[0])
 #	----------------------------------------------------------------------
 def showReadyNotice():
 	game = page.game
@@ -948,7 +948,7 @@ def showWaitFlag():
 	showReceiptFlag()
 	if (('NO_MINOR_WAIT' in page.game.rules and page.game.phaseType != 'M')
 	or 'REAL_TIME' in page.game.rules
-	or not page.game.deadline or page.game.deadline < Time()): return
+	or not page.game.deadline or page.game.deadline < page.game.getTime()): return
 	page.write(
 		"""
 		<tr><td class=bodycopy align=center>
@@ -1453,19 +1453,12 @@ def checkProposal():
 def checkAbsence():
 	startDate = 'startdate' in vars(page) and page.startdate or ''
 	endDate = 'enddate' in vars(page) and page.enddate or ''
-	nope = line = ''
 	if startDate and endDate:
-		line = 'Set absence from %s to %s.' % (startDate, endDate)
 		nope = normDate(startDate) + '-' + normDate(endDate)
-	elif endDate:
-		line = 'Set absence to %s.' % endDate
-		nope = '-' + normDate(endDate)
-	elif startDate:
-		line = 'Set absence on %s.' % startDate
-		nope = normDate(startDate)
-	else:
-		line = 'No absence set.'
-	if nope: page.game.setAbsence(page.power, nope, line)
+	elif endDate: nope = '-' + normDate(endDate)
+	elif startDate: nope = normDate(startDate)
+	else: nope = ''
+	page.game.setAbsence(page.power, nope)
 #	----------------------------------------------------------------------
 def normDate(date):
 	dots = date.split('-')

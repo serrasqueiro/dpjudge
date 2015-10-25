@@ -1,4 +1,4 @@
-import os, stat, sys, time, textwrap
+import os, stat, sys, textwrap
 import host
 
 from DPjudge import *
@@ -27,8 +27,7 @@ class Check(Status):
 	def __init__(self, argv = None):
 		Status.__init__(self)
 		if argv is None: argv = sys.argv
-		os.putenv('TZ', 'GMT')
-		now = Time()
+		now = Time('GMT')
 		tsf = host.logDir + '/check.tim'
 		tsf2 = host.logDir + '/check2.tim'
 		if '-t' in argv and os.path.exists(tsf):
@@ -70,7 +69,7 @@ class Check(Status):
 					mail.close()
 				open(tsf2, 'w').close()
 				raise ServerOutageSuspected
-		print 'Checking deadlines at %s GMT' % time.ctime()
+		print 'Checking deadlines at %s GMT' % now.cformat()
 		flags = [x for x in argv[1:] if x.startswith('-')]
 		gameList = [x for x in argv[1:] if not x.startswith('-')]
 		for gameName, data in self.dict.items():
@@ -189,12 +188,13 @@ class Check(Status):
 				hey, when = game.latePowers(), game.timing.get('WARN', '4H')
 				for warn in when.split(','):
 					if warn[:-1] != '0' and hey:
-						hit = (Time(line).seconds() - int(warn[:-1]) *
-							{ 'M': 60, 'H': 3600, 'D': 86400, 'W': 604800 }
-							.get(warn[-1], 1))
-						start = time.localtime(hit)[:5]
-						end = time.localtime(hit + 1200)[:5]
-						if start <= time.localtime()[:5] < end:
+						hit = line.offset('-' + warn)
+						#	------------------------------------------
+						#	Note that we don't need to change the time
+						#	zone for "now", since internally the Time
+						#	class compares the timestamps
+						#	------------------------------------------
+						if hit <= now < hit.offset('20M'):
 							print '... sending reminders',
 							game.lateNotice()
 							break

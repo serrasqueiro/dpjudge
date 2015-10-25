@@ -1,4 +1,4 @@
-import os, time, random, socket, textwrap, urllib, glob, re
+import os, random, socket, textwrap, urllib, glob, re
 from codecs import open
 
 import host
@@ -7,7 +7,7 @@ from Status import Status
 from Power import Power
 from Mail import Mail
 from View import View
-from Time import Time
+from Time import Time, TimeZone
 
 class Game:
 	#	----------------------------------------------------------------------
@@ -63,7 +63,7 @@ class Game:
 		for each in self.playerTypes: text += '\nALLOW ' + each
 		if self.proposal: text += '\nPROPOSAL ' + ' '.join(self.proposal)
 		if self.deadline: text += '\nDEADLINE ' + self.deadline
-		if self.zone: text += '\nZONE ' + self.zone
+		if self.zone: text += '\nZONE %s' % self.zone
 		if self.delay: text += '\nDELAY %d' % self.delay
 		if self.processed: text += '\nPROCESSED ' + self.processed
 		if self.timing:
@@ -94,7 +94,7 @@ class Game:
 			if includeFlags & 4: powers = []
 			playerTypes, desc, master, norules = [], [], [], []
 			rotate, directives, origin = [], [], []
-			avail, zones, morphs = [], [], []
+			avail, morphs = [], []
 			try: metaRules = self.rules[:]
 			except: metaRules, rules = [], []
 			tester = host.tester
@@ -106,7 +106,6 @@ class Game:
 			#	be changed to '/'.join(host.gameDir, name[0], name)
 			#	------------------------------------------------------
 			gameDir = host.gameDir + '/' + self.name
-			os.putenv('TZ', 'GMT')
 		#	-----------------------------------
 		#	Initialize the transient parameters
 		#	-----------------------------------
@@ -593,17 +592,16 @@ class Game:
 		return self.gameDir + '/' + name
 	#	----------------------------------------------------------------------
 	def setTimeZone(self, zone = 'GMT'):
-		if not self.zones:
-			self.zones = ['GMT']
-			zoneFile = open(host.zoneFile)
-			for line in zoneFile:
-				word = line.strip().split()
-				if word and word[0][0] != '#': self.zones.append(word[2])
-			zoneFile.close()
-		if zone in self.zones:
-			self.zone = zone
-			os.putenv('TZ', zone)
-		else: self.error += ['BAD TIME ZONE: ' + zone]
+		zone = TimeZone(zone)
+		if not zone: return self.error.append('BAD TIME ZONE: ' + zone)
+		self.zone = zone
+		# Changing the deadline time (and not just the zone) may not be what the user expects.
+		# Also the TIMING line may influence the deadline, and we're not going to update that.
+		if self.deadline: self.deadline.zone = zone
+		if self.processed: self.processed = self.processed.changeZone(zone)
+	#	----------------------------------------------------------------------
+	def getTime(self, when = None, npar = 5):
+		return Time(self.zone, when, npar)
 	#	----------------------------------------------------------------------
 	def loadStatus(self, fileName = 'status', includeFlags = 7):
 		#	---------------------------------------------
@@ -736,7 +734,7 @@ class Game:
 			elif upword == 'DEADLINE':
 				if self.deadline: error += ['TWO DEADLINES']
 				else:
-					self.deadline = Time(' '.join(word[1:]))
+					self.deadline = self.getTime(' '.join(word[1:]))
 					if not self.deadline:
 						error += ['BAD DEADLINE: ' + ' '.join(word[1:])]
 			elif upword == 'DELAY':
@@ -750,7 +748,7 @@ class Game:
 			elif upword == 'PROCESSED':
 				if self.processed: error += ['TWO PROCESSED TIMES']
 				else:
-					self.processed = Time(' '.join(word[1:]))
+					self.processed = self.getTime(' '.join(word[1:]))
 					if not self.processed:
 						error += ['BAD PROCESSED TIME: ' + ' '.join(word[1:])]
 			else:
@@ -1387,7 +1385,7 @@ class Game:
 	def save(self, asBackup = 0):
 		fileName = 'status'
 		if asBackup:
-			if not self.processed: self.processed = Time(npar=6)
+			if not self.processed: self.processed = self.getTime(npar=6)
 			fileName += '.' + self.phaseAbbr()
 		file = open(self.file(fileName), 'w')
 		for x in [self] + self.powers:
@@ -1406,8 +1404,7 @@ class Game:
 			#	Add a mail-like header
 			#	----------------------
 			lines[:0] = ['From %s %s\nSubject: %s\n\n' %
-				(host.resultsFrom, time.ctime(self.processed and
-				self.processed.seconds()), subject)]
+				(host.resultsFrom, (self.processed or self.getTime()).cformat(), subject)]
 		file = open(self.file('results'), 'a')
 		temp = ''.join(lines)
 		file.write(temp.encode('latin-1'))
@@ -1651,7 +1648,7 @@ class Game:
 				(self.anglify(starter.name), self.name, self.timeFormat()),
 				subject = 'Diplomacy power assignment')
 		self.sortPowers()
-		self.start = time.strftime('%d %B %Y', time.localtime())
+		self.start = self.getTime().format(3)
 		if self.start[0] == '0': self.start = self.start[1:]
 		self.changeStatus('active')
 		#	---------------------------------------------
@@ -2176,7 +2173,7 @@ class Game:
 	#	----------------------------------------------------------------------
 	def ready(self, process = 0):
 		return self.status[1] == 'active' and not self.error and (
-			process == 2 or ((self.deadline and self.deadline <= Time())
+			process == 2 or ((self.deadline and self.deadline <= self.getTime())
 			or process or not (self.await > 1 or
 			[1 for power in self.powers if power.wait]
 			or ('ALWAYS_WAIT' in self.rules and (self.phaseType == 'M'
@@ -2287,7 +2284,7 @@ class Game:
 					#	it should delay one cycle before processing
 					#	(if the deadline hasn't passed yet).
 					#	-------------------------------------------
-					self.delay = self.deadline > Time()
+					self.delay = self.deadline > self.getTime()
 					return self.save()
 				#	-----------------------------------------
 				#	No deadline.  Process right away.
@@ -3962,7 +3959,7 @@ class Game:
 		return [
 			':: Judge: %s  Game: %s  Variant: %s ' %
 				(host.resultsID, self.name, self.map.name) + self.variant,
-			':: Deadline: %s ' % phase + self.timeFormat(shortForm = 1),
+			':: Deadline: %s ' % phase + self.timeFormat(1),
 			':: URL: %s%s?game=' % (host.resultsURL,
 				'/index.cgi' * (os.name == 'nt')) + self.name, ''] or []
 	#	----------------------------------------------------------------------
@@ -4072,8 +4069,7 @@ class Game:
 		if append: return lines
 	#	----------------------------------------------------------------------
 	def finish(self, victors):
-		self.end = time.strftime('%d %B %Y', time.localtime())
-		self.end = self.end[self.end[0] == '0':]
+		self.end = self.getTime().format(3)
 		self.outcome = [self.phaseAbbr()] + victors
 		self.proposal, self.phase = None, 'COMPLETED'
 		for power in self.powers:
@@ -4110,17 +4106,11 @@ class Game:
 					if x not in who.centers]: return
 		return 1
 	#	----------------------------------------------------------------------
-	def timeFormat(self, shortForm = None):
-		format = shortForm and ('a', 'b', '%Z') or ('A', 'B', '%Z')
-		if hasattr(host, 'timeZone') and host.timeZone: 
-			format = (format[0], format[1], host.timeZone)
-		try: when = time.strftime('%%%s %%d %%%s %%Y %%H:%%M %s' % format,
-				Time(self.deadline).struct()).split()
+	def timeFormat(self, form = 0):
+		try: return self.deadline.format(form)
 		except:
 			if self.phase == 'FORMING': return ''
 			return 'Invalid Deadline! Notify Master!'
-		when[1] = `int(when[1])`
-		return ' '.join(when)
 	#	----------------------------------------------------------------------
 	def graceExpired(self):
 		grace = self.timing.get('GRACE',
@@ -4128,9 +4118,7 @@ class Game:
 		return grace and self.deadlineExpired(grace)
 	#	----------------------------------------------------------------------
 	def deadlineExpired(self, grace = '0H'):
-		dict = { 'M': 60, 'H': 3600, 'D': 86400, 'W': 604800 }
-		try: return time.localtime()[:5] >= time.localtime(Time(
-			self.deadline).seconds() + int(grace[:-1]) * dict.get(grace[-1], 1))[:5]
+		try: return self.getTime() >= self.deadline.offset(grace)
 		except: pass
 	#	----------------------------------------------------------------------
 	def getDeadline(self, fileName = 'status'):
@@ -4162,84 +4150,83 @@ class Game:
 		return deadline
 	#	----------------------------------------------------------------------
 	def setDeadline(self, firstPhase = 0):
+		now = self.getTime()
 		at, days = self.timing.get('AT'), self.timing.get('DAYS', '-MTWTF-')
 		try: delay = [y for x,y in self.timing.items()
 			if not self.phase.split()[-1].find(x)][0]
 		except: delay = self.timing.get('NEXT',
 			('3D', '1D')[self.phaseType in 'RA'])
-		oneDay = 86400
-		dict = { 'M': 60, 'H': 3600, 'D': oneDay, 'W': 604800 }
-		secs = int(delay[:-1]) * dict.get(delay[-1], 1)
 		#	-------------------------------------------------------
 		#	Determine earliest deadline.  If the game allows press,
 		#	double the usual length of time for the first deadline.
 		#	-------------------------------------------------------
-		next = time.time() + (secs << (firstPhase
-			and 'NO_PRESS' not in self.rules
-			and ('FTF_PRESS' not in self.rules or self.phaseType == 'M')))
-		#	--------------------
-		#	Advance the deadline
-		#	the specified time.
-		#	--------------------
-		when = moved = time.localtime(next)
-		if secs < oneDay / 2: at = 0
-		elif at:
+		when = now.offset(delay)
+		realtime = REAL_TIME in self.rules or when < now.offset('20M')
+		#	------------------------------------------
+		#	Advance the deadline to the specified time
+		#	unless the delay is less than half a day.
+		#	------------------------------------------
+		if when < now.offset('12H'): at = 0
+		if (firstPhase and 'NO_PRESS' not in self.rules
+			and ('FTF_PRESS' not in self.rules or self.phaseType == 'M')):
+			when = when.offset(delay)
+		if at:
 			#	-------------------------------------
 			#	Pull the deadline back 20 minutes to
 			#	provide fudge-time so that three days
 			#	from 11:41, pushed to the next 11:40
 			#	won't be four days away (for example)
 			#	-------------------------------------
-			next -= 1200
-			at, when = tuple(map(int, at.split(':'))), time.localtime(next)
-			if when[3:5] > at:
-				next += oneDay
-				when = time.localtime(next)
+			when = when.offset(-1200).next(at)
+		moved = 1
 		while moved:
 			#	---------------------------------
 			#	Specific day-of-week setting (the
 			#	DAYS option to the TIMING line)
 			#	---------------------------------
+			day = when.tuple()[6]
 			while 1:
-				day = days[(when[6] + 1) % 7]
-				if (day.isalpha(), day.isupper())[self.phaseType == 'M']: break
-				next += oneDay
-				when = time.localtime(next)
+				day = (day + 1) % 7
+				if (days[day].isalpha(),
+					days[day].isupper())[self.phaseType == 'M']: break
+				when = when.offset('1D')
 			#	--------------------------
 			#	Vacation handling (the NOT
 			#	option to the TIMING line)
 			#	--------------------------
 			outings, moved = self.timing.get('NOT', ''), 0
-			vacations, now = filter(None, outings.split(',')), Time()
+			vacations = filter(None, outings.split(','))
 			while vacations:
 				for vacation in vacations:
 					if '-' in vacation: start, end = vacation.split('-')
 					else: start = end = vacation
-					while (start or now) <= Time(when)[:len(end)] <= end:
-						next += oneDay
-						when = moved = time.localtime(next)
-					if end < now[:len(end)]:
+					start, end = self.getTime(start), self.getTime(end)
+					end = end.offset(realtime and '1M' or end.npar() > 3 and
+						'20M' or '1D')
+					if when < start: continue
+					if when < end:
+						if at: when = end.next(at)
+						elif realtime: when = end
+						else: when = end.next(when)
+						moved = 1
+					if end <= now:
 						vacations.remove(vacation)
 						break
 				else: break
 			if vacations: self.timing['NOT'] = ','.join(vacations)
 			elif outings: del self.timing['NOT']
-		#	------------------------------
-		#	Specific time-of-day setting
-		#	(AT option in the TIMING line)
-		#	------------------------------
-		if at: when = when[:3] + at + when[5:]
 		#	--------------------------------------------------------------
 		#	Set deadline to the nearest :00, :20, or :40 of the given hour
 		#	--------------------------------------------------------------
-		if secs > 1200: when = when[:4] + (when[4] / 20 * 20,) + when[5:]
+		if not realtime: when = when.trunc('20M')
 		#	----------------------------------------------------------------
 		#	Now set the deadline unless it's already set beyond the new time
 		#	----------------------------------------------------------------
-		self.deadline = max(self.deadline, Time(when))
+		self.deadline = max(self.deadline, when)
+		return self.deadline
 	#	----------------------------------------------------------------------
 	def canChangeOrders(self, oldOrders, newOrders, proxyOnly = False):
-		if self.deadline and self.deadline <= Time() and not self.avail:
+		if self.deadline and self.deadline <= self.getTime() and not self.avail:
 			if not newOrders and not proxyOnly:
 				return self.error.append('ORDERS REQUIRED TO AVOID LATE STATUS')
 			if oldOrders and 'NO_LATE_CHANGES' in self.rules:
@@ -4654,7 +4641,7 @@ class Game:
 		#	orders in (so not the trivial cases, such as uncontrolled dummies or
 		#	virtually eliminated powers).
 		#	----------------------------------------------------------------------
-		late, now = self.latePowers(after), Time()
+		late, now = self.latePowers(after), self.getTime()
 		text = ('Diplomacy Game:   %s (%s)\n'
 				'Current Phase:    %s\n' %
 				(self.name, host.dpjudgeID, self.phaseName(form = 2)))
@@ -4814,19 +4801,35 @@ class Game:
 		self.mail.write(self.playerOrders(power))
 		self.mail.close()
 	#	----------------------------------------------------------------------
-	def setAbsence(self, power, nope, line):
+	def setAbsence(self, power, nope):
+		if not nope: return
 		if 'NOT' in self.timing: self.timing['NOT'] += ','
 		else: self.timing['NOT'] = ''
 		self.timing['NOT'] += nope
+		if nope[0] == '-':
+			full = len(nope[1:]) > 8
+			date = self.getTime(nope[1:], 3 + 2 * full) 
+			line = 'until %s' % date.format(4 - 4 * full)
+		elif '-' in nope:
+			dates = nope.split('-')
+			full = len(dates[0]) > 8
+			date = self.getTime(dates[0], 3 + 2 * full) 
+			line = 'from %s\n' % date.format(4 - 4 * full)
+			full = len(dates[1]) > 8
+			date = self.getTime(dates[1], 3 + 2 * full) 
+			line += 'to %s' % date.format(4 - 4 * full)
+		else:
+			full = len(nope) > 8
+			date = self.getTime(nope, 3 + 2 * full) 
+			line = 'on %s' % date.format(4 - 4 * full)
 		for who in (1, 0):
 			who = ([x.name for x in self.powers
 				if x.type != 'MONITOR'] *
 				('SILENT_ABSENCES' not in self.rules),
 				['MASTER'])[who]
 			if who: self.mailPress(None, who,
-				"Absences for game '%s' have been changed\n"
-				'%susing the following command:\n'
-				'%s\n' % (self.name, ('by %s ' %
+				"An absence for game '%s' has been entered\n"
+				'%s%s.\n' % (self.name, ('by %s ' %
 				(power.name == 'MASTER' and 'the Master'
 				or self.anglify(power.name))) *
 				('HIDE_ABSENTEES' not in self.rules
@@ -4900,7 +4903,7 @@ class Game:
 		file = open(access, 'a')
 		if pwd == self.password: pwd = '!-MASTER-!'
 		elif pwd == host.judgePassword: pwd = '!-JUDGEKEEPER-!'
-		temp = '%s %-16s %-10s %s\n' % (time.ctime(), origin, power, pwd)
+		temp = '%s %-16s %-10s %s\n' % (self.getTime().cformat(), origin, power, pwd)
 		file.write(temp.encode('latin-1'))
 		del temp
 		file.close()
@@ -4950,7 +4953,7 @@ class Game:
 						'STATUS':	':'.join(self.status).upper(),
 						'PHASE':	self.phaseAbbr(),
 						'DEADLINE':	self.deadline,
-						'ZONE':		self.zone or 'GMT',
+						'ZONE':		self.zone and self.zone.__repr__() or 'GMT',
 						'PRIVATE':	self.private or '',
 						'MAP':		self.map.name,
 						'RULES':	':'.join(self.rules),

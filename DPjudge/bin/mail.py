@@ -1,6 +1,6 @@
 #!/usr/bin/env python -O
 
-import urllib, time, email
+import urllib, email
 from codecs import open
 
 from DPjudge import *
@@ -407,7 +407,8 @@ class Procmail:
 		if command != 'RESIGN':
 			if not game.private or command == 'MONITOR':
 				if len(word) != 3: self.respond('Invalid %s command' % command)
-			elif len(word) != 4 or self.sanitize(word[3]).upper() != game.private:
+			elif (len(word) != 4
+			or self.sanitize(word[3]).upper() != game.private):
 				self.respond(
 					"Game '%s' is a private game for invited players only.\n"
 					'You may %s only by specifying (after your password)\n'
@@ -565,7 +566,7 @@ class Procmail:
 		game, orders = self.game, []
 		if game.phase in ('FORMING', 'COMPLETED'): rules = ['PUBLIC_PRESS']
 		else: rules = game.rules
-		official = press = None
+		official = press = deathnote = None
 		if not self.power: self.locatePower(powerName, password)
 		power, self.message = self.power, self.message[1:] + ['SIGNOFF']
 		try: self.ip = socket.gethostbyaddr(self.ip)[0]
@@ -594,7 +595,7 @@ class Procmail:
 				if claimFrom == '(WHITE)': claimFrom = None
 				if power.name != 'MASTER':
 					late = game.latePowers()
-					if (game.deadline and game.deadline <= Time()
+					if (game.deadline and game.deadline <= game.getTime()
 					and ('LATE_SEND' not in game.rules
 					or	'NO_LATE_RECEIVE' in game.rules
 					or	'FTF_PRESS' in game.rules)
@@ -801,91 +802,103 @@ class Procmail:
 			#	and SET DEADLINE handling.
 			#	--------------------------
 			elif (len(word) > 1 and word[0] == 'SET'
-			and word[1] in ('ADDRESS', 'PASSWORD', 'DEADLINE',
-							'WAIT', 'NOWAIT', 'ABSENCE')):
+			and word[1] in ('ADDRESS', 'PASSWORD', 'DEADLINE', 'ZONE',
+							'NOZONE', 'WAIT', 'NOWAIT', 'ABSENCE')):
+				nok = word[1][:2] == 'NO' and 2 or 0
 				if len(word) == 2:
 					if word[1][:2] == 'AD': word += [self.email]
-					elif word[1][0] not in 'NW': 
+					elif word[1][nok] == 'Z' and power.name == 'MASTER':
+						word += [host.timeZone or 'GMT']
+					elif word[1][nok] not in 'WZ': 
 						self.respond('No new %s given' % word[1])
-				elif word[1][0] in 'NW':
+				elif word[1][nok] == 'W':
 					self.respond('Bad %s directive' % word[1])
-				if word[1][:2] in ('DE', 'AB'):
-					if (word[1][0] == 'A' and 'NO_ABSENCES' in game.rules
-					and power.name != 'MASTER'):
-						self.respond('SET ABSENCE not allowed in this game')
-					#	----------------------------
-					#	SET DEADLINE and SET ABSENCE
-					#	----------------------------
-					if (word[1][0] == 'D' and power.name != 'MASTER'
-					and 'PLAYER_DEADLINES' not in game.rules):
+				if word[1][:2] == 'DE':
+					#	------------
+					#	SET DEADLINE
+					#	------------
+					if (power.name != 'MASTER' and
+						'PLAYER_DEADLINES' not in game.rules):
 						self.respond('Only the Master can SET %s' % word[1])
-					if word[2] in ['TO', 'ON', 'FROM'][
-					word[1][0] == 'A':3 - (word[1][0] == 'D')]: del word[2]
-					word = [x for x in word if x != 'AT']
-					now, dates, oldline = Time(npar=6), [word[2:]], None
-					if word[1][0] == 'A' and 'TO' in word:
-						where = word.index('TO')
-						if where == 2: dates = [word[3:]]
-						else: dates = word[2:where], word[where + 1:]
+					if game.phase in ('FORMING', 'COMPLETED'): self.respond(
+						'DEADLINE cannot be set on an inactive game')
+					if word[2] in ('TO', 'ON'): del word[2]
+					now, date = game.getTime(npar=6), word[2:]
+					try:
+						if ':' not in date[-1]:
+							date += [game.timing.get('AT', '0:00')]
+						newline = now.next(' '.join(date))
+					except: self.respond('Bad %s specified' % word[1])
+					if now > newline: self.respond(
+						'DEADLINE has already past: ' + ' '.join(word[2:]))
+					if (power.name != 'MASTER'
+					and newline < game.deadline): self.respond(
+						'Only the Master may shorten a deadline')
+					game.deadline, game.delay = newline, None
+					if not deathnote: deathnote = (
+						"The deadline for game '%s' has been changed "
+						'by %s.\n' % (game.name,
+						power.name == 'MASTER' and 'the Master'
+						or 'HIDE_EXTENDERS' in game.rules and 'a power'
+						or game.anglify(power.name)))
+				elif word[1][:2] == 'AB':
+					#	-----------
+					#	SET ABSENCE
+					#	-----------
+					if 'NO_ABSENCES' in game.rules and power.name != 'MASTER':
+						self.respond('Only the Master is allowed to ' +
+							'SET ABSENCE in this game')
+					if word[2] in ('ON', 'FROM'): del word[2]
+					now, dates, oldline = game.getTime(npar=6), [word[2:]], None
+					where = ('TO' in word and word.index('TO') or
+						'UNTIL' in word and word.index('UNTIL'))
+					if where == 2: dates = [None, word[3:]]
+					elif where: dates = word[2:where], word[where + 1:]
 					for date in dates:
+						if not date: continue
 						try:
-							if len(date) == 1 and ':' in date[0]:
-								newline = Time(now[:8] +
-									time.strptime(date[0], '%H:%M'))
-							else:
-								if len(date) == 2 or ':' in date[2]:
-									date[2:2] = [now[:4]]
-								if (len(date) == 3 and 'AT' in game.timing
-								and word[1][0] == 'D'): date += [game.timing['AT']]
-								newline = Time(time.strptime(' '.join(date),
-									' '.join(('%d %b %Y', '%H:%M')[:len(date) - 2])))
+							newline = (oldline or now).next(' '.join(date))
 							if not oldline: oldline = newline
 						except: self.respond('Bad %s specified' % word[1])
-					if word[1][0] == 'D':
-						#	------------
-						#	SET DEADLINE
-						#	------------
-						if game.phase in ('FORMING', 'COMPLETED'): self.respond(
-							'DEADLINE cannot be set on an inactive game')
-						if now.seconds() > newline.seconds(): self.respond(
-							'DEADLINE has already past: ' + ' '.join(word[2:]))
-						if (power.name != 'MASTER'
-						and newline < game.deadline): self.respond(
-							'Only the Master may shorten a deadline')
-						game.deadline, game.delay = newline, None
-						game.mailPress(None, ['All!'],
-							"The deadline for game '%s' has been changed "
-							'by %s.\n'
-							'The new deadline is %s.\n' % (game.name,
-							power.name == 'MASTER' and 'the Master'
-							or 'HIDE_EXTENDERS' in game.rules and 'a power'
-							or game.anglify(power.name), game.timeFormat()),
-							subject = 'Diplomacy deadline changed')
-					else:
-						#	-----------
-						#	SET ABSENCE
-						#	-----------
-						nope, length = '', 0
-						if len(dates) > 1:
-							nope = Time(oldline)
-							while nope[-2:] == '00': nope = nope[:-2]
-							length = newline.seconds() - oldline.seconds()
-						if (length < 0 or newline.seconds() < now.seconds()
-						or	power.name != 'MASTER' and len(dates) > 1
-						and length > 14 * 24 * 60 * 60):
-							self.respond('Invalid ABSENCE duration')
-						if 'TO' in word: nope += '-'
-						nope += Time(newline)
+					if newline < now:
+						self.respond('Invalid ABSENCE duration')
+					if len(dates) > 1 and dates[0]:
+						nope = str(oldline)
 						while nope[-2:] == '00': nope = nope[:-2]
-						game.setAbsence(power, nope, line)
+						if (newline < oldline or power.name != 'MASTER'
+							and newline > oldline.offset('2W')):
+							self.respond('Invalid ABSENCE duration')
+					else: nope = ''
+					if len(dates) > 1: nope += '-'
+					nope += str(newline)
+					while nope[-2:] == '00': nope = nope[:-2]
+					if len(dates) == 1 and len(nope) > 8:
+						self.respond('One minute ABSENCE too short')
+					game.setAbsence(power, nope)
 				elif len(word) > 3: self.respond('Bad %s syntax' % word[1])
-				#	---------------
-				#	WAIT and NOWAIT
-				#	---------------
-				elif word[1][0] in 'NW':
+				#	-------------------
+				#	SET ZONE and NOZONE
+				#	-------------------
+				elif word[1][nok] == 'Z':
+					if len(word) == 2: power.zone = None
+					else:
+						zoneInfo = TimeZone(word[2])
+						if not zoneInfo:
+							self.respond("Bad time zone '%s'" % word[2])
+						zone = zoneInfo.__repr__()
+						if power.name == 'MASTER':
+							game.setTimeZone(zone)
+							deathnote = ("The Master has changed the time zone for game " +
+								"'%s'\nto %s (%s).\n" % (game.name, zone,
+								zoneInfo.gmtlabel()))
+						else: power.zone = zone
+				#	-------------------
+				#	SET WAIT and NOWAIT
+				#	-------------------
+				elif word[1][nok] == 'W':
 					if power.name == 'MASTER':
 						self.respond('MASTER has no WAIT flag')
-					if game.await or game.deadline < Time():
+					if game.await or game.deadline < game.getTime():
 						self.respond('WAIT unavailable after deadline')
 					if power.isEliminated():
 						self.respond('WAIT unavailable; no orders required')
@@ -893,7 +906,7 @@ class Procmail:
 					and game.phaseType != 'M'):
 						self.respond('WAIT not available in this phase')
 					if power.name in game.map.powers:
-						power.wait = word[1][0] == 'W'
+						power.wait = not nok
 				else:
 					#	----------------------------
 					#	SET ADDRESS and SET PASSWORD
@@ -984,6 +997,12 @@ class Procmail:
 			else:
 				orders += [line.strip()]
 				del self.message[0]
+		#	--------------------------------
+		#	If the deadline or the time zone
+		#	was changed, broadcast it.
+		#	--------------------------------
+		if deathnote: game.mailPress(None, ['All!'], deathnote +
+			'The new deadline is %s.\n' % game.timeFormat(), subject = 'Diplomacy deadline changed')
 		if orders: self.setOrders(orders)
 	#	----------------------------------------------------------------------
 	def sanitize(self, password):

@@ -1,6 +1,6 @@
-import os, time, random, socket
+import os, random, socket
 
-from Game import host, Status, Power, Game, Mail, View, Time
+from Game import host, Status, Power, Game, Mail, View, Time, TimeZone
 from Map import Map
 
 class Page:

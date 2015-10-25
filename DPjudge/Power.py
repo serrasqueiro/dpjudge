@@ -283,10 +283,11 @@ class Power:
 		#		and the grace period has expired.
 		#	-----------------------------------
 		game = self.game
+		now = game.getTime()
 		return not self.type and self.player and (
 			self.isDummy() and (
 				not self.ceo and 'CD_DUMMIES' in game.rules or (
-					after > 0 or after == 0 and game.deadline <= Time() and (
+					after > 0 or after == 0 and game.deadline <= now and (
 						not self.ceo or game.graceExpired()
 					)
 				) and (
@@ -296,7 +297,7 @@ class Power:
 				)
 			) or
 			not self.isResigned() and (
-				after > 0 or after == 0 and game.deadline <= Time() and
+				after > 0 or after == 0 and game.deadline <= now and
 				game.graceExpired()
 			) and
 			'CIVIL_DISORDER' in game.rules and

@@ -17,7 +17,7 @@ for (var, value) in [
 	('dpjudgeSubDir', 'web'),
 	('gameMapSubDir', 'maps'),
 	('dpjudgeURL', 'http://localhost'),
-	('zoneFileName', 'zone.tab'),
+	('zoneFileName', 'zone.tab'), ('timeZone', ''), ('showGMT', 0),
 	('bannerHtml', ''), ('tester', ''), ('openingsList', ''),
 	('dppd', ''), ('dppdSubURL', '?variant=dppd'),
 	('judgePassword', ''),

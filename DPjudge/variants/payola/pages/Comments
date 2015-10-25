@@ -5,6 +5,7 @@
 <style type="text/css">
 <:
 page.include('stylesheet')
+page.include('functions')
 :>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 </head>
@@ -450,14 +451,7 @@ subordinate role.
 	</tr>
 	</table>
 
-
-</td>
-</tr>
-<tr valign=top>
-<td colspan=2 align=right class="fineprint" bgcolor="#CCCCCC">The DPjudge is copyright © <:= '1995-%d' % time.localtime()[0] :> by Manus Hand. All rights reserved. </td>
-</tr>
-</table>
-
-</body>
-</html>
+<:
+footer()
+:>
 

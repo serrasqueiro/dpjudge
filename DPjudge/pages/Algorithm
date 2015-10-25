@@ -38,15 +38,15 @@ page.include('functions')
 <tr><td colspan=2 height=5><!--SPACER--></td>
 </tr>
 <tr valign=top bgcolor="#CCCCCC">
-<td width=300 align=center class="grey"><b>Adjudication&nbsp;Procedure</b></td>
-<td width=100% align=center class="grey"><a name="0"></a>
+<td width=30% align=center class="grey"><b>Adjudication&nbsp;Procedure</b></td>
+<td width=70% align=center class="grey"><a name="0"></a>
 	<b>Supporting Data Structures</b></td>
 </tr>
 <tr valign=top>
-<td width=300>
+<td>
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
-	<td nowrap class="bodycopy">
+	<td class="bodycopy">
 		<b>&middot;</b>&nbsp;<a href="#0">Supporting Data Structures<br>
 		<HR>
 		<b>&middot;</b>&nbsp;<a href="#1">Mark Invalid Convoys</a><br>
@@ -558,13 +558,7 @@ page.include('functions')
 	</tr>
 	</table>
 
-</td>
-</tr>
-<tr valign=top>
-<td colspan=2 align=right class="fineprint" bgcolor="#CCCCCC">The DPjudge is copyright © <:= '1995-%d' % time.localtime()[0] :> by Manus Hand. All rights reserved. </td>
-</tr>
-</table>
-
-</body>
-</html>
+<:
+footer()
+:>
 
