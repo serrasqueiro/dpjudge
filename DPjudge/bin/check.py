@@ -99,7 +99,7 @@ class Check(Status):
 				print game.name, 'has ERRORS ... notifying the Master'
 				for addr in game.master[1].split(',') + [
 					host.judgekeeper] * (not game.tester):
-						mail = Mail(addr,
+					mail = Mail(addr,
 						'Diplomacy ERRORS (%s)' % game.name)
 					mail.write("The game '%s' on %s has the following "
 						'errors in its status file:\n\n%s\n\nLog in at\n'
@@ -110,7 +110,7 @@ class Check(Status):
 					mail.close()
 			elif 'active' in data:
 				if line and game.deadlineExpired('4W'):
-					mail = DPjudge.Mail(host.judgekeeper,
+					mail = Mail(host.judgekeeper,
 						'Diplomacy game alert (%s)' % game.name)
 					mail.write("JudgeKeeper:\n\nThe %s game '%s' on %s is "
 						'past its deadline for more than 4 weeks.\n\nVisit the game at\n'
@@ -128,10 +128,11 @@ class Check(Status):
 							game.anglify(x[:x.find('-')]) + x[x.find('-'):]
 							for x in game.avail])
 					if line and game.deadlineExpired('8W'):
-						mail = DPjudge.Mail(host.judgekeeper,
+						mail = Mail(host.judgekeeper,
 							'Diplomacy game alert (%s)' % game.name)
 						mail.write("JudgeKeeper:\n\nThe %s game '%s' on %s is "
-							'in the %s state for more than 8 weeks.%s\n\nVisit the game at\n'
+							'in the %s state for more than 8 weeks.%s\n\n'
+							'Visit the game at\n'
 							'   %s?game=%s\nfor more information.\n\n'
 							'Thank you,\nThe DPjudge\n' %
 							(game.private and 'private' or 'public',
@@ -148,7 +149,7 @@ class Check(Status):
 				print game.name, 'is in the %s state' % state,
 				print '... reminding the Master'
 				for addr in game.master[1].split(','):
-						mail = Mail(addr,
+					mail = Mail(addr,
 						'Diplomacy game reminder (%s)' % game.name)
 					mail.write("GameMaster:\n\nThe game '%s' on %s is "
 						'still in the %s state.%s\n\nVisit the game at\n'

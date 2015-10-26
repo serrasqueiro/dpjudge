@@ -619,8 +619,11 @@ class Game:
 		zone = TimeZone(zone)
 		if not zone: return self.error.append('BAD TIME ZONE: ' + zone)
 		self.zone = zone
-		# Changing the deadline time (and not just the zone) may not be what the user expects.
-		# Also the TIMING line may influence the deadline, and we're not going to update that.
+		#	-------------------------------------------------------------
+		#	Changing the deadline time (and not just the zone) may not be
+		#	what the user expects. Also the TIMING line may influence the
+		#	deadline, and we're not going to update that.
+		#	-------------------------------------------------------------
 		if self.deadline: self.deadline.zone = zone
 		if self.processed: self.processed = self.processed.changeZone(zone)
 	#	----------------------------------------------------------------------

@@ -225,7 +225,7 @@ def outStatusFile():
 		'WAIT', 'SKIP', 'NEED')
 	implemented = ('DESC', 'DESCRIPTION', 'GAME', 'DEADLINE', 'ZONE', 'NAME',
 		'MORPH', 'MASTER', 'RULE', 'RULES', 'PRIVATE', 'MAP', 'TRIAL',
-		'PASSWORD')
+		'PASSWORD', 'PROCESSED')
 	modal = ('DESC', 'DESCRIPTION', 'NAME', 'MORPH')
 	noshow, mode = hidden + implemented, None
 	file, outfile = open(page.game.file('status'), encoding='latin-1'), ''
@@ -394,13 +394,22 @@ def showStatusFile():
 	else: page.write("<b>Time Zone:</b></td><td>")
 	page.write("<select class=bodycopy name=zone>")
 	if not page.game.zone: page.game.setTimeZone()
-	for zone in sorted(page.game.zones): page.write('<option %s>%s</option>' %
-		(' selected' * (zone == page.game.zone), zone))
+	zoneGroups = TimeZone().groupZones()
+	for label in sorted(zoneGroups.keys(),
+		key=lambda x: not x and 10000 or int(x[3:].ljust(5, '0')), reverse=1):
+		if label: page.write('<optgroup label="%s">' % label)
+		for zone in sorted(zoneGroups[label]):
+			page.write('<option %s>%s</option>' %
+				(' selected' * (zone == page.game.zone.__repr__()), zone))
 	page.write('</select></td></tr>')
 	if page.game.avail: page.write("""
 		<tr><td class="bodycopy" align="left"><b>Powers Needed:</b></td>
-			<td class="bodycopy">%s</tr>
+			<td class="bodycopy">%s</td></tr>
 		""" % ', '.join(page.game.avail))
+	if page.game.processed: page.write("""
+		<tr><td class="bodycopy" align="left" colspan=2>Last processed on %s
+		</td></tr>
+		""" % page.game.processed.format(1))
 	powerData()
 	ruleBoxes()
 	page.write("""
@@ -677,6 +686,13 @@ def updateMaster():
 		else: error = page.game.rollback(page.phase, flags)
 		if error: return reportUpdateError(error + '.')
 		return finished()
+	#	----------------
+	#	Process the turn
+	#	----------------
+	if vars(page)['proc_now'] == "now":
+		error = page.game.process(now=1)
+		if error: return reportUpdateError(error + '.')
+		return finished()
 	#	----------------------
 	#	Game mode modification
 	#	----------------------
@@ -716,7 +732,6 @@ def updateMaster():
 	else: page.game.desc = []
 	if page.origin: page.game.origin = page.origin.split('\n')
 	else: page.game.origin = []
-	page.game.zone = page.zone != 'GMT' and page.zone or ''
 	if page.morphs: page.game.morphs = page.morphs.split('\n')
 	else: page.game.morphs = []
 	page.extra = page.status.split('\n')
@@ -734,13 +749,31 @@ def updateMaster():
 	extract('FLOW', isList = 1)
 	extract('VICTORY', isList = 1)
 	extract('PROPOSAL', isList = 1)
+	deathnote = None
+	if page.zone != page.game.zone and page.game.zone.__repr__() or 'GMT':
+		page.game.setTimeZone(page.zone)
+		deathnote = ('The Master has changed the time zone for ' +
+			"game '%s' to %s (%s).\n" % (
+			page.game.name, page.zone, TimeZone(page.zone).gmtlabel()))
 	if 'NO_DEADLINE' in page.game.rules: page.game.deadline = None
 	elif 'date' in vars(page):
 		dead = map(int, page.date.split('-'))
-		page.game.deadline = ('%d%02d%02d' % (dead[2], dead[0], dead[1]) +
+		deadline = ('%d%02d%02d' % (dead[2], dead[0], dead[1]) +
 			page.hour + page.minute)
-	else: page.game.setDeadline()
+		if deadline != page.game.deadline:
+			page.game.deadline = page.game.getTime(deadline)
+			if not deathnote:
+				deathnote = ('The deadline for game ' +
+					"'%s' has been changed by the Master.\n" % page.game.name)
+	else:
+		page.game.setDeadline()
+		deathnote = 'The NO_DEADLINE rule has been removed.\n'
+	if deathnote and page.game.deadline:
+		deathnote += 'The deadline is now %s.\n' % page.game.timeFormat()
+		page.game.mailPress(None, ['All!'], deathnote,
+			subject = 'Diplomacy deadline changed')
 	extract('DELAY')
+	extract('PROCESSED')
 	extract('RESERVES', 'extra', 1)
 	extract('MILITIA', 'defense', 1)
 	page.game.timing = None	# it will be in page.extra if given....
@@ -811,8 +844,6 @@ def updateMaster():
 				elif dummy == 'false' and target.isDummy():
 					target.takeover(byMaster = 1)
 	rd_game.save()
-	####################################################
-	if vars(page)['proc_now'] == "now": page.game.process(now=1)
 #	----------------------------------------------------------------------
 #
 #
