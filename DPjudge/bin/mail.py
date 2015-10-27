@@ -904,27 +904,29 @@ class Procmail:
 					where = ('TO' in word and word.index('TO') or
 						'UNTIL' in word and word.index('UNTIL'))
 					if where == 2: dates = [None, word[3:]]
-					elif where: dates = word[2:where], word[where + 1:]
+					elif where: dates = [word[2:where], word[where + 1:]]
 					for date in dates:
 						if not date: continue
 						try:
 							newline = (oldline or now).next(' '.join(date))
 							if not oldline: oldline = newline
 						except: self.respond('Bad %s specified' % word[1])
-					if newline < now:
-						self.respond('Invalid ABSENCE duration')
-					if len(dates) > 1 and dates[0]:
-						nope = str(oldline)
-						while nope[-2:] == '00': nope = nope[:-2]
-						if (newline < oldline or not self.isMaster(power)
-						and newline > oldline.offset('2W')):
-							self.respond('Invalid ABSENCE duration')
-					else: nope = ''
-					if len(dates) > 1: nope += '-'
+					if len(dates) < 2: nope, oldline = '', newline
+					elif dates[0]: nope = str(oldline)  + '-'
+					else: nope, oldline = '-', None
 					nope += str(newline)
-					while nope[-2:] == '00': nope = nope[:-2]
-					if len(dates) == 1 and len(nope) > 8:
+					if oldline:
+						if oldline < now: oldline = None
+						else: oldline = oldline.adjust(5)
+					if newline.npar() < 4: newline = newline.offset('1D')
+					newline = newline.adjust(5)
+					if newline == oldline:
 						self.respond('One minute ABSENCE too short')
+					if (newline < (oldline or now) or not self.isMaster(power)
+					and newline > (oldline or now).offset('2W')):
+						self.respond('Invalid ABSENCE duration')
+					dates = (oldline and oldline.format(0) or None,
+						newline.format(0))
 					game.setAbsence(power, nope)
 				elif len(word) > 3: self.respond('Bad %s syntax' % word[1])
 				#	-------------------
@@ -933,7 +935,7 @@ class Procmail:
 				elif word[1][nok] == 'Z':
 					if len(word) == 2: power.zone = None
 					else:
-						zoneInfo = TimeZone(word[2])
+						zoneInfo = Time.TimeZone(word[2])
 						if not zoneInfo:
 							self.respond("Bad time zone '%s'" % word[2])
 						zone = zoneInfo.__repr__()
@@ -947,6 +949,7 @@ class Procmail:
 				#	SET WAIT and NOWAIT
 				#	-------------------
 				elif word[1][nok] == 'W':
+					if self.isMaster(power):
 						self.respond('MASTER has no WAIT flag')
 					if game.await or game.deadline < game.getTime():
 						self.respond('WAIT unavailable after deadline')
@@ -982,14 +985,9 @@ class Procmail:
 						if 'BLIND' in game.rules: game.makeMaps()
 				game.save()
 				if word[1][:2] == 'AB':
-					if len(dates) == 1:
-						if 'TO' in word: text = 'until after '
-						else: text = 'on '
-						text += ' '.join(dates[0]).title()
-					else: text = ('from %s to %s' %
-						(' '.join(dates[0]).title(),
-						' '.join(dates[1]).title()))
-					self.response += ['No deadlines will be set %s' % text]
+					self.response += ['No deadlines will be set ' +
+						('from %s to %s' % dates,
+						'until after %s' % dates[1])[not dates[0]]]
 				elif word[1][0] in 'AP':
 					self.response += [word[1].title() + ' set to ' + word[2]]
 				elif word[1][0] in 'NW': self.response += [
