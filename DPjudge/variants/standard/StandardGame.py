@@ -201,6 +201,23 @@ class StandardGame(Game):
 		for power in self.powers: power.orders, power.cd = {}, 0
 		return Game.postMoveUpdate(self)
 	#	----------------------------------------------------------------------
+	def checkPhase(self, text):
+		if 'LAST_MAN_STANDING' in self.rules:
+			if self.phase in (None, 'FORMING', 'COMPLETED'): return
+			if self.phaseType in 'MA': 
+				if sum([len(x.units) for x in self.powers]) == 1:
+					power = [x for x in self.powers if x.units][0]
+					text += ['The %s %s is the Last Man Standing.' %
+						(self.anglify(self.map.ownWord[power.name]),
+						self.anglify(power.units[0], retreating = 1))]
+					self.finish([power.name])
+					return
+		return Game.checkPhase(self, text)
+	#	----------------------------------------------------------------------
+	def determineWin(self, func = None):
+		if 'LAST_MAN_STANDING' in self.rules: return []
+		return Game.determineWin(self, func)
+	#	----------------------------------------------------------------------
 	def addOrder(self, power, word):
 		#	-------------------------------
 		#	Check that the order is valid.

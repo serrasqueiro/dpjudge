@@ -1354,9 +1354,10 @@ class Game:
 		self.norules = [x for x in self.norules if x in norules]
 	#	----------------------------------------------------------------------
 	def available(self):
-		return len(self.map.powers) - len(self.map.dummies) - len(
+		return 'SOLITAIRE' not in self.rules and (
+			len(self.map.powers) - len(self.map.dummies) - len(
 			[1 for x in self.powers if x.type == 'POWER' and
-			x.name not in self.map.dummies])
+			x.name not in self.map.dummies])) or 0
 	#	----------------------------------------------------------------------
 	def parseUnit(self, power, unit, retreats):
 		#	-------------------------
@@ -1638,7 +1639,10 @@ class Game:
 		self.powers.sort(Power.compare)
 	#	----------------------------------------------------------------------
 	def begin(self, roll = 0):
-		if self.status[1] != 'forming' or self.error:
+		if 'SOLITAIRE' in self.rules:
+			self.map.dummies = self.map.powers[:]
+		if self.error or self.status[1] != 'forming' and (
+			self.status[1] != 'preparation' or self.available()):
 			return ("To begin the game make sure that it's forming and " +
 				"without errors")
 		if not roll: self.rollin()
@@ -1684,8 +1688,9 @@ class Game:
 		#	and make the initial PostScript and gif map.
 		#	---------------------------------------------
 		lines = self.mapperHeader() + ['Starting position for ' +
-			self.phaseName()] + self.list() + [
-			'\nThe deadline for the first orders is %s.\n' % self.timeFormat()]
+			self.phaseName()] + self.list()
+		lines += ['\nThe deadline for the first orders is %s.\n' %
+			self.timeFormat(pseudo = 1)]
 		self.mailResults([line + '\n' for line in lines],
 			'Diplomacy game %s starting' % self.name)
 		#	-------------------------------------------------------
@@ -2265,6 +2270,11 @@ class Game:
 						min(self.map.militia.count(power.name),
 						len([0 for x in power.units
 							if x[2:5] in power.homes])))
+				if cd and 'CD_BUILDS' not in self.rules and units < centers:
+					sites = self.buildSites(power)
+					need = min(self.buildLimit(power, sites), centers - units)
+					power.adjust = ['BUILD WAIVED'] * need
+					continue
 				if (cd or centers == 0 or units == centers
 				or (units < centers and not self.buildLimit(power))): continue
 			elif self.phaseType == 'R':
@@ -2322,7 +2332,6 @@ class Game:
 				#	and recursively call process with now
 				#	augmented to 1.
 				#	-----------------------------------------
-				self.save(asBackup = 1)
 				self.skip = None
 				self.process(1, email, roll)
 				return
@@ -2330,7 +2339,7 @@ class Game:
 			#	We have received a PROCESS command via e-mail
 			#	---------------------------------------------
 			if not self.preview: self.lateNotice(-1)
-			if self.deadline and not self.preview: self.save(asBackup = 1)
+			if not self.preview: self.save(asBackup = 1)
 			self.delay = None
 			if self.phaseType == 'M':
 				self.determineOrders()
@@ -2356,7 +2365,6 @@ class Game:
 		#	---------------------------
 		if not self.preview:
 			self.save()
-			if self.phase == 'COMPLETED': return 'Game completed'
 	#	---------------------------------------------------------------------
 	def rollback(self, phase = None, includeFlags = 0):
 		#	---------------------------------------------------------------
@@ -3333,7 +3341,10 @@ class Game:
 		#	Determine any vassal state statuses
 		#	and the list of who owns what.
 		#	-----------------------------------
-		list = self.vassalship() + self.ownership(unowned)
+		return (self.vassalship() + self.ownership(unowned) +
+			self.determineWin(func))
+	#	----------------------------------------------------------------------
+	def determineWin(self, func = None):
 		#	----------------------------------------------------------------
 		#	See if we have a win.  Criteria are the ARMADA Regatta victory
 		#	criteria (adapted from David Norman's "variable length" system).
@@ -3356,7 +3367,7 @@ class Game:
 				victors += [power]
 				func = None
 		if victors and not self.preview: self.finish([x.name for x in victors])
-		list += self.powerSizes(victors, func)
+		list = self.powerSizes(victors, func)
 		if not victors: list += self.checkVotes(1)
 		return list
 	#	----------------------------------------------------------------------
@@ -3996,10 +4007,11 @@ class Game:
 		#	----------------------------------------------------------
 		phase = self.phaseAbbr()
 		if phase[0] + phase[-1] == 'WA': phase = 'F%sB' % phase[1:-1]
+		deadline = self.timeFormat(form = 1, pseudo = 1)
 		return [
 			':: Judge: %s  Game: %s  Variant: %s ' %
 				(host.resultsID, self.name, self.map.name) + self.variant,
-			':: Deadline: %s ' % phase + self.timeFormat(1),
+			':: Deadline: %s ' % phase + deadline,
 			':: URL: %s%s?game=' % (host.resultsURL,
 				'/index.cgi' * (os.name == 'nt')) + self.name, ''] or []
 	#	----------------------------------------------------------------------
@@ -4048,8 +4060,8 @@ class Game:
 					if deadline: self.deadline = deadline
 					else: self.setDeadline()
 				else: self.setDeadline()
-				broadcast += ['The deadline for orders will be %s.' %
-					self.timeFormat()]
+			broadcast += ['The deadline for orders will be %s.' %
+				self.timeFormat(pseudo = 1)]
 			#	---------------------------------------------------------
 			#	Rotate power control for any "BEFORE" and "FOR" rotations
 			#	---------------------------------------------------------
@@ -4146,9 +4158,10 @@ class Game:
 					if x not in who.centers]: return
 		return 1
 	#	----------------------------------------------------------------------
-	def timeFormat(self, form = 0):
+	def timeFormat(self, form = 0, pseudo = 0):
 		try: return self.deadline.format(form)
 		except:
+			if pseudo: return self.getTime().format(form)
 			if self.phase == 'FORMING': return ''
 			return 'Invalid Deadline! Notify Master!'
 	#	----------------------------------------------------------------------
@@ -4185,7 +4198,7 @@ class Game:
 			elif len(word) == 1 and upword in (
 				'DESC', 'DESCRIPTION', 'NAME', 'MORPH'): mode = upword
 			elif len(word) == 2 and upword == 'DEADLINE':
-				deadline = word[1]
+				deadline = self.getTime(word[1])
 				break
 		file.close()
 		return deadline
@@ -4205,7 +4218,7 @@ class Game:
 		#	double the usual length of time for the first deadline.
 		#	-------------------------------------------------------
 		when = now.offset(delay)
-		realtime = REAL_TIME in self.rules or when < now.offset('20M')
+		realtime = 'REAL_TIME' in self.rules or when < now.offset('20M')
 		#	------------------------------------------
 		#	Advance the deadline to the specified time
 		#	unless the delay is less than half a day.
@@ -5073,7 +5086,7 @@ class Game:
 		if self.status[1] == 'preparation' and mode != 'forming':
 			return 'Please allow the game to form first'
 		if self.phase == 'FORMING':
-			if mode == 'active': return self.begin()
+			if mode == 'active': self.begin()
 		elif self.phase == 'COMPLETED':
 			return ('Please discuss with the judgekeeper why ' +
 				'you consider changing the state of a completed game')

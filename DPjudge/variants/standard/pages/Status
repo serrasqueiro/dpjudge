@@ -38,8 +38,7 @@ showReadyNotice()
 <:
 if not page.game.error and not page.game.map.error:
 	page.write('<td align=center class="grey"><b>Communications</b></td>')
-if (page.power.name != 'MASTER'
-and page.game.phase not in ('FORMING', 'COMPLETED')):
+if page.game.phase not in ('FORMING', 'COMPLETED'):
 	page.write('<td align=center class="grey"><b>Orders</b></td>')
 page.write('</tr>')
 checkErrors()
@@ -76,10 +75,9 @@ showDocList((('summary', 'Game Summary'),
 if (page.power.name != 'MASTER' and page.game.phase not in
 	('FORMING', 'COMPLETED')):
 	showProposal()
-	showControlInfo()
-showAbsenceInput()
-if page.power.name == 'MASTER':
-	if page.pwdFlag == 1: showStatusFile()
+showControlInfo()
+showAbsenceInfo()
+if page.power.name == 'MASTER': showMasterCommands()
 :>
 		</table>
 		<!--MAPS, RESULTS, ENDGAME TABLE ENDS HERE-->
@@ -112,8 +110,7 @@ if not page.game.error:
 		</table>
 		</td>
 		""")
-if (page.power.name != 'MASTER'
-and page.game.phase not in ('FORMING', 'COMPLETED')):
+if page.game.phase not in ('FORMING', 'COMPLETED'):
 	showLists()
 :>
 </tr>

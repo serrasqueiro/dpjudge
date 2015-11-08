@@ -175,8 +175,8 @@ and page.game.phase not in ('FORMING', 'COMPLETED')):
 	showBalance()
 	if page.pwdFlag == 1: showTransferForm()
 showPricesButton()
-showAbsenceInput()
-if (page.power.name, page.pwdFlag) == ('MASTER', 1): showStatusFile()
+showAbsenceInfo()
+if page.power.name == 'MASTER': showMasterCommands()
 :>
 		</table>
 		<!--MAPS, RESULTS, ENDGAME TABLE ENDS HERE-->

@@ -107,11 +107,14 @@ page.dppd.db.execute("""
 			and Game.status not in ('COMPLETED', 'TERMINATED')
 			""" % (page.dpjudge, page.id))
 for info in page.dppd.db.fetchall():
-	game.phase, game.deadline = info['phase'], info['deadline']
+	game.phase = info['phase']
 	game.setTimeZone(info['zone'])
-	when = game.timeFormat(1).split()
-	info['late'] = game.deadlineExpired()
-	info['deadline'] = ' '.join(when[:-2]) + '<br>' + ' '.join(when[-2:])
+	if info['deadline']:
+		game.deadline = game.getTime(info['deadline'])
+		when = game.timeFormat(1).split()
+		info['deadline'] = ' '.join(when[:-2]) + '<br>' + ' '.join(when[-2:])
+		info['late'] = game.deadlineExpired()
+	else: info['late'] = None
 	if info['type'] == 'MASTER': master += [info]
 	elif info['type'] in ('POWER', 'LATE'): player += [info]
 	else: observer += [info]

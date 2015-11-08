@@ -135,6 +135,7 @@ def ruleBoxes(variant = None, mapName = None):
 	if gameRules: map(on.extend, [y for y in rules[x].get('=', [])
 		for x in gameRules if y not in off])
 	for group in groups:
+		groupZero = group[0][0] == '0' and not changeZero
 		guys = sorted([x for x in rules
 			if rules[x]['group'] == group and x not in forced])
 		if not guys: continue
@@ -152,11 +153,10 @@ def ruleBoxes(variant = None, mapName = None):
 				>&nbsp;<a href="javascript: describe('%s')"
 				onMouseOver="window.status='Show Description of %s';return(1);"
 				onMouseOut="window.status='';return(1);">%s</a></td>
-				""" % (rule, rule,
+				""" % (rule + '0' * groupZero, rule,
 					' checked' * (rule in gameRules + enforced + forced + on),
 					' disabled' * ((rule in enforced + forced)
-					or (group[0][0] == '0' and not changeZero)
-					or rule in page.game.metaRules),
+					or groupZero or rule in page.game.metaRules),
 					rule, ','.join([x for x in rules[rule].get('-',[])
 						if x not in forced]),
 					rule, ','.join([x for x in rules[rule].get('!',[])
@@ -166,6 +166,9 @@ def ruleBoxes(variant = None, mapName = None):
 					rule, ','.join([x for x in rules[rule].get('=',[])
 						if x not in forced]),
 					rule, rule, rule))
+			if groupZero and rule in gameRules and rule not in (
+				enforced + forced + page.game.metaRules):
+				apprise('RULE_' + rule, 'on')
 			count += 1
 		page.write('</tr>')
 
@@ -175,17 +178,11 @@ def ruleBoxes(variant = None, mapName = None):
 #
 #
 #	----------------------------------------------------------------------
-def changeButton():
+def changeMasterButton():
 	if page.game.deadline: com = ''
 	else: com = '//'
 	page.write("""
 		<script>
-		function ProcNow()
-		{
-			document.master.currpower.value = "NO POWERS";
-			document.master.proc_now.value = "now";
-			document.master.submit();
-		}
 		function prepSubmit()
 		{
 			%sdocument.master.date.value=document.master.deadline.value;
@@ -195,25 +192,22 @@ def changeButton():
 				document.master.datadummy.value = document.master.dummy.checked;
 				document.master.currpower.value = document.master.powerChoice.options[
 				document.master.powerChoice.options.selectedIndex].text;
-				document.master.proc_now.value = "not_now";
 			}
 			else
 			{
 				document.master.dataresigned.value = "";
 				document.master.datadummy.value = "";
 				document.master.currpower.value = "NO POWERS";
-				document.master.proc_now.value = "not_now";
 			}
 			document.master.submit();
 		}
 		</script>
 		<tr><td></td></tr><tr><td align=center colspan=3>
-		<%sinput type=%s
+		<%sinput type=button onClick=prepSubmit()
 		class=inputSubmit value="Submit Updates">
 		</td></tr>
 		</form>
-		""" % (com, '!'[page.pwdFlag == 1:],
-		('submit', 'button onClick=prepSubmit()')[page.power.name == 'MASTER']))
+		""" % (com, '!'[page.pwdFlag == 1:]))
 
 #	----------------------------------------------------------------------
 #	This function parses the status file, only outputting the lines that 
@@ -244,44 +238,99 @@ def outStatusFile():
 #
 #
 #	----------------------------------------------------------------------
+def showMasterCommands():
+	if page.power.name != 'MASTER': return
+	game = page.game
+	stamp = int(os.path.getmtime(game.file('status')))
+	if 'preparation' not in game.status:
+		page.write('<tr><td colspan=3><hr></td></tr>')
+		page.write('<form method=post><tr>')
+		hideBack('Update')
+		apprise('action', 'state')
+		apprise('stamp', stamp)
+		page.write('<tr><td class=bodycopy><b>Game&nbsp;State:</b>'
+			'</td><td align=right><select class=inputBox name=gameMode>')
+		for mode in (['forming'] * (game.phase == 'FORMING') +
+			['active', 'waiting'] * (game.phase != 'COMPLETED'
+			and ('forming' not in game.status or game.available())) +
+			['completed'] * (game.phase == 'COMPLETED') +
+			['terminated']):
+			page.write('<option value=%s%s>%s' %
+				(mode, ' selected' * (mode in game.status), mode.title()))
+		page.write('</select></td>')
+		if page.pwdFlag == 1: page.write('<td>'
+			'<input type=submit class=inputSubmit value=Set></td>')
+		page.write('</tr></form>')
+	if page.pwdFlag != 1: return
+	#	-------------------------
+	#	Buttons and links Section
+	#	-------------------------
+	page.write('</table><hr><table width=100%>')
+	page.write('<tr><form method=post name=access>')
+	hideBack('Read')
+	apprise('file', 'access')
+	page.write("""
+		<td nowrap valign=top>
+		<a href=# onclick="document.access.submit();return false;">
+		<font color=red>[View Access Log]</a></td>
+		""")
+	page.write('</form>')
+	page.write('<form method=post name=settings>')
+	hideBack('Settings')
+	page.write("""
+		<td nowrap colspan=2 align=right valign=top>
+		<a href=# onclick="document.settings.submit();return false;">
+		<font color=red>[Edit Settings]</font></a></td>
+		""")
+	page.write('</form></tr>')
+	if 'preparation' in game.status or ('forming' in game.status
+	and not game.available()):
+		page.write('<tr><form method=post>')
+		hideBack('Update')
+		apprise('action', 'form')
+		apprise('stamp', stamp)
+		apprise('list', 'LIST')
+		mode = (game.available() or 'preparation' in game.status and
+			'START_MASTER' in game.rules) and 'forming' or 'active'
+		apprise('formMode', mode)
+		page.write("""
+			<td colspan=3 align=center>
+			<input type=submit class=inputSubmit value="%s"></td>
+			""" % ('Allow Game To Form', 'Set Game To Active')[
+			mode == 'active'])
+		page.write('</form></tr>')
+	elif game.phase not in ('FORMING', 'COMPLETED'):
+		page.write('<tr><form method=post>')
+		hideBack('Update')
+		apprise('action', 'process')
+		apprise('stamp', stamp)
+		page.write("""
+			<td colspan=3 align=center>
+			<input type=submit class=inputSubmit value="Process Turn"></td>
+			""")
+		page.write('</form></tr>')
+	#	--------------------------------
+	#	End of Buttons and links Section
+	#	--------------------------------
+#	----------------------------------------------------------------------
+#
+#
+#	----------------------------------------------------------------------
 def showStatusFile():
+	if page.power.name != 'MASTER':
+		return reportUpdateError(
+			'Only the Master can edit the game status file.')
 	statFile = page.game.file('status')
 	page.write('<form method=post name=master>')
 	hideBack('Update')
+	apprise('action', 'settings')
 	apprise('stamp', int(os.path.getmtime(statFile)))
 	apprise('currpower', 'NO POWERS')
-	comprise(['dataresigned', 'datadummy', 'proc_now'])
-	# This is the new section
-	#print '<tr><td colspan=3><hr></td></tr>'
-
-	if 'preparation' not in page.game.status:
-		page.write('<tr><td class=bodycopy><b>Current&nbsp;Game&nbsp;State:</b>'
-			'</td><td><select class=inputBox name=gameMode>')
-		for mode in (['forming'] * (page.game.phase == 'FORMING') +
-			['active', 'waiting'] * (page.game.phase != 'COMPLETED') +
-			['completed'] * (page.game.phase == 'COMPLETED') +
-			['terminated']):
-			page.write('<option value=%s%s>%s' %
-				(mode, ' selected' * (mode in page.game.status), mode.title()))
-		page.write("""
-			</select></td>
-			<td align=right colspan=1>
-			<%sinput type=%s class=inputSubmit value="Submit Updates">
-			</td></tr>
-		""" % ('!'[page.pwdFlag == 1:],
-		('submit', 'button onClick=prepSubmit()')[page.power.name == 'MASTER']))
+	comprise(['dataresigned', 'datadummy'])
 	page.write("""
 		<tr><td class=bodycopy><b>Password:</b>
-			<td><input class=bodycopy name=newPassword value="%s"></td>
+		<td><input class=bodycopy name=newPassword value="%s"></td></tr>
 		""" % page.game.password)
-	if page.game.phase not in ('FORMING', 'COMPLETED') and page.pwdFlag == 1:
-		page.write("""
-		<td align=right colspan=1>
-		<input type=%s class=inputSubmit value="Process Game">
-		</td>
-		""" % 
-		('process', 'button onClick=ProcNow()')[page.power.name == 'MASTER'])
-	page.write('</tr>')
 	page.write("""
 		<script>
 		function policy()
@@ -302,11 +351,15 @@ def showStatusFile():
 				<input style=visibility:%s name=private value="%s"
 				class=bodycopy>
 			</td>
+			<td align=center><%sinput type=button onClick=prepSubmit()
+				class=inputSubmit value="Submit Updates">
+			</td>
 		</tr>
 		""" % ( ' selected' * (page.game.private is None),
 				' selected' * (page.game.private != None),
 				('visible', 'hidden')[page.game.private is None],
-				page.game.private or ''))
+				page.game.private or '',
+				'!'[page.pwdFlag == 1:]))
 	page.write("<tr class=bodycopy><td><b>Variant:</b><td>")
 	varLocked = page.game.phase != 'FORMING'
 	page.write('<select class=bodycopy name=%s %s>' %
@@ -359,15 +412,15 @@ def showStatusFile():
 	page.write("""
 		<tr><td class="bodycopy" align="left"
 		valign=top><b>Description:</b></td>
-		<td class="bodycopy"><textarea class=bodycopy name=desc rows=%d
-		cols=80>%s</textarea></tr>
+		<td colspan=2 class="bodycopy"><textarea class=bodycopy name=desc
+		rows=%d cols=80>%s</textarea></tr>
 		""" % (len(desc) / 80 + 1, desc))
 	desc = ' '.join(page.game.origin)
 	page.write("""
 		<tr><td class="bodycopy" align="left" nowrap
 		valign=top><b>Origin of Name:</b></td>
-		<td class="bodycopy"><textarea class=bodycopy name=origin rows=%d
-		cols=80>%s</textarea></tr>
+		<td colspan=2 class="bodycopy"><textarea class=bodycopy name=origin
+		rows=%d cols=80>%s</textarea></tr>
 		<tr><td class="bodycopy" nowrap align="left">
 		""" % (len(desc) / 80 + 2, desc))
 	if page.game.deadline:
@@ -429,39 +482,29 @@ def showStatusFile():
 		<textarea class=bodycopy name=status rows=%d cols=80
 		wrap=off>%s</textarea></td></tr>
 		""" % (extra.count('\n') + 1, extra))
-
-	# Buttons and links Section
+	#	-------------------------
+	#	Buttons and links Section
+	#	-------------------------
 	page.write('<tr><td colspan=3><hr></td></tr>')
 	page.write("""
-		<tr><td nowrap valign=top><a href=<URL>?page=StatusHelp target=status>
-				<font color=red>[Status File Help]</font></a></td>
-			<td nowrap align=center>
+		<tr><td nowrap valign=top>
+		<a href=<URL>?page=StatusHelp target=status>
+		<font color=red>[Status File Help]</font></a></td>
+		<td nowrap align=right valign=top colspan=2>
+		<a href=<URL>?page=Rules target=rules>
+		<font color=red>[Game Rules Help]</font></a></td></tr>
 		""")
-	apprise('list', 'LIST')
-	apprise('access', '')
-	page.write("""
-				<a href=# onclick="document.master.access.value=1;
-				document.master.submit();return false;">
-				<font color=red>[View Access Log]</a></td>
-			<td nowrap align=right valign=top>
-				<a href=<URL>?page=Rules target=rules>
-				<font color=red>[Game Rules Help]</font></a></td></tr>
-		""")
-	if 'preparation' in page.game.status: page.write("""
-		<tr><td colspan=3 align=center><table border cellpadding=10>
-		<tr><th class=bodycopy bgcolor=yellow><input type=checkbox name=form>
-		<select name=formMode><option value=forming>Allow Game To Form
-		<option value=active>Set Game To Active
-		</select></th></tr></table></td></tr>
-		""")
-	changeButton()
-	page.write('</td>') #</tr>')
-	# End of Buttons and links Section
+	changeMasterButton()
+	#	--------------------------------
+	#	End of Buttons and links Section
+	#	--------------------------------
 #	----------------------------------------------------------------------
 #
 #
 #	----------------------------------------------------------------------
 def showAccessLog():
+	if page.power.name != 'MASTER' or page.pwdFlag != 1:
+		return finished('Forbidden To Read')
 	access = page.game.file('access')
 	try:
 		file = open(access, encoding='latin-1')
@@ -487,9 +530,7 @@ def showAccessLog():
 		<textarea cols=88 rows=20>%s</textarea><p>
 		""" % (host.judgekeeper, page.game.name, contents))
 	goBack()
-	page.write('<br>&nbsp;<BR></td></tr>')
-	footer()
-	raise SystemExit
+	page.write('<br>&nbsp;<BR>')
 #	----------------------------------------------------------------------
 #
 #
@@ -667,6 +708,9 @@ def reportUpdateError(error):
 #
 #	----------------------------------------------------------------------
 def updateMaster():
+	if page.power.name != 'MASTER' or page.pwdFlag != 1:
+		return reportUpdateError(
+			'Only the Master can update the game status file.')
 	statFile = page.game.file('status')
 	if page.stamp != `int(os.path.getmtime(statFile))`:
 		return reportUpdateError(
@@ -678,43 +722,48 @@ def updateMaster():
 	#	----------
 	#	Roll phase
 	#	----------
-	if page.setdefault('action') in ('rollback', 'rollforward'):
+	action = page.setdefault('action')
+	if action in ('rollback', 'rollforward'):
 		flags = page.has('restore') * 1 + page.has('full') * 2 + (
 			host.judgePassword and page.password == host.judgePassword) * 16
 		if page.action == 'rollforward':
 			error = page.game.rollforward(page.phase, flags | 4)
 		else: error = page.game.rollback(page.phase, flags)
 		if error: return reportUpdateError(error + '.')
-		return finished()
+		return finished('Phase Rolled ' + action[4:].title())
 	#	----------------
 	#	Process the turn
 	#	----------------
-	if vars(page)['proc_now'] == "now":
+	if action == 'process':
 		error = page.game.process(now=1)
 		if error: return reportUpdateError(error + '.')
-		return finished()
+		return finished(('Turn Processed', 'Game Completed')[
+			page.game.phase == 'COMPLETED'])
 	#	----------------------
 	#	Game mode modification
 	#	----------------------
-	gameMode = page.game.status[1:]
-	if 'form' in vars(page) and page.form and 'formMode' in vars(page):
-		page.gameMode = page.formMode
-	if 'gameMode' in vars(page):
-		if page.gameMode == 'active':
-#			page.game = Game(page.game.name)
-			if page.game.phase == 'FORMING': 
-				if page.game.status[1] == 'waiting':
-					page.game.status[1] = 'forming'
-				responding = page.game.begin() or ''
-				untouched = responding and 'No ' or ''
-				return finished(untouched + 'Update Made', responding)
-		gameMode[0] = page.gameMode
-		page.game.status[1:] = gameMode
-	if (page.list == 'LIST') == ('unlisted' in gameMode):
-		try: gameMode.remove('unlisted')
-		except: gameMode += ['unlisted']
 	games = Status()
-	games.update(page.game.name, gameMode, page.curVariant)
+	if action in ('state', 'form'):
+		gameMode = page.game.status[1:]
+		if 'formMode' in vars(page):
+			if page.formMode == 'active' and gameMode[0] != 'forming':
+				page.game.status[1] = 'forming'
+			page.gameMode = page.formMode
+		if 'gameMode' in vars(page):
+			if page.gameMode == 'active':
+				if page.game.phase == 'FORMING': 
+					if page.game.status[1] == 'waiting':
+						page.game.status[1] = 'forming'
+					responding = page.game.begin() or ''
+					untouched = responding and 'Not ' or ''
+					return finished('Game %sStarted' % untouched, responding)
+			gameMode[0] = page.gameMode
+			page.game.status[1:] = gameMode
+		if (page.list == 'LIST') == ('unlisted' in gameMode):
+			try: gameMode.remove('unlisted')
+			except: gameMode += ['unlisted']
+		games.update(page.game.name, gameMode, page.curVariant)
+		return finished()
 	for guy in ('desc', 'origin', 'zone', 'status', 'morphs'):
 		if guy not in vars(page): vars(page)[guy] = ''
 	#	------------------
@@ -744,11 +793,19 @@ def updateMaster():
 	extract('NEED', 'avail', 1)
 	extract('ROTATE', isList = 1)
 	extract('NEWHOME', 'homeYears', 1)
-	page.game.rules = [x[5:] for x in vars(page) if x[:5] == 'RULE_']
 	extract('ALLOW', 'playerTypes', 1)
 	extract('FLOW', isList = 1)
 	extract('VICTORY', isList = 1)
 	extract('PROPOSAL', isList = 1)
+	extract('DELAY')
+	extract('PROCESSED')
+	extract('RESERVES', 'extra', 1)
+	extract('MILITIA', 'defense', 1)
+	page.game.rules = [x[5:] for x in vars(page) if x[:5] == 'RULE_']
+	page.game.validateRules()
+	if page.game.error:
+		return reportUpdateError('<br>'.join(
+			['The following rule violations were detected:'] + page.game.error))
 	deathnote = None
 	if page.zone != page.game.zone and page.game.zone.__repr__() or 'GMT':
 		page.game.setTimeZone(page.zone)
@@ -772,10 +829,6 @@ def updateMaster():
 		deathnote += 'The deadline is now %s.\n' % page.game.timeFormat()
 		page.game.mailPress(None, ['All!'], deathnote,
 			subject = 'Diplomacy deadline changed')
-	extract('DELAY')
-	extract('PROCESSED')
-	extract('RESERVES', 'extra', 1)
-	extract('MILITIA', 'defense', 1)
 	page.game.timing = None	# it will be in page.extra if given....
 	page.game.terrain = {}	# ditto this guy as well
 	if page.game.tester and page.game.tester[-1:] == '!':

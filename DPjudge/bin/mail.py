@@ -156,15 +156,24 @@ class Procmail:
 					if unlisted: games.dict[game] += ['unlisted']
 					games.save()
 					self.game, self.message = Game(game), []
+					if 'SOLITAIRE' in self.game.rules:
+						if not self.game.private:
+							self.game.private = 'SOLITAIRE'
+							self.game.save()
 					if self.game.private:
 						games.dict[game] += ['private']
 						games.save()
+					if (mode == 'forming' and not game.available()
+					and 'START_MASTER' not in self.game.rules):
+						self.game.begin()
+						mode = 'active'
 					observers = host.observers or []
 					if type(observers) is not list: observers = [observers]
 					self.respond("Game '%s' has been created.  %s at:\n"
 						'   %s%s?game=%s\n\nWelcome to the %s' %
-						(game, ('Finish preparation', 'Game is now forming')
-						[mode == 'forming'], host.dpjudgeURL,
+						(game, mode[0] == 'p' and 'Finish preparation'
+						or mode[0] == 'f' and 'Game is now forming'
+						or 'Game has started', host.dpjudgeURL,
 						'/index.cgi' * (os.name == 'nt'), game,
 						host.dpjudgeNick),
 						copyTo = observers + self.game.map.notify)
@@ -779,10 +788,13 @@ class Procmail:
 					self.response += ['The game is already in the %s state' %
 						mode]
 				else:
+					if (self.status[1] == 'preparation' and mode == 'forming'
+					and not (self.available() or 'START_MASTER' in self.rules)):
+						mode = 'active'
 					reply = game.setState(mode)
 					if reply: self.respond(reply)
 					self.response += ['The game state has been changed to %s' %
-						mode]
+						game.status[1]]
 			#	------------------------------
 			#	See if we are to do a ROLLBACK
 			#	------------------------------

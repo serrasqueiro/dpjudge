@@ -31,7 +31,6 @@ showReadyNotice()
 <tr><td colspan=3 height=5><!--SPACER--></td>
 </tr>
 <:
-if page.power.name == 'MASTER' and 'access' in vars(page): showAccessLog()
 page.write(
 	"""
 	<tr valign=top bgcolor="#CCCCCC">
@@ -51,8 +50,9 @@ def updatePower():
 	else: return updateOrders()
 #	----------------------------------------------------------------------
 
-page.game.error = []
-if page.power.name != 'MASTER':
+page.game.error, acting = [], 'message' in vars(page) and 2 or (
+	page.power.name == 'MASTER' and 'action' in vars(page) and 1) or 0
+if not acting:
 	untouched = updatePower() and 'No ' or ''
 	if page.game.error:
 		page.write('<td align=center class="grey"><b>Erroneous Orders</b></td>')
@@ -79,9 +79,9 @@ powerHeader()
 		<!--MAPS, RESULTS, ENDGAME TABLE BEGINS HERE-->
 		<table border=0 align=center width=100%>
 <:
-if 'message' in vars(page):
+if acting == 2:
 	sendPress()
-elif page.power.name != 'MASTER':
+elif not acting:
 	if page.game.error: problem()
 	else: finished(untouched + 'Update Made')
 :>
@@ -93,8 +93,8 @@ elif page.power.name != 'MASTER':
 	</table>
 </td>
 <:
-if 'message' in vars(page): pass
-elif page.power.name == 'MASTER': updateMaster()
+if acting > 1: pass
+elif acting: updateMaster()
 elif page.game.error and page.game.phase not in ('FORMING', 'COMPLETED'):
 	showLists()
 :>

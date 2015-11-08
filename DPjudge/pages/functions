@@ -278,9 +278,9 @@ def showDocList(files, beforeEnd = 0):
 		</form>
 		""")
 #	----------------------------------------------------------------------
-def showAbsenceInput():
-	if 'terminated' in page.game.status or 'completed' in page.game.status:
-		return
+def showAbsenceInfo():
+	if ('terminated' in page.game.status or 'completed' in page.game.status
+	or 'NO_DEADLINE' in page.game.rules): return
 	page.write("""
 		<script language="javascript" type="text/javascript"
 		src="<URL>/scripts/dater"></script>
@@ -480,14 +480,15 @@ def showGameInfo():
 		for x in rules]
 	showInfo('<a target=rules href=<URL>?page=Rules>Rules</a>',
 		rules and '<tt><b>' + ', '.join(rules) + '.' or '')
-	if game.phase == 'FORMING': showInfo('Time Zone', game.zone or 'UTC (GMT)')
-	if game.phase == 'COMPLETED' and 'NOT' in game.timing:
-		del game.timing['NOT']
-	for key, val in game.timing.items(): timing += ' ' + key + ' ' + val
-	timing = timing or 'NEXT 1D MOVE 3D'
-	if 'DAYS' not in game.timing: timing += ' DAYS -MTWTF-'
-	showInfo('<a target=rules href=<URL>?page=Status#timing>Timing</a>',
-			'<tt><b>' + timing)
+	if game.phase == 'FORMING': showInfo('Time Zone', game.zone.__repr__() or 'UTC (GMT)')
+	if 'NO_DEADLINE' not in game.rules:
+		if game.phase == 'COMPLETED' and 'NOT' in game.timing:
+			del game.timing['NOT']
+		for key, val in game.timing.items(): timing += ' ' + key + ' ' + val
+		timing = timing or 'NEXT 1D MOVE 3D'
+		if 'DAYS' not in game.timing: timing += ' DAYS -MTWTF-'
+		showInfo('<a target=rules href=<URL>?page=Status#timing>Timing</a>',
+				'<tt><b>' + timing)
 	if game.avail: showInfo('Last Accessed',
 		Time('GMT', os.path.getmtime(game.file('status'))).cformat())
 	if game.start: showInfo('Game Started', game.start)
@@ -921,7 +922,8 @@ def showWaitFlag():
 	showReceiptFlag()
 	if (('NO_MINOR_WAIT' in page.game.rules and page.game.phaseType != 'M')
 	or 'REAL_TIME' in page.game.rules
-	or not page.game.deadline or page.game.deadline < page.game.getTime()): return
+	or not page.game.deadline or page.game.deadline < page.game.getTime()):
+		return
 	page.write(
 		"""
 		<tr><td class=bodycopy align=center>
@@ -931,6 +933,11 @@ def showWaitFlag():
 #	----------------------------------------------------------------------
 def showAdjustList():
 	game, power, shown = page.game, page.power, 0
+	#	-------------------------------
+	#	Obtain default orders for dummy
+	#	and nearly eliminated powers.
+	#	-------------------------------
+	game.latePowers()
 	for who in [power] + power.vassals():
 		if len(who.centers) == 0: continue
 		count = len(who.centers) - len(who.units)
@@ -999,6 +1006,11 @@ def showAdjustList():
 #	----------------------------------------------------------------------
 def showRetreatList():
 	game, power, shown = page.game, page.power, 0
+	#	-------------------------------
+	#	Obtain default orders for dummy
+	#	and nearly eliminated powers.
+	#	-------------------------------
+	game.latePowers()
 	for who in [power] + power.vassals():
 		if not who.retreats or who.goner: continue
 		if not shown:
@@ -1030,9 +1042,18 @@ def showRetreatList():
 					if select or page.pwdFlag == 1: page.write(
 						'<option value=\'%s\'%s>' % (ord, select) + choice)
 				page.write('</select></td></tr>')
-			page.write('</table')
+			page.write('</table>')
 	if shown: page.write('</td></tr>')
 	return shown
+#	----------------------------------------------------------------------
+def changeButton():
+	page.write("""
+		<tr><td></td></tr><tr><td align=center colspan=3>
+		<%sinput type=submit
+		class=inputSubmit value="Submit Updates">
+		</td></tr>
+		</form>
+		""" % '!'[page.pwdFlag == 1:])
 #	----------------------------------------------------------------------
 def viewFile():
 	if not page.file: return
@@ -1187,7 +1208,7 @@ def goBack(caption = None, auto = 0):
 		page.write("""
 			<form method = post>
 			<input type=button class=inputSubmit value="%s"
-			onclick="alert('No backpage'); window.history.back()">
+			onclick="window.history.back()">
 			</form>
 			""" % caption)
 #	----------------------------------------------------------------------
@@ -1467,13 +1488,14 @@ def powerInfo():
 		except: pass
 	rules = rules and '<tt><b>' + ', '.join(rules) + '.' or ''
 	showInfo('<a target=rules href=<URL>?page=Rules>Rules</a>', rules, 1)
-	if game.phase == 'COMPLETED' and 'NOT' in game.timing:
-		del game.timing['NOT']
-	for key, val in game.timing.items(): timing += ' ' + key + ' ' + val
-	timing = timing or 'NEXT 1D MOVE 3D'
-	if 'DAYS' not in game.timing: timing += ' DAYS -MTWTF-'
-	showInfo('<a target=rules href=<URL>?page=Status#timing>Timing</a>',
-			'<tt><b>' + timing, 1)
+	if 'NO_DEADLINE' not in game.rules:
+		if game.phase == 'COMPLETED' and 'NOT' in game.timing:
+			del game.timing['NOT']
+		for key, val in game.timing.items(): timing += ' ' + key + ' ' + val
+		timing = timing or 'NEXT 1D MOVE 3D'
+		if 'DAYS' not in game.timing: timing += ' DAYS -MTWTF-'
+		showInfo('<a target=rules href=<URL>?page=Status#timing>Timing</a>',
+				'<tt><b>' + timing, 1)
 	page.write('<tr><td colspan=3><HR></td></tr>')
 #	----------------------------------------------------------------------
 def pouchLinks():

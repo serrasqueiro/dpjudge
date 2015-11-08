@@ -42,12 +42,14 @@ def showOrderList():
 		else:
 			if active:
 				if power.orders:
-					orders += [u + ' ' + o for u, o in power.orders.items()]
+					orders += [u + ' ' + o for u, o in power.orders.items()] + [
+						u for u in power.units if u not in power.orders]
 				else: orders += power.units or ['(NMR)']
 			for who in vassals:
 				orders += ['[' + who.name + ']']
 				if who.orders:
-					orders += [u + ' ' + o for u, o in who.orders.items()]
+					orders += [u + ' ' + o for u, o in who.orders.items()] + [
+						u for u in who.units if u not in who.orders]
 				else: orders += who.units or ['(NMR)']
 	rows = max(len(orders), 19) + 1
 	orders = '\n'.join(orders)

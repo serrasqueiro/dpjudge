@@ -118,6 +118,7 @@ def showLedger():
 if page.file == 'ledgers': showLedger()
 elif page.file == 'chart': showPrices()
 elif page.file == 'results': showResults()
+elif page.file == 'access': showAccessLog()
 else: viewFile()
 :>
 </td>

@@ -81,10 +81,8 @@ if (page.power.name != 'MASTER' and page.game.phase not in
 	('FORMING', 'COMPLETED')):
 	showProposal()
 	showControlInfo()
-showAbsenceInput()
-if page.power.name == 'MASTER':
-	if page.pwdFlag == 1: showStatusFile()
-
+showAbsenceInfo()
+if page.power.name == 'MASTER': showMasterCommands()
 :>
 		</table>
 		<!--MAPS, RESULTS, ENDGAME TABLE ENDS HERE-->
