@@ -248,6 +248,8 @@ def showMasterCommands():
 		hideBack('Update')
 		apprise('action', 'state')
 		apprise('stamp', stamp)
+		apprise('list', 'LIST')
+		apprise('curVariant', game.__class__.__name__[:-4].lower())
 		page.write('<tr><td class=bodycopy><b>Game&nbsp;State:</b>'
 			'</td><td align=right><select class=inputBox name=gameMode>')
 		for mode in (['forming'] * (game.phase == 'FORMING') +
@@ -290,6 +292,7 @@ def showMasterCommands():
 		apprise('action', 'form')
 		apprise('stamp', stamp)
 		apprise('list', 'LIST')
+		apprise('curVariant', game.__class__.__name__[:-4].lower())
 		mode = (game.available() or 'preparation' in game.status and
 			'START_MASTER' in game.rules) and 'forming' or 'active'
 		apprise('formMode', mode)

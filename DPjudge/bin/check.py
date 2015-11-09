@@ -2,6 +2,7 @@ import os, stat, sys, textwrap
 import host
 
 from DPjudge import *
+from DPjudge.Game import Time
 
 class Check(Status):
 	#	----------------------------------------------------------------------

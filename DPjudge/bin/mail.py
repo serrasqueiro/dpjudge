@@ -788,8 +788,8 @@ class Procmail:
 					self.response += ['The game is already in the %s state' %
 						mode]
 				else:
-					if (self.status[1] == 'preparation' and mode == 'forming'
-					and not (self.available() or 'START_MASTER' in self.rules)):
+					if (game.status[1] == 'preparation' and mode == 'forming'
+					and not (game.available() or 'START_MASTER' in self.rules)):
 						mode = 'active'
 					reply = game.setState(mode)
 					if reply: self.respond(reply)
