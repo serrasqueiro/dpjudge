@@ -168,7 +168,7 @@ def ruleBoxes(variant = None, mapName = None):
 					rule, rule, rule))
 			if groupZero and rule in gameRules and rule not in (
 				enforced + forced + page.game.metaRules):
-				apprise('RULE_' + rule, 'on')
+				page.apprise('RULE_' + rule, 'on')
 			count += 1
 		page.write('</tr>')
 
@@ -246,10 +246,9 @@ def showMasterCommands():
 		page.write('<tr><td colspan=3><hr></td></tr>')
 		page.write('<form method=post><tr>')
 		hideBack('Update')
-		apprise('action', 'state')
-		apprise('stamp', stamp)
-		apprise('list', 'LIST')
-		apprise('curVariant', game.__class__.__name__[:-4].lower())
+		page.apprise('action', 'state')
+		page.apprise('stamp', stamp)
+		page.apprise('curVariant', game.__class__.__name__[:-4].lower())
 		page.write('<tr><td class=bodycopy><b>Game&nbsp;State:</b>'
 			'</td><td align=right><select class=inputBox name=gameMode>')
 		for mode in (['forming'] * (game.phase == 'FORMING') +
@@ -270,7 +269,7 @@ def showMasterCommands():
 	page.write('</table><hr><table width=100%>')
 	page.write('<tr><form method=post name=access>')
 	hideBack('Read')
-	apprise('file', 'access')
+	page.apprise('file', 'access')
 	page.write("""
 		<td nowrap valign=top>
 		<a href=# onclick="document.access.submit();return false;">
@@ -289,13 +288,12 @@ def showMasterCommands():
 	and not game.available()):
 		page.write('<tr><form method=post>')
 		hideBack('Update')
-		apprise('action', 'form')
-		apprise('stamp', stamp)
-		apprise('list', 'LIST')
-		apprise('curVariant', game.__class__.__name__[:-4].lower())
+		page.apprise('action', 'form')
+		page.apprise('stamp', stamp)
+		page.apprise('curVariant', game.__class__.__name__[:-4].lower())
 		mode = (game.available() or 'preparation' in game.status and
 			'START_MASTER' in game.rules) and 'forming' or 'active'
-		apprise('formMode', mode)
+		page.apprise('formMode', mode)
 		page.write("""
 			<td colspan=3 align=center>
 			<input type=submit class=inputSubmit value="%s"></td>
@@ -305,8 +303,8 @@ def showMasterCommands():
 	elif game.phase not in ('FORMING', 'COMPLETED'):
 		page.write('<tr><form method=post>')
 		hideBack('Update')
-		apprise('action', 'process')
-		apprise('stamp', stamp)
+		page.apprise('action', 'process')
+		page.apprise('stamp', stamp)
 		page.write("""
 			<td colspan=3 align=center>
 			<input type=submit class=inputSubmit value="Process Turn"></td>
@@ -323,17 +321,18 @@ def showStatusFile():
 	if page.power.name != 'MASTER':
 		return reportUpdateError(
 			'Only the Master can edit the game status file.')
-	statFile = page.game.file('status')
+	game = page.game
+	statFile = game.file('status')
 	page.write('<form method=post name=master>')
 	hideBack('Update')
-	apprise('action', 'settings')
-	apprise('stamp', int(os.path.getmtime(statFile)))
-	apprise('currpower', 'NO POWERS')
-	comprise(['dataresigned', 'datadummy'])
+	page.apprise('action', 'settings')
+	page.apprise('stamp', int(os.path.getmtime(statFile)))
+	page.apprise('currpower', 'NO POWERS')
+	page.comprise(['dataresigned', 'datadummy'])
 	page.write("""
 		<tr><td class=bodycopy><b>Password:</b>
 		<td><input class=bodycopy name=newPassword value="%s"></td></tr>
-		""" % page.game.password)
+		""" % game.password)
 	page.write("""
 		<script>
 		function policy()
@@ -358,43 +357,54 @@ def showStatusFile():
 				class=inputSubmit value="Submit Updates">
 			</td>
 		</tr>
-		""" % ( ' selected' * (page.game.private is None),
-				' selected' * (page.game.private != None),
-				('visible', 'hidden')[page.game.private is None],
-				page.game.private or '',
+		""" % ( ' selected' * (game.private is None),
+				' selected' * (game.private != None),
+				('visible', 'hidden')[game.private is None],
+				game.private or '',
 				'!'[page.pwdFlag == 1:]))
-	page.write("<tr class=bodycopy><td><b>Variant:</b><td>")
-	varLocked = page.game.phase != 'FORMING'
-	page.write('<select class=bodycopy name=%s %s>' %
-		(('curVariant', 'wontPost')[varLocked], 'disabled' * varLocked))
-	dirs = sorted([x for x in os.listdir('<PKG>/variants')
-				if os.path.isdir('<PKG>/variants/' + x)])
-	#	----------------------------------------------------------------
-	#	Make sure Standard Diplomacy is listed before any other variants
-	#	----------------------------------------------------------------
-	curVariant = 'standard'
-	if 'standard' in dirs:
-		dirs.remove('standard')
-		dirs.insert(0, 'standard')
-	for dir in dirs:
-		try: name = __import__('DPjudge.variants.' + dir,
-								globals(), locals(), dir).VARIANT
-		except: continue
-		selected = page.game.__class__.__name__.lower().startswith(dir)
-		if selected: curVariant = dir
-		page.write('<option value=%s %s>%s Diplomacy' % (dir,
-			'selected' * selected,
-			{'xtalball': 'Crystal Ball'}.get(dir, dir.title())))
-	page.write('</select></td></tr>')
-	if varLocked: apprise('curVariant', curVariant)
+	page.write("<tr class=bodycopy><td><b>Variant:</b></td><td>")
+	curVariant = game.__class__.__name__[:-4].lower()
+	try: varName = __import__('DPjudge.variants.' + curVariant,
+		globals(), locals(), curVariant).VARIANT
+	except: curVariant, varName = 'standard', 'Standard Diplomacy'
+	if game.phase != 'FORMING':
+		page.write(varName)
+		page.apprise('curVariant', curVariant)
+	else:
+		variants = {varName: curVariant}
+		page.write('<select class=bodycopy name=curVariant>')
+		dirs = [x for x in os.listdir('<PKG>/variants')
+			if os.path.isdir('<PKG>/variants/' + x)]
+		for dir in dirs:
+			if dir == curVariant: continue
+			try: name = __import__('DPjudge.variants.' + dir,
+				globals(), locals(), dir).VARIANT
+			except: continue
+			variants[name] = dir
+		#	----------------------------------------------------------------
+		#	Make sure Standard Diplomacy is listed before any other variants
+		#	----------------------------------------------------------------
+		varNames = sorted(variants.keys())
+		if 'Standard Diplomacy' in varNames:
+			varNames.remove('Standard Diplomacy')
+			varNames.insert(0, 'Standard Diplomacy')
+		for name in varNames:
+			page.write('<option value=%s%s>%s</option>' % (variants[name],
+				' selected' * (varName == name), name))
+		page.write('</select>')
+	page.write('&nbsp;&nbsp;&nbsp;&nbsp;<b>Unlist?</b>')
+	page.write('<input type=checkbox name=unlist%s>' %
+		(' checked' * ('unlisted' in game.status)))
+	page.apprise('list', 'LIST')
+	page.write('</td></tr>')
 	page.write("<tr class=bodycopy><td><b>%sMap:</b><td>" %
-		('Trial ' * page.game.map.trial))
-	if page.game.phase == 'FORMING':
-		gameFile  = page.game.map.name + '.map'
+		('Trial ' * game.map.trial))
+	if game.phase == 'FORMING':
+		gameFile  = game.map.name + '.map'
 		page.write('<select class=bodycopy name=map>')
 		for trial in range(2):
 			dir = '<PKG>/' + ['maps', 'trials'][trial]
-			if page.game.map.trial: same = trial
+			if game.map.trial: same = trial
 			else: same = not trial
 			files = os.listdir(dir)
 			if same and gameFile not in files: files += [gameFile]
@@ -409,16 +419,16 @@ def showStatusFile():
 					('(%s)' % map, map)[os.path.isfile(dir + '/' + file)]))
 			if trial: page.write('</optgroup>')
 		page.write("</select>")
-	else: page.write(page.game.map.name)
+	else: page.write(game.map.name)
 	page.write("</td></tr>")
-	desc = ' '.join(page.game.desc)
+	desc = ' '.join(game.desc)
 	page.write("""
 		<tr><td class="bodycopy" align="left"
 		valign=top><b>Description:</b></td>
 		<td colspan=2 class="bodycopy"><textarea class=bodycopy name=desc
 		rows=%d cols=80>%s</textarea></tr>
 		""" % (len(desc) / 80 + 1, desc))
-	desc = ' '.join(page.game.origin)
+	desc = ' '.join(game.origin)
 	page.write("""
 		<tr><td class="bodycopy" align="left" nowrap
 		valign=top><b>Origin of Name:</b></td>
@@ -426,15 +436,15 @@ def showStatusFile():
 		rows=%d cols=80>%s</textarea></tr>
 		<tr><td class="bodycopy" nowrap align="left">
 		""" % (len(desc) / 80 + 2, desc))
-	if page.game.deadline:
-		dead = page.game.deadline
+	if game.deadline:
+		dead = game.deadline
 		dead = '%s-%s-%s' % (dead[4:6], dead[6:8], dead[:4])
 		page.write("""
 			<script language="javascript" type="text/javascript"
 			src="<URL>/scripts/dater"></script>
 			<b>Deadline:</b></td>
 			""")
-		apprise('date', dead)
+		page.apprise('date', dead)
 		page.write("""
 			<td class="bodycopy" colspan=2><b><input disabled name=deadline
 			id=deadline type=text size=12 value="%s" class=bodycopy>
@@ -445,27 +455,27 @@ def showStatusFile():
 			class=bodycopy value=%s>:<input class=bodycopy
 			type=text size=2 maxlength=2 name=minute value=%s>
 			Time Zone:&nbsp;
-			""" % (dead, page.game.deadline[8:10],
-				page.game.deadline[-2:]))
+			""" % (dead, game.deadline[8:10],
+				game.deadline[-2:]))
 	else: page.write("<b>Time Zone:</b></td><td>")
 	page.write("<select class=bodycopy name=zone>")
-	if not page.game.zone: page.game.setTimeZone()
+	if not game.zone: game.setTimeZone()
 	zoneGroups = TimeZone().groupZones()
 	for label in sorted(zoneGroups.keys(),
 		key=lambda x: not x and 10000 or int(x[3:].ljust(5, '0')), reverse=1):
 		if label: page.write('<optgroup label="%s">' % label)
 		for zone in sorted(zoneGroups[label]):
 			page.write('<option %s>%s</option>' %
-				(' selected' * (zone == page.game.zone.__repr__()), zone))
+				(' selected' * (zone == game.zone.__repr__()), zone))
 	page.write('</select></td></tr>')
-	if page.game.avail: page.write("""
+	if game.avail: page.write("""
 		<tr><td class="bodycopy" align="left"><b>Powers Needed:</b></td>
 			<td class="bodycopy">%s</td></tr>
-		""" % ', '.join(page.game.avail))
-	if page.game.processed: page.write("""
+		""" % ', '.join(game.avail))
+	if game.processed: page.write("""
 		<tr><td class="bodycopy" align="left" colspan=2>Last processed on %s
 		</td></tr>
-		""" % page.game.processed.format(1))
+		""" % game.processed.format(1))
 	powerData()
 	ruleBoxes()
 	page.write("""
@@ -475,7 +485,7 @@ def showStatusFile():
 		<td colspan=2 class=bodycopy align="center">
 		<textarea class=bodycopy name=morphs rows=%d cols=80
 		wrap=off>%s</textarea></td></tr>
-		""" % (len(page.game.morphs) + 1, '\n'.join(page.game.morphs)))
+		""" % (len(game.morphs) + 1, '\n'.join(game.morphs)))
 	extra = outStatusFile()
 	page.write("""
 		<tr><td colspan=3><hr></td></tr>
@@ -590,9 +600,9 @@ def addRoll(phase, forward = 0):
 		<form name=roll method=post>
 		""" % (forward and ' forward' or 'back'))
 	hideBack('Update')
-	apprise('action', 'roll' + (forward and 'forward' or 'back'))
-	apprise('stamp', int(os.path.getmtime(statFile)))
-	apprise('phase', phase)
+	page.apprise('action', 'roll' + (forward and 'forward' or 'back'))
+	page.apprise('stamp', int(os.path.getmtime(statFile)))
+	page.apprise('phase', phase)
 	page.write("""
 		<input type="button" value="Roll%s to %s" class="inputSubmit"
 		onclick="rollto()"> <b>with</b>
@@ -607,7 +617,7 @@ def addRoll(phase, forward = 0):
 def powerData():
 	if not page.game.powers: return
 	for num, power in enumerate(page.game.powers):
-		apprise('powerData%d' % num, '')
+		page.apprise('powerData%d' % num, '')
 	page.write(
 		"""
 		<script>
@@ -714,7 +724,8 @@ def updateMaster():
 	if page.power.name != 'MASTER' or page.pwdFlag != 1:
 		return reportUpdateError(
 			'Only the Master can update the game status file.')
-	statFile = page.game.file('status')
+	game = page.game
+	statFile = game.file('status')
 	if page.stamp != `int(os.path.getmtime(statFile))`:
 		return reportUpdateError(
 			"""
@@ -730,42 +741,42 @@ def updateMaster():
 		flags = page.has('restore') * 1 + page.has('full') * 2 + (
 			host.judgePassword and page.password == host.judgePassword) * 16
 		if page.action == 'rollforward':
-			error = page.game.rollforward(page.phase, flags | 4)
-		else: error = page.game.rollback(page.phase, flags)
+			error = game.rollforward(page.phase, flags | 4)
+		else: error = game.rollback(page.phase, flags)
 		if error: return reportUpdateError(error + '.')
 		return finished('Phase Rolled ' + action[4:].title())
 	#	----------------
 	#	Process the turn
 	#	----------------
 	if action == 'process':
-		error = page.game.process(now=1)
+		error = game.process(now=1)
 		if error: return reportUpdateError(error + '.')
 		return finished(('Turn Processed', 'Game Completed')[
-			page.game.phase == 'COMPLETED'])
+			game.phase == 'COMPLETED'])
 	#	----------------------
 	#	Game mode modification
 	#	----------------------
 	games = Status()
+	gameMode = game.status[1:]
+	if 'formMode' in vars(page):
+		if page.formMode == 'active' and gameMode[0] != 'forming':
+			game.status[1] = 'forming'
+		page.gameMode = page.formMode
+	if 'gameMode' in vars(page):
+		if page.gameMode == 'active':
+			if game.phase == 'FORMING': 
+				if game.status[1] == 'waiting':
+					game.status[1] = 'forming'
+				responding = game.begin() or ''
+				untouched = responding and 'Not ' or ''
+				return finished('Game %sStarted' % untouched, responding)
+		gameMode[0] = page.gameMode
+		game.status[1:] = gameMode
+	if page.has('list') and page.has('unlist') != ('unlisted' in gameMode):
+		try: gameMode.remove('unlisted')
+		except: gameMode += ['unlisted']
+	games.update(game.name, gameMode, page.curVariant)
 	if action in ('state', 'form'):
-		gameMode = page.game.status[1:]
-		if 'formMode' in vars(page):
-			if page.formMode == 'active' and gameMode[0] != 'forming':
-				page.game.status[1] = 'forming'
-			page.gameMode = page.formMode
-		if 'gameMode' in vars(page):
-			if page.gameMode == 'active':
-				if page.game.phase == 'FORMING': 
-					if page.game.status[1] == 'waiting':
-						page.game.status[1] = 'forming'
-					responding = page.game.begin() or ''
-					untouched = responding and 'Not ' or ''
-					return finished('Game %sStarted' % untouched, responding)
-			gameMode[0] = page.gameMode
-			page.game.status[1:] = gameMode
-		if (page.list == 'LIST') == ('unlisted' in gameMode):
-			try: gameMode.remove('unlisted')
-			except: gameMode += ['unlisted']
-		games.update(page.game.name, gameMode, page.curVariant)
 		return finished()
 	for guy in ('desc', 'origin', 'zone', 'status', 'morphs'):
 		if guy not in vars(page): vars(page)[guy] = ''
@@ -775,17 +786,17 @@ def updateMaster():
 	#	NEW STUFF (TO BE USED TO UPDATE WITH)
 	if 'map' in vars(page):
 		trial = page.map[:1] == '*'
-		page.game.map = Map(page.map[trial:], trial)
-	if page.password == page.game.password: page.password = page.newPassword
-	page.game.password = page.newPassword
-	if page.privacy == 'public': page.game.private = None
-	else: page.game.private = page.private
-	if page.desc: page.game.desc = page.desc.split('\n')
-	else: page.game.desc = []
-	if page.origin: page.game.origin = page.origin.split('\n')
-	else: page.game.origin = []
-	if page.morphs: page.game.morphs = page.morphs.split('\n')
-	else: page.game.morphs = []
+		game.map = Map(page.map[trial:], trial)
+	if page.password == game.password: page.password = page.newPassword
+	game.password = page.newPassword
+	if page.privacy == 'public': game.private = None
+	else: game.private = page.private
+	if page.desc: game.desc = page.desc.split('\n')
+	else: game.desc = []
+	if page.origin: game.origin = page.origin.split('\n')
+	else: game.origin = []
+	if page.morphs: game.morphs = page.morphs.split('\n')
+	else: game.morphs = []
 	page.extra = page.status.split('\n')
 	extract('JUDGE', isList = 1)
 	extract('BEGIN', 'firstPhase')
@@ -804,52 +815,52 @@ def updateMaster():
 	extract('PROCESSED')
 	extract('RESERVES', 'extra', 1)
 	extract('MILITIA', 'defense', 1)
-	page.game.rules = [x[5:] for x in vars(page) if x[:5] == 'RULE_']
-	page.game.validateRules()
-	if page.game.error:
+	game.rules = [x[5:] for x in vars(page) if x[:5] == 'RULE_']
+	game.validateRules()
+	if game.error:
 		return reportUpdateError('<br>'.join(
-			['The following rule violations were detected:'] + page.game.error))
+			['The following rule violations were detected:'] + game.error))
 	deathnote = None
-	if page.zone != page.game.zone and page.game.zone.__repr__() or 'GMT':
-		page.game.setTimeZone(page.zone)
+	if page.zone != game.zone and game.zone.__repr__() or 'GMT':
+		game.setTimeZone(page.zone)
 		deathnote = ('The Master has changed the time zone for ' +
 			"game '%s' to %s (%s).\n" % (
-			page.game.name, page.zone, TimeZone(page.zone).gmtlabel()))
-	if 'NO_DEADLINE' in page.game.rules: page.game.deadline = None
+			game.name, page.zone, TimeZone(page.zone).gmtlabel()))
+	if 'NO_DEADLINE' in game.rules: game.deadline = None
 	elif 'date' in vars(page):
 		dead = map(int, page.date.split('-'))
 		deadline = ('%d%02d%02d' % (dead[2], dead[0], dead[1]) +
 			page.hour + page.minute)
-		if deadline != page.game.deadline:
-			page.game.deadline = page.game.getTime(deadline)
+		if deadline != game.deadline:
+			game.deadline = game.getTime(deadline)
 			if not deathnote:
 				deathnote = ('The deadline for game ' +
-					"'%s' has been changed by the Master.\n" % page.game.name)
+					"'%s' has been changed by the Master.\n" % game.name)
 	else:
-		page.game.setDeadline()
+		game.setDeadline()
 		deathnote = 'The NO_DEADLINE rule has been removed.\n'
-	if deathnote and page.game.deadline:
-		deathnote += 'The deadline is now %s.\n' % page.game.timeFormat()
-		page.game.mailPress(None, ['All!'], deathnote,
+	if deathnote and game.deadline:
+		deathnote += 'The deadline is now %s.\n' % game.timeFormat()
+		game.mailPress(None, ['All!'], deathnote,
 			subject = 'Diplomacy deadline changed')
-	page.game.timing = None	# it will be in page.extra if given....
-	page.game.terrain = {}	# ditto this guy as well
-	if page.game.tester and page.game.tester[-1:] == '!':
-		page.game.tester = ''	# and this one?
-	if 'corrupt' in page.game.status: return finished()
+	game.timing = None	# it will be in page.extra if given....
+	game.terrain = {}	# ditto this guy as well
+	if game.tester and game.tester[-1:] == '!':
+		game.tester = ''	# and this one?
+	if 'corrupt' in game.status: return finished()
 	#--------------
 	# Write the file
 	#--------------
 	try:
 		file = open(statFile, 'w')
-		temp = unicode(`page.game`, 'latin-1').strip()
+		temp = unicode(`game`, 'latin-1').strip()
 		file.write(temp.encode('latin-1'))
 		del temp
 		if page.extra:
 			temp = '\n' + '\n'.join(page.extra).strip()
 			file.write(temp.encode('latin-1'))
 			del temp
-		for num, power in enumerate(page.game.powers):
+		for num, power in enumerate(game.powers):
 			temp = '\n\n%s' % \
 				vars(page)['powerData%s' % `num`].replace('\015','')
 			file.write(temp.encode('latin-1'))
@@ -864,17 +875,17 @@ def updateMaster():
 		traceback.print_exc(None, os.sys.stdout)
 		print '-->'
 		return
-	oldState = dict(page.game.state)
-	page.game = page.game.__class__(page.game.name)
-	page.game.state = oldState
-	try: games.dict[page.game.name].remove('private')
+	oldState = dict(game.state)
+	game = page.game = game.__class__(game.name)
+	game.state = oldState
+	try: games.dict[game.name].remove('private')
 	except: pass
-	if page.game.private: games.dict[page.game.name] += ['private']
+	if game.private: games.dict[game.name] += ['private']
 	games.save()
-	try: os.chmod(page.game.fileName, 0666)
+	try: os.chmod(game.fileName, 0666)
 	except: pass
-	gamename = page.game.name
-	page.game.updateState()
+	gamename = game.name
+	game.updateState()
 	checkErrors()
 	finished()
 	####################################################
@@ -885,8 +896,8 @@ def updateMaster():
 	####################################################
 	rd_game = Status().load(gamename)
 	if 'groups' in vars(page):
-		if rd_game.groups != page.game.groups:
-			rd_game.groups = page.game.groups
+		if rd_game.groups != game.groups:
+			rd_game.groups = game.groups
 	if vars(page)['currpower'] != "NO POWERS":
 		resign = vars(page)['dataresigned']
 		dummy = vars(page)['datadummy']

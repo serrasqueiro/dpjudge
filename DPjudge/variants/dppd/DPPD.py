@@ -111,6 +111,33 @@ class DPPD(dict):
 		if len(results) == 1: return self[data['id']]
 		return results or None
 	#	----------------------------------------------------------------------
+	def verify(self, password, email = '', name = '', id = None):
+		if not password: return 'No password'
+		if id is not None:
+			key = 'ID: %d' % id
+			nr = self.db.execute("""
+				select password from User
+				where id = %s
+				""", id)
+		elif name:
+			key = 'Name: ' + name
+			nr = self.db.execute("""
+				select password from User
+				where name = %s
+				""", name)
+		elif email:
+			key = 'Email: ' + email
+			nr = self.db.execute("""
+				select password from User, Email
+				where address = %s
+				and id = userId
+				""", email)
+		else: return 'Empty key'
+		if not nr: return 'Not registered' + ' with ' + key
+		elif nr > 1: return 'Multiple registrations'
+		if password != self.db.fetchone()['password']:
+			return 'No password match'
+	#	----------------------------------------------------------------------
 	def updateGame(self, data):
 		#	-----------------------------------------------------------------
 		#	DON'T PRINT THE STATUS! It may show up as an error page in the

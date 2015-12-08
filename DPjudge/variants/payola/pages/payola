@@ -21,8 +21,8 @@ def showPowerData():
 		page.write('<form %s>' % ('onSubmit="return false"',
 		'method=post name=UpdateForm')[page.pwdFlag == 1])
 		hideBack('Update')
-		apprise('balance', power.balance)
-		apprise('phase', game.phaseAbbr())
+		page.apprise('balance', power.balance)
+		page.apprise('phase', game.phaseAbbr())
 	showAcceptList()
 	if game.await:
 		showWaitNotice()
@@ -90,7 +90,7 @@ def showPricesButton(selected = ''):
 	and os.path.isfile(page.game.file('chart'))):
 		page.write('<form name=price method=post>')
 		hideBack('Read')
-		apprise('file', 'chart')
+		page.apprise('file', 'chart')
 		page.write("""
 			<tr><td class=bodycopy><b>Bribes:</b></td>
 			<td align=right class=bodycopy><select name=phase class=inputBox

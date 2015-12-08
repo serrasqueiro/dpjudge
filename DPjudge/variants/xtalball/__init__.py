@@ -1,6 +1,6 @@
-#	---------------------------
-#	Subpackage DPjudge.xtalball
-#	---------------------------
+#	------------------------------------
+#	Subpackage DPjudge.variants.xtalball
+#	------------------------------------
 
 VARIANT = 'Crystal Ball Diplomacy'
 

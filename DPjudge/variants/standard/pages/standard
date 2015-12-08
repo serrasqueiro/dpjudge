@@ -86,7 +86,7 @@ def showLists(orders = 0):
 			('onSubmit="return false"',
 			'method=post name=UpdateForm')[page.pwdFlag == 1])
 		hideBack('Update')
-		apprise('phase', page.game.phaseAbbr())
+		page.apprise('phase', page.game.phaseAbbr())
 		if page.game.phaseType == 'M': shown = showOrderList()
 		elif page.game.phaseType == 'A': shown = showAdjustList()
 		elif page.game.phaseType == 'R': shown = showRetreatList()

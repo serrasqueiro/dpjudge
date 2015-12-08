@@ -320,17 +320,39 @@ class Power:
 		#	---------------------------
 		#	Determine password validity
 		#	---------------------------
-		if not password: return
+		if not password: return 0
 		password = password.upper()
-		if (self.password and password == self.password.upper()
-			or password == self.game.password.upper()
-			or password == host.judgePassword.upper()): return 1
+		if password == host.judgePassword.upper(): return 5
+		if password == self.game.password.upper(): return 4
+		if password == self.password.upper(): return 3
 		#	----------------------------------------
 		#	Check against omniscient power passwords
 		#	----------------------------------------
-		if self.name == 'MASTER': return
+		if self.name == 'MASTER': return 0
 		if [1 for x in self.game.powers if x.omniscient
 			and x.password and password == x.password.upper()]: return 2
+		return 0
+	#	----------------------------------------------------------------------
+	def isValidUserId(self, userId):
+		#	-------------------------------------------------------------------
+		#	If power is run by controller, userId is in the controller's data
+		#	-------------------------------------------------------------------
+		ceo = self.controller()
+		if ceo: return ceo.isValidUserId(userId)
+		#	---------------------------
+		#	Determine userId validity
+		#	---------------------------
+		if userId < 0: return 0
+		id = '#' + str(userId)
+		if self.game.master and id == self.game.master[0]: return 4
+		if self.player and id == self.player[0].split('|')[0]: return 3
+		#	----------------------------------------
+		#	Check against omniscient power passwords
+		#	----------------------------------------
+		if self.name == 'MASTER': return 0
+		if [1 for x in self.game.powers if x.omniscient
+			and x.player and id == x.player[0].split('|')[0]]: return 2
+		return 0
 	#	----------------------------------------------------------------------
 	def generatePassword(self):
 		random.seed()

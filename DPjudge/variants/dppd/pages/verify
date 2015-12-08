@@ -1,0 +1,8 @@
+<:
+page.include('dppd')
+
+#try:
+print page.dppd.verify(page.get('password'), page.get('email'),
+	page.get('name'), page.getint('id')) or ''
+#except: print 'FAILED!'
+:>

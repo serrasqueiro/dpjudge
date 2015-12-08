@@ -42,7 +42,7 @@ def listGames(variant = 'standard'):
 		if games[state]:
 ##			if state[0] in 'FW': page.write('(Private games listed in gray)')
 			page.write('<form name=%s method=post>' % state)
-			apprise('page', 'Login')
+			page.apprise('page', 'Login')
 			page.write(
 				"""
 				<input type=submit value="View Game:" 
@@ -105,6 +105,8 @@ def showGameHeader():
 	""" % (when - now))
 #	----------------------------------------------------------------------
 def showMapButtons():
+	game = page.game
+	if 'unlisted' in game.status and not page.pwdFlag: return
 	file, game = mapName(), page.game
 	map = host.gameMapDir + '/' + file
 	gif = os.path.exists(map + '.gif') | (os.path.exists(map + '_.gif') * 2)
@@ -179,6 +181,7 @@ def showMapButtons():
 #	----------------------------------------------------------------------
 def showResultsText(subject = None, align = 1):
 	game = page.game
+	if 'unlisted' in game.status and not page.pwdFlag: return
 	pwdFlag = (isinstance(page.power, Power) and
 		page.power.isValidPassword(page.password))
 	if pwdFlag: power = page.power.name
@@ -227,8 +230,8 @@ def showResultsText(subject = None, align = 1):
 	if not backList and not forwardList: return
 	page.write('<form name=results method=post>')
 	hideBack('Read')
-	apprise('file', 'results')
-	if fileNames: apprise('files', '|'.join(fileNames))
+	page.apprise('file', 'results')
+	if fileNames: page.apprise('files', '|'.join(fileNames))
 	page.write("""
 		%s<b>Results:</b>
 		%s<select name="subject" class="inputBox"
@@ -392,8 +395,8 @@ def showLoginForm(showElimPowers = 0):
 		else document.powerForm.submit();}</script>
 		<form name=powerForm method=post onSubmit=maySubmit()>
 		""")
-	apprise('page', 'Status')
-	reprise(['game'])
+	page.apprise('page', 'Status')
+	page.reprise(['game'])
 	page.write("""
 		<tr valign=bottom><td height=10 colspan=3><!hr></td></tr>
 		<tr><td colspan=2 class="bodycopy" nowrap><b>Log in as:</b>&nbsp;
@@ -751,7 +754,7 @@ def showProposal():
 			</script><form name=proposalForm method=post>
 			""")
 		hideBack('Status')
-		apprise('proposal', '')
+		page.apprise('proposal', '')
 		page.write("""
 			<tr><td class=bodycopy><b>Endgame:</td>
 			<td colspan=2 align=right>
@@ -772,9 +775,9 @@ def showControlInfo():
 	game, power = page.game, page.power
 	if power.ceo:
 		page.write('<form name=ceoForm method=post>')
-		apprise('page', 'Status')
-		reprise(['game', 'password'])
-		apprise('power', power.ceo[0])
+		page.apprise('page', 'Status')
+		page.reprise(['game', 'password'])
+		page.apprise('power', power.ceo[0])
 		page.write("""
 			<tr><td class=bodycopy><b>Controller:</b></td>
 			<td class=bodycopy align=right>%s</td>
@@ -785,8 +788,8 @@ def showControlInfo():
 	headsUp = [x.name for x in power.vassals(all = True)]
 	if headsUp:
 		page.write('<form name=ceoForm method=post>')
-		apprise('page', 'Status')
-		reprise(['game', 'password'])
+		page.apprise('page', 'Status')
+		page.reprise(['game', 'password'])
 		page.write("""
 			<tr><td class=bodycopy nowrap><b>Controller Of:</b></td>
 			<td align=right>
@@ -879,7 +882,7 @@ def showPressOptions():
 </table></td>
 			""")
 	elif readers:
-		apprise('recipient', readers[0])
+		page.apprise('recipient', readers[0])
 		page.write("""
 			<th><input class=inputSubmit type=submit value="Mail the %s">
 			</th>
@@ -909,7 +912,7 @@ def showWaitNotice():
 def showReceiptFlag():
 	if not page.power.address: return
 	if 'ALWAYS_CONFIRM' in page.game.rules:
-		apprise('receipt', 1)
+		page.apprise('receipt', 1)
 	else:
 		page.write(
 			"""
@@ -1169,36 +1172,18 @@ def sendPress():
 		'E-mail service down; message queued for delivery when restored') *
 		(type(socket.gethostname) is not type(len)))
 #	----------------------------------------------------------------------
-def apprise(option, value):
-	try: value = value.name
-	except: pass
-	page.write('<input type=hidden name="%s" value="%s">' % (option, value))
-#	----------------------------------------------------------------------
-def comprise(options):
-	for option in options:
-		page.write('<input type=hidden name="%s">' % option)
-#	----------------------------------------------------------------------
-def surprise(option, fallBack):
-	try: apprise(option, vars(page)[option])
-	except: apprise(option, fallBack)
-#	----------------------------------------------------------------------
-def reprise(options):
-	for option in options:
-		try: apprise(option, vars(page)[option])
-		except: pass
-#	----------------------------------------------------------------------
 def hideBack(target):
-	apprise('page', target)
-	surprise('backpage', page.page)
-	reprise(['game', 'power', 'password'])
+	page.apprise('page', target)
+	page.surprise('backpage', page.page)
+	page.reprise(['game', 'power', 'password'])
 #	----------------------------------------------------------------------
 def goBack(caption = None, auto = 0):
 	if 'backpage' in vars(page):
 		if not caption: caption = 'Return To The %s Page' % page.backpage
 		if auto: caption += ' [Automatic In %d Seconds]' % auto
 		page.write('<form method=post name=form>')
-		apprise('page', page.backpage)
-		reprise(['game', 'power', 'password'])
+		page.apprise('page', page.backpage)
+		page.reprise(['game', 'power', 'password'])
 		page.write("""
 			<input type=submit class=inputSubmit value="%s">
 			</form>
@@ -1398,14 +1383,10 @@ def loadGame():
 			</script>
 			""" % host.dpjudgeURL)
 		raise SystemExit
-	try: page.power = [x for x in page.game.powers if x.name in (page.power,
-		'_' + page.power)][0]
-	except: 
-		if page.power == 'MASTER': page.power = Power(page.game, 'MASTER')
 #	----------------------------------------------------------------------
 def mapName():
 	file = page.game.name
-	if ('BLIND' in page.game.rules and page.power
+	if ('BLIND' in page.game.rules and page.power and page.pwdFlag
 	and page.game.phase != 'COMPLETED'):
 		if page.power.name != 'MASTER': file += ('.' +
 			(page.power.abbrev or 'O') + `hash((page.power.password
@@ -1537,9 +1518,11 @@ def pressCode(text, lineNum = None):
 	return map(long, result)
 #	----------------------------------------------------------------------
 def showPressArchive(selected = 0, filter = 0):
+	game = page.game
+	if 'unlisted' in game.status and not page.pwdFlag: return []
 #	if 'TZAR' not in `page.power`: return []
 	file = page.game.file('press')
-	if not os.path.exists(file): return
+	if not os.path.exists(file): return []
 	pwdFlag = (isinstance(page.power, Power) and
 		page.power.isValidPassword(page.password))
 	power = pwdFlag and page.power.name or ''

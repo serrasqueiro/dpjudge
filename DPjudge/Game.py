@@ -1522,16 +1522,6 @@ class Game:
 	def finishPhase(self):
 		pass
 	#	----------------------------------------------------------------------
-	def isValidPassword(self, power, password):
-		if not power: return
-		#	---------------------------------------
-		#	Find proper power to check his password
-		#	---------------------------------------
-		if type(power) in (str, unicode):
-			try: power = [x for x in self.powers if x.name == power][0]
-			except: return
-		return power.isValidPassword(password)
-	#	----------------------------------------------------------------------
 	def makeMaps(self):
 		self.view.makeMaps()
 	#	----------------------------------------------------------------------
@@ -2414,7 +2404,7 @@ class Game:
 					try: os.rename(self.file('status.' + unphase),
 						self.file('status.' + unphase + '.0'))
 					except: pass
-					unphase = self.probeNextPhase(unphase)
+					unphase = self.probeNextPhase(self.phaseLong(unphase))
 					if not unphase: break
 					unphase = self.phaseAbbr(unphase)
 		else:
@@ -2469,10 +2459,11 @@ class Game:
 			self.save()
 			self.mailPress(None, ['All!'],
 				"Diplomacy game '%s' has been rolled back to %s\n"
-				'and all orders have been %s.\n\n'
-				'The new deadline is %s.\n' %
-				(self.name, self.phaseName(form = 2), includeFlags & 1 and
-				'restored' or 'cleared', self.timeFormat()),
+				'and all orders have been %s.\n' %
+				(self.name, self.phaseName(form = 2),
+				includeFlags & 1 and 'restored' or 'cleared') +
+				('NO_DEADLINE' not in self.rules and
+				'\nThe new deadline is %s.\n' % self.timeFormat() or ''),
 				subject = 'Diplomacy rollback notice')
 			if phase != outphase or not os.path.isfile(self.file('results')):
 				# Truncate the results
@@ -2607,10 +2598,11 @@ class Game:
 			self.save()
 			self.mailPress(None, ['All!'],
 				"Diplomacy game '%s' has been rolled forward to %s\n"
-				'and all orders have been %s.\n\n'
-				'The new deadline is %s.\n' %
-				(self.name, self.phaseName(form = 2), includeFlags & 1 and
-				'restored' or 'cleared', self.timeFormat()),
+				'and all orders have been %s.\n' %
+				(self.name, self.phaseName(form = 2),
+				includeFlags & 1 and 'restored' or 'cleared') +
+				('NO_DEADLINE' not in self.rules and
+				'\nThe new deadline is %s.\n' % self.timeFormat() or ''),
 				subject = 'Diplomacy rollforward notice')
 		else:
 			if prephase != 'COMPLETED' and self.outcome:

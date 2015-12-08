@@ -63,22 +63,26 @@ pouchLinks()
 		<!--BUTTON NAVIGATION TABLE BEGINS HERE-->
 		<table border=0 cellpadding=0 cellspacing=0>
 <:
-dirs = sorted([x for x in os.listdir('<PKG>/variants')
-	if os.path.isdir('<PKG>/variants/' + x)])
-#	----------------------------------------------------------------
-#	Make sure Standard Diplomacy is listed before any other variants
-#	----------------------------------------------------------------
-if 'standard' in dirs:
-	dirs.remove('standard')
-	dirs.insert(0, 'standard')
-for dir in dirs:
+variants = {}
+for dir in [x for x in os.listdir('<PKG>/variants')
+	if os.path.isdir('<PKG>/variants/' + x)]:
 	try: name = __import__('DPjudge.variants.' + dir,
 							globals(), locals(), dir).VARIANT
 	except: continue
+	variants[name] = dir
+#	----------------------------------------------------------------
+#	Make sure Standard Diplomacy is listed before any other variants
+#	----------------------------------------------------------------
+varNames = sorted(variants.keys())
+if 'Standard Diplomacy' in varNames:
+	varNames.remove('Standard Diplomacy')
+	varNames.insert(0, 'Standard Diplomacy')
+for name in varNames:
 	page.write('<form method=post><tr><td align=center><input type=hidden '
-		'name=variant value=%s>'
-		'<input type=submit value=%s class=inputSubmit2></td></tr></form>'
-		'<tr><td height=2></td></tr>' % (dir, `name.replace(' Diplomacy', '')`))
+		'name=variant value="%s">'
+		'<input type=submit value="%s" class=inputSubmit2></td></tr></form>'
+		'<tr><td height=2></td></tr>' %
+		(variants[name], name.replace(' Diplomacy', '')))
 :>
 		<tr><td height=15></td></tr>
 		<form method="post" name="toGame">
@@ -152,14 +156,15 @@ for dir in dirs:
 	<li><a href="http://groups.yahoo.com/group/dpjgames"><b>Game
 		announcements</b></a> and other game-related discussion is on
 		the DPJgames mailing list.
-	-->
 	<li><a href="http://groups.yahoo.com/group/dpjudge/join">Join</a> the
 		<a href="http://groups.yahoo.com/group/dpjudge">DPjudge Mailing List</a>
-		<!--
 		or <a href="http://groups.yahoo.com/group/dpjgames/join">join</a> the
 		<a href="http://groups.yahoo.com/group/dpjgames">DPJgames mailing
 		list</a>
-		-->
+	-->
+	<li>Join the
+		<a href="https://www.facebook.com/groups/989418777786642/">DPjudge
+		Facebook group</a>
 		to keep abreast of the latest happenings, discussions and game
 		announcements.
 	<!--

@@ -70,7 +70,7 @@ def showLedgerButton():
 	if os.path.isfile(page.game.file('ledgers')):
 		page.write('<form method=post>')
 		hideBack('Read')
-		apprise('file', 'ledgers')
+		page.apprise('file', 'ledgers')
 		page.write("""
 			<tr><td class=bodycopy><b>Ledger:</b></td>
 			<td align=right class=bodycopy>Complete account ledger history</td>
@@ -91,7 +91,7 @@ def showTransferForm():
 	and (not page.power.ceo)): return
 	page.write('<form name=transferForm method=post>')
 	hideBack('Transfer')
-	apprise('balance', page.power.balance)
+	page.apprise('balance', page.power.balance)
 	page.write("""
 		<tr><td class=bodycopy><b>Transfer:</b></td>
 		<td class=bodycopy align=right>Send

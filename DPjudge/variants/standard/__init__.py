@@ -1,6 +1,6 @@
-#	---------------------------
-#	Subpackage DPjudge.standard
-#	---------------------------
+#	------------------------------------
+#	Subpackage DPjudge.variants.standard
+#	------------------------------------
 
 VARIANT = 'Standard Diplomacy'
 

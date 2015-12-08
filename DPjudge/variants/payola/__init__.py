@@ -1,6 +1,6 @@
-#	--------------------------
-#	Subpackage DPjudge.payola
-#	--------------------------
+#	-----------------------------------
+#	Subpackage DPjudge.variants.payola
+#	-----------------------------------
 
 VARIANT = 'Payola Diplomacy'
 
