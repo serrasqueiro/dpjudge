@@ -49,7 +49,7 @@ showReadyNotice()
 		<!--MAPS, RESULTS, ENDGAME TABLE BEGINS HERE-->
 		<table border=0 align=center>
 <:
-if page.power.name == 'MASTER' and page.pwdFlag == 1: showStatusFile()
+if page.pwdFlag > 3: showStatusFile()
 else: finished('No Access',
 	'Only the Master can see or change the game settings!')
 :>

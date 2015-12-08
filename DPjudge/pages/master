@@ -207,7 +207,7 @@ def changeMasterButton():
 		class=inputSubmit value="Submit Updates">
 		</td></tr>
 		</form>
-		""" % (com, '!'[page.pwdFlag == 1:]))
+		""" % (com, '!'[page.pwdFlag > 3:]))
 
 #	----------------------------------------------------------------------
 #	This function parses the status file, only outputting the lines that 
@@ -259,10 +259,10 @@ def showMasterCommands():
 			page.write('<option value=%s%s>%s' %
 				(mode, ' selected' * (mode in game.status), mode.title()))
 		page.write('</select></td>')
-		if page.pwdFlag == 1: page.write('<td>'
+		if page.pwdFlag > 3: page.write('<td>'
 			'<input type=submit class=inputSubmit value=Set></td>')
 		page.write('</tr></form>')
-	if page.pwdFlag != 1: return
+	if page.pwdFlag < 4: return
 	#	-------------------------
 	#	Buttons and links Section
 	#	-------------------------
@@ -361,7 +361,7 @@ def showStatusFile():
 				' selected' * (game.private != None),
 				('visible', 'hidden')[game.private is None],
 				game.private or '',
-				'!'[page.pwdFlag == 1:]))
+				'!'[page.pwdFlag > 3:]))
 	page.write("<tr class=bodycopy><td><b>Variant:</b></td><td>")
 	curVariant = game.__class__.__name__[:-4].lower()
 	try: varName = __import__('DPjudge.variants.' + curVariant,
@@ -516,8 +516,7 @@ def showStatusFile():
 #
 #	----------------------------------------------------------------------
 def showAccessLog():
-	if page.power.name != 'MASTER' or page.pwdFlag != 1:
-		return finished('Forbidden To Read')
+	if page.pwdFlag < 4: return finished('Forbidden To Read')
 	access = page.game.file('access')
 	try:
 		file = open(access, encoding='latin-1')
@@ -721,9 +720,8 @@ def reportUpdateError(error):
 #
 #	----------------------------------------------------------------------
 def updateMaster():
-	if page.power.name != 'MASTER' or page.pwdFlag != 1:
-		return reportUpdateError(
-			'Only the Master can update the game status file.')
+	if page.pwdFlag < 4: return reportUpdateError(
+		'Only the Master can update the game status file.')
 	game = page.game
 	statFile = game.file('status')
 	if page.stamp != `int(os.path.getmtime(statFile))`:

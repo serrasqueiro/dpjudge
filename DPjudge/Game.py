@@ -1653,11 +1653,15 @@ class Game:
 			self.morphs.append('UNPLAYED ' + ' '.join(avail))
 			self.map.load(self.morphs[-1:])
 			self.map.validate(force = 1)
-		for starter in [x for x in self.map.dummies
-			if x not in [y.name for y in self.powers]]:
-			dummy = self.powerType(self, starter)
-			self.powers.append(dummy)
-			dummy.player = ['DUMMY']
+		for starter in self.map.dummies:
+			dummy = [x for x in self.powers if x.name == starter]
+			if dummy:
+				dummy = dummy[0]
+				if not dummy.isDummy(): continue
+			else:
+				dummy = self.powerType(self, starter)
+				self.powers.append(dummy)
+				dummy.player = ['DUMMY']
 			dummy.ceo = self.map.controls.get(starter) or []
 		for starter in [x for x in self.powers if not x.type]:
 			starter.abbrev = self.map.abbrev.get(starter.name, starter.name[0])
@@ -1878,7 +1882,8 @@ class Game:
 					vassals = [who.name] + [x.name for x in who.vassals()]
 					who.sees += [x for x in centers
 						if x not in who.sees and [1 for y, z in
-						self.visible(power, x).items() if z & 2 and y in vassals]]
+						self.visible(power, x).items() if z & 2
+						and y in vassals]]
 					seen = [x for x in centers if x in who.sees]
 				if not seen: continue
 				if showing:
@@ -2011,7 +2016,8 @@ class Game:
 						if (power.isDummy()
 						or sendingPower.ceo[:1] == [power.name]): continue
 					elif power.ceo:
-						if power.ceo[0] in ('MASTER', sendingPower.name): continue
+						if power.ceo[0] in ('MASTER', sendingPower.name):
+							continue
 					else: continue
 				power = power.name
 			if includeSelf or power != sendingPower.name: readers += [power]
@@ -2359,7 +2365,7 @@ class Game:
 	def rollback(self, phase = None, includeFlags = 0):
 		#	---------------------------------------------------------------
 		#	Rolls back to the specified phase, or to the previous phase if
-		#	none is specified or to the FORMING stage if phase equals 1..
+		#	none is specified or to the FORMING stage if phase equals 1.
 		#   Relevant bit values for includeFlags:
 		#		1: include orders for each power
 		#		2: include persistent power data
@@ -3456,7 +3462,8 @@ class Game:
 				if 'BLIND' in self.rules:
 					if victory: list += ['SHOW']
 					else: list += ['SHOW MASTER ' + ' '.join([x.name
-						for x in self.powers if x is power or x.omniscient or [x.name] == ceo])]
+						for x in self.powers if x is power or x.omniscient
+						or [x.name] == ceo])]
 				list += [text]
 			if func and self.phaseType != 'A': func(power, text.upper().split())
 		return list + ['SHOW' * ('BLIND' in self.rules)]
@@ -3527,6 +3534,10 @@ class Game:
 			#	Get the list of the "seer"s sighted units (if any)
 			#	with their positions before and after any movement
 			#	--------------------------------------------------
+			vassals = [seer] + seer.vassals()
+			units = [y for x in vassals for y in x.units]
+			adjusts = [y for x in vassals for y in x.adjust]
+			retreats = [y for x in vassals for y in x.retreats.keys()]
 			if 'NO_UNITS_SEE' in rules: before = after = []
 			else:
 				spotters = ' ' in unit and (
@@ -3534,21 +3545,21 @@ class Game:
 					'UNITS_SEE_OTHER' in rules and ('F', 'A')[unit[0] == 'F'] or
 					'') or ''
 				before = after = [x[2:]
-					for x in seer.units + seer.retreats.keys()
+					for x in units + retreats
 					if not spotters or x[0] in spotters]
 				if self.phaseType == 'M':
 					after = []
-					for his in seer.units:
+					for his in units:
 						if spotters and his[0] not in spotters: continue
 						if (self.command.get(his, 'H')[0] != '-'
 							or self.result.get(his)): after += [his[2:]]
 						else: after += [self.command[his].split()[-1]]
 				elif self.phaseType == 'R':
 					if 'popped' not in vars(self): self.popped = []
-					if seer.adjust:
+					if adjusts:
 						after = [x for x in before if x not in
-							[y[2:] for y in seer.retreats.keys()]]
-						for adjusted in seer.adjust:
+							[y[2:] for y in retreats]]
+						for adjusted in adjusts:
 							word = adjusted.split()
 							if spotters and word[1][0] not in spotters: continue
 							if word[3][0] == '-' and word[2] not in self.popped:
@@ -3558,9 +3569,9 @@ class Game:
 							[y[2:] for y in self.popped]]
 				elif self.phaseType == 'A':
 					after = [z for z in before if z not in
-						[x[1] for x in [y.split()[1:] for y in seer.adjust]
+						[x[1] for x in [y.split()[1:] for y in adjusts]
 					if len(x) > 1]] + [x[1] for x in
-						[y.split()[1:] for y in seer.adjust if y[0] == 'B']
+						[y.split()[1:] for y in adjusts if y[0] == 'B']
 					if len(x) > 1 and (not spotters or x[0][0] in spotters)]
 			#	------------------------------------------------
 			#	Get the list of the "seer"s sighted scs (if any)
@@ -3571,20 +3582,21 @@ class Game:
 				#	------------------------------------
 				#	The seer's owned centers are sighted
 				#	------------------------------------
-				scs = seer.centers[:]
+				scs = [y for x in vassals for y in x.centers]
 				if 'SC!' in scs:
-					scs = [x[8:11] for x in seer.adjust if x[:5] == 'BUILD']
+					scs = [x[8:11] for x in adjusts if x[:5] == 'BUILD']
 			else:
 				#	-----------------------------------
 				#	The seer's home centers are sighted
 				#	-----------------------------------
-				scs = seer.homes and seer.homes[:] or []
+				scs = [y for x in vassals for y in x.homes or []]
 				#	----------------------------------------------------------
 				#	Also add locations where the power had units at game start
 				#	(helping void variant games, where units start on non-SCs)
 				#	----------------------------------------------------------
 				if 'BLANK_BOARD' not in rules and 'MOBILIZE' not in rules:
-					scs += [x[2:] for x in self.map.units.get(seer.name, [])]
+					scs += [y[2:] for x in vassals
+						for y in self.map.units.get(x.name, [])]
 			#	-------------------------------------------------
 			#	When it comes to visibility, we can ignore coasts
 			#	-------------------------------------------------

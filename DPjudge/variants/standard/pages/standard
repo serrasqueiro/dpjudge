@@ -84,7 +84,7 @@ def showLists(orders = 0):
 	else:
 		page.write('<form %s>' %
 			('onSubmit="return false"',
-			'method=post name=UpdateForm')[page.pwdFlag == 1])
+			'method=post name=UpdateForm')[page.pwdFlag > 2])
 		hideBack('Update')
 		page.apprise('phase', page.game.phaseAbbr())
 		if page.game.phaseType == 'M': shown = showOrderList()

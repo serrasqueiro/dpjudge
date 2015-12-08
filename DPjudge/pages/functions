@@ -106,7 +106,7 @@ def showGameHeader():
 #	----------------------------------------------------------------------
 def showMapButtons():
 	game = page.game
-	if 'unlisted' in game.status and not page.pwdFlag: return
+	if 'unlisted' in game.status and page.pwdFlag < 2: return
 	file, game = mapName(), page.game
 	map = host.gameMapDir + '/' + file
 	gif = os.path.exists(map + '.gif') | (os.path.exists(map + '_.gif') * 2)
@@ -181,10 +181,8 @@ def showMapButtons():
 #	----------------------------------------------------------------------
 def showResultsText(subject = None, align = 1):
 	game = page.game
-	if 'unlisted' in game.status and not page.pwdFlag: return
-	pwdFlag = (isinstance(page.power, Power) and
-		page.power.isValidPassword(page.password))
-	if pwdFlag: power = page.power.name
+	if 'unlisted' in game.status and page.pwdFlag < 2: return
+	if page.pwdFlag > 1: power = page.power.name
 	elif 'BLIND' in game.rules: return
 	else: power = ''
 	backList, forwardList = [], []
@@ -436,8 +434,7 @@ def showInfo(name, value, left = 0):
 #	----------------------------------------------------------------------
 def showVariantInfo():
 	game, power, ceoInfo = page.game, page.power, ''
-	pwdFlag = isinstance(power, Power) and power.isValidPassword(page.password)
-	omniscient = pwdFlag and (power.name == 'MASTER' or power.omniscient)
+	omniscient = page.pwdFlag == 2 or page.pwdFlag > 3
 	if (not omniscient and 'completed' not in page.game.status and
 		'HIDE_DUMMIES' in game.rules): return
 	for who in game.powers:
@@ -535,9 +532,7 @@ def showGameInfo():
 	page.write('</table>')
 #	----------------------------------------------------------------------
 def gameHeader():
-	pwdFlag = (isinstance(page.power, Power) and
-		page.power.isValidPassword(page.password))
-	game, power = page.game, pwdFlag and page.power or None
+	game, power = page.game, page.pwdFlag > 1 and page.power or None
 	page.write(
 		"""
 		<tr>
@@ -679,23 +674,23 @@ def showProposal():
 			else document.proposalForm.proposal.selectedIndex=%d;}</script>
 			<form name=proposalForm %s>
 			""" % (now,
-			('onSubmit="return false"', 'method=post')[page.pwdFlag == 1]))
+			('onSubmit="return false"', 'method=post')[page.pwdFlag > 2]))
 		hideBack('Status')
 		page.write("""
 			<tr valign=top><td class="bodycopy">
 			<b>Goal:</b></td><td align=right class="bodycopy">
 			<select name=proposal onchange=makeProp() class="inputBox">
 			""")
-		if 1 in (vote, page.pwdFlag):
+		if vote == 1 or page.pwdFlag > 2:
 			page.write('<option value=1%s>A solo victory for %s</option>' %
 				(' selected' * (vote == 1), powerName))
 		for way in range((dias, 2)['NO_DIAS' in game.rules], dias + 1):
-			if vote == way or page.pwdFlag == 1: page.write(
+			if vote == way or page.pwdFlag > 2: page.write(
 				'<option value=%d%s>A %sdraw including %s</option>' %
 				(way == dias and -1 or way, ' selected' * (vote == way),
 				('%d-way ' % way, '')['BLIND' in game.rules],
 				powerName + ' (DIAS)' * (way == dias)))
-		if vote == 0 or page.pwdFlag == 1: page.write(
+		if vote == 0 or page.pwdFlag > 2: page.write(
 			'<option value=0%s>%s</option>' % (' selected' * (vote == 0),
 			('A concession to another power',
 			'Any result NOT including ' + powerName)
@@ -763,9 +758,7 @@ def showProposal():
 			""")
 #	----------------------------------------------------------------------
 def showMessages():
-	pwdFlag = (isinstance(page.power, Power) and
-		page.power.isValidPassword(page.password))
-	if pwdFlag and page.power.name != 'MASTER' and page.power.msg:
+	if page.pwdFlag in (2, 3) and page.power.msg:
 		page.write('<tr><td class=bodycopy valign=top><b>Message:</b></td>'
 			'<td valign=top class=bodycopy colspan=2><b><font color=red>')
 		for msg in page.power.msg: page.write(msg + '<br>')
@@ -921,7 +914,7 @@ def showReceiptFlag():
 			""")
 #	----------------------------------------------------------------------
 def showWaitFlag():
-	if page.pwdFlag != 1: return
+	if page.pwdFlag < 3: return
 	showReceiptFlag()
 	if (('NO_MINOR_WAIT' in page.game.rules and page.game.phaseType != 'M')
 	or 'REAL_TIME' in page.game.rules
@@ -994,14 +987,14 @@ def showAdjustList():
 		for which in range(abs(count)):
 			order = who.adjust[which:which + 1]
 			page.write('<b>%s <select name=adjust class=inputBox>' % action.title())
-			if page.pwdFlag == 1 or not order:
+			if page.pwdFlag > 2 or not order:
 				page.write('<option value=\'%s(NMR)\'>(NMR)' %
 					(who is not power and who.name + ' ' or ''))
 			for ord in list:
 				syntax = action + ' ' + ord
 				select = ' selected' * (syntax in order)
 				if who is not power: syntax = who.name + ' ' + syntax
-				if select or page.pwdFlag == 1: page.write(
+				if select or page.pwdFlag > 2: page.write(
 					'<option value=\'%s\'%s>' % (syntax, select) + ord)
 			page.write('</select><br>')
 	if shown: page.write('</p></td></tr>')
@@ -1034,7 +1027,7 @@ def showRetreatList():
 				page.write('<tr><td class=bodycopy align=right>' +
 					unit.replace(' ', '&nbsp;') + '</td>')
 				page.write('<td><select name=adjust class=inputBox>')
-				if not who.adjust or page.pwdFlag == 1:
+				if not who.adjust or page.pwdFlag > 2:
 					page.write('<option value=\'%s(NMR)\'>(NMR)' %
 						(who is not power and who.name + ' ' or ''))
 				choices = ['DISBAND'] + ['- ' + x for x in who.retreats[unit]]
@@ -1042,7 +1035,7 @@ def showRetreatList():
 					ord = 'RETREAT %s ' % unit + choice
 					select = ' selected' * (ord in who.adjust)
 					if who is not power: ord = who.name + ' ' + ord
-					if select or page.pwdFlag == 1: page.write(
+					if select or page.pwdFlag > 2: page.write(
 						'<option value=\'%s\'%s>' % (ord, select) + choice)
 				page.write('</select></td></tr>')
 			page.write('</table>')
@@ -1056,14 +1049,12 @@ def changeButton():
 		class=inputSubmit value="Submit Updates">
 		</td></tr>
 		</form>
-		""" % '!'[page.pwdFlag == 1:])
+		""" % '!'[page.pwdFlag > 2:])
 #	----------------------------------------------------------------------
 def viewFile():
 	if not page.file: return
-	pwdFlag = (isinstance(page.power, Power) and
-		page.power.isValidPassword(page.password))
-	if page.file.split('.')[0] in ('access', 'results', 'status') and not (
-		pwdFlag and page.power.name == 'MASTER'):
+	if page.file.split('.')[0] in ('access', 'results', 'status') and (
+		page.pwdFlag < 4):
 		return finished('Forbidden To Read')
 	page.write("""
 		<tr valign=top bgcolor="#CCCCCC">
@@ -1090,8 +1081,6 @@ def viewFile():
 def showResults():
 	if 'subject' not in vars(page): return viewFile()
 	page.setdefault('files')
-	pwdFlag = (isinstance(page.power, Power) and
-		page.power.isValidPassword(page.password))
 	page.write("""
 		<tr valign=top bgcolor="#CCCCCC">
 		<td align=center class="grey"><b>Results</b></td></tr>
@@ -1115,7 +1104,7 @@ def showResults():
 				if showing < 2: continue
 				if line.startswith('SHOW'):
 					showTo = line[:-1].split()[1:]
-					blind = showTo and not (pwdFlag and
+					blind = showTo and not (page.pwdFlag > 1 and
 						page.power.name in showTo)
 				elif not blind and (line[:-1] or lastLine):
 					lastLine = line[:-1]
@@ -1128,7 +1117,7 @@ def showResults():
 	forward = showResultsText(page.subject, 0)
 	if forward:
 		page.write('</td></tr><tr><td align=center class=bodycopy>')
-		if pwdFlag and page.power.name == 'MASTER':
+		if page.pwdFlag > 3:
 			word = page.subject.split()
 			phase = len(word) > 2 and word[1] in ('results',
 				'phase') and word[-1] or 'FORMING'
@@ -1355,9 +1344,7 @@ def updateOffPhases():
 	page.game.updateOffPhases(page.power, page.adjust)
 #	----------------------------------------------------------------------
 def checkPassword():
-	page.pwdFlag = (isinstance(page.power, Power) and
-		page.power.isValidPassword(page.password))
-	if page.pwdFlag: return
+	if page.pwdFlag > 1: return
 	page.write(
 		"""
 		<script>
@@ -1386,7 +1373,7 @@ def loadGame():
 #	----------------------------------------------------------------------
 def mapName():
 	file = page.game.name
-	if ('BLIND' in page.game.rules and page.power and page.pwdFlag
+	if ('BLIND' in page.game.rules and page.pwdFlag > 1
 	and page.game.phase != 'COMPLETED'):
 		if page.power.name != 'MASTER': file += ('.' +
 			(page.power.abbrev or 'O') + `hash((page.power.password
@@ -1519,17 +1506,14 @@ def pressCode(text, lineNum = None):
 #	----------------------------------------------------------------------
 def showPressArchive(selected = 0, filter = 0):
 	game = page.game
-	if 'unlisted' in game.status and not page.pwdFlag: return []
+	if 'unlisted' in game.status and page.pwdFlag < 2: return []
 #	if 'TZAR' not in `page.power`: return []
 	file = page.game.file('press')
 	if not os.path.exists(file): return []
-	pwdFlag = (isinstance(page.power, Power) and
-		page.power.isValidPassword(page.password))
-	power = pwdFlag and page.power.name or ''
+	power = page.pwdFlag > 1 and page.power.name or ''
 	thePower = power.encode('latin-1')
 	file, items, validCodes, involved = open(file), [], [], []
-	omniscient = pwdFlag and ((power == 'MASTER') or
-		power and page.power.omniscient)
+	omniscient = page.pwdFlag == 2 or page.pwdFlag > 3
 	for lineNum, line in enumerate(file):
 		if not line.startswith('::'): continue
 		data, receivers = line.strip().upper().split(), []

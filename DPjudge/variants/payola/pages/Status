@@ -173,7 +173,7 @@ and page.game.phase not in ('FORMING', 'COMPLETED')):
 	showControlInfo()
 	showLedgerButton()
 	showBalance()
-	if page.pwdFlag == 1: showTransferForm()
+	if page.pwdFlag > 1: showTransferForm()
 showPricesButton()
 showAbsenceInfo()
 if page.power.name == 'MASTER': showMasterCommands()

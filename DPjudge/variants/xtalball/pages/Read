@@ -33,8 +33,6 @@ gameHeader()
 <:
 #	----------------------------------------------------------------------
 def showLists():
-	pwdFlag = (isinstance(page.power, Power) and
-		page.power.isValidPassword(page.password))
 	page.write(
 		"""
 		<tr valign=top bgcolor="#CCCCCC">
@@ -49,14 +47,14 @@ def showLists():
 	for line in file:
 		word = line.split()
 		if word:
-			if (pwdFlag and line[0] != '=' and word[-1] != 'ORDERS'
-			and page.power.name not in (word[0][:-1].upper(), 'MASTER')):
+			if (page.pwdFlag in (2, 3) and word[-1] != 'ORDERS'
+			and line[0] != '=' and page.power.name != word[0][:-1].upper()):
 				continue
 			start = end = ''
 			if '[' in line and 'ordered' not in line:
 				if 'ignored' in line:
 					if ('LIMIT_LISTS' in page.game.rules
-					and page.game.phase != 'COMPLETED' and not pwdFlag):
+					and page.game.phase != 'COMPLETED' and page.pwdFlag < 2):
 						continue
 					start, end = '<font color=brown><i>', '</i>'
 				elif 'default' in line: start = '<font color=green>'
