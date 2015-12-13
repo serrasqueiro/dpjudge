@@ -70,7 +70,7 @@ if page.power.name != 'MASTER':
 showMapButtons()
 showResultsText()
 showPressArchive()
-if page.power.name != 'MASTER': showVariantInfo()
+showVariantInfo()
 files = (('summary', 'Game Summary'),
 		('EOG', 'End Of Game Statements'),
 		('lists', 'Complete Order Lists'))

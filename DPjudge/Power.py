@@ -324,7 +324,7 @@ class Power:
 		password = password.upper()
 		if password == host.judgePassword.upper(): return 5
 		if password == self.game.password.upper(): return 4
-		if password == self.password.upper(): return 3
+		if self.password and password == self.password.upper(): return 3
 		#	----------------------------------------
 		#	Check against omniscient power passwords
 		#	----------------------------------------

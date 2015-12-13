@@ -6,7 +6,6 @@ from Map import Map
 class Page:
 	#	----------------------------------------------------------------------
 	def __init__(self, form = {}):
-		self.pwdFlag = None
 		#	---------------------------------------------------
 		#	Parameters that may appear in the url (as GET).
 		#	If they also appear in the form (as POST),
@@ -77,12 +76,13 @@ class Page:
 		#	 4: Game password (Master)
 		#	 5: Host password (Judgekeeper)
 		#	---------------------------------------------------------------
-		if not self.password: self.pwdFlag = 0
+		self.pwdFlag = 0
+		if not self.password: pass
 		elif self.password == host.judgePassword: self.pwdFlag = 5
 		elif self.game:
 			if self.password == self.game.password: self.pwdFlag = 4
 			elif self.power:
-				if self.password == self.power.password: self.pwdFlag = 3
+				self.pwdFlag = self.power.isValidPassword(self.password)
 		if self.include(): raise SystemExit
 		self.write("<script>window.location.replace('%s');</script>" %
 			host.dpjudgeURL)

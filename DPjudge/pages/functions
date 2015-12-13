@@ -434,7 +434,8 @@ def showInfo(name, value, left = 0):
 #	----------------------------------------------------------------------
 def showVariantInfo():
 	game, power, ceoInfo = page.game, page.power, ''
-	omniscient = page.pwdFlag == 2 or page.pwdFlag > 3
+	omniscient = (power.omniscient and page.pwdFlag > 1 or
+		power.name == 'MASTER' and page.pwdFlag > 3)
 	if (not omniscient and 'completed' not in page.game.status and
 		'HIDE_DUMMIES' in game.rules): return
 	for who in game.powers:
@@ -784,11 +785,11 @@ def showControlInfo():
 		page.apprise('page', 'Status')
 		page.reprise(['game', 'password'])
 		page.write("""
-			<tr><td class=bodycopy nowrap><b>Controller Of:</b></td>
+			<tr><td class=bodycopy nowrap><b>%s:</b></td>
 			<td align=right>
 			<select class=inputBox
 			name=power onChange=document.ceoForm.submit()>
-			""")
+			""" % ('Controller Of', 'Power')[power.omniscient or power.name == 'MASTER'])
 		for country in headsUp:
 			page.write('<option value="%s">%s</option>' %
 				(country, game.anglify(country)))

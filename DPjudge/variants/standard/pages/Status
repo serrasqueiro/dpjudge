@@ -69,7 +69,7 @@ if page.power.name != 'MASTER':
 showMapButtons()
 showResultsText()
 showPressArchive()
-if page.power.name != 'MASTER': showVariantInfo()
+showVariantInfo()
 showDocList((('summary', 'Game Summary'),
 			('EOG', 'End Of Game Statements')))
 if (page.power.name != 'MASTER' and page.game.phase not in

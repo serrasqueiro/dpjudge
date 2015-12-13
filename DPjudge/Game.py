@@ -1753,10 +1753,26 @@ class Game:
 					if 'BLIND' in self.rules:
 						shows = [x for x,y in
 							self.visible(power, unit, 'H').items() if y & 8]
-						if playing and playing.name not in shows: continue
+						if option:
+							controllers = ['MASTER', power.name]
+							boss = power.controller()
+							if boss and boss not in controllers:
+								controllers += [boss.name]
+							controllers += [x.name for x in self.powers
+								if x.omniscient and x.name not in controllers]
+						if playing:
+							if playing.name not in shows: continue
+							if option and playing.name not in controllers:
+								option = None
 					if not spaced: lines += ['']
 					spaced = 1
 					if 'BLIND' in self.rules and not playing:
+						if option:
+							shows = [x for x in shows if x not in controllers]
+							if shows:
+								lines += ['SHOW ' + ' '.join(shows)]
+								lines += [powerName + self.anglify(unit) + '.']
+							shows = controllers
 						lines += ['SHOW ' + ' '.join(shows)]
 					lines += [powerName + self.anglify(unit) +
 						(option and (' can retreat to ' +
@@ -1864,21 +1880,25 @@ class Game:
 		showing = blind and not playing and 'SEE_ALL_SCS' not in rules
 		lines += ['\nOwnership of supply centers:\n']
 		for power in self.powers + ['UNOWNED']:
-			if playing and playing.name not in omnis + [power.name]:
+			if power != 'UNOWNED':
+				controllers = [power.name]
+				boss = power.controller()
+				if boss: controllers += [boss.name]
+			else: controllers = []
+			if playing and playing.name not in omnis + controllers:
 				continue
 			if power != 'UNOWNED':
 				powerName, centers = power.name, power.centers
 				[unowned.remove(x) for x in centers if x in unowned]
 			else: powerName, centers = power, unowned
 			powerName = self.anglify(powerName) + ':'
-			ceo = getattr(power, 'ceo', [])[:1]
 			for who in self.powers + ['UNOWNED']:
 				seen = 0
 				if who is power:
 					seen = [(x, 'Undetermined Home SC')[x == 'SC!']
 						for x in centers if x[-1] not in '?*']
-				elif (showing and who != 'UNOWNED'
-				and not who.omniscient and [who.name] != ceo):
+				elif (showing and who != 'UNOWNED' and not who.omniscient
+				and who.name not in controllers):
 					vassals = [who.name] + [x.name for x in who.vassals()]
 					who.sees += [x for x in centers
 						if x not in who.sees and [1 for y, z in
@@ -1889,7 +1909,7 @@ class Game:
 				if showing:
 					if who == 'UNOWNED': lines += ['SHOW ' + ' '.join(omnis)]
 					elif who is power: lines += ['SHOW ' +
-						' '.join(omnis + [power.name] + ceo)]
+						' '.join(omnis + controllers)]
 					else: lines += ['SHOW ' + who.name]
 				lines += [y.replace('\x7f', '-') for y in textwrap.wrap(
 					('%-11s %s.' % (powerName,
@@ -3783,10 +3803,17 @@ class Game:
 							items() if y & 8 and x in self.map.powers]
 						who += [x for x in show if x not in who]
 						show.remove(power.name)
+						controllers = ['MASTER', power.name]
+						boss = power.controller()
+						if boss:
+							try:
+								show.remove(boss.name)
+								controllers += [boss.name]
+							except: pass
 						if show: dis += ['SHOW ' + ' '.join(show), desc + '.']
 						show = [x.name for x in self.powers if x.omniscient]
 						who += [x for x in show if x not in who]
-						dis += ['SHOW MASTER %s ' % power.name + ' '.join(show)]
+						dis += ['SHOW ' + ' '.join(controllers + show)]
 					#	------------------------------------
 					#	Make long lines wrap around politely
 					#	------------------------------------
