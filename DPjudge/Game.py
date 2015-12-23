@@ -3341,6 +3341,7 @@ class Game:
 		for power in self.powers:
 			[unowned.remove(x) for x in power.centers if x in unowned]
 			power.sees = []
+		self.lost = {}
 		for power in self.powers + [None]:
 			if power: centers = power.centers
 			else: centers = unowned
@@ -3354,13 +3355,21 @@ class Game:
 						and center in [x[2:5] for x in owner.units]):
 						self.transferCenter(power, owner, center)
 						if not power: unowned.remove(center)
+						else: self.lost[center] = power
 						break
 		#	-----------------------------------
 		#	Determine any vassal state statuses
 		#	and the list of who owns what.
 		#	-----------------------------------
-		return (self.vassalship() + self.ownership(unowned) +
+		list = (self.vassalship() + self.ownership(unowned) +
 			self.determineWin(func))
+		if 'BLIND' in self.rules:
+			for power in self.powers:
+				for unit in power.units:
+					list += self.showLines(power, ['HOLD'] + unit.split(),
+						[])[:-1]
+			list += ['SHOW']
+		return list
 	#	----------------------------------------------------------------------
 	def determineWin(self, func = None):
 		#	----------------------------------------------------------------
@@ -3586,7 +3595,7 @@ class Game:
 								after += [word[-1]]
 					else:
 						after = [x for x in before if x not in
-							[y[2:] for y in self.popped]]
+							[y[2:] for y in self.popped if y in retreats]]
 				elif self.phaseType == 'A':
 					after = [z for z in before if z not in
 						[x[1] for x in [y.split()[1:] for y in adjusts]
@@ -3596,7 +3605,7 @@ class Game:
 			#	------------------------------------------------
 			#	Get the list of the "seer"s sighted scs (if any)
 			#	------------------------------------------------
-			if 'NO_SCS_SEE' in rules: scs = []
+			if 'NO_SCS_SEE' in rules: pass
 			elif ('OWN_SCS_SEE' in rules
 			or self.map.homeYears and not [x for x in self.powers if x.homes]):
 				#	------------------------------------
@@ -3605,6 +3614,15 @@ class Game:
 				scs = [y for x in vassals for y in x.centers]
 				if 'SC!' in scs:
 					scs = [x[8:11] for x in adjusts if x[:5] == 'BUILD']
+				after += scs
+				if 'OWN_SCS_SEE' in rules:
+					if 'lost' in vars(self):
+						for what, who in self.lost.items():
+							if what in scs and who not in vassals:
+								scs.remove(what)
+							elif what not in scs and who in vassals:
+								scs.append(what)
+					before += scs
 			else:
 				#	-----------------------------------
 				#	The seer's home centers are sighted
@@ -3617,12 +3635,14 @@ class Game:
 				if 'BLANK_BOARD' not in rules and 'MOBILIZE' not in rules:
 					scs += [y[2:] for x in vassals
 						for y in self.map.units.get(x.name, [])]
+				after += scs
+				before += scs
 			#	-------------------------------------------------
 			#	When it comes to visibility, we can ignore coasts
 			#	-------------------------------------------------
 			before = set([x[:3] for x in before])
 			after = set([x[:3] for x in after])
-			both = (before & after) | set(scs)
+			both = before & after
 			before, after = before - both, after - both
 			old, new = old[:3], new[:3]
 			places = (' ' in unit and unit in getattr(power, 'hides', []) and
@@ -3876,7 +3896,8 @@ class Game:
 						for kind in 'FA': pref.append(
 							[x for x in power.units if x[0] == kind
 							and (x[2:5] in self.map.scs) == sc
-							and (x[2:5] in power.centers) == own])
+							and (x[2:5] in power.centers) == own
+							and (x[2:5] in power.homes) == home])
 					for unit in range(diff):
 						pref = filter(None, pref)
 						goner = random.choice(pref[0])

@@ -157,7 +157,7 @@ class PostScriptMap:
 			#	Center ownership
 			#	----------------
 			if section == 'O':
-				if 'SUPPLY' in word:
+				if 'SUPPLY' in word or 'LOST.' in word or 'FOUND.' in word:
 					# Reset order and change section - Not good, as in blind
 					# games not all visible powers are listed.
 					section = 'U'
@@ -182,8 +182,9 @@ class PostScriptMap:
 			#	Unit allotment
 			#	----------------
 			if section == 'U':
-				if power not in self.ownerOrder: raise PowerNotInPS
-				continue
+				if 'SUPPLY' in word:
+					if power not in self.ownerOrder: raise PowerNotInPS
+					continue
 
 			#	--------------------------------------------------------
 			#	Unit destructions.  Destroyed units are indicated by
