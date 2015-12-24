@@ -178,7 +178,7 @@ class Time(str):
 				date = day.tuple()
 				days = (frm == 1 and (datetime(date[0] + 1, 1, 1) -
 					datetime(date[0], 1, 1)).days or frm == 2 and
-					(datetime(date[0], date[1] + 1, 1) -
+					(datetime(date[0] + date[1] / 12, date[1] % 12 + 1, 1) -
 					datetime(date[0], date[1], 1)).days or 1)
 				when = Time(self.zone, day.offset('%dD' % days) + at, npar)
 		if week is not None and week != when.tuple()[6]:
