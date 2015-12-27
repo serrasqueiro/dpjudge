@@ -127,7 +127,7 @@ def updatePower():
 	elif page.game.phaseType not in 'DE': return updateOffers() and unchanged
 #	----------------------------------------------------------------------
 page.game.error = []
-if page.power.name != 'MASTER':
+if page.power.name != 'MASTER' and not 'message' in vars(page):
 	untouched = updatePower() and 'No ' or ''
 	if page.game.error:
 		page.write('<td align=center class="grey"><b>Erroneous Offers</b></td>')

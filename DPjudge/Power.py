@@ -255,10 +255,10 @@ class Power:
 		return (power is self or power.controller() is self or
 			self.name == 'MASTER')
 	#	----------------------------------------------------------------------
-	def vassals(self, public = False, all = False):
+	def vassals(self, public = False, all = False, indirect = True):
 		return [x for x in self.game.powers if
-			(x.ceo[:1] == [self.name] or self.name == 'MASTER') and
-			(all or not x.isEliminated(public, True))]
+			(x.ceo[:1] == [self.name] or indirect and self.name == 'MASTER')
+			and (all or not x.isEliminated(public, True))]
 	#	----------------------------------------------------------------------
 	def isResigned(self):
 		return self.player[:1] == ['RESIGNED']

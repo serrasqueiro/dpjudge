@@ -570,8 +570,9 @@ def gameHeader():
 				for x in game.avail]))
 		elif game.deadline < game.Time():
 			if late:
-				if power and (power.name in late or
-				[1 for x in power.vassals() if x.name in late]): page.write(
+				if power and (power.name in late
+				or [1 for x in power.vassals(indirect = False)
+				if x.name in late]): page.write(
 					'<br><font size=+1><blink>You Are Late!</blink></font>')
 				elif (power and (power.name == 'MASTER' or power.omniscient)
 				or 'HIDE_LATE_POWERS' not in game.rules): page.write(
@@ -1384,7 +1385,7 @@ def loadGame():
 #	----------------------------------------------------------------------
 def mapName():
 	file = page.game.name
-	if ('BLIND' in page.game.rules and page.power
+	if ('BLIND' in page.game.rules and page.power and page.pwdFlag
 	and page.game.phase != 'COMPLETED'):
 		if page.power.name != 'MASTER': file += ('.' +
 			(page.power.abbrev or 'O') + `hash((page.power.password
