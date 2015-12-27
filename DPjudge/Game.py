@@ -1144,7 +1144,8 @@ class Game:
 					elif controller in self.map.dummies:
 						error += ['CONTROLLING POWER %s IS A DUMMY' %
 							controller]
-		if self.phase not in ('FORMING', 'COMPLETED') and not self.deadline:
+		if self.phase not in ('FORMING', 'COMPLETED') and not (
+			self.deadline or 'NO_DEADLINE' in self.rules):
 			error += ['GAME HAS NO DEADLINE!']
 		if 'NO_RESERVES' in rules: self.map.reserves = []
 		if 'NO_MILITIA' in rules: self.map.militia = []
@@ -4124,6 +4125,7 @@ class Game:
 		return grace and self.deadlineExpired(grace)
 	#	----------------------------------------------------------------------
 	def deadlineExpired(self, grace = '0H'):
+		if 'NO_DEADLINE' in self.rules: return
 		dict = { 'M': 60, 'H': 3600, 'D': 86400, 'W': 604800 }
 		try: return time.localtime()[:5] >= time.localtime(time.mktime(tuple(
 			map(int, (self.deadline[:4], self.deadline[4:6], self.deadline[6:8],
@@ -4132,6 +4134,9 @@ class Game:
 		except: pass
 	#	----------------------------------------------------------------------
 	def setDeadline(self, firstPhase = 0):
+		if 'NO_DEADLINE' in self.rules:
+			self.deadline = None
+			return
 		at, days = self.timing.get('AT'), self.timing.get('DAYS', '-MTWTF-')
 		try: delay = [y for x,y in self.timing.items()
 			if not self.phase.split()[-1].find(x)][0]
