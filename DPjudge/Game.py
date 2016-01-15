@@ -2871,15 +2871,16 @@ class Game:
 		#	-----------------------------------------------------------
 		for unit, order in self.command.items():
 			if order[0] != 'S': continue
-			word = order.split()
+			word, signal = order.split(), 1
 			#	----------------------------------------------
 			#	See if the unit is allowed to give the support
 			#	----------------------------------------------
 			if 'SIGNAL_SUPPORT' in self.rules:
 				if word[-1] == '?':
+					signal = 1
+					del word[-1]
 					self.result[unit] += ['void']
-					self.command[unit] = ' '.join(word[:-1])
-					continue
+					self.command[unit] = ' '.join(word)
 			#	------------------------------------------------------
 			#	Remove any trailing "H" from a support-in-place order.
 			#	------------------------------------------------------
@@ -2896,34 +2897,36 @@ class Game:
 			#	See if there is a unit to receive the support
 			#	---------------------------------------------
 			if not guy:
-				if 'SHOW_PHANTOM' in self.rules: self.result[unit] += ['void']
-				else: self.command[unit] = 'H'
+				if 'SHOW_PHANTOM' not in self.rules: self.command[unit] = 'H'
+				elif not signal: self.result[unit] += ['void']
 				continue
 			word[1:where + 1] = guy.split()
 			self.command[unit] = ' '.join(word)
 			#	---------------------------------------------------
 			#	See if the unit's order matches the supported order
 			#	---------------------------------------------------
+			if signal: continue
 			coord = self.command[guy].split()
 			if ((len(word) < 5 and coord[0] == '-')
 			or (len(word) > 4 and (coord[0], coord[-1]) != ('-', word[4]))
-			or 'no convoy' in self.result[guy]): self.result[unit] += ['void']
-			else:
-				#	---------------------------
-				#	Okay, the support is valid.
-				#	---------------------------
-				self.supports[guy][0] += 1
-				#	----------------------------------------------
-				#	If the unit is owned by the owner of the piece
-				#	being attacked, add the unit to those whose
-				#	supports are not counted toward dislodgement.
-				#	----------------------------------------------
-				if coord[0] != '-': continue
-				owner = self.unitOwner(unit)
-				other = self.unitOwner(self.occupant(coord[-1], anyCoast = 1))
-				if (owner is other and 'FRIENDLY_FIRE' not in self.rules
-				and not (owner.isDummy() and 'DUMMY_FIRE' in self.rules)):
-					self.supports[guy][1] += [unit]
+			or 'no convoy' in self.result[guy]):
+				self.result[unit] += ['void']
+				continue
+			#	---------------------------
+			#	Okay, the support is valid.
+			#	---------------------------
+			self.supports[guy][0] += 1
+			#	----------------------------------------------
+			#	If the unit is owned by the owner of the piece
+			#	being attacked, add the unit to those whose
+			#	supports are not counted toward dislodgement.
+			#	----------------------------------------------
+			if coord[0] != '-': continue
+			owner = self.unitOwner(unit)
+			other = self.unitOwner(self.occupant(coord[-1], anyCoast = 1))
+			if (owner is other and 'FRIENDLY_FIRE' not in self.rules
+			and not (owner.isDummy() and 'DUMMY_FIRE' in self.rules)):
+				self.supports[guy][1] += [unit]
 		#	-------------------------------------------------------
 		#	STEP 3.  LET DIRECT (NON-CONVOYED) ATTACKS CUT SUPPORTS
 		#	-------------------------------------------------------
