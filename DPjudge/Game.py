@@ -5135,8 +5135,8 @@ class Game:
 	#	----------------------------------------------------------------------
 	def setState(self, mode):
 		if self.status[1] == mode: return
-		if self.status[1] == 'preparation' and mode != 'forming':
-			return 'Please allow the game to form first'
+		#if self.status[1] == 'preparation' and mode != 'forming':
+		#	return 'Please allow the game to form first'
 		if self.phase == 'FORMING':
 			if mode == 'active': self.begin()
 		elif self.phase == 'COMPLETED':

@@ -434,8 +434,8 @@ def showInfo(name, value, left = 0):
 #	----------------------------------------------------------------------
 def showVariantInfo():
 	game, power, ceoInfo = page.game, page.power, ''
-	omniscient = (power.omniscient and page.pwdFlag > 1 or
-		power.name == 'MASTER' and page.pwdFlag > 3)
+	omniscient = (page.pwdFlag > 1 and power.omniscient or
+		page.pwdFlag > 3 and power.name == 'MASTER')
 	if (not omniscient and 'completed' not in page.game.status and
 		'HIDE_DUMMIES' in game.rules): return
 	for who in game.powers:
