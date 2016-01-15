@@ -81,7 +81,9 @@ class Power:
 		if self.homes is None:
 			if game.map.homeYears: self.homes = []
 			else: self.homes = game.map.homes.get(self.name, [])
-		if 'MOBILIZE' in game.rules: self.centers = ['SC!']
+		if 'MOBILIZE' in game.rules:
+			self.centers = ['SC!'] * ('IMMOBILE_DUMMIES' in game.rules and
+				self.isDummy() and len(game.map.homes.get(self.name, [])) or 1)
 		elif 'BLANK_BOARD' in game.rules:
 			if not self.centers:
 				self.centers = game.map.centers.get(self.name, [])

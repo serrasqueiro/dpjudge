@@ -435,7 +435,7 @@ class PostScriptMap:
 				order, graph, submsg = '', 'FindUnit', 'FOUND'
 				if section in 'DRA': 
 					self.discoveries.setdefault(section, {}).setdefault(
-						power + ' F', []).append(unit + ' ' + si['nick'])
+						power + ' F', []).append(unit + ' ' + (si or di)['nick'])
 			#	----
 			#	Lost
 			#	----
