@@ -2871,7 +2871,7 @@ class Game:
 		#	-----------------------------------------------------------
 		for unit, order in self.command.items():
 			if order[0] != 'S': continue
-			word, signal = order.split(), 1
+			word, signal = order.split(), 0
 			#	----------------------------------------------
 			#	See if the unit is allowed to give the support
 			#	----------------------------------------------
