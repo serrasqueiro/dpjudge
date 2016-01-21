@@ -367,6 +367,8 @@ class Power:
 				`hash((self.password or self.game.password) + self.name)` +
 				suffix)
 			except: pass
+		for vassal in self.vassals(all=True, indirect=False):
+			vassal.removeBlindMaps()
 	#	----------------------------------------------------------------------
 	def movesSubmitted(self):
 		#	Each variant had pretty much better override this guy!  :-)
