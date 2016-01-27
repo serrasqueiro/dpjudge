@@ -834,7 +834,7 @@ def updateMaster():
 			if not deathnote:
 				deathnote = ('The deadline for game ' +
 					"'%s' has been changed by the Master.\n" % game.name)
-	else:
+	elif game.phase not in ('FORMING', 'COMPLETED'):
 		game.setDeadline()
 		deathnote = 'The NO_DEADLINE rule has been removed.\n'
 	if deathnote and game.deadline:
