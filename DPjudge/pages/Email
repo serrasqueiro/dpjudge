@@ -86,7 +86,7 @@ page.include('functions')
 		<a href=mailto:<MAIL>><tt><MAIL></tt></a>
 
 		<P><b>If I send an e-mail to the DPjudge, what commands may I include in that e-mail?</b><br>
-		The DPjudge recognizes only the following thirty-eight commands:
+		The DPjudge recognizes only the following forty commands:
 	
 			<P><table border=0 cellpadding=0 align=center>
 			<tr valign=top>
@@ -110,9 +110,9 @@ page.include('functions')
 			</tr>
 			</table>
 
-		<P><b>Hey, you said there were <i>thirty-eight</i> recognized commands!
+		<P><b>Hey, you said there were <i>forty</i> recognized commands!
 		That's only twenty-one!</b><br>
-		Okay, you're right.  I left out the seventeen "Master commands"
+		Okay, you're right.  I left out the nineteen "Master commands"
 		(those that may be used only by a game's Master). These are:
 	
 			<P><table border=0 cellpadding=0 align=center>
@@ -138,10 +138,12 @@ page.include('functions')
 			<td width=20></td>
 			<td class="bodycopy">&middot;<a href=#official>OFFICIAL</a>
 			<br>&middot;<a href=#deadline>SET DEADLINE</a></td>
+			<br>&middot;<a href=#unlisted>SET UNLISTED</a></td>
+			<br>&middot;<a href=#unlisted>SET LISTED</a></td>
 			</tr>
 			</table>
 	
-		<p>There; that makes thirty-five.  That's it. If you are familiar with the Ken Lowe Internet judge, you know that it supports a few more commands.  The DPjudge does <i>not</i> support these. Limit your messages to the commands listed above or the DPjudge will simply tell you it does not understand you.
+		<p>There; that makes forty.  That's it. If you are familiar with the Ken Lowe Internet judge, you know that it supports a few more commands.  The DPjudge does <i>not</i> support these. Limit your messages to the commands listed above or the DPjudge will simply tell you it does not understand you.
 	
 		<P><i>Note that if a specific <a href=<URL>?page=Rules><tt>RULE</tt></a>
 		(<tt>PLAYER_DEADLINES</tt>) is used in a game, the
@@ -985,13 +987,14 @@ does, but tell me anyway.</b><br>
 	from the world) and the Master will be told how to access the game's
 	status file via the Web.
 	<P>
-	<!--
-	If the message contains a line beginning with the word <tt>UNLISTED</tt>,
+	<a name=unlisted></a>
+	If the message contains a line beginning with the words <tt>SET UNLISTED</tt>,
 	only persons knowing the game name will know about the game (it will
 	not appear in the game lists on the Web, nor in the response to an
 	e-mailed <tt>LIST</tt> command or on The Diplomatic Pouch Openings List).
+	The GM can change this at any time by sending a new message with either
+	<tt>SET LISTED</tt> or <tt>SET UNLISTED</tt> in it.
 	<P>
-	-->
 	Lines that appear in the e-mail after the <tt>CREATE</tt> command
 	(until any <tt>SIGNOFF</tt> command is encountered
 	<!--

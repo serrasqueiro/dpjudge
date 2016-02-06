@@ -788,7 +788,8 @@ def updateMaster():
 	if page.password == game.password: page.password = page.newPassword
 	game.password = page.newPassword
 	if page.privacy == 'public': game.private = None
-	else: game.private = page.private
+	elif page.private: game.private = page.private
+	else: return reportUpdateError('Empty privacy password')
 	if page.desc: game.desc = page.desc.split('\n')
 	else: game.desc = []
 	if page.origin: game.origin = page.origin.split('\n')
@@ -819,12 +820,13 @@ def updateMaster():
 		return reportUpdateError('<br>'.join(
 			['The following rule violations were detected:'] + game.error))
 	deathnote = None
-	if page.zone != game.zone and game.zone.__repr__() or 'GMT':
+	if page.zone != (game.zone and game.zone.__repr__() or 'GMT'):
 		game.setTimeZone(page.zone)
 		deathnote = ('The Master has changed the time zone for ' +
 			"game '%s' to %s (%s).\n" % (
 			game.name, page.zone, TimeZone(page.zone).gmtlabel()))
-	if 'NO_DEADLINE' in game.rules: game.deadline = None
+	if ('NO_DEADLINE' in game.rules
+	or game.phase in ('FORMING', 'COMPLETED')): game.deadline = None
 	elif 'date' in vars(page):
 		dead = map(int, page.date.split('-'))
 		deadline = ('%d%02d%02d' % (dead[2], dead[0], dead[1]) +
@@ -834,7 +836,7 @@ def updateMaster():
 			if not deathnote:
 				deathnote = ('The deadline for game ' +
 					"'%s' has been changed by the Master.\n" % game.name)
-	elif game.phase not in ('FORMING', 'COMPLETED'):
+	else:
 		game.setDeadline()
 		deathnote = 'The NO_DEADLINE rule has been removed.\n'
 	if deathnote and game.deadline:

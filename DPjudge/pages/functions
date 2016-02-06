@@ -611,11 +611,18 @@ def gameHeader():
 			elif game.await == 2:
 				page.write('<br>Waiting for the Master to process the phase.')
 		page.write('</td></tr>')
-	if game.private: page.write(
-		'<tr><th bgcolor="yellow" align=center class="bodycopy">'
-		'<font color=red>'
-		'This is a private game including specific players;<br>'
-		'it may include players who know each other.</th></tr>')
+	warnings = []
+	if game.private: warnings += ['This is a private game including specific players;',
+		'it may include players who know each other.']
+	if 'unlisted' in game.status:
+		warnings += ['This is an <a href=<PAGE>Email#unlisted>unlisted</a> game.']
+		if page.pwdFlag in (2, 3):
+			warnings[-1] = warnings[-1][:-1] + ';'
+			warnings += ['if you disagree, contact the GM or Judgekeeper.']
+	if warnings: page.write("""
+		<tr><th bgcolor="yellow" align=center class="bodycopy">
+		<font color=red>%s</font></th></tr>
+		""" % '<br>\n'.join(warnings))
 	page.write(
 		"""
 			<tr><td height=5><!--SPACER--></td></tr>

@@ -135,7 +135,7 @@ class Procmail:
 					file.write(temp.encode('latin-1'))
 					for info in self.message[1:]:
 						word = ''.join(info.upper().split()[:1])
-						if word == 'DESC': break
+						if word in ('DESC', 'DESCRIPTION', 'SIGNOFF'): break
 						if word in ('MAP', 'TRIAL'):
 							onmap = ' on the %s%s map' % (
 								''.join(info.split()[1:2]).title(),
@@ -144,11 +144,15 @@ class Procmail:
 						temp = 'DESC A %s game%s.\n' % (desc, onmap)
 						file.write(temp.encode('latin-1'))
 					for info in self.message[1:]:
-						word = ''.join(info.upper().split()[:1])
-						if word == 'SIGNOFF': break
-						if word in ('GAME', 'PHASE', 'MASTER'): pass
-						elif word == 'FORM': mode = 'forming'
-						# elif word == 'UNLISTED': unlisted = 1
+						word = info.upper().split()
+						if not len(word): file.write('\n')
+						elif word[0] == 'SIGNOFF': break
+						elif word[0] in ('GAME', 'PHASE', 'MASTER'): pass
+						elif (len(word) == 1
+						and word[0] in ('FORM', 'ACTIVATE')): mode = 'forming'
+						elif (len(word) == 2 and word[0] == 'SET'
+						and word[1] in ('LISTED', 'UNLISTED')):
+							unlisted = word[0][1] == 'U'
 						else: file.write((info + '\n').encode('latin-1'))
 					file.close()
 					os.chmod(file.name, 0666)
@@ -862,15 +866,16 @@ class Procmail:
 			#	--------------------------
 			elif (len(word) > 1 and word[0] == 'SET'
 			and word[1] in ('ADDRESS', 'PASSWORD', 'DEADLINE', 'ZONE',
-							'NOZONE', 'WAIT', 'NOWAIT', 'ABSENCE')):
-				nok = word[1][:2] == 'NO' and 2 or 0
+							'NOZONE', 'WAIT', 'NOWAIT', 'ABSENCE',
+							'LISTED', 'UNLISTED')):
+				nok = word[1][:2] in ('NO', 'UN') and 2 or 0
 				if len(word) == 2:
 					if word[1][:2] == 'AD': word += [self.email]
 					elif word[1][nok] == 'Z' and power.name == 'MASTER':
 						word += [host.timeZone or 'GMT']
-					elif word[1][nok] not in 'WZ': 
+					elif word[1][nok] not in 'LWZ': 
 						self.respond('No new %s given' % word[1])
-				elif word[1][nok] == 'W':
+				elif word[1][nok] in 'LW':
 					self.respond('Bad %s directive' % word[1])
 				if word[1][:2] == 'DE':
 
@@ -972,6 +977,19 @@ class Procmail:
 						self.respond('WAIT not available in this phase')
 					if power.name in game.map.powers:
 						power.wait = not nok
+				#	-----------------------
+				#	SET LISTED and UNLISTED
+				#	-----------------------
+				elif word[1][nok] == 'L':
+					if not self.isMaster(power):
+						self.respond('Only the MASTER may UNLIST a game')
+					gameMode = game.status[1:]
+					if 'unlisted' in gameMode == (nok and 1):
+						self.respond('Game already ' + word[2])
+					if nok: gameMode += ['unlisted']
+					else: gameMode.remove('unlisted')
+					game.status[1:] = gameMode
+					games.update(game.name, gameMode, game.status[0])
 				else:
 					#	----------------------------
 					#	SET ADDRESS and SET PASSWORD
