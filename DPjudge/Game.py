@@ -3371,7 +3371,8 @@ class Game:
 				for unit in power.units:
 					list += self.showLines(power, ['HOLD'] + unit.split(),
 						[])[:-1]
-			list += ['SHOW']
+			list += ['SHOW', '']
+		self.lost = {}
 		return list
 	#	----------------------------------------------------------------------
 	def determineWin(self, func = None):
@@ -3487,7 +3488,8 @@ class Game:
 			#	------------------------------------------------------------
 			ceo = getattr(power, 'ceo', [])[:1]
 			victory = victors and (power in victors or
-				'TEAM_VICTORY' in self.rules and [1 for x in victors if [x.name] == ceo])
+				'TEAM_VICTORY' in self.rules and
+				[1 for x in victors if [x.name] == ceo])
 			if victory:
 				text += '  (* VICTORY!! *)'
 			if self.phase == 'COMPLETED' or self.phaseType == 'A':
@@ -3498,7 +3500,7 @@ class Game:
 						or [x.name] == ceo])]
 				list += [text]
 			if func and self.phaseType != 'A': func(power, text.upper().split())
-		return list + ['SHOW' * ('BLIND' in self.rules)]
+		return list + ['SHOW'] * ('BLIND' in self.rules) + ['']
 	#	----------------------------------------------------------------------
 	def phaseAbbr(self, phase = None):
 		#	------------------------------------------
@@ -3554,8 +3556,22 @@ class Game:
 		if 'command' not in vars(self): self.command = {}
 		shows, order = {'MASTER': 15}, order or self.command.get(unit, 'H')
 		old = new = unit.split()[-1][:3]
+		dislodging = []
 		if order[0] == '-' and (self.phaseType != 'M'
-			or not self.result.get(unit)): new = order.split()[-1][:3]
+		or not self.result.get(unit)):
+			new = order.split()[-1][:3]
+			if self.phaseType == 'M':
+				#	-------------------------------------------------------
+				#	If this unit is dislodging another unit (which might be
+				#	of the same power), we'll pretend that any unit able to
+				#	see the destination after the move can also see it
+				#	before the move. This way the unit will always be
+				#	arriving, allowing to depict both the dislodging and
+				#	dislodged units.
+				#	-------------------------------------------------------
+				dislodging = [x for p in self.powers for x in p.units
+					if x[2:5] == new[:3]
+					and 'dislodged' in self.result.get(x, [])]
 		rules = self.rules
 		for seer in self.powers:
 			shows[seer.name] = 15 * bool(power is seer or seer.omniscient
@@ -3585,7 +3601,12 @@ class Game:
 						if spotters and his[0] not in spotters: continue
 						if (self.command.get(his, 'H')[0] != '-'
 							or self.result.get(his)): after += [his[2:]]
-						else: after += [self.command[his].split()[-1]]
+						else:
+							after += [self.command[his].split()[-1]]
+							if (dislodging
+							and after[-1][:3] not in [x[:3] for x in before]
+							and (not spotters or dislodging[0][0] in spotters)):
+								before += [after[-1]]
 				elif self.phaseType == 'R':
 					if 'popped' not in vars(self): self.popped = []
 					if adjusts:
@@ -3825,15 +3846,19 @@ class Game:
 						show = [x for x,y in self.visible(power, unit, 'H').
 							items() if y & 8 and x in self.map.powers]
 						who += [x for x in show if x not in who]
-						show.remove(power.name)
-						controllers = ['MASTER', power.name]
-						boss = power.controller()
-						if boss:
-							try:
-								show.remove(boss.name)
-								controllers += [boss.name]
-							except: pass
-						if show: dis += ['SHOW ' + ' '.join(show), desc + '.']
+						if unit in self.popped:
+							controllers, show = ['MASTER'] + show, []
+						else:
+							show.remove(power.name)
+							controllers = ['MASTER', power.name]
+							boss = power.controller()
+							if boss:
+								try:
+									show.remove(boss.name)
+									controllers += [boss.name]
+								except: pass
+							if show:
+								dis += ['SHOW ' + ' '.join(show), desc + '.']
 						show = [x.name for x in self.powers if x.omniscient]
 						who += [x for x in show if x not in who]
 						dis += ['SHOW ' + ' '.join(controllers + show)]

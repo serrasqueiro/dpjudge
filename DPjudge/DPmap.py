@@ -143,14 +143,18 @@ class PostScriptMap:
 			#	------------------------------
 			#	Check if the section has ended
 			#	------------------------------
-			if section in ('OWN', None):
+			if not section:
 				#	---------------------
 				#	Write the information
 				#	---------------------
 				for graphic in graphics:
 					self.outFile.write((graphic + '\n').encode('latin-1'))
+				graphics = []
 				power = powerDecl = powerRedecl = powerOrder = None
-				if section: section = 'O'
+				continue
+			elif section == 'OWN':
+				power = powerDecl = powerRedecl = powerOrder = None
+				section = 'O'
 				continue
 
 			#	----------------
@@ -433,7 +437,7 @@ class PostScriptMap:
 			#	-----
 			elif order[0] == 'F':
 				order, graph, submsg = '', 'FindUnit', 'FOUND'
-				if section in 'DRA': 
+				if section in 'DRAU': 
 					self.discoveries.setdefault(section, {}).setdefault(
 						power + ' F', []).append(unit + ' ' + (si or di)['nick'])
 			#	----
@@ -442,7 +446,7 @@ class PostScriptMap:
 			elif order[0] == 'L':
 				order, submsg = '', 'LOST'
 				graph = 'Lose' + 'Arrive' * (not si) + 'Unit'
-				if section in 'DRA': 
+				if section in 'DRAU': 
 					self.discoveries.setdefault(section, {}).setdefault(
 						power + ' L', []).append(unit + ' ' +
 						(di or si)['nick'])
@@ -473,7 +477,7 @@ class PostScriptMap:
 						(power, unit, si and si['nick'] or '???') +
 						(order and order + ' ' or '') + 
 						self.translate(msg and msg or submsg)]
-			if graph and section in 'MDRA': graphics += ['%s%d %d ' %
+			if graph and section in 'MDRUA': graphics += ['%s%d %d ' %
 				(msg and 'FailedOrder ' or '', (si or di)['x'],
 				(si or di)['y']) + graph + (msg and ' OkOrder' or '')]
 
@@ -760,14 +764,15 @@ class PostScriptMap:
 		#	--------------
 		#	Retreat report
 		#	--------------
-		if self.retreats or 'R' in self.discoveries or 'D' in self.discoveries:
+		if self.retreats or ('R' in self.discoveries
+		or 'D' in self.discoveries or 'U' in self.discoveries):
 			self.outFile.write('RetreatReport\n')
 		if self.retreats:
 			for order in sorted(self.retreats):
 				temp = '(%s) WriteRetreat\n' % order
 				self.outFile.write(temp.encode('latin-1'))
 			self.retreats = []
-		for sect in 'DR':
+		for sect in 'DRU':
 			for powered in sorted(self.discoveries.get(sect, [])):
 				temp = ('(%-10s %s %s) WriteRetreat\n' %
 					(powered[:-2], ', '.join(self.discoveries[sect][powered]),
@@ -784,10 +789,10 @@ class PostScriptMap:
 					(power, self.adj[power][0], ', '.join(self.adj[power][1:])))
 				self.outFile.write(temp.encode('latin-1'))
 			self.adj = {}
-		if 'A' in self.discoveries:
-			for powered in sorted(self.discoveries['A']):
+		for sect in 'A':
+			for powered in sorted(self.discoveries.get(sect, [])):
 				temp = ('(%-10s %s %s) WriteAdjust\n' %
-					(powered[:-2], ', '.join(self.discoveries['A'][powered]),
+					(powered[:-2], ', '.join(self.discoveries[sect][powered]),
 					self.translate(powered[-1] == 'F' and 'FOUND' or 'LOST')))
 				self.outFile.write(temp.encode('latin-1'))
 		self.discoveries = {}
