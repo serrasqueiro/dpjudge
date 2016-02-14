@@ -112,8 +112,8 @@ class Game:
 		if includeFlags & 4:
 			outcome, error, state = [], [], {}
 			end = phase = ''
-			mail = proposal = season = year = phaseType = None
-			mode = preview = deadline = delay = processed = win = await = skip = None
+			mail = proposal = season = year = phaseType = mode = None
+			preview = deadline = delay = processed = win = await = skip = None
 			modeRequiresEnd, includeOwnership = None, -1
 
 		vars(self).update(locals())
@@ -1432,8 +1432,8 @@ class Game:
 			#	----------------------
 			#	Add a mail-like header
 			#	----------------------
-			lines[:0] = ['From %s %s\nSubject: %s\n\n' %
-				(host.resultsFrom, (self.processed or self.getTime()).cformat(), subject)]
+			lines[:0] = ['From %s %s\nSubject: %s\n\n' % (host.resultsFrom,
+				(self.processed or self.getTime()).cformat(), subject)]
 		file = open(self.file('results'), 'a')
 		temp = ''.join(lines)
 		file.write(temp.encode('latin-1'))
@@ -1752,7 +1752,7 @@ class Game:
 					unit, option = (unit, (unit, None))[unit in power.units]
 					if 'BLIND' in self.rules:
 						shows = [x for x,y in
-							self.visible(power, unit, 'H').items() if y & 8]
+							power.visible(unit, 'H').items() if y & 8]
 						if option:
 							controllers = ['MASTER', power.name]
 							boss = power.controller()
@@ -1837,7 +1837,7 @@ class Game:
 	#	----------------------------------------------------------------------
 	def ownership(self, unowned = None, playing = None):
 		self.includeOwnership = 0
-		rules = self.rules
+		rules, master = self.rules, Power(self, 'MASTER')
 		if unowned is None:
 			homes = [x for y in self.powers for x in y.homes or []]
 			unowned = [x for x in self.map.scs if x not in homes]
@@ -1879,35 +1879,35 @@ class Game:
 				if showing: lines += ['SHOW']
 		showing = blind and not playing and 'SEE_ALL_SCS' not in rules
 		lines += ['\nOwnership of supply centers:\n']
-		for power in self.powers + ['UNOWNED']:
-			if power != 'UNOWNED':
+		for power in self.powers + [master]:
+			if power is not master:
 				controllers = [power.name]
 				boss = power.controller()
 				if boss: controllers += [boss.name]
 			else: controllers = []
 			if playing and playing.name not in omnis + controllers:
 				continue
-			if power != 'UNOWNED':
+			if power is not master:
 				powerName, centers = power.name, power.centers
 				[unowned.remove(x) for x in centers if x in unowned]
-			else: powerName, centers = power, unowned
+			else: powerName, centers = 'UNOWNED', unowned
 			powerName = self.anglify(powerName) + ':'
-			for who in self.powers + ['UNOWNED']:
+			for who in self.powers + [master]:
 				seen = 0
 				if who is power:
 					seen = [(x, 'Undetermined Home SC')[x == 'SC!']
 						for x in centers if x[-1] not in '?*']
-				elif (showing and who != 'UNOWNED' and not who.omniscient
+				elif (showing and who is not master and not who.omniscient
 				and who.name not in controllers):
 					vassals = [who.name] + [x.name for x in who.vassals()]
 					who.sees += [x for x in centers
 						if x not in who.sees and [1 for y, z in
-						self.visible(power, x).items() if z & 2
+						power.visible(x).items() if z & 2
 						and y in vassals]]
 					seen = [x for x in centers if x in who.sees]
 				if not seen: continue
 				if showing:
-					if who == 'UNOWNED': lines += ['SHOW ' + ' '.join(omnis)]
+					if who is master: lines += ['SHOW ' + ' '.join(omnis)]
 					elif who is power: lines += ['SHOW ' +
 						' '.join(omnis + controllers)]
 					else: lines += ['SHOW ' + who.name]
@@ -2006,8 +2006,8 @@ class Game:
 				or [x for y in sendingPower.units for x in power.units
 					if (self.validOrder(sendingPower, y, 'S ' + x, 0) == 1
 					or self.validOrder(power, x, 'S ' + y, 0) == 1)
-					and self.visible(sendingPower, y, 'H')[power.name] & 1
-					and self.visible(power, x, 'H')[sendingPower.name] & 1]):
+					and sendingPower.visible(y, 'H')[power.name] & 1
+					and power.visible(x, 'H')[sendingPower.name] & 1]):
 					if power in who: who.remove(power)
 					elif power.name in who: who.remove(power.name)
 			if 'REMOTE_PRESS' in rules:
@@ -2224,12 +2224,13 @@ class Game:
 	#	----------------------------------------------------------------------
 	def ready(self, process = 0):
 		return self.status[1] == 'active' and not self.error and (
-			process == 2 or ((self.deadline and self.deadline <= self.getTime())
+			process == 2 or (('NO_DEADLINE' not in self.rules and
+			self.deadline and self.deadline <= self.getTime())
 			or process or not (self.await > 1 or
 			[1 for power in self.powers if power.wait]
 			or ('ALWAYS_WAIT' in self.rules and (self.phaseType == 'M'
 			or self.phaseType in 'AR' and 'NO_MINOR_WAIT' not in self.rules))))
-			and not self.latePowers())
+			and not self.latePowers(process))
 	#	----------------------------------------------------------------------
 	def findGoners(self, phase = 1):
 		if self.phaseType == '-': return
@@ -2349,11 +2350,12 @@ class Game:
 				#	augmented to 1.
 				#	-----------------------------------------
 				self.skip = None
-				self.process(1, email, roll)
+				self.process(-1, email, roll)
 				return
 			#	---------------------------------------------
 			#	We have received a PROCESS command via e-mail
 			#	---------------------------------------------
+			if not roll: self.processed = None
 			if not self.preview: self.lateNotice(-1)
 			if not self.preview: self.save(asBackup = 1)
 			self.delay = None
@@ -3205,6 +3207,7 @@ class Game:
 	#	----------------------------------------------------------------------
 	def advancePhase(self, roll = None):
 		if roll: roll = roll & 2
+		else: self.processed = None
 		text = []
 		for idx in range(len(self.map.seq)):
 			if self.phase in (None, 'FORMING', 'COMPLETED'): break
@@ -3369,7 +3372,7 @@ class Game:
 		if 'BLIND' in self.rules:
 			for power in self.powers:
 				for unit in power.units:
-					list += self.showLines(power, ['HOLD'] + unit.split(),
+					list += power.showLines(['HOLD'] + unit.split(),
 						[])[:-1]
 			list += ['SHOW', '']
 		self.lost = {}
@@ -3539,199 +3542,6 @@ class Game:
 			and form != 2) + word[1] + (form != 2 and '.' or ' ' + word[2]) +
 			'  (%s.%s)' % (self.name, self.phaseAbbr(phase)) * (not form))
 	#	----------------------------------------------------------------------
-	def visible(self, power, unit, order = None):
-		#	--------------------------------------------------------------
-		#	This function returns a dictionary listing a number for each
-		#	of the powers.  The number is a bitmap, with the following
-		#	meaning.  If the bitvalue 1 is set, this means the power could
-		#	"see" the unit in question BEFORE the move.  If the bitvalue 2
-		#	is set, this means the power could "see" (AFTER the move) the
-		#	location where the unit in question began the turn.  If the
-		#	bitvalue 4 is set, the power could "see" (BEFORE the move) the
-		#	location where the unit in question ended the turn, and if the
-		#	bitvalue 8 is set, the power could "see" (AFTER the move) the
-		#	location where the unit in question ended the turn.  If "unit"
-		#	is simply a center location, determines center visibility.
-		#	--------------------------------------------------------------
-		if 'command' not in vars(self): self.command = {}
-		shows, order = {'MASTER': 15}, order or self.command.get(unit, 'H')
-		old = new = unit.split()[-1][:3]
-		dislodging = []
-		if order[0] == '-' and (self.phaseType != 'M'
-		or not self.result.get(unit)):
-			new = order.split()[-1][:3]
-			if self.phaseType == 'M':
-				#	-------------------------------------------------------
-				#	If this unit is dislodging another unit (which might be
-				#	of the same power), we'll pretend that any unit able to
-				#	see the destination after the move can also see it
-				#	before the move. This way the unit will always be
-				#	arriving, allowing to depict both the dislodging and
-				#	dislodged units.
-				#	-------------------------------------------------------
-				dislodging = [x for p in self.powers for x in p.units
-					if x[2:5] == new[:3]
-					and 'dislodged' in self.result.get(x, [])]
-		rules = self.rules
-		for seer in self.powers:
-			shows[seer.name] = 15 * bool(power is seer or seer.omniscient
-				or [seer.name] == getattr(power, 'ceo', [])[:1])
-			if (shows[seer.name]
-			or ('SEE_NO_SCS', 'SEE_NO_UNITS')[' ' in unit] in rules): continue
-			#	--------------------------------------------------
-			#	Get the list of the "seer"s sighted units (if any)
-			#	with their positions before and after any movement
-			#	--------------------------------------------------
-			vassals = [seer] + seer.vassals()
-			units = [y for x in vassals for y in x.units]
-			adjusts = [y for x in vassals for y in x.adjust]
-			retreats = [y for x in vassals for y in x.retreats.keys()]
-			if 'NO_UNITS_SEE' in rules: before = after = []
-			else:
-				spotters = ' ' in unit and (
-					'UNITS_SEE_SAME' in rules and unit[0] or
-					'UNITS_SEE_OTHER' in rules and ('F', 'A')[unit[0] == 'F'] or
-					'') or ''
-				before = after = [x[2:]
-					for x in units + retreats
-					if not spotters or x[0] in spotters]
-				if self.phaseType == 'M':
-					after = []
-					for his in units:
-						if spotters and his[0] not in spotters: continue
-						if (self.command.get(his, 'H')[0] != '-'
-							or self.result.get(his)): after += [his[2:]]
-						else:
-							after += [self.command[his].split()[-1]]
-							if (dislodging
-							and after[-1][:3] not in [x[:3] for x in before]
-							and (not spotters or dislodging[0][0] in spotters)):
-								before += [after[-1]]
-				elif self.phaseType == 'R':
-					if 'popped' not in vars(self): self.popped = []
-					if adjusts:
-						after = [x for x in before if x not in
-							[y[2:] for y in retreats]]
-						for adjusted in adjusts:
-							word = adjusted.split()
-							if spotters and word[1][0] not in spotters: continue
-							if word[3][0] == '-' and word[2] not in self.popped:
-								after += [word[-1]]
-					else:
-						after = [x for x in before if x not in
-							[y[2:] for y in self.popped if y in retreats]]
-				elif self.phaseType == 'A':
-					after = [z for z in before if z not in
-						[x[1] for x in [y.split()[1:] for y in adjusts]
-					if len(x) > 1]] + [x[1] for x in
-						[y.split()[1:] for y in adjusts if y[0] == 'B']
-					if len(x) > 1 and (not spotters or x[0][0] in spotters)]
-			#	------------------------------------------------
-			#	Get the list of the "seer"s sighted scs (if any)
-			#	------------------------------------------------
-			if 'NO_SCS_SEE' in rules: pass
-			elif ('OWN_SCS_SEE' in rules
-			or self.map.homeYears and not [x for x in self.powers if x.homes]):
-				#	------------------------------------
-				#	The seer's owned centers are sighted
-				#	------------------------------------
-				scs = [y for x in vassals for y in x.centers]
-				if 'SC!' in scs:
-					scs = [x[8:11] for x in adjusts if x[:5] == 'BUILD']
-				after += scs
-				if 'OWN_SCS_SEE' in rules:
-					if 'lost' in vars(self):
-						for what, who in self.lost.items():
-							if what in scs and who not in vassals:
-								scs.remove(what)
-							elif what not in scs and who in vassals:
-								scs.append(what)
-					before += scs
-			else:
-				#	-----------------------------------
-				#	The seer's home centers are sighted
-				#	-----------------------------------
-				scs = [y for x in vassals for y in x.homes or []]
-				#	----------------------------------------------------------
-				#	Also add locations where the power had units at game start
-				#	(helping void variant games, where units start on non-SCs)
-				#	----------------------------------------------------------
-				if 'BLANK_BOARD' not in rules and 'MOBILIZE' not in rules:
-					scs += [y[2:] for x in vassals
-						for y in self.map.units.get(x.name, [])]
-				after += scs
-				before += scs
-			#	-------------------------------------------------
-			#	When it comes to visibility, we can ignore coasts
-			#	-------------------------------------------------
-			before = set([x[:3] for x in before])
-			after = set([x[:3] for x in after])
-			both = before & after
-			before, after = before - both, after - both
-			old, new = old[:3], new[:3]
-			places = (' ' in unit and unit in getattr(power, 'hides', []) and
-				[(new, 4)] or old == new and [(old, 5)] or [(old, 1), (new, 4)])
-
-			#	-------------------------------------------------------
-			#	Set the bitmap for this "seer" if any unit or sc in the
-			#	lists (before, after, scs) can see the site in question
-			#	-------------------------------------------------------
-			for bit in [b * m for (b, l) in [(1, before), (2, after), (3, both)]
-				 for x in l for (y, m) in places
-				 if x == y or self.abuts('?', y, 'S', x)]:
-				shows[seer.name] |= bit
-		return shows
-	#	----------------------------------------------------------------------
-	def showLines(self, power, unit, notes):
-		if self.phaseType != 'M': unit, word = ' '.join(unit[1:3]), unit
-		list, lost, found, gone, came, all = [], [], [], [], [], []
-		if self.phaseType == 'M':
-			if self.command.get(unit, 'H')[0] != '-' or self.result[unit]:
-				there = unit
-			else: there = unit[:2] + self.command[unit].split()[-1]
-			cmd = None
-		elif len(word) > 4 and word[2] not in notes:
-			cmd, there = ' '.join(word[3:]), unit[:2] + word[-1]
-			power.units += [unit]
-			for who in (self.powers, [])['NO_UNITS_SEE' in self.rules]:
-				if who is power: continue
-				for what in who.units + who.adjust:
-					if ('UNITS_SEE_OTHER' in self.rules and what[0] == unit[0]
-					or	'UNITS_SEE_SAME' in self.rules and what[0] != unit[0]):
-						continue
-					if what in who.adjust:
-						parse = what.split()
-						if parse[2] in notes or parse[3] != '-': continue
-						what, it = parse[1], parse[-1]
-					else: it = what[2:]
-					if (self.abuts('?', word[-1], 'S', it)
-					and not self.visible(who, what, 'H').get(power.name, 0)):
-						list += ['SHOW ' + power.name,
-							'%-11s %s FOUND.' % (self.anglify(who.name) + ':',
-							self.anglify(what[0] + ' ' + it))]
-			power.units.remove(unit)
-		elif unit == 'WAIVED' or (len(word) > 3 and word[-1] == 'HIDDEN'):
-			return ['SHOW MASTER ' + ' '.join(
-			[x.name for x in self.powers if x == power or x.omniscient])]
-		else: cmd, there = 'H', unit
-		for who, how in self.visible(power, unit, cmd).items():
-			if how & 8:
-				if how & 1: all += [who]
-				else: (found, came)[how & 4 > 0].append(who)
-			elif how & 1: (lost, gone)[how & 2 > 0].append(who)
-		if self.phaseType != 'M' and word[2] in notes: found = arrived = []
-		for who, what in ((gone, 'DEPARTS'), (lost, 'LOST'),
-						  (found, 'FOUND'), (came, 'ARRIVES')):
-			if who:
-				list += ['SHOW ' + ' '.join(who)]
-				if self.phaseType == 'M': list += ['%s: %s %s.' %
-					(self.anglify(power.name),
-					self.anglify((unit, there)[what[0] in 'FA'], power), what) +
-					'  (*dislodged*)' * ('dislodged' in notes)]
-				else: list += ['%-11s %s %s.' % (self.anglify(power.name) + ':',
-					self.anglify((unit, there)[what[0] in 'FA'], power), what)]
-		return list + ['SHOW ' + ' '.join(all)]
-	#	----------------------------------------------------------------------
 	def moveResults(self):
 		self.resolveMoves()
 		list = ['Movement results for ' + self.phaseName(), '']
@@ -3763,7 +3573,7 @@ class Game:
 					#	text line specifying who should see result text.
 					#	Also, show any partial results that should be seen.
 					#	-----------------------------------------------------
-					list += self.showLines(power, unit, notes)
+					list += power.showLines(unit, notes)
 				#	-------------------------------------------
 				#	I know it's tempting to line up the orders,
 				#	but David Norman's Mapper doesn't read the
@@ -3843,7 +3653,7 @@ class Game:
 					#	text line specifying who should NOT see result text.
 					#	-----------------------------------------------------
 					if 'BLIND' in rules:
-						show = [x for x,y in self.visible(power, unit, 'H').
+						show = [x for x,y in power.visible(unit, 'H').
 							items() if y & 8 and x in self.map.powers]
 						who += [x for x in show if x not in who]
 						if unit in self.popped:
@@ -3887,7 +3697,7 @@ class Game:
 				self.phaseType = 'R'
 				for power in self.powers:
 					for unit in power.units:
-						list += self.showLines(power, ['HOLD'] + unit.split(),
+						list += power.showLines(['HOLD'] + unit.split(),
 							[])[:-1]
 				list += ['SHOW']
 				self.phaseType = 'M'
@@ -4025,19 +3835,26 @@ class Game:
 		#	----------------------------
 		if 'BLIND' in self.rules:
 			for power in self.powers:
-				for unit in power.units: list += self.showLines(power,
-					['HOLD'] + unit.split(), [])[:-1]
+				for order in power.adjust or []:
+					word = order.split()
+					if len(word) > 3 and word[-1] == 'HIDDEN':
+						order = order[:-7]
+					list += power.showLines(order.split(), self.popped)
+					list += ['%-11s %s.' %
+						(self.anglify(power.name) + ':', self.anglify(order))]
+				for unit in power.units: list += power.showLines(
+					['HOLD'] + unit.split(), self.popped)[:-1]
+		else:
+			for power in self.powers:
+				for order in power.adjust or []:
+					word = order.split()
+					if len(word) > 3 and word[-1] == 'HIDDEN':
+						order = word[0] + ' HIDDEN'
+					list += ['%-11s %s.' %
+						(self.anglify(power.name) + ':', self.anglify(order))]
 		for power in self.powers:
 			for order in power.adjust or []:
 				word = order.split()
-				if 'BLIND' in self.rules:
-					list += self.showLines(power, word, self.popped)
-					if len(word) > 3 and word[-1] == 'HIDDEN':
-						order = order[:-7]
-				elif len(word) > 3 and word[-1] == 'HIDDEN':
-				 	order = word[0] + ' HIDDEN'
-				list += ['%-11s %s.' %
-					(self.anglify(power.name) + ':', self.anglify(order))]
 				if word[0] == 'BUILD' and len(word) > 2:
 					if len(word) > 3 and word[-1] == 'HIDDEN':
 						word = word[:-1]
@@ -4445,7 +4262,6 @@ class Game:
 			adjust = []
 		adjust.sort()
 		if adjust == power.adjust:
-			self.process()
 			return self.error
 		if not self.canChangeOrders(power.adjust, adjust): return
 		if not adjust:

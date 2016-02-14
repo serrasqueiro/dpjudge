@@ -291,26 +291,24 @@ class Power:
 		#		and the grace period has expired.
 		#	-----------------------------------
 		game = self.game
-		now = game.getTime()
 		return not self.type and self.player and (
 			self.isDummy() and (
 				not self.ceo and 'CD_DUMMIES' in game.rules or (
-					after > 0 or after == 0 and game.deadline <= now and (
+					after > 0 or 'NO_DEADLINE' not in game.rules and
+					game.deadline and game.deadline <= game.getTime() and (
 						not self.ceo or game.graceExpired()
 					)
 				) and (
 					self.ceo and 'CD_DUMMIES' in game.rules or
-					{'M': 'CD_SUPPORTS', 'R': 'CD_RETREATS', 'A': 'CD_BUILDS'}
-					.get(game.phaseType) in game.rules
+					'CIVIL_DISORDER' in game.rules
 				)
 			) or
 			not self.isResigned() and (
-				after > 0 or after == 0 and game.deadline <= now and
+				after > 0 or 'NO_DEADLINE' not in game.rules and
+				game.deadline and game.deadline <= game.getTime() and
 				game.graceExpired()
 			) and
-			'CIVIL_DISORDER' in game.rules and
-			{'M': 'CD_SUPPORTS', 'R': 'CD_RETREATS', 'A': 'CD_BUILDS'}
-			.get(game.phaseType) in game.rules
+			'CIVIL_DISORDER' in game.rules
 		)
 	#	----------------------------------------------------------------------
 	def isValidPassword(self, password):
@@ -377,4 +375,198 @@ class Power:
 	def canVote(self):
 		return not self.ceo and (self.centers or
 			[1 for x in self.vassals() if x.centers])
+	#	----------------------------------------------------------------------
+	def visible(self, unit, order = None):
+		#	--------------------------------------------------------------
+		#	This function returns a dictionary listing a number for each
+		#	of the powers.  The number is a bitmap, with the following
+		#	meaning.  If the bitvalue 1 is set, this means the power could
+		#	"see" the unit in question BEFORE the move.  If the bitvalue 2
+		#	is set, this means the power could "see" (AFTER the move) the
+		#	location where the unit in question began the turn.  If the
+		#	bitvalue 4 is set, the power could "see" (BEFORE the move) the
+		#	location where the unit in question ended the turn, and if the
+		#	bitvalue 8 is set, the power could "see" (AFTER the move) the
+		#	location where the unit in question ended the turn.  If "unit"
+		#	is simply a center location, determines center visibility.
+		#	--------------------------------------------------------------
+		game = self.game
+		if 'command' not in vars(game): game.command = {}
+		shows, order = {'MASTER': 15}, order or game.command.get(unit, 'H')
+		old = new = unit.split()[-1][:3]
+		dislodging = 0
+		if order[0] == '-' and (game.phaseType != 'M'
+		or not game.result.get(unit)):
+			new = order.split()[-1][:3]
+			if game.phaseType == 'M':
+				#	-------------------------------------------------------
+				#	If this unit is dislodging another unit (which might be
+				#	of the same power), we'll pretend that any unit able to
+				#	see the destination after the move can also see it
+				#	before the move. This way the unit will always be
+				#	arriving, allowing to depict both the dislodging and
+				#	dislodged units.
+				#	-------------------------------------------------------
+				dislodging = [x for p in game.powers for x in p.units
+					if x[2:5] == new[:3]
+					and 'dislodged' in game.result.get(x, [])] and 1 or 0
+		rules = game.rules
+		for seer in game.powers:
+			shows[seer.name] = 15 * bool(self is seer or seer.omniscient
+				or seer is self.controller())
+			if (shows[seer.name]
+			or ('SEE_NO_SCS', 'SEE_NO_UNITS')[' ' in unit] in rules): continue
+			#	--------------------------------------------------
+			#	Get the list of the "seer"s sighted units (if any)
+			#	with their positions before and after any movement
+			#	--------------------------------------------------
+			vassals = [seer] + seer.vassals()
+			units = [y for x in vassals for y in x.units]
+			adjusts = [y for x in vassals for y in x.adjust]
+			retreats = [y for x in vassals for y in x.retreats.keys()]
+			if 'NO_UNITS_SEE' in rules: before = after = []
+			else:
+				spotters = 'AF'
+				if ' ' in unit:
+					if 'UNITS_SEE_SAME' in rules: spotters = unit[0]
+					elif 'UNITS_SEE_OTHER' in rules:
+						spotters = spotters.replace(unit[0], '')
+				before = after = [x[2:] for x in units + retreats
+					if x[0] in spotters]
+				if game.phaseType == 'M':
+					after = []
+					for his in units:
+						if his[0] not in spotters: continue
+						if (game.command.get(his, 'H')[0] != '-'
+							or game.result.get(his)): after += [his[2:]]
+						else:
+							after += [game.command[his].split()[-1]]
+				elif game.phaseType == 'R':
+					if 'popped' not in vars(game): game.popped = []
+					if adjusts:
+						after = [x for x in before if x not in
+							[y[2:] for y in retreats]]
+						for adjusted in adjusts:
+							word = adjusted.split()
+							if word[1][0] not in spotters: continue
+							if word[3][0] == '-' and word[2] not in game.popped:
+								after += [word[-1]]
+					else:
+						after = [x for x in before if x not in
+							[y[2:] for y in game.popped if y in retreats]]
+				elif game.phaseType == 'A':
+					after = [z for z in before if z not in
+						[x[1] for x in [y.split()[1:] for y in adjusts]
+						if len(x) > 1]] + [x[1] for x in
+						[y.split()[1:] for y in adjusts if y[0] == 'B']
+						if len(x) > 1 and x[0][0] in spotters]
+			#	------------------------------------------------
+			#	Get the list of the "seer"s sighted scs (if any)
+			#	------------------------------------------------
+			if 'NO_SCS_SEE' in rules: pass
+			elif ('OWN_SCS_SEE' in rules
+			or game.map.homeYears and not [x for x in game.powers if x.homes]):
+				#	------------------------------------
+				#	The seer's owned centers are sighted
+				#	------------------------------------
+				scs = [y for x in vassals for y in x.centers]
+				if 'SC!' in scs:
+					scs = [x[8:11] for x in adjusts if x[:5] == 'BUILD']
+				after += scs
+				if 'OWN_SCS_SEE' in rules:
+					if 'lost' in vars(game):
+						for what, who in game.lost.items():
+							if what in scs and who not in vassals:
+								scs.remove(what)
+							elif what not in scs and who in vassals:
+								scs.append(what)
+					before += scs
+			else:
+				#	-----------------------------------
+				#	The seer's home centers are sighted
+				#	-----------------------------------
+				scs = [y for x in vassals for y in x.homes or []]
+				#	----------------------------------------------------------
+				#	Also add locations where the power had units at game start
+				#	(helping void variant games, where units start on non-SCs)
+				#	----------------------------------------------------------
+				if 'BLANK_BOARD' not in rules and 'MOBILIZE' not in rules:
+					scs += [y[2:] for x in vassals
+						for y in game.map.units.get(x.name, [])]
+				after += scs
+				before += scs
+			#	-------------------------------------------------
+			#	When it comes to visibility, we can ignore coasts
+			#	-------------------------------------------------
+			before = set([x[:3] for x in before])
+			after = set([x[:3] for x in after])
+			both = before & after
+			before, after = before - both, after - both
+			old, new = old[:3], new[:3]
+			places = (' ' in unit and unit in self.hides and
+				[(new, 4)] or old == new and [(old, 5)] or [(old, 1), (new, 4)])
+			#	-------------------------------------------------------
+			#	Set the bitmap for this "seer" if any unit or sc in the
+			#	lists (before, after, scs) can see the site in question
+			#	-------------------------------------------------------
+			for bit in [b * m for (y, m) in places for (b, l) in [(1, before),
+				(2 + ((m & 4) and dislodging), after), (3, both)]
+				for x in l if x == y or game.abuts('?', y, 'S', x)]:
+				shows[seer.name] |= bit
+		return shows
+	#	----------------------------------------------------------------------
+	def showLines(self, unit, notes):
+		game = self.game
+		if game.phaseType != 'M': unit, word = ' '.join(unit[1:3]), unit
+		list, lost, found, gone, came, all = [], [], [], [], [], []
+		if game.phaseType == 'M':
+			if game.command.get(unit, 'H')[0] != '-' or game.result[unit]:
+				there = unit
+			else: there = unit[:2] + game.command[unit].split()[-1]
+			cmd = None
+		elif len(word) > 4 and word[2] not in notes:
+			cmd, there = ' '.join(word[3:]), unit[:2] + word[-1]
+			if not 'NO_UNITS_SEE' in game.rules:
+				self.units += [unit]
+				adjust, self.adjust = self.adjust, []
+				for who in game.powers:
+					if who is self or who.controller() is self: continue
+					for what in who.units:
+						it = what[2:]
+						if ('UNITS_SEE_OTHER' in game.rules
+						and what[0] == unit[0]
+						or	'UNITS_SEE_SAME' in game.rules
+						and what[0] != unit[0]):
+							continue
+						if (game.abuts('?', word[-1], 'S', it)
+						and not who.visible(what, 'H').get(
+							self.name, 0)):
+							list += ['SHOW ' + self.name,
+								'%-11s %s FOUND.' % (
+								game.anglify(who.name) + ':',
+								game.anglify(what[0] + ' ' + it))]
+				self.adjust = adjust
+				self.units.remove(unit)
+		elif unit == 'WAIVED' or (len(word) > 3 and word[-1] == 'HIDDEN'):
+			return ['SHOW MASTER ' + ' '.join([x.name for x in game.powers
+				if x == self or x == self.controller() or x.omniscient])]
+		else: cmd, there = 'D', unit
+		for who, how in self.visible(unit, cmd).items():
+			if how & 8:
+				if how & 1: all += [who]
+				elif how & 4: came.append(who)
+				elif cmd != 'D': found.append(who)
+			elif how & 1: (lost, gone)[how & 2 > 0].append(who)
+		if game.phaseType != 'M' and word[2] in notes: found = arrived = []
+		for who, what in ((gone, 'DEPARTS'), (lost, 'LOST'),
+						  (found, 'FOUND'), (came, 'ARRIVES')):
+			if who:
+				list += ['SHOW ' + ' '.join(who)]
+				if game.phaseType == 'M': list += ['%s: %s %s.' %
+					(game.anglify(self.name),
+					game.anglify((unit, there)[what[0] in 'FA'], self), what) +
+					'  (*dislodged*)' * ('dislodged' in notes)]
+				else: list += ['%-11s %s %s.' % (game.anglify(self.name) + ':',
+					game.anglify((unit, there)[what[0] in 'FA'], self), what)]
+		return list + ['SHOW ' + ' '.join(all)]
 	#	----------------------------------------------------------------------
