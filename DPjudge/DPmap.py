@@ -42,6 +42,7 @@ class PostScriptMap:
 				line = lastLine.rstrip() + ' ' + line
 				word = line.upper().split()
 				lastLine = None
+			if word[0][0] in '#%': continue
 			if word[0] == 'SHOW':
 				show = not word[1:] or (viewer or 'MASTER') in word[1:]
 				continue

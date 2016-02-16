@@ -35,8 +35,9 @@ class Game:
 			for morph in self.morphs: text += '\nMORPH ' + morph
 		if self.master: text += '\nMASTER ' + '|'.join(self.master)
 		text += '\nPASSWORD ' + self.password
-		if self.tester and self.tester[-1] == '!':
-			text += '\nTESTER ' + self.tester[:-1]
+		tester = self.tester.rstrip('@')
+		if tester and tester[-1] == '!':
+			text += '\nTESTER ' + tester[:-1]
 		if self.groups: text += '\nGROUPS ' + ('|').join(self.groups)
 		if self.start: text += '\nSTART ' + self.start
 		if self.end: text += '\nFINISH ' + self.end
@@ -1401,8 +1402,9 @@ class Game:
 		and '(%s)' % self.name not in words): subject += ' (%s)' % self.name
 		if not mailTo: mailTo = host.dpjudge
 		elif mailTo != host.dpjudge and self.tester:
-			mailTo = (self.tester, self.tester[:-1])[self.tester[-1] == '!']
-			mailTo = mailTo * (len(mailTo) > 2 and '@' in mailTo)
+			mailTo = self.tester.rstrip('!')
+			mailTo = mailTo * (len(mailTo) > 2 and
+				mailTo[-1] != '@' and '@' in mailTo)
 		else: mailTo = mailTo or host.dpjudge
 		self.mail = Mail(mailTo, subject,
 			copy = copyFile and self.file(copyFile),
@@ -2081,7 +2083,7 @@ class Game:
 		if self.tester:
 			email = self.tester 
 			if email[-1] == '!': email = email[:-1]
-			if len(email) > 2 and '@' in email:
+			if len(email) > 2 and email[-1] != '@' and '@' in email:
 				self.deliverPress(sender, 'MASTER', email, readers, message,
 								  claimFrom, claimTo, subject = subject)
 				sentTo += [email]
@@ -2553,7 +2555,7 @@ class Game:
 				'error-free game')
 		if self.status[1] != expected: self.changeStatus(expected)
 		preview, self.preview = self.preview, 0
-		tester, self.tester = self.tester, '@'
+		self.tester += '@'
 		if self.phase == 'FORMING':
 			self.status[1] = 'forming'
 			self.begin(roll = 1)
@@ -2613,10 +2615,12 @@ class Game:
 				unphase = self.map.phaseAbbr(self.phase, self.phase.upper())
 			if unphase != outphase:
 				return 'ROLLFORWARD phase mismatch'
-		self.preview, self.tester = preview, tester
+		self.preview, self.tester = preview, self.tester[:-1]
 		# Load the last phase
 		prephase = self.phase
 		self.loadStatus('status.' + unphase + '.0', includeFlags)
+		try: os.unlink(self.file('results.0'))
+		except: pass
 		self.await = self.await > 1 and self.await
 		self.skip = None
 		if self.phase != 'COMPLETED':
@@ -3372,8 +3376,7 @@ class Game:
 		if 'BLIND' in self.rules:
 			for power in self.powers:
 				for unit in power.units:
-					list += power.showLines(['HOLD'] + unit.split(),
-						[])[:-1]
+					list += power.showLines('HOLD ' + unit, [])
 			list += ['SHOW', '']
 		self.lost = {}
 		return list
@@ -3568,21 +3571,23 @@ class Game:
 						notes.remove('void')
 						if self.command[unit].count('-') > 1:
 							notes += ['no convoy']
+				line = '%s: %s.%s' % (self.anglify(power.name),
+					self.anglify(unit + ' ' + self.command[unit], power),
+					notes and '  (*%s*)' % ', '.join(notes) or '')
+				if 'BLIND' in rules:
 					#	-----------------------------------------------------
 					#	If this is a BLIND game, add a line before the result
 					#	text line specifying who should see result text.
 					#	Also, show any partial results that should be seen.
 					#	-----------------------------------------------------
-					list += power.showLines(unit, notes)
+					list += power.showLines(unit, notes, line)
 				#	-------------------------------------------
 				#	I know it's tempting to line up the orders,
 				#	but David Norman's Mapper doesn't read the
 				#	output right if it has more than a single
 				#	space between the colon and the order.
 				#	-------------------------------------------
-				list += ['%s: %s.%s' % (self.anglify(power.name),
-					self.anglify(unit + ' ' + self.command[unit], power),
-					notes and '  (*%s*)' % ', '.join(notes) or '')]
+				else: list += [line]
 			#	-------------------------------------------
 			#	Add any invalid orders (if NO_CHECK is set)
 			#	-------------------------------------------
@@ -3697,8 +3702,7 @@ class Game:
 				self.phaseType = 'R'
 				for power in self.powers:
 					for unit in power.units:
-						list += power.showLines(['HOLD'] + unit.split(),
-							[])[:-1]
+						list += power.showLines('HOLD ' + unit, [])
 				list += ['SHOW']
 				self.phaseType = 'M'
 			for unit, power in destroyed.items():
@@ -3835,15 +3839,16 @@ class Game:
 		#	----------------------------
 		if 'BLIND' in self.rules:
 			for power in self.powers:
+				units = power.units[:]
 				for order in power.adjust or []:
 					word = order.split()
 					if len(word) > 3 and word[-1] == 'HIDDEN':
-						order = order[:-7]
-					list += power.showLines(order.split(), self.popped)
-					list += ['%-11s %s.' %
-						(self.anglify(power.name) + ':', self.anglify(order))]
-				for unit in power.units: list += power.showLines(
-					['HOLD'] + unit.split(), self.popped)[:-1]
+						order = ' '.join(word[:-1])
+					if word[0] == 'REMOVE': units.remove(' '.join(word[1:3]))
+					list += power.showLines(order, self.popped, '%-11s %s.' %
+						(self.anglify(power.name) + ':', self.anglify(order)))
+				for unit in units:
+					list += power.showLines('HOLD ' + unit, self.popped)
 		else:
 			for power in self.powers:
 				for order in power.adjust or []:

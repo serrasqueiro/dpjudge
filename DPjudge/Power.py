@@ -515,58 +515,53 @@ class Power:
 				shows[seer.name] |= bit
 		return shows
 	#	----------------------------------------------------------------------
-	def showLines(self, unit, notes):
+	def showLines(self, unit, notes = [], line = None):
 		game = self.game
-		if game.phaseType != 'M': unit, word = ' '.join(unit[1:3]), unit
 		list, lost, found, gone, came, all = [], [], [], [], [], []
+		#list += ['# Show ' + unit]
 		if game.phaseType == 'M':
 			if game.command.get(unit, 'H')[0] != '-' or game.result[unit]:
 				there = unit
 			else: there = unit[:2] + game.command[unit].split()[-1]
 			cmd = None
-		elif len(word) > 4 and word[2] not in notes:
-			cmd, there = ' '.join(word[3:]), unit[:2] + word[-1]
-			if not 'NO_UNITS_SEE' in game.rules:
-				self.units += [unit]
-				adjust, self.adjust = self.adjust, []
-				for who in game.powers:
-					if who is self or who.controller() is self: continue
-					for what in who.units:
-						it = what[2:]
-						if ('UNITS_SEE_OTHER' in game.rules
-						and what[0] == unit[0]
-						or	'UNITS_SEE_SAME' in game.rules
-						and what[0] != unit[0]):
-							continue
-						if (game.abuts('?', word[-1], 'S', it)
-						and not who.visible(what, 'H').get(
-							self.name, 0)):
-							list += ['SHOW ' + self.name,
-								'%-11s %s FOUND.' % (
-								game.anglify(who.name) + ':',
-								game.anglify(what[0] + ' ' + it))]
-				self.adjust = adjust
-				self.units.remove(unit)
-		elif unit == 'WAIVED' or (len(word) > 3 and word[-1] == 'HIDDEN'):
-			return ['SHOW MASTER ' + ' '.join([x.name for x in game.powers
-				if x == self or x == self.controller() or x.omniscient])]
-		else: cmd, there = 'D', unit
+		else:
+			word = unit.split()
+			unit = ' '.join(word[1:3])
+			if len(word) > 4 and word[2] not in notes:
+				cmd, there = ' '.join(word[3:]), unit[:2] + word[-1]
+			elif unit == 'WAIVED' or (len(word) > 3 and word[-1] == 'HIDDEN'):
+				return line and ['SHOW MASTER ' + ' '.join([x.name
+					for x in game.powers if x == self or x == self.controller()
+					or x.omniscient]), line] or []
+			else: cmd, there = word[2] in notes and 'D' or word[0][0], unit
+		c = not cmd and 'M' or len(cmd) == 1 and cmd or 'M'
 		for who, how in self.visible(unit, cmd).items():
 			if how & 8:
 				if how & 1: all += [who]
 				elif how & 4: came.append(who)
-				elif cmd != 'D': found.append(who)
-			elif how & 1: (lost, gone)[how & 2 > 0].append(who)
-		if game.phaseType != 'M' and word[2] in notes: found = arrived = []
-		for who, what in ((gone, 'DEPARTS'), (lost, 'LOST'),
-						  (found, 'FOUND'), (came, 'ARRIVES')):
-			if who:
-				list += ['SHOW ' + ' '.join(who)]
-				if game.phaseType == 'M': list += ['%s: %s %s.' %
-					(game.anglify(self.name),
-					game.anglify((unit, there)[what[0] in 'FA'], self), what) +
-					'  (*dislodged*)' * ('dislodged' in notes)]
-				else: list += ['%-11s %s %s.' % (game.anglify(self.name) + ':',
-					game.anglify((unit, there)[what[0] in 'FA'], self), what)]
-		return list + ['SHOW ' + ' '.join(all)]
+				elif game.phaseType == 'A':
+					if c in 'BR': all += [who]
+					if c != 'B': found.append(who)
+				elif c not in 'RD': found.append(who)
+			elif how & 1:
+				if how & 2: gone.append(who)
+				else:
+					if c not in 'RD': lost.append(who)
+					if c in 'BRD': all += [who]
+		if game.phaseType == 'M':
+			fmt = '%s %s %s.' + '  (*dislodged*)' * ('dislodged' in notes)
+		else:
+			fmt = '%-11s %s %s.'
+		for who, what in ((found, 'FOUND'), (came, 'ARRIVES')):
+			if not who: continue
+			list += ['SHOW ' + ' '.join(who),
+				fmt % (game.anglify(self.name) + ':',
+				game.anglify((unit, there)[what[0] in 'FA'], self), what)]
+		if line: list += ['SHOW ' + ' '.join(all), line]
+		for who, what in ((gone, 'DEPARTS'), (lost, 'LOST')):
+			if not who: continue
+			list += ['SHOW ' + ' '.join(who),
+				fmt % (game.anglify(self.name) + ':',
+				game.anglify((unit, there)[what[0] in 'FA'], self), what)]
+		return list
 	#	----------------------------------------------------------------------
