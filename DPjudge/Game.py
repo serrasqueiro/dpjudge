@@ -1,4 +1,4 @@
-import os, random, socket, textwrap, urllib, glob, re
+import os, random, socket, textwrap, urllib, glob, re, shutil
 from codecs import open
 
 import host
@@ -2616,11 +2616,25 @@ class Game:
 			if unphase != outphase:
 				return 'ROLLFORWARD phase mismatch'
 		self.preview, self.tester = preview, self.tester[:-1]
+		# Merge the results of the rolled phases with any further rolled back phases.
+		if os.path.exists(self.file('results.0')):
+			file = open(self.file('results.0'), encoding='latin-1')
+			lines = file.readlines()
+			file.close()
+			idx = 0
+			for line in lines:
+				if line[:8] != 'Subject:': continue
+				if line.split()[:-2] == unphase: break
+				idx += 1
+			else: idx = -1
+			shutil.copyfile(self.file('results'), self.file('results.0'))
+			if idx != -1:
+				file = open(self.file('results.0'), 'a', encoding='latin-1')
+				file.writelines(lines[idx:])
+				file.close()
 		# Load the last phase
 		prephase = self.phase
 		self.loadStatus('status.' + unphase + '.0', includeFlags)
-		try: os.unlink(self.file('results.0'))
-		except: pass
 		self.await = self.await > 1 and self.await
 		self.skip = None
 		if self.phase != 'COMPLETED':
@@ -3715,6 +3729,7 @@ class Game:
 		return list
 	#	----------------------------------------------------------------------
 	def otherResults(self):
+		self.command = {}
 		conflicts, self.popped, owner, list = {}, [], 0, ['%s orders for ' %
 			self.phase.split()[2][:-1].title() + self.phaseName(), '']
 		#	---------------------------------------------------

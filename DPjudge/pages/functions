@@ -203,7 +203,7 @@ def showResultsText(subject = None, align = 1):
 				if matching:
 					if topic == matching: matching = False
 				else:
-					# In case te results file went last.
+					# In case the results file went lost.
 					if not backList and topic.split()[-1] == game.phaseAbbr():
 						backList, forwardList = forwardList, []
 					forwardList += [topic]
