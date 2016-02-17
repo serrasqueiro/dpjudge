@@ -98,7 +98,7 @@ class Game:
 			avail, morphs = [], []
 			try: metaRules = self.rules[:]
 			except: metaRules, rules = [], []
-			tester = host.tester
+			tester = host.tester or ''
 			groups = password = start = ''
 			map = private = zone = judge = signon = None
 			timing, terrain, status = {}, {}, Status().dict.get(self.name, [])
