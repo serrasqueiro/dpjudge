@@ -197,17 +197,18 @@ class Game:
 		#	convoyed unit could exist and could
 		#	reach the listed destination).
 		#	-------------------------------------
-		if 'FICTIONAL_OK' in rules:
-			if not map.isValidUnit(unit):
-				return error.append('ORDER TO INVALID UNIT: ' + unit)
-			if word[0] in ('S', 'C') and word[1] in ('A', 'F'):
-				other = ' '.join(word[1:3])
+		if not map.isValidUnit(unit):
+			return error.append('ORDER TO INVALID UNIT: ' + unit)
+		if orderType in ('S', 'C') and word[1] in ('A', 'F'):
+			other = ' '.join(word[1:3])
+			if not map.isValidUnit(other, 1):
+				return error.append('ORDER INCLUDES INVALID UNIT: ' + other)
+			if len(word) == 5:
+				other = (word[1], '?')['SIGNAL_SUPPORT' in rules and
+					orderType == 'S'] + ' ' + word[4]
 				if not map.isValidUnit(other, 1):
-					return error.append('ORDER INCLUDES INVALID UNIT: ' + other)
-				if len(word) == 5:
-					other = word[1] + ' ' + word[4]
-					if not map.isValidUnit(other, 1):
-						return error.append('IMPOSSIBLE ORDER FOR ' + unit)
+					return error.append('IMPOSSIBLE ORDER FOR ' + unit)
+		if 'FICTIONAL_OK' in rules: pass
 		elif not status:
 			return error.append('ORDER TO NON-EXISTENT UNIT: ' + unit)
 		elif (power is not owner and 'PROXY_OK' not in rules

@@ -120,8 +120,10 @@ The power abbreviation for Mori is R, and for Oda is D.
 Additionally, six of the 21
 neutral centres begin the game occupied by an unowned army, which
 <tt>HOLD</tt>s on each turn and may be supported by any player.  When
-this army is dislodged, it does not retreat; it is destroyed.
-
+this army is dislodged, it does not retreat; it is destroyed. If
+however the player attacks in Spring and exits in Fall, so that the
+center is not yet captured, a new unowned unit will be built there.
+<p>
 Players may build new units on any owned supply center.
 <p>
 The map contains 37 supply centers; control of 15 is required for victory.
