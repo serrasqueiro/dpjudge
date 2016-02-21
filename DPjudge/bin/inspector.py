@@ -76,6 +76,18 @@ class Inspector(object):
 		if not errors: print('Game %s purged.' % gameName)
 		else: print('\n'.join(errors))
 	#	----------------------------------------------------------------------
+	def rename(self, gameName, toGameName = None):
+		if toGameName is None:
+			if not self.game:
+				print 'No game loaded'
+				return
+			gameName, toGameName = self.game.name, gameName
+		errors = Status().renameGame(gameName, toGameName, 1)
+		if errors: print('\n'.join(errors))
+		else:
+			print('Game %s renamed to %s.' % (gameName, toGameName))
+			self.load(toGameName)
+	#	----------------------------------------------------------------------
 	def connect(self):
 		dppd = DPPD()
 		db = dppd.db

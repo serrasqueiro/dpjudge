@@ -86,23 +86,41 @@ class Time(str):
 	def __new__(self, zone = None, when = None, npar = 5):
 		zone = TimeZone(zone)
 		zone.putZone()
-		try:
-			if (when.isnumeric() and len(when) in range(8, 16, 2)):
-				this = str.__new__(self, when.ljust(14, '0')[:(npar * 2 + 2)])
-			else: raise AssertionError
-		except:
+		while 1:
+			try:
+				if (when.isnumeric() and len(when) in range(8, 16, 2)):
+					this = str.__new__(self, when.ljust(14, '0')[:(npar * 2 + 2)])
+					break
+			except: pass
 			try:
 				if (unicode(when, 'latin-1').isnumeric()
 				and len(when) in range(8, 16, 2)):
 					this = str.__new__(self,
 						when.ljust(14, '0')[:(npar * 2 + 2)])
-				else: raise AssertionError
-			except:
-				try: this = str.__new__(self, '%02d' * npar % when[:npar])
-				except:
-					try: this = str.__new__(self, '%02d' * npar %
-						time.localtime(when)[:npar])
-					except: this = str.__new__(self)
+					break
+			except: pass
+			try:
+				this = str.__new__(self, '%02d' * npar % when[:npar])
+				break
+			except: pass
+			try:
+				this = str.__new__(self, '%02d' * npar %
+					time.localtime(when)[:npar])
+				break
+			except: pass
+			try:
+				this = str.__new__(self, '%02d' * npar %
+					time.strptime(when)[:npar])
+				break
+			except: pass
+			for fmt in ['%A %d %B %Y %H:%M', '%a %d %b %Y %H:%M', '%a, %d %b %Y %H:%M:%S', '%d %B %Y', '%A %d %B %Y']:
+				try:
+					this = str.__new__(self, '%02d' * npar %
+						time.strptime(when, fmt)[:npar])
+					break
+				except: pass
+			else: this = str.__new__(self)
+			break
 		this.zone = zone
 		this.tail = [0, 0, -1]
 		if this:

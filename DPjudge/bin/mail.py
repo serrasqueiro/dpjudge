@@ -89,8 +89,10 @@ class Procmail:
 				if len(word) < 5: word += ['standard']
 				elif len(word) > 5:
 					self.respond('Unrecognized %s data' % upword)
-				game, toGame, password, variant = ' '.join(word[1:]).lower().split()
-				password, variant = self.sanitize(password), self.sanitize(variant)
+				game, toGame, password, variant = ' '.join(
+					word[1:]).lower().split()
+				password = self.sanitize(password)
+				variant = self.sanitize(variant)
 				for name in [toGame, game][upword[0] != 'R':]:
 					if name[:0] == ['-']:
 						self.respond("Game name can not begin with '-'")

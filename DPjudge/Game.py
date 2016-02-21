@@ -66,7 +66,6 @@ class Game:
 		if self.deadline: text += '\nDEADLINE ' + self.deadline
 		if self.zone: text += '\nZONE %s' % self.zone
 		if self.delay: text += '\nDELAY %d' % self.delay
-		if self.processed: text += '\nPROCESSED ' + self.processed
 		if self.timing:
 			text += '\nTIMING ' + ' '.join(map(' '.join, self.timing.items()))
 		for terrain, changes in self.terrain.items():
@@ -184,27 +183,28 @@ class Game:
 		if len(word[-1]) == 1 and not word[-1].isalpha(): word = word[:-1]
 		if not word: return
 		error = ([], self.error)[report]
-		map, status = self.map, owner != None
+		map, status, signal = self.map, owner != None, 'SIGNAL_SUPPORT' in rules
 		unitType, unitLoc, orderType = unit[0], unit[2:], word[0]
 		#	-------------------------------------
 		#	Make sure the unit exists or (if the
 		#	player is in a game in which he can't
 		#	necessarily know) could exist.  Also
 		#	make sure any mentioned (supported or
-		#	convoyed unit could exist and could
-		#	reach the listed destination).
+		#	convoyed) unit could exist and could
+		#	reach the listed destination.
 		#	-------------------------------------
-		if 'FICTIONAL_OK' in rules:
-			if not map.isValidUnit(unit):
-				return error.append('ORDER TO INVALID UNIT: ' + unit)
-			if word[0] in ('S', 'C') and word[1] in ('A', 'F'):
-				other = ' '.join(word[1:3])
+		if not map.isValidUnit(unit):
+			return error.append('ORDER TO INVALID UNIT: ' + unit)
+		if orderType in ('S', 'C') and word[1] in ('A', 'F'):
+			other = ' '.join(word[1:3])
+			if not map.isValidUnit(other, 1):
+				return error.append('ORDER INCLUDES INVALID UNIT: ' + other)
+			if len(word) == 5:
+				other = (word[1], '?')[signal and
+					orderType == 'S'] + ' ' + word[4]
 				if not map.isValidUnit(other, 1):
-					return error.append('ORDER INCLUDES INVALID UNIT: ' + other)
-				if len(word) == 5:
-					other = word[1] + ' ' + word[4]
-					if not map.isValidUnit(other, 1):
-						return error.append('IMPOSSIBLE ORDER FOR ' + unit)
+					return error.append('IMPOSSIBLE ORDER FOR ' + unit)
+		if 'FICTIONAL_OK' in rules: pass
 		elif not status:
 			return error.append('ORDER TO NON-EXISTENT UNIT: ' + unit)
 		elif (power is not owner and 'PROXY_OK' not in rules
@@ -214,7 +214,7 @@ class Game:
 		#	Validate that anything in a SHUT location is only ordered to HOLD
 		#	-----------------------------------------------------------------
 		if map.areatype(unitLoc) == 'SHUT' and orderType != 'H':
-			if 'SIGNAL_SUPPORT' in rules: status = -1
+			if signal: status = -1
 			else: return error.append('UNIT MAY ONLY BE ORDERED TO HOLD: ' + unit)
 		#	----------------------------------
 		#	Validate support and convoy orders
@@ -289,7 +289,7 @@ class Game:
 				elif (not self.abuts(word[1], word[2], orderType, dest)
 				and	 (rcvr[0] == 'F' and 'PORTAGE_CONVOY' not in rules
 				or not self.canConvoy(word[1], word[2][:3], dest, 0, unitLoc))):
-					if 'SIGNAL_SUPPORT' in rules: status = -1
+					if signal: status = -1
 					else: return error.append(
 						'SUPPORTED UNIT CANNOT REACH DESTINATION: %s ' %
 						unit + order)
@@ -300,7 +300,7 @@ class Game:
 				#	----------------------------------
 				elif ((unitLoc, dest) in map.abutRules.get('*', []) +
 										 map.abutRules.get('~', [])):
-					if 'SIGNAL_SUPPORT' in rules: status = -1
+					if signal: status = -1
 					else: return error.append(
 						'UNIT CANNOT PROVIDE SUPPORT TO DESTINATION: %s ' %
 						unit + order)
@@ -323,7 +323,7 @@ class Game:
 				if (not self.abuts(unitType, unitLoc, orderType, dest)
 				or (unitLoc, dest) in map.abutRules.get('*', []) +
 									  map.abutRules.get('~', [])):
-					if 'SIGNAL_SUPPORT' in rules: status = -1
+					if signal: status = -1
 					else: return error.append(
 						'UNIT CANNOT DELIVER SUPPORT TO DESTINATION: %s ' %
 						unit + order)
@@ -336,8 +336,8 @@ class Game:
 			#	-----------------------------------------------------
 			#	Make sure support or convoy is kosher with any LEAGUE
 			#	-----------------------------------------------------
-			if 'FICTIONAL_OK' not in self.rules:
-				signal = orderType == 'S' and 'SIGNAL_SUPPORT' in self.rules
+			if 'FICTIONAL_OK' not in rules:
+				signal = orderType == 'S' and signal
 				if not self.checkLeague(owner, unit, order, word,
 				orderText, report and not signal):
 					if signal: status = -1
@@ -667,7 +667,9 @@ class Game:
 					error += ['NOT A GAME DECLARATION: ' + ' '.join(word)]
 					blockMode -= 4
 				else: 
-					if word[1:] != [self.name]: error += ['GAME NAME MISMATCH']
+					# Allowed during renaming, when broadcasts are disabled.
+					if word[1:] != [self.name] and self.tester[-1:] != '@':
+						error += ['GAME NAME MISMATCH']
 					blockMode = 1
 					self.mode = self.modeRequiresEnd = None
 			elif blockMode == 1:
@@ -773,12 +775,6 @@ class Game:
 						self.delay = int(word[1])
 						if not (0 < self.delay < 73): raise
 					except: error += ['BAD DELAY COUNT: ' + word[1]]
-			elif upword == 'PROCESSED':
-				if self.processed: error += ['TWO PROCESSED TIMES']
-				else:
-					self.processed = self.getTime(' '.join(word[1:]))
-					if not self.processed:
-						error += ['BAD PROCESSED TIME: ' + ' '.join(word[1:])]
 			else:
 				found = 0
 				if upword == 'RESULT':
@@ -1416,7 +1412,6 @@ class Game:
 	def save(self, asBackup = 0):
 		fileName = 'status'
 		if asBackup:
-			if not self.processed: self.processed = self.getTime(npar=6)
 			fileName += '.' + self.phaseAbbr()
 		file = open(self.file(fileName), 'w')
 		for x in [self] + self.powers:
@@ -1430,13 +1425,42 @@ class Game:
 		else: self.updateState()
 	#	----------------------------------------------------------------------
 	def fileResults(self, lines, subject = None):
+		deadline = None
 		if subject:
 			#	----------------------
 			#	Add a mail-like header
 			#	----------------------
-			lines[:0] = ['From %s %s\nSubject: %s\n\n' % (host.resultsFrom,
-				(self.processed or self.getTime()).cformat(), subject)]
-		file = open(self.file('results'), 'a')
+			lines[:0] = ['From %s %s\n' % (host.resultsFrom, (self.processed or
+				self.getTime()).cformat()), 'Subject: %s\n' % subject, '\n']
+			#	--------------------------------
+			#	Replace the deadline on the last
+			#	line of the previous season
+			#	to match the current deadline.
+			#	--------------------------------
+			phase = subject.split()[-1]
+			processed, deadline = self.processed, self.deadline
+			self.deadline = None
+			self.parseProcessed(lines, phase)
+			self.processed = processed
+			self.deadline, deadline = deadline, self.deadline
+		mode = 'a'
+		if deadline:
+			try:
+				file = open(self.file('results'), 'r', 'latin-1')
+				rlines = file.readlines()
+				file.close()
+				num = 0
+				for line in reversed(rlines):
+					num -= 1
+					if line.rstrip(): break
+				if line.startswith('The deadline for '):
+					word = line.split()
+					rdeadline = Time(word[-1][:-1], ' '.join(word[-6:-1]))
+					if rdeadline and rdeadline != deadline:
+						lines[:0], mode = rlines[:num] + [' '.join(word[:-6]) +
+							' %s.\n' % deadline.format(), '\n'], 'w'
+			except: pass
+		file = open(self.file('results'), mode)
 		temp = ''.join(lines)
 		file.write(temp.encode('latin-1'))
 		del temp
@@ -2386,6 +2410,26 @@ class Game:
 		if not self.preview:
 			self.save()
 	#	---------------------------------------------------------------------
+	def reprocess(self, phase = None, includeFlags = 0):
+		#	---------------------------------------------------------------
+		#	Rollback to phase and immediately forward to the current phase,
+		#	restoring orders and transient properties.
+		#	The deadline remains unchanged and no message is broadcast.
+		#	Mostly used after bug fixes to reproduce the results or when
+		#	renaming the game to get the new name in the results for all
+		#	phases.
+		#	---------------------------------------------------------------
+		textOnly, self.map.textOnly = self.map.textOnly, 1
+		outphase, deadline = self.phase, self.deadline
+		self.tester += '@'
+		error = (self.rollback(phase, includeFlags) or
+			self.rollforward(outphase, includeFlags | 5))
+		self.tester = self.tester[:-1]
+		self.deadline = deadline
+		self.map.textOnly = textOnly
+		self.makeMaps()
+		return error
+	#	---------------------------------------------------------------------
 	def rollback(self, phase = None, includeFlags = 0):
 		#	---------------------------------------------------------------
 		#	Rolls back to the specified phase, or to the previous phase if
@@ -2394,6 +2438,7 @@ class Game:
 		#		1: include orders for each power
 		#		2: include persistent power data
 		#		16: force roll, even for inactive games or games with errors
+		#	Bit 4 allows to include all transient data, which is always on.
 		#	Bit 8 would remove all rules when saving, so gets masked out.
 		#	Tip: During tests or debugging, use self.tester to send mail to
 		#	yourself only or, if you specify an invalid address like '@', to
@@ -2448,10 +2493,9 @@ class Game:
 		if os.path.isfile(self.file('status.' + outphase + '.0')):
 			try: os.unlink(self.file('status.rollback'))
 			except: pass
-			os.rename(self.file('status'), self.file('status.rollback'))
-		else:
-			os.rename(self.file('status'),
-				self.file('status.' + outphase + '.0'))
+			os.rename(self.file('status.' + outphase + '.0'),
+				self.file('status.rollback'))
+		os.rename(self.file('status'), self.file('status.' + outphase + '.0'))
 		try: os.unlink(self.file('summary'))
 		except: pass
 		if phase != outphase:
@@ -2554,84 +2598,77 @@ class Game:
 			return ('ROLLFORWARD can only occur on an active or waiting, ' +
 				'error-free game')
 		if self.status[1] != expected: self.changeStatus(expected)
+		if os.path.exists(self.file('results.0')):
+			file = open(self.file('results.0'), encoding='latin-1')
+			rlines = file.readlines()
+			file.close()
+		else: rlines = None
 		preview, self.preview = self.preview, 0
 		self.tester += '@'
 		if self.phase == 'FORMING':
 			self.status[1] = 'forming'
+			rlines = self.parseProcessed(rlines, 'starting')
 			self.begin(roll = 1)
 			if not phase: phase = self.phase
 		elif waiting: self.status[1] = 'active'
 		unphase = outphase = self.map.phaseAbbr(self.phase, self.phase)
 		if not os.path.isfile(self.file('status.' + outphase + '.0')):
 			return 'Invalid ROLLFORWARD phase'
-		if phase:
-			if phase == 1:
-				unphase = self.phase
-				while unphase:
-					phase = unphase
-					unphase = self.probeNextPhase(unphase)
-				phase = self.map.phaseAbbr(phase, phase)
-				unphase = outphase
-			else:
-				phase = phase.upper()
-				if len(phase.split()) > 1: phase = self.phaseAbbr(phase)
-			if phase != outphase:
-				if (self.map.comparePhases(phase, outphase) <= 0 or 
-					not os.path.isfile(self.file('status.' + phase + '.0'))):
-					return 'Invalid ROLLFORWARD phase'
-				unphase = outphase
-				while phase != unphase:
-					# Load the phase, including orders.
-					self.loadStatus('status.' + unphase + '.0',
-						includeFlags | 1)
-					# Process the phase, suppressing any mail
-					self.process(now = 2, roll = includeFlags & 4 and 2 or 1)
-					try: os.unlink(self.file('status.' + unphase + '.0'))
-					except: pass
-					if self.phase == 'COMPLETED':
-						unphase = self.outcome[0]
-						break
-					unphase = self.map.phaseAbbr(self.phase, self.phase)
-					if not os.path.isfile(self.file('status.' + unphase +
-						'.0')): return 'Invalid ROLLFORWARD phase'
-				self.makeMaps()
-		else:
+		if not phase:
 			# Check for the next phase.
-			phase = self.probeNextPhase()
-			if not phase: return 'Invalid ROLLFORWARD phase'
-			outphase = self.probeNextPhase(phase)
+			outphase = self.probeNextPhase()
 			if not outphase: return 'Invalid ROLLFORWARD phase'
+			phase = self.probeNextPhase(outphase)
+			if not phase: return 'Invalid ROLLFORWARD phase'
 			phase, outphase = self.phaseAbbr(phase), self.phaseAbbr(outphase)
-			# Load the current phase, including orders.
-			self.loadStatus('status.' + phase + '.0', includeFlags | 1)
-			# Process the phase, suppressing any mail
-			self.process(now = 2, roll = includeFlags & 4 and 2 or 1)
+		elif phase == 1:
+			unphase = self.phase
+			while unphase:
+				phase = unphase
+				unphase = self.probeNextPhase(unphase)
+			phase = self.map.phaseAbbr(phase, phase)
+			unphase = outphase
+		else:
+			phase = phase.upper()
+			if len(phase.split()) > 1: phase = self.phaseAbbr(phase)
+		if phase != outphase:
+			if (self.map.comparePhases(phase, outphase) <= 0 or 
+				not os.path.isfile(self.file('status.' + phase + '.0'))):
+				return 'Invalid ROLLFORWARD phase'
+			unphase = outphase
+			while phase != unphase:
+				# Load the phase, including orders.
+				self.loadStatus('status.' + unphase + '.0',
+					includeFlags | 1)
+				# Capture the deadline and processed time.
+				rlines = self.parseProcessed(rlines, unphase)
+				# Process the phase, suppressing any mail
+				self.process(now = 2, roll = includeFlags & 4 and 2 or 1)
+				try: os.unlink(self.file('status.' + unphase + '.0'))
+				except: pass
+				if self.phase == 'COMPLETED':
+					unphase = self.outcome[0]
+					break
+				unphase = self.map.phaseAbbr(self.phase, self.phase)
+				if not os.path.isfile(self.file('status.' + unphase +
+					'.0')): return 'Invalid ROLLFORWARD phase'
 			self.makeMaps()
-			try: os.unlink(self.file('status.' + phase + '.0'))
-			except: pass
-			if self.phase == 'COMPLETED':
-				unphase = self.outcome[0]
-			else:
-				unphase = self.map.phaseAbbr(self.phase, self.phase.upper())
-			if unphase != outphase:
-				return 'ROLLFORWARD phase mismatch'
 		self.preview, self.tester = preview, self.tester[:-1]
-		# Merge the results of the rolled phases with any further rolled back phases.
-		if os.path.exists(self.file('results.0')):
-			file = open(self.file('results.0'), encoding='latin-1')
-			lines = file.readlines()
-			file.close()
-			idx = 0
-			for line in lines:
-				if line[:8] != 'Subject:': continue
-				if line.split()[:-2] == unphase: break
-				idx += 1
-			else: idx = -1
-			shutil.copyfile(self.file('results'), self.file('results.0'))
-			if idx != -1:
+		# Merge the results of the rolled phases into results.0.
+		self.processed = None
+		if rlines:
+			num = 0
+			for line in rlines:
+				if (line.startswith('Subject:')
+				and line.split()[-1] == unphase): break
+				num += 1
+			else: rlines = None
+			if rlines:
+				shutil.copyfile(self.file('results'), self.file('results.0'))
 				file = open(self.file('results.0'), 'a', encoding='latin-1')
-				file.writelines(lines[idx:])
+				file.writelines(rlines[num-1:])
 				file.close()
+			else: os.unlink(self.file('results.0'))
 		# Load the last phase
 		prephase = self.phase
 		self.loadStatus('status.' + unphase + '.0', includeFlags)
@@ -2689,6 +2726,29 @@ class Game:
 				if self.map.comparePhases(phase, self.phase) >= 0:
 					os.rename(x, self.file('status.' + phase + '.0'))
 		return idx
+	#	----------------------------------------------------------------------
+	def parseProcessed(self, lines, phase):
+		self.processed = None
+		if not lines: return
+		num = 0
+		for line in lines:
+			if line.startswith('Subject:') and line.split()[-1] == phase: break
+			num += 1
+		else: return lines
+		if num > 1: lines = lines[num-1:]
+		if lines[0].startswith('From '):
+			self.processed = self.getTime(' '.join(lines[0].split()[2:]), 6)
+		for line in lines[2:]:
+			if not line.rstrip(): continue
+			if not line.startswith(':: '): break
+			word = line.split()
+			if word[1] == "Deadline:":
+				self.deadline = Time(word[-1], ' '.join(word[3:-1]))
+				if self.zone != self.deadline.zone:
+					self.deadline = self.deadline.changeZone(self.zone)
+					self.processed = self.processed.changeZone(self.zone)
+				break
+		return lines
 	#	----------------------------------------------------------------------
 	def occupant(self, site, anyCoast = 0):
 		#	-------------------------------------
@@ -3225,7 +3285,6 @@ class Game:
 	#	----------------------------------------------------------------------
 	def advancePhase(self, roll = None):
 		if roll: roll = roll & 2
-		else: self.processed = None
 		text = []
 		for idx in range(len(self.map.seq)):
 			if self.phase in (None, 'FORMING', 'COMPLETED'): break
@@ -3971,12 +4030,7 @@ class Game:
 			broadcast += ['The next phase of %s will be %s for ' %
 				(`self.name.encode('latin-1')`,
 				phase[2]) + self.phaseName(form = 1)]
-			if self.deadline:
-				if roll:
-					deadline = self.getDeadline('status.' + self.phaseAbbr() + '.0')
-					if deadline: self.deadline = deadline
-					else: self.setDeadline()
-				else: self.setDeadline()
+			if self.deadline: self.setDeadline()
 			broadcast += ['The deadline for orders will be %s.' %
 				self.timeFormat(pseudo = 1)]
 			#	---------------------------------------------------------

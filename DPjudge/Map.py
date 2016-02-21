@@ -389,7 +389,7 @@ class Map:
 			#	------------------------------------------
 			#	Text-Only specification (no .ps available)
 			#	------------------------------------------
-			elif upword == 'TEXTONLY': self.textonly = 1
+			elif upword == 'TEXTONLY': self.textOnly = 1
 			#	----------------------------------
 			#	Centers needed to obtain a VICTORY
 			#	----------------------------------
@@ -1021,7 +1021,7 @@ class Map:
 	def isValidUnit(self, unit, noCoastOK = 0, shutOK = 0):
 		unit, locale = unit.upper().split()
 		type = self.areatype(locale)
-		if unit == '?': return type
+		if unit == '?': return not not type
 		if shutOK and type == 'SHUT': return 1
 		if unit == 'A': return ('/' not in locale
 			and type in ('LAND', 'COAST', 'PORT'))

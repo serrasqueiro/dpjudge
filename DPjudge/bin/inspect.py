@@ -40,6 +40,29 @@ class Inspect:
 		inspect @ ".purge('denarius')"
 			will purge the game denarius and WILL leave you
 			in the Python interpreter for further commands
+	Useful inspector commands:
+		.load(gameName = None)
+			loads the game with this name and creates variables
+			for each power with the power name in lowercase,
+			replacing non-alphanumeric characters with 
+			underscores
+			use "self" or "game" to access the game methods and
+			variables
+			reloads the same game by default
+		.rename(gameName, toGameName = None)
+			renames the game to the specified name and loads it
+			renames the loaded game by default
+		.connect()
+			connects to the DPPD, adding the "db" and "dppd"
+			global variables, so that you can query the database
+		.visit(game = None, power = 'MASTER', password = None)
+			displays the html-code for the login page of the
+			specified power
+			uses the name of the loaded game, the master and the
+			master password by default
+		.query(query = None)
+			displays the html-code for the DPPD page with the
+			given query string appended to the URL after a "?"
 	"""
 	def __init__(self, argv = None):
 		if argv is None: argv = sys.argv
