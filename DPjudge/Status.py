@@ -129,7 +129,7 @@ class Status:
 				error += ['No match with the master password']
 		error += self.checkGameName(toGameName)
 		if error: return error
-		# Rename game maps
+		# Remove game maps
 		mapRootName = os.path.join(host.gameMapDir, gameName)
 		mapRootRename = os.path.join(host.gameMapDir, toGameName)
 		for suffix in ('.ps', '.pdf', '.gif', '_.gif'):
@@ -174,8 +174,8 @@ class Status:
 		self.save()
 		# Reload game with the appropriate variant class.
 		game = self.load(toGameName)
-		# Propagate name to all results and status files for all phases
-		error += [game.reprocess(1)]
+		# Propagate name to all results and status files and remake the maps
+		error += [game.reprocess(1, 16)]
 		# Send mail
 		self.announce(game, 'Game name change', 
 			"Game '%s' has been renamed to '%s'.  The new link is:\n  %s" %

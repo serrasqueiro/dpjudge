@@ -2419,8 +2419,13 @@ class Game:
 		#	renaming the game to get the new name in the results for all
 		#	phases.
 		#	---------------------------------------------------------------
+		if self.phase == 'FORMING': return
 		textOnly, self.map.textOnly = self.map.textOnly, 1
 		outphase, deadline = self.phase, self.deadline
+		if outphase == 'COMPLETED':
+			includeFlags |= 16
+			outphase = self.outcome[0]
+		else: outphase = self.phaseAbbr(outphase)
 		self.tester += '@'
 		error = (self.rollback(phase, includeFlags) or
 			self.rollforward(outphase, includeFlags | 5))
@@ -3445,7 +3450,7 @@ class Game:
 		#	and the list of who owns what.
 		#	-----------------------------------
 		list = (self.vassalship() + self.ownership(unowned) +
-			self.determineWin(func))
+			self.determineWin(lastYear, func))
 		if 'BLIND' in self.rules:
 			for power in self.powers:
 				for unit in power.units:
@@ -3454,7 +3459,7 @@ class Game:
 		self.lost = {}
 		return list
 	#	----------------------------------------------------------------------
-	def determineWin(self, func = None):
+	def determineWin(self, lastYear, func = None):
 		#	----------------------------------------------------------------
 		#	See if we have a win.  Criteria are the ARMADA Regatta victory
 		#	criteria (adapted from David Norman's "variable length" system).

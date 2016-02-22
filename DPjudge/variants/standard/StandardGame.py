@@ -214,9 +214,9 @@ class StandardGame(Game):
 					return
 		return Game.checkPhase(self, text)
 	#	----------------------------------------------------------------------
-	def determineWin(self, func = None):
+	def determineWin(self, lastYear, func = None):
 		if 'LAST_MAN_STANDING' in self.rules: return []
-		return Game.determineWin(self, func)
+		return Game.determineWin(self, lastYear, func)
 	#	----------------------------------------------------------------------
 	def addOrder(self, power, word):
 		#	-------------------------------
