@@ -1666,7 +1666,7 @@ class Game:
 		self.avail, avail = [], [x for x in self.map.powers
 			if x not in self.map.dummies]
 		self.win = self.victory[0]
-		self.setDeadline(firstPhase = 1)
+		if not roll: self.setDeadline(firstPhase = 1)
 		for starter in [x for x in self.powers if x.name in self.map.dummies]:
 			starter.type = None
 		for starter in [x for x in self.powers if x.name in avail]:
