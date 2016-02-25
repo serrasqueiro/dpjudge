@@ -21,7 +21,11 @@ class TimeZone(tzinfo):
 			zoneFile.close()
 			self.adding = None
 		if not zone: zone = host.timeZone or 'GMT'
-		return self.zones.get(zone.upper(), None)
+		zone = zone.upper()
+		if zone in self.zones: return self.zones[zone]
+		for zoneInfo in self.zones.values():
+			if zoneInfo.tzname().upper() == zone: return zoneInfo
+		return None
 	#	----------------------------------------------------------------------
 	def groupZones(self):
 		if not TimeZone.zoneGroups:
@@ -243,7 +247,7 @@ class Time(str):
 			'%H:%M', stc), self.zone.tzname()]
 		return ' '.join(when)
 	#	----------------------------------------------------------------------
-	def changeZone(self, zone):
+	def changeZone(self, zone = None):
 		zone = TimeZone(zone)
 		if not zone: return None
 		if zone == self.zone: return self

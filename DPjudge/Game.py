@@ -2748,10 +2748,13 @@ class Game:
 			if not line.startswith(':: '): break
 			word = line.split()
 			if word[1] == "Deadline:":
-				self.deadline = Time(word[-1], ' '.join(word[3:-1]))
-				if self.zone != self.deadline.zone:
-					self.deadline = self.deadline.changeZone(self.zone)
+				if word[-1] == (self.zone and self.zone.tzname() or 'GMT'):
+					self.deadline = self.getTime(' '.join(word[3:-1]))
+				else:
+					self.deadline = Time(word[-1], ' '.join(word[3:-1]))
+					self.processed.zone = self.deadline.zone
 					self.processed = self.processed.changeZone(self.zone)
+					self.deadline = self.deadline.changeZone(self.zone)
 				break
 		return lines
 	#	----------------------------------------------------------------------
