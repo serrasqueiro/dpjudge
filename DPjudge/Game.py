@@ -3919,34 +3919,14 @@ class Game:
 		#	----------------------------
 		#	Add the orders to the output
 		#	----------------------------
-		if 'BLIND' in self.rules:
-			for power in self.powers:
-				units = power.units[:]
-				for order in power.adjust or []:
-					word = order.split()
-					if len(word) > 3 and word[-1] == 'HIDDEN':
-						order = ' '.join(word[:-1])
-					if word[0] == 'REMOVE': units.remove(' '.join(word[1:3]))
-					list += power.showLines(order, self.popped, '%-11s %s.' %
-						(self.anglify(power.name) + ':', self.anglify(order)))
-				for unit in units:
-					list += power.showLines('HOLD ' + unit, self.popped)
-		else:
-			for power in self.powers:
-				for order in power.adjust or []:
-					word = order.split()
-					if len(word) > 3 and word[-1] == 'HIDDEN':
-						order = word[0] + ' HIDDEN'
-					list += ['%-11s %s.' %
-						(self.anglify(power.name) + ':', self.anglify(order))]
 		for power in self.powers:
+			units, builds = power.units[:], []
 			for order in power.adjust or []:
 				word = order.split()
+				if len(word) > 3 and word[-1] == 'HIDDEN':
+					order = ' '.join(word[:-1])
 				if word[0] == 'BUILD' and len(word) > 2:
-					if len(word) > 3 and word[-1] == 'HIDDEN':
-						word = word[:-1]
-						power.hides += [' '.join(word[1:])]
-					power.units += [' '.join(word[1:])]
+					builds += [' '.join(word[1:])]
 					sc = word[2][:3]
 					if 'SC!' in power.centers:
 						power.centers.remove('SC!')
@@ -3957,27 +3937,46 @@ class Game:
 						power.homes.remove('&SC')
 						power.homes += [sc]
 				elif word[0] == 'REMOVE':
-					power.units.remove(' '.join(word[1:]))
-				elif len(word) == 5:
-					if word[2] in self.popped:
-						list[-1] += '  (*bounce, destroyed*)'
-					else: power.units += [word[1] + ' ' + word[-1]]
+					units.remove(' '.join(word[1:3]))
+				result = '%-11s %s.' % (
+					self.anglify(power.name) + ':', self.anglify(order))
+				if len(word) >= 5 and word[2] in self.popped:
+					result += '  (*bounce, destroyed*)'
+				if 'BLIND' in self.rules:
+					list += power.showLines(order, self.popped, result)
+				else: list += [result]
+			if 'BLIND' in self.rules:
+				for unit in units:
+					list += power.showLines('HOLD ' + unit, self.popped)
 			if self.phaseType == 'A':
-				count = len(power.centers) - len(power.units)
+				count = len(power.centers) - len(units) - len(builds)
 				if [x for x in power.centers if x in power.homes]:
 					count += (self.map.reserves.count(power.name) +
 						min(self.map.militia.count(power.name),
-						len([0 for x in power.units
+						len([0 for x in units + builds
 							if x[2:5] in power.homes])))
 				if count:
 					if 'BLIND' in self.rules: list += ['SHOW MASTER ' +
-						' '.join([x.name for x in self.powers
-						if x is power or x.omniscient])]
+						' '.join([x.name for x in self.powers if x is power
+						or x is power.controller() or x.omniscient])]
 					list += ['%-12s%d unused build%s pending.' %
 						(self.anglify(power.name) + ':', count,
 						's'[count == 1:])]
 				while 'SC?' in power.centers: power.centers.remove('SC?')
 				while 'SC*' in power.centers: power.centers.remove('SC*')
+		for power in self.powers:
+			for order in power.adjust or []:
+				word = order.split()
+				if word[0] == 'BUILD' and len(word) > 2:
+					if len(word) > 3 and word[-1] == 'HIDDEN':
+						word = word[:-1]
+						power.hides += [' '.join(word[1:])]
+					power.units += [' '.join(word[1:])]
+				elif word[0] == 'REMOVE':
+					power.units.remove(' '.join(word[1:]))
+				elif len(word) == 5:
+					if word[2] not in self.popped:
+						power.units += [word[1] + ' ' + word[-1]]
 			power.adjust, power.retreats, power.cd = [], {}, 0
 		if 'BLIND' in self.rules: list += ['SHOW']
 		return list + ['']
