@@ -3797,8 +3797,9 @@ class Game:
 	#	----------------------------------------------------------------------
 	def otherResults(self):
 		self.command = {}
-		conflicts, self.popped, owner, list = {}, [], 0, ['%s orders for ' %
-			self.phase.split()[2][:-1].title() + self.phaseName(), '']
+		conflicts, self.popped, owner = {}, [], 0
+		list = ['%s orders for ' % self.phase.split()[2][:-1].title() +
+			self.phaseName(), '']
 		#	---------------------------------------------------
 		#	Supply CIVIL_DISORDER retreat and adjustment orders
 		#	---------------------------------------------------

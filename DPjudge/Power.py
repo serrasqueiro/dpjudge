@@ -533,7 +533,7 @@ class Power:
 				return line and ['SHOW MASTER ' + ' '.join([x.name
 					for x in game.powers if x == self or x == self.controller()
 					or x.omniscient]), line] or []
-			else: cmd, there = word[2] in notes and 'D' or word[0][0], unit
+			else: cmd, there = word[0][0], unit
 		c = not cmd and 'M' or len(cmd) == 1 and cmd or 'M'
 		for who, how in self.visible(unit, cmd).items():
 			if how & 8:
