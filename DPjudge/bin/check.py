@@ -110,15 +110,21 @@ class Check(Status):
 						host.dpjudgeURL, game.name))
 					mail.close()
 			elif 'active' in data:
-				if line and game.deadlineExpired('4W'):
-					mail = Mail(host.judgekeeper,
-						'Diplomacy game alert (%s)' % game.name)
-					mail.write("JudgeKeeper:\n\nThe %s game '%s' on %s is "
-						'past its deadline for more than 4 weeks.\n\nVisit the game at\n'
-						'   %s?game=%s\nfor more information.\n\n'
-						'Thank you,\nThe DPjudge\n' %
-						(game.private and 'private' or 'public',
-						game.name, host.dpjudgeID, host.dpjudgeURL, game.name))
+				if line and game.deadlineExpired('1W'):
+					critical = game.deadlineExpired('4W')
+					for addr in game.master[1].split(',') + [
+						host.judgekeeper] * (not game.tester and critical):
+						mail = Mail(host.judgekeeper,
+							'Diplomacy game alert (%s)' % game.name)
+						mail.write("%s:\n\nThe %s game '%s' on %s is "
+							'past its deadline for more than %s.\n\n'
+							'Visit the game at\n'
+							'   %s?game=%s\nfor more information.\n\n'
+							'Thank you,\nThe DPjudge\n' %
+							(addr == host.judgekeeper and 'JudgeKeeper'
+							or 'Master', game.private and 'private' or 'public',
+							game.name, host.dpjudgeID, critical and '4 weeks'
+							or '1 week', host.dpjudgeURL, game.name))
 					mail.close()
 			elif 'terminated' not in data:
 				reason = ''
@@ -146,7 +152,7 @@ class Check(Status):
 						len(game.map.powers) - len(game.map.dummies))
 					reason = ' %d position%s remain%s.' % (
 						spots, 's'[spots == 1:], 's'[spots != 1:])
-				else: state = 'preparation'
+				else: state = data[1]
 				print game.name, 'is in the %s state' % state,
 				print '... reminding the Master'
 				for addr in game.master[1].split(','):

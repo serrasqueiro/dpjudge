@@ -169,7 +169,7 @@ class Procmail:
 					if self.game.private:
 						games.dict[game] += ['private']
 						games.save()
-					if (mode == 'forming' and not game.available()
+					if (mode == 'forming' and not self.game.available()
 					and 'START_MASTER' not in self.game.rules):
 						self.game.begin()
 						mode = 'active'
@@ -320,7 +320,7 @@ class Procmail:
 			'page=whois&email=' + urllib.quote(self.email, '@'))
 		response = unicode(page.read(), 'latin-1')
 		page.close()
-		self.ip, self.dppd = self.email, '|'.join(response.strip().split())
+		self.ip, self.dppd = self.email, '|'.join(response.split())
 		if self.dppd[:1] != '#': self.respond(
 			'Your e-mail address (%s) is\nnot registered with the DPPD, '
 			'or your DPPD status does\nnot allow you to use the %s command.'

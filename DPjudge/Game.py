@@ -878,7 +878,10 @@ class Game:
 							self.timing[key] += ',' + word[num + 1].upper()
 						elif key in self.timing:
 							error += ['TWO %s SPECS IN TIMING' % key]
-						elif key == 'DAYS': self.timing[key] = word[num + 1]
+						elif key == 'DAYS':
+							days = word[num + 1]
+							self.timing[key] = (days == days.lower() and
+								days.upper() or days)
 						else: self.timing[key] = word[num + 1].upper()
 				except: error += ['BAD TIMING']
 			elif upword == 'MORPH':
@@ -5004,12 +5007,13 @@ class Game:
 		return 1
 	#	-------------------------------------------------------
 	def collectState(self):
-		if self.status[1] == 'preparation': return
-		if self.error and self.status[1] not in ('completed', 'terminated'):
-			self.status[1] = 'error'
+		status = self.status[:]
+		if status[1] == 'preparation': return
+		if self.error and status[1] not in ('completed', 'terminated'):
+			status[1] = 'error'
 		self.state = {
 						'MASTER':	self.password + ':' + self.master[0],
-						'STATUS':	':'.join(self.status).upper(),
+						'STATUS':	':'.join(status).upper(),
 						'PHASE':	self.phaseAbbr(),
 						'DEADLINE':	self.deadline,
 						'ZONE':		self.zone and self.zone.__repr__() or 'GMT',
@@ -5019,7 +5023,7 @@ class Game:
 					}
 		for power in self.powers:
 			if power.player and power.password and power.player[0][0] == '#':
-				if (self.status[1] == 'active' and self.deadlineExpired()
+				if (status[1] == 'active' and self.deadlineExpired()
 				and power.name in self.latePowers()): what = 'LATE'
 				else: what = power.type or 'POWER'
 				self.state[power.name] = ':'.join(
