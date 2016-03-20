@@ -113,7 +113,7 @@ class Power:
 			del self.game.powers[num]
 		else:
 			if (self.game.status[1] in ('active', 'waiting')
-			and not self.isEliminated(False, True)):
+			and not self.isEliminated()):
 				self.game.avail += ['%s-(%s)' % (self.name,
 					('%d/%d' % (len(self.units), len(self.centers)),
 					'?/?')['BLIND' in self.game.rules])]
@@ -144,7 +144,7 @@ class Power:
 					% (self.game.anglify(self.name), self.game.name))
 				self.game.mail.close()
 			self.message, self.pressSent = [], 1
-			if not self.isEliminated(False, True):
+			if not self.isEliminated():
 				self.game.mailPress(None, ['All!'],
 					(("The Master has resigned %s from game '%s'.",
 					"%s has resigned from game '%s'.")[not byMaster])
@@ -259,10 +259,10 @@ class Power:
 		return (power is self or power.controller() is self or
 			self.name == 'MASTER')
 	#	----------------------------------------------------------------------
-	def vassals(self, public = False, all = False, indirect = True):
+	def vassals(self, public = False, all = False, indirect = False):
 		return [x for x in self.game.powers if
 			(x.ceo[:1] == [self.name] or indirect and self.name == 'MASTER')
-			and (all or not x.isEliminated(public, True))]
+			and (all or not x.isEliminated(public))]
 	#	----------------------------------------------------------------------
 	def isResigned(self):
 		return self.player[:1] == ['RESIGNED']
@@ -365,7 +365,7 @@ class Power:
 				`hash((self.password or self.game.password) + self.name)` +
 				suffix)
 			except: pass
-		for vassal in self.vassals(all=True, indirect=False):
+		for vassal in self.vassals(all = True):
 			vassal.removeBlindMaps()
 	#	----------------------------------------------------------------------
 	def movesSubmitted(self):

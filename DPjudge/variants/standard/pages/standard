@@ -5,7 +5,8 @@ def showOrderList():
 
 	power, game = page.power, page.game
 	dummyProxy = 'PROXY_OK' in game.rules and 'HIDE_DUMMIES' in game.rules
-	vassals = [x for x in power.vassals() if x.units or dummyProxy]
+	vassals = [x for x in power.vassals(indirect = True)
+		if x.units or dummyProxy]
 	active = power.units or ('PROXY_OK' in game.rules and
 		not power.isDummy(True) and (power.centers or vassals))
 	if not active and not vassals: return

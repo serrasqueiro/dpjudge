@@ -569,9 +569,8 @@ def gameHeader():
 				for x in game.avail]))
 		elif game.deadline < game.getTime():
 			if late:
-				if power and (power.name in late
-				or [1 for x in power.vassals(indirect = False)
-				if x.name in late]): page.write(
+				if power and (power.name in late or [1 for x in power.vassals()
+					if x.name in late]): page.write(
 					'<br><font size=+1><blink>You Are Late!</blink></font>')
 				elif (power and (power.name == 'MASTER' or power.omniscient)
 				or 'HIDE_LATE_POWERS' not in game.rules): page.write(
@@ -786,7 +785,7 @@ def showControlInfo():
 			</td></tr></form>
 			""" % game.anglify(power.ceo[0]))
 		return
-	headsUp = [x.name for x in power.vassals(all = True)]
+	headsUp = [x.name for x in power.vassals(all = True, indirect = True)]
 	if headsUp:
 		page.write('<form name=ceoForm method=post>')
 		page.apprise('page', 'Status')
@@ -796,7 +795,8 @@ def showControlInfo():
 			<td align=right>
 			<select class=inputBox
 			name=power onChange=document.ceoForm.submit()>
-			""" % ('Controller Of', 'Power')[power.omniscient or power.name == 'MASTER'])
+			""" % ('Controller Of', 'Power')[power.omniscient
+			or power.name == 'MASTER'])
 		for country in headsUp:
 			page.write('<option value="%s">%s</option>' %
 				(country, game.anglify(country)))
@@ -942,7 +942,7 @@ def showAdjustList():
 	#	and nearly eliminated powers.
 	#	-------------------------------
 	game.latePowers()
-	for who in [power] + power.vassals():
+	for who in [power] + power.vassals(indirect = True):
 		if len(who.centers) == 0: continue
 		count = len(who.centers) - len(who.units)
 		if [x for x in who.centers if x in who.homes]:
@@ -1015,7 +1015,7 @@ def showRetreatList():
 	#	and nearly eliminated powers.
 	#	-------------------------------
 	game.latePowers()
-	for who in [power] + power.vassals():
+	for who in [power] + power.vassals(indirect = True):
 		if not who.retreats or who.goner: continue
 		if not shown:
 			shown = 1

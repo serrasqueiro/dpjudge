@@ -21,7 +21,8 @@ def showOrders():
 
 	page.write('<td><table border=0 cellpadding=2 cellspacing=2 width=100%>')
 	game, power = page.game, page.power
-	alive, vassals = not power.isEliminated(personal = True), power.vassals()
+	alive = not power.isEliminated(personal = True)
+	vassals = power.vassals(indirect = True)
 	if not alive and not vassals:
 		showWaitNotice()
 		return page.write('</table></td>')

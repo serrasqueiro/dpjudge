@@ -4683,16 +4683,17 @@ class Game:
 	#	----------------------------------------------------------------------
 	def playerOrders(self, power):
 		orders = self.powerOrders(power)
-		orders += ''.join([self.powerOrders(x) for x in power.vassals()])
+		orders += ''.join([self.powerOrders(x)
+			for x in power.vassals(indirect = True)])
 		return orders + 'End of orders.\n'
 	#	----------------------------------------------------------------------
 	def lateNotice(self, after = 0):
-		#	----------------------------------------------------------------------
+		#	-----------------------------------------------------------------
 		#	Set after to 1 to force a late notice as if the grace expired,
-		#   or to -1 to get a notice of the powers in CD who were expected to have
-		#	orders in (so not the trivial cases, such as uncontrolled dummies or
-		#	virtually eliminated powers).
-		#	----------------------------------------------------------------------
+		#   or to -1 to get a notice of the powers in CD who were expected
+		#	to have orders in (so not the trivial cases, such as uncontrolled
+		#	dummies or virtually eliminated powers).
+		#	-----------------------------------------------------------------
 		late, now = self.latePowers(after), self.getTime()
 		text = ('Diplomacy Game:   %s (%s)\n'
 				'Current Phase:    %s\n' %
