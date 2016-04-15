@@ -4408,23 +4408,25 @@ class Game:
 			file.close()
 		except: lines = []
 		show, reading, save = 1, 0, ''
-		count, owner, last, years = {}, {}, {}, []
+		count, owner, years = {}, {}, []
 		year = end = None
+		forPowerName = (('BLIND' not in self.rules or
+			self.phase == 'COMPLETED') and 'MASTER' or
+			forPower and forPower.name or '')
 		for line in [x.strip() for x in lines]:
 			if not line:
 				if reading and owner.get(year): reading = 0
 			elif line[:26] == 'Subject: Diplomacy results':
 				word = line.split()
 				end, year = word[4], word[4][1:-1]
-			elif year and line[:12] == 'Ownership of' and year not in years:
-				years += [year]
+			elif year and line[:12] == 'Ownership of':
+				if year not in years: years += [year]
 				reading, owner[year], count[year] = 1, {}, {}
 			elif reading:
 				line = line.upper()
 				if line[:4] == 'SHOW':
-					if self.phase == 'COMPLETED': continue
 					who = line.split()
-					show = len(who) == 1 or not forPower or forPower.name in who
+					show = len(who) == 1 or forPowerName in who[1:]
 					continue
 				if not show: continue
 				if save: line = save + ' ' + line
@@ -4435,12 +4437,13 @@ class Game:
 					centers = ' '.join(line[:-1].split()[1:]).split(', ')
 					if not centers: continue
 					for spot in centers: owner[year][self.map.aliases.
-						get(spot.strip().replace(' ', '+'))] = letter
+						get(spot.strip())] = letter
 					count[year][power] = len(centers)
-					last[power] = year
 				else: save = line
-		scs = []
-		for yr in owner: scs += [sc for sc in owner[yr] if sc not in scs]
+		last, scs = {}, []
+		for yr in sorted(owner):
+			scs += [sc for sc in owner[yr] if sc not in scs]
+			for power in count[yr]: last[power] = yr
 		if None in scs: scs.remove(None)
 		if not scs:
 			if email:
@@ -4474,8 +4477,7 @@ class Game:
 							results += '  %2d' % count[year].get(power, 0)
 			results += '\nIndex:    '
 			for year in years[decade * 10:][:10]:
-				if (forPower and forPower.name == 'MASTER'
-				or 'BLIND' not in self.rules or self.phase == 'COMPLETED'):
+				if forPowerName == 'MASTER':
 					if 'UNOWNED' in count[year]: del count[year]['UNOWNED']
 					total, scCounts = 0, count[year].values()
 					for num in scCounts: total += num * num
@@ -4514,15 +4516,25 @@ class Game:
 						and powerName in self.latePowers()
 						and self.deadlineExpired()
 						and ('HIDE_LATE_POWERS' not in self.rules
-						or forPower.name in (powerName, 'MASTER')))
+						or forPower is not None
+						and forPower.name in (powerName, 'MASTER')))
 					if (self.phase != 'COMPLETED' or ('NO_REVEAL' in self.rules
 					and not reveal)) and (forPower is None
 					or forPower.name not in ('MASTER', powerName)
 					or forPower.name == powerName and data != player[-1]):
 						person = (None, 'someone@somewhere', late)
 					else: person = data.split('|')
-				elif data in ('RESIGNED', 'DUMMY'):
-					late = ('vacant', 'dummy')[data[0] == 'D']
+				elif data == 'RESIGNED':
+					late = 'vacant'
+					person = ('', '*', late)
+				elif data == 'DUMMY':
+					late = 'dummy'
+					boss = power.controller()
+					if boss and (self.phase == 'COMPLETED'
+					or 'HIDE_DUMMIES' not in self.rules
+					or forPower is not None
+					and forPower.name in (powerName, boss.name, 'MASTER')):
+						late = 'vassal of ' + self.anglify(boss.name)
 					person = ('', '*', late)
 				else:
 					results += '   from %-10s' % (data + ':')
