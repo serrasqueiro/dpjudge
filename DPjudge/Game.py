@@ -195,7 +195,7 @@ class Game:
 		#	-------------------------------------
 		if not map.isValidUnit(unit):
 			return error.append('ORDER TO INVALID UNIT: ' + unit)
-		if orderType in ('S', 'C') and word[1] in ('A', 'F'):
+		if orderType in ('S', 'C') and word[1:] and word[1] in ('A', 'F'):
 			other = ' '.join(word[1:3])
 			if not map.isValidUnit(other, 1):
 				return error.append('ORDER INCLUDES INVALID UNIT: ' + other)
@@ -616,9 +616,9 @@ class Game:
 	def file(self, name):
 		return self.gameDir + '/' + name
 	#	----------------------------------------------------------------------
-	def setTimeZone(self, zone = 'GMT'):
-		zone = TimeZone(zone)
-		if not zone: return self.error.append('BAD TIME ZONE: ' + zone)
+	def setTimeZone(self, timeZone = 'GMT'):
+		zone = TimeZone(timeZone)
+		if not zone: return self.error.append('BAD TIME ZONE: ' + timeZone)
 		self.zone = zone
 		#	-------------------------------------------------------------
 		#	Changing the deadline time (and not just the zone) may not be
@@ -4509,8 +4509,12 @@ class Game:
 			if request == 'LIST': del player[1:]
 			elif (power.isResigned() and self.phase != self.map.phase
 			and power.isEliminated()): del player[:2]
+			if player[0] == 'DUMMY':
+				boss = power.controller()
+				if boss: player[0] += '|' + boss.name
 			for data in reversed(player):
-				if '|' in data:
+				person = data.split('|')
+				if len(person) > 2:
 					late = 'late' * (self.deadline and data == player[-1]
 						and self.phase not in ('COMPLETED', 'FORMING')
 						and powerName in self.latePowers()
@@ -4523,18 +4527,16 @@ class Game:
 					or forPower.name not in ('MASTER', powerName)
 					or forPower.name == powerName and data != player[-1]):
 						person = (None, 'someone@somewhere', late)
-					else: person = data.split('|')
-				elif data == 'RESIGNED':
+				elif person[0] == 'RESIGNED':
 					late = 'vacant'
 					person = ('', '*', late)
-				elif data == 'DUMMY':
+				elif person[0] == 'DUMMY':
 					late = 'dummy'
-					boss = power.controller()
-					if boss and (self.phase == 'COMPLETED'
+					if len(person) > 1 and (self.phase == 'COMPLETED'
 					or 'HIDE_DUMMIES' not in self.rules
 					or forPower is not None
-					and forPower.name in (powerName, boss.name, 'MASTER')):
-						late = 'vassal of ' + self.anglify(boss.name)
+					and forPower.name in (powerName, power[1], 'MASTER')):
+						late = 'vassal of ' + self.anglify(person[1])
 					person = ('', '*', late)
 				else:
 					results += '   from %-10s' % (data + ':')
