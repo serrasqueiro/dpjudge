@@ -70,7 +70,7 @@ def showLedgerButton():
 	if os.path.isfile(page.game.file('ledgers')):
 		page.write('<form method=post>')
 		hideBack('Read')
-		apprise('file', 'ledgers')
+		page.apprise('file', 'ledgers')
 		page.write("""
 			<tr><td class=bodycopy><b>Ledger:</b></td>
 			<td align=right class=bodycopy>Complete account ledger history</td>
@@ -91,7 +91,7 @@ def showTransferForm():
 	and (not page.power.ceo)): return
 	page.write('<form name=transferForm method=post>')
 	hideBack('Transfer')
-	apprise('balance', page.power.balance)
+	page.apprise('balance', page.power.balance)
 	page.write("""
 		<tr><td class=bodycopy><b>Transfer:</b></td>
 		<td class=bodycopy align=right>Send
@@ -162,7 +162,7 @@ if page.power.name != 'MASTER':
 showMapButtons()
 showResultsText()
 showPressArchive()
-if page.power.name != 'MASTER': showVariantInfo()
+showVariantInfo()
 showDocList( (	('summary', 'Game Summary'),
 				('EOG', 'End Of Game Statements'),
 				('chart', 'Bribe Chart'),
@@ -173,10 +173,10 @@ and page.game.phase not in ('FORMING', 'COMPLETED')):
 	showControlInfo()
 	showLedgerButton()
 	showBalance()
-	if page.pwdFlag == 1: showTransferForm()
+	if page.pwdFlag > 1: showTransferForm()
 showPricesButton()
-showAbsenceInput()
-if (page.power.name, page.pwdFlag) == ('MASTER', 1): showStatusFile()
+showAbsenceInfo()
+if page.power.name == 'MASTER': showMasterCommands()
 :>
 		</table>
 		<!--MAPS, RESULTS, ENDGAME TABLE ENDS HERE-->

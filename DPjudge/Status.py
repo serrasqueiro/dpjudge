@@ -111,25 +111,25 @@ class Status:
 			self.dict[gameName] = [gameVar.lower(), mode]
 			self.save()
 			# Send mail
-			self.game = Game.Game(gameName)
-			self.announce('Game creation', 
+			game = Game.Game(gameName)
+			self.announce(game, 'Game creation', 
 				"Game '%s' has been created.  Finish preparation at:\n  %s"
 				'\n\nWelcome to the %s.' %
-				(gameName, self.gameLink(), host.dpjudgeNick))
+				(gameName, self.gameLink(game), host.dpjudgeNick))
 		return error
 	#	----------------------------------------------------------------------
 	def renameGame(self, gameName, toGameName, forced = 1, gamePass = None):
 		error = []
 		if gameName not in self.dict:
 			return ['No such game exists on this judge']
-		self.game = Game.Game(gameName)
+		game = Game.Game(gameName)
 		if not forced and (
 			not host.judgePassword or gamePass != host.judgePassword):
-			if not gamePass or self.game.password != gamePass:
+			if not gamePass or game.password != gamePass:
 				error += ['No match with the master password']
 		error += self.checkGameName(toGameName)
 		if error: return error
-		# Rename game maps
+		# Remove game maps
 		mapRootName = os.path.join(host.gameMapDir, gameName)
 		mapRootRename = os.path.join(host.gameMapDir, toGameName)
 		for suffix in ('.ps', '.pdf', '.gif', '_.gif'):
@@ -140,20 +140,20 @@ class Status:
 					os.path.splitext(mapFileName)[0])[1] + suffix)
 				except: pass
 		# Rename game dir
-		if os.path.exists(self.game.gameDir) and os.path.isdir(
-			self.game.gameDir):
-			toGameDir = os.path.join(os.path.split(self.game.gameDir)[0],
+		if os.path.exists(game.gameDir) and os.path.isdir(
+			game.gameDir):
+			toGameDir = os.path.join(os.path.split(game.gameDir)[0],
 				toGameName)
 			try:
-				os.rename(self.game.gameDir, toGameDir)
-				self.game.gameDir = toGameDir
+				os.rename(game.gameDir, toGameDir)
+				game.gameDir = toGameDir
 			except: error += ['Failed to rename the game directory']
 		# Purge from dppd
 		if host.dppdURL:
 			dict = urllib.urlencode({
 				'judge': host.dpjudgeID.encode('latin-1'),
 				'name': gameName.encode('latin-1'),
-				'password': self.game.password.encode('latin-1')})
+				'password': game.password.encode('latin-1')})
 			for dppdURL in host.dppdURL.split(','):
 				query = '?&'['?' in dppdURL]
 				page = urllib.urlopen(dppdURL + query + 'page=delete&' + dict)
@@ -166,38 +166,42 @@ class Status:
 			if not [1 for x in lines if 'NoGameToDelete' in x]:
 				error += ['Failed to delete the game records from the DPPD'] 
 		# Rename game and update dppd
-		self.game.name = toGameName
-		self.game.save()
+		game.name = toGameName
+		game.save()
 		# Update status
 		self.dict[toGameName] = self.dict[gameName]
 		del self.dict[gameName]
 		self.save()
+		# Reload game with the appropriate variant class.
+		game = self.load(toGameName)
+		# Propagate name to all results and status files and remake the maps
+		error += [game.reprocess(1, 16)]
 		# Send mail
-		self.announce('Game name change', 
+		self.announce(game, 'Game name change', 
 			"Game '%s' has been renamed to '%s'.  The new link is:\n  %s" %
-			(gameName, toGameName, self.gameLink()))
-		return error
+			(gameName, toGameName, self.gameLink(game)))
+		return filter(None, error)
 	#	----------------------------------------------------------------------
 	def purgeGame(self, gameName, forced = 1, gamePass = None):
 		error = []
 		if gameName not in self.dict:
 			return ['No such game exists on this judge']
-		self.game = Game.Game(gameName)
+		game = Game.Game(gameName)
 		if not forced and (
 			not host.judgePassword or gamePass != host.judgePassword):
 			status = self.dict[gameName][1]
 			if status == 'preparation': pass
 			elif status == 'forming':
-				if [1 for x in self.game.powers if not x.isDummy()]:
+				if [1 for x in game.powers if not x.isDummy()]:
 					error += ['Please inform your players and make them resign '
 						'first']
 			else: error += ['Please contact the judgekeeper to purge a game '
 				'that has already started']
-			if not gamePass or self.game.password != gamePass:
+			if not gamePass or game.password != gamePass:
 				error += ['No match with the master password']
 			if error: return error
 		# Remove game maps
-		mapRootName = os.path.join(host.gameMapDir, self.game.name)
+		mapRootName = os.path.join(host.gameMapDir, game.name)
 		for suffix in ('.ps', '.pdf', '.gif', '_.gif'):
 			try: os.unlink(mapRootName + suffix)
 			except: pass
@@ -205,16 +209,16 @@ class Status:
 				try: os.unlink(mapFileName)
 				except: pass
 		# Remove game dir
-		if os.path.exists(self.game.gameDir) and os.path.isdir(
-			self.game.gameDir):
-			try: shutil.rmtree(self.game.gameDir)
+		if os.path.exists(game.gameDir) and os.path.isdir(
+			game.gameDir):
+			try: shutil.rmtree(game.gameDir)
 			except: error += ['Failed to remove the game directory']
 		# Purge from dppd
 		if host.dppdURL:
 			dict = urllib.urlencode({
 				'judge': host.dpjudgeID.encode('latin-1'),
 				'name': gameName.encode('latin-1'),
-				'password': self.game.password.encode('latin-1')})
+				'password': game.password.encode('latin-1')})
 			for dppdURL in host.dppdURL.split(','):
 				query = '?&'['?' in dppdURL]
 				page = urllib.urlopen(dppdURL + query + 'page=delete&' + dict)
@@ -230,7 +234,7 @@ class Status:
 		del self.dict[gameName]
 		self.save()
 		# Send mail
-		self.announce('Game purged', 
+		self.announce(game, 'Game purged', 
 			"Game '%s' has been purged." % gameName)
 		return error
 	#	----------------------------------------------------------------------
@@ -245,21 +249,22 @@ class Status:
 				error += ["Game name cannot contain '%s'" % ch]
 		return error
 	#	----------------------------------------------------------------------
-	def announce(self, subject, message):
-		groups = [self.game.map.notify]
+	def announce(self, game, subject, message):
+		if game.tester or 'SOLITAIRE' in game.rules: return
+		groups = [game.map.notify]
 		if not host.observers: pass
 		elif type(host.observers) is list: groups += [host.observers]
 		else: groups += [[host.observers]]
-		groups += [[self.game.master[1]]]
-		groups += [x.address for x in self.game.powers if x.address]
+		groups += [[game.master[1]]]
+		groups += [x.address for x in game.powers if x.address]
 		for addresses in groups:
 			if not addresses: continue
 			mail = Mail.Mail(', '.join(addresses), subject,
-				('', self.game.gameDir + '/mail')[host.copy], host.dpjudge, '')
+				('', game.gameDir + '/mail')[host.copy], host.dpjudge, '')
 			mail.write(message)
 			mail.close()
 	#	----------------------------------------------------------------------
-	def gameLink(self):
+	def gameLink(self, game):
 		return '%s%s?game=%s' % (host.dpjudgeURL,
-			'/index.cgi' * (os.name == 'nt'), self.game.name)
+			'/index.cgi' * (os.name == 'nt'), game.name)
 	#	----------------------------------------------------------------------

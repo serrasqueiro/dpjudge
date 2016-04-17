@@ -1,23 +1,18 @@
-import os, time, random, socket
+import os, random, socket, urllib
 
-from Game import host, Status, Power, Game, Mail, View
+from Game import host, Status, Power, Game, Mail, View, Time, TimeZone
 from Map import Map
 
 class Page:
 	#	----------------------------------------------------------------------
 	def __init__(self, form = {}):
-		#	---------------------------------------------------------------
-		#	The pwdFlag is 0 or None if bad password, 1 if good (incl. GM),
-		#	and 2 if good enough to provide read-only access (omniscient).
-		#	---------------------------------------------------------------
-		self.pwdFlag = None
 		#	---------------------------------------------------
 		#	Parameters that may appear in the url (as GET).
 		#	If they also appear in the form (as POST),
 		#	they end up as a list of 2 nearly identical values,
 		#	which is undesirable.
 		#	---------------------------------------------------
-		self.variant = self.game = self.power = self.password = self.page = ''
+		self.variant = self.game = self.power = self.password = self.user = self.page = ''
 		for key in form.keys():
 			if type(form) is dict or type(form[key]) != list:
 				vars(self)[key] = unicode(form.get(key), 'latin-1')
@@ -61,13 +56,47 @@ class Page:
 			if not self.game: self.page = 'Index'
 			elif self.power and self.password: self.page = 'Status'
 			else: self.page = 'Login'
-		if self.power: self.power = self.power.upper().replace('%23', '#')
+		if self.power:
+			self.power = self.power.upper().replace('%23', '#')
+			if self.game:
+				try: self.power = [x for x in self.game.powers if x.name in
+					(self.power, '_' + self.power)][0]
+				except: 
+					if self.power in ('MASTER', 'JUDGEKEEPER'):
+						self.power = Power(self.game, self.power)
+		if self.user:
+			try: self.user = int(self.user)
+			except: self.user = -1
+		#	---------------------------------------------------------------
+		#	Values for pwdFlag:
+		#	 0: Bad or no password
+		#	 1: Valid DPPD user, but no power specified or not in control
+		#	 2: Good enough to provide read-only access (omniscient)
+		#	 3: Valid password for power (player is or controls power)
+		#	 4: Game password (Master)
+		#	 5: Host password (Judgekeeper)
+		#	---------------------------------------------------------------
+		self.pwdFlag = 0
+		if not self.password: pass
+		elif self.password == host.judgePassword: self.pwdFlag = 5
+		elif self.game:
+			if self.password == self.game.password: self.pwdFlag = 4
+			elif self.power:
+				self.pwdFlag = self.power.isValidPassword(self.password)
 		if self.include(): raise SystemExit
 		self.write("<script>window.location.replace('%s');</script>" %
 			host.dpjudgeURL)
 	#	----------------------------------------------------------------------
 	def setdefault(self, var, val = ''):
 		return vars(self).setdefault(var, val)
+	#	----------------------------------------------------------------------
+	def get(self, var, val = ''):
+		return urllib.unquote(vars(self).get(var, val))
+	#	----------------------------------------------------------------------
+	def getint(self, var, val = None):
+		if not var in vars(self): return None
+		try: return vars(self).get(var)
+		except: return val
 	#	----------------------------------------------------------------------
 	def has(self, var):
 		return var in vars(self)
@@ -87,6 +116,24 @@ class Page:
 	#	----------------------------------------------------------------------
 	def silent(self):
 		self.write = lambda x,y=0: 0
+	#	----------------------------------------------------------------------
+	def apprise(self, option, value):
+		try: value = value.name
+		except: pass
+		self.write('<input type=hidden name="%s" value="%s">' % (option, value))
+	#	----------------------------------------------------------------------
+	def comprise(self, options):
+		for option in options:
+			self.write('<input type=hidden name="%s">' % option)
+	#	----------------------------------------------------------------------
+	def surprise(self, option, fallBack):
+		try: self.apprise(option, vars(self)[option])
+		except: self.apprise(option, fallBack)
+	#	----------------------------------------------------------------------
+	def reprise(self, options):
+		for option in options:
+			try: self.apprise(option, vars(self)[option])
+			except: pass
 	#	----------------------------------------------------------------------
 	def convertPlainTextToHTML(self, text):
 		return text.replace('-', '&#8722;').replace(

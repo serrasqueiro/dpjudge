@@ -9,7 +9,7 @@ def showOrdersButton():
 	page.write('<form method=post>')
 	hideBack('Read')
 	if power and power.name != 'MASTER': which = "My Power's"
-	apprise('file', 'lists')
+	page.apprise('file', 'lists')
 	page.write("""
 		<tr><td class=bodycopy><b>Orders:</b>
 		<td class=bodycopy align=right>%s Complete Order List History</b>
@@ -21,7 +21,8 @@ def showOrders():
 
 	page.write('<td><table border=0 cellpadding=2 cellspacing=2 width=100%>')
 	game, power = page.game, page.power
-	alive, vassals = not power.isEliminated(personal = True), power.vassals()
+	alive = not power.isEliminated(personal = True)
+	vassals = power.vassals(indirect = True)
 	if not alive and not vassals:
 		showWaitNotice()
 		return page.write('</table></td>')
@@ -33,9 +34,9 @@ def showOrders():
 	page.write('<p>')
 	if not game.await:
 		page.write('<form %s>' % ('onSubmit="return false"',
-			'method=post name=UpdateForm')[page.pwdFlag == 1])
+			'method=post name=UpdateForm')[page.pwdFlag > 2])
 		hideBack('Update')
-		apprise('phase', game.phaseAbbr())
+		page.apprise('phase', game.phaseAbbr())
 	if game.phaseType != 'M':
 		if game.phaseType == 'A': shown = showAdjustList()
 		elif game.phaseType == 'R': shown = showRetreatList()

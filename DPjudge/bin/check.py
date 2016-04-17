@@ -1,9 +1,10 @@
-import os, stat, sys, time, textwrap
+import os, stat, sys, textwrap
 import host
 
-import DPjudge
+from DPjudge import *
+from DPjudge.Game import Time
 
-class Check(DPjudge.Status):
+class Check(Status):
 	#	----------------------------------------------------------------------
 	"""
 	This class is invoked by the cron job to check deadlines on all games,
@@ -25,15 +26,14 @@ class Check(DPjudge.Status):
 	"""
 	#	----------------------------------------------------------------------
 	def __init__(self, argv = None):
-		DPjudge.Status.__init__(self)
+		Status.__init__(self)
 		if argv is None: argv = sys.argv
-		os.putenv('TZ', 'GMT')
-		now = DPjudge.Game.Time()
+		now = Time('GMT')
 		tsf = host.logDir + '/check.tim'
 		tsf2 = host.logDir + '/check2.tim'
 		if '-t' in argv and os.path.exists(tsf):
 			last = os.path.getmtime(tsf)
-			curr = time.mktime(time.localtime())
+			curr = now.seconds()
 			if last + 3600 < curr:
 				# Use a second timestamp file to keep track of subsequent
 				# server outages.
@@ -64,13 +64,13 @@ class Check(DPjudge.Status):
 				print(msg)
 				# Warn the judgekeeper.
 				if not last2 or again:
-					mail = DPjudge.Mail(host.judgekeeper,
+					mail = Mail(host.judgekeeper,
 						'%s server outage' % host.dpjudgeID)
 					mail.write(msg)
 					mail.close()
 				open(tsf2, 'w').close()
 				raise ServerOutageSuspected
-		print 'Checking deadlines at %s GMT' % time.ctime()
+		print 'Checking deadlines at %s GMT' % now.cformat()
 		flags = [x for x in argv[1:] if x.startswith('-')]
 		gameList = [x for x in argv[1:] if not x.startswith('-')]
 		for gameName, data in self.dict.items():
@@ -100,7 +100,7 @@ class Check(DPjudge.Status):
 				print game.name, 'has ERRORS ... notifying the Master'
 				for addr in game.master[1].split(',') + [
 					host.judgekeeper] * (not game.tester):
-					mail = DPjudge.Mail(addr,
+					mail = Mail(addr,
 						'Diplomacy ERRORS (%s)' % game.name)
 					mail.write("The game '%s' on %s has the following "
 						'errors in its status file:\n\n%s\n\nLog in at\n'
@@ -110,15 +110,21 @@ class Check(DPjudge.Status):
 						host.dpjudgeURL, game.name))
 					mail.close()
 			elif 'active' in data:
-				if line and game.deadlineExpired('4W'):
-					mail = DPjudge.Mail(host.judgekeeper,
-						'Diplomacy game alert (%s)' % game.name)
-					mail.write("JudgeKeeper:\n\nThe %s game '%s' on %s is "
-						'past its deadline for more than 4 weeks.\n\nVisit the game at\n'
-						'   %s?game=%s\nfor more information.\n\n'
-						'Thank you,\nThe DPjudge\n' %
-						(game.private and 'private' or 'public',
-						game.name, host.dpjudgeID, host.dpjudgeURL, game.name))
+				if line and game.deadlineExpired('1W'):
+					critical = game.deadlineExpired('4W')
+					for addr in game.master[1].split(',') + [
+						host.judgekeeper] * (not game.tester and critical):
+						mail = Mail(host.judgekeeper,
+							'Diplomacy game alert (%s)' % game.name)
+						mail.write("%s:\n\nThe %s game '%s' on %s is "
+							'past its deadline for more than %s.\n\n'
+							'Visit the game at\n'
+							'   %s?game=%s\nfor more information.\n\n'
+							'Thank you,\nThe DPjudge\n' %
+							(addr == host.judgekeeper and 'JudgeKeeper'
+							or 'Master', game.private and 'private' or 'public',
+							game.name, host.dpjudgeID, critical and '4 weeks'
+							or '1 week', host.dpjudgeURL, game.name))
 					mail.close()
 			elif 'terminated' not in data:
 				reason = ''
@@ -129,10 +135,11 @@ class Check(DPjudge.Status):
 							game.anglify(x[:x.find('-')]) + x[x.find('-'):]
 							for x in game.avail])
 					if line and game.deadlineExpired('8W'):
-						mail = DPjudge.Mail(host.judgekeeper,
+						mail = Mail(host.judgekeeper,
 							'Diplomacy game alert (%s)' % game.name)
 						mail.write("JudgeKeeper:\n\nThe %s game '%s' on %s is "
-							'in the %s state for more than 8 weeks.%s\n\nVisit the game at\n'
+							'in the %s state for more than 8 weeks.%s\n\n'
+							'Visit the game at\n'
 							'   %s?game=%s\nfor more information.\n\n'
 							'Thank you,\nThe DPjudge\n' %
 							(game.private and 'private' or 'public',
@@ -145,11 +152,11 @@ class Check(DPjudge.Status):
 						len(game.map.powers) - len(game.map.dummies))
 					reason = ' %d position%s remain%s.' % (
 						spots, 's'[spots == 1:], 's'[spots != 1:])
-				else: state = 'preparation'
+				else: state = data[1]
 				print game.name, 'is in the %s state' % state,
 				print '... reminding the Master'
 				for addr in game.master[1].split(','):
-					mail = DPjudge.Mail(addr,
+					mail = Mail(addr,
 						'Diplomacy game reminder (%s)' % game.name)
 					mail.write("GameMaster:\n\nThe game '%s' on %s is "
 						'still in the %s state.%s\n\nVisit the game at\n'
@@ -193,7 +200,7 @@ class Check(DPjudge.Status):
 				try: game.process(now = 1)
 				except: pass
 				if game.await:
-					mail = DPjudge.Mail(host.judgekeeper,
+					mail = Mail(host.judgekeeper,
 						'Diplomacy adjudication error! (%s)' % game.name)
 					mail.write('JudgeKeeper:\n\nThe game %s on %s\n'
 						'encountered an error during adjudication\n'
@@ -212,14 +219,13 @@ class Check(DPjudge.Status):
 				hey, when = game.latePowers(), game.timing.get('WARN', '4H')
 				for warn in when.split(','):
 					if warn[:-1] != '0' and hey:
-						hit = (time.mktime(map(int,
-							(line[:4], line[4:6], line[6:8], line[8:10],
-							line[10:], 0, 0, 0, -1))) - int(warn[:-1]) *
-							{ 'M': 60, 'H': 3600, 'D': 86400, 'W': 604800 }
-							.get(warn[-1], 1))
-						start = time.localtime(hit)[:5]
-						end = time.localtime(hit + 1200)[:5]
-						if start <= time.localtime()[:5] < end:
+						hit = line.offset('-' + warn)
+						#	------------------------------------------
+						#	Note that we don't need to change the time
+						#	zone for "now", since internally the Time
+						#	class compares the timestamps
+						#	------------------------------------------
+						if hit <= now < hit.offset('20M'):
 							print '... sending reminders',
 							game.lateNotice()
 							break

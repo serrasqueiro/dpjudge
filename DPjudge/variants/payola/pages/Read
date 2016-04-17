@@ -34,8 +34,6 @@ gameHeader()
 <:
 #	----------------------------------------------------------------------
 def showPrices():
-	pwdFlag = (isinstance(page.power, Power) and
-		page.power.isValidPassword(page.password))
 	if 'phase' not in vars(page): page.phase = page.game.phase
 	show = done = page.phase == 'COMPLETED'
 	page.write(
@@ -62,7 +60,7 @@ def showPrices():
 		elif show:
 			word = line.split()
 			if not word: lines += ['']
-			elif pwdFlag and page.power.name == 'MASTER' or done:
+			elif page.pwdFlag > 3 or done:
 				lines += [line.rstrip()]
 			else:
 				if line[0] != ' ': unit = ' '.join(word[:2])
@@ -79,8 +77,6 @@ def showPrices():
 	page.write('</td></tr></table></center>')
 #	----------------------------------------------------------------------
 def showLedger():
-	pwdFlag = (isinstance(page.power, Power) and
-		page.power.isValidPassword(page.password))
 	page.write(
 		"""
 		<tr valign=top bgcolor="#CCCCCC">
@@ -92,10 +88,10 @@ def showLedger():
 		""")
 	page.write('<pre>')
 	file = open(page.game.file(page.file), encoding='latin-1')
-	reading = text = not pwdFlag
+	reading = text = page.pwdFlag < 2
 	for line in file:
 		word = line.split()
-		if not pwdFlag:
+		if page.pwdFlag < 2:
 			if word and word[0] == 'ENDPRESS': page.write()
 			else: page.write(line[:-1])
 		elif not reading:
@@ -118,6 +114,7 @@ def showLedger():
 if page.file == 'ledgers': showLedger()
 elif page.file == 'chart': showPrices()
 elif page.file == 'results': showResults()
+elif page.file == 'access': showAccessLog()
 else: viewFile()
 :>
 </td>

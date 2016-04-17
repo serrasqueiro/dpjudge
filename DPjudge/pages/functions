@@ -42,7 +42,7 @@ def listGames(variant = 'standard'):
 		if games[state]:
 ##			if state[0] in 'FW': page.write('(Private games listed in gray)')
 			page.write('<form name=%s method=post>' % state)
-			apprise('page', 'Login')
+			page.apprise('page', 'Login')
 			page.write(
 				"""
 				<input type=submit value="View Game:" 
@@ -76,36 +76,37 @@ def listGames(variant = 'standard'):
 def showGameHeader():
 	game = page.game
 	page.write('<title>Game %s</title>' % game.name)
-	when = game.deadline
-	if 'active' in game.status and when and when > game.Time():
-		page.write(
-		"""
-		<script>
-		window.setTimeout("Update(%d);",0);
-		function Update(left) {
-			down=--left;tick="Time to Deadline: ";
-			weeks=Math.floor(down/604800);down%%=604800;
-			days=Math.floor(down/86400);down%%=86400;
-			hrs=Math.floor(down/3600);down%%=3600;
-			mins=Math.floor(down/60);secs=down%%60;
-			if(weeks>1)tick+=weeks+" weeks, ";
-			else if(weeks==1)tick+="1 week, ";
-			if(days>1)tick+=days+" days, ";
-			else if(days==1)tick+="1 day, ";
-			if(hrs>1)tick+=hrs+" hours, ";
-			else if(hrs==1)tick+="1 hour, ";
-			if(mins>1)tick+=mins+" minutes, ";
-			else if(mins==1)tick+="1 minute, ";
-			tick+=secs+" second";if(secs!=1)tick+="s";
-			window.status=tick;
-			if(left)window.setTimeout("Update("+left+");",1000);
-			else alert("Deadline!!");}
-		</script>
-		""" % (time.mktime(map(int, (when[:4], when[4:6], when[6:8],
-			when[8:10], when[10:], 0, 0, 0, -1))) -
-			time.mktime(time.localtime())))
+	if 'active' not in game.status or not game.deadline: return
+	when, now = game.deadline.seconds(), game.getTime(npar=6).seconds()
+	if when <= now: return
+	page.write(
+	"""
+	<script>
+	window.setTimeout("Update(%d);",0);
+	function Update(left) {
+		down=--left;tick="Time to Deadline: ";
+		weeks=Math.floor(down/604800);down%%=604800;
+		days=Math.floor(down/86400);down%%=86400;
+		hrs=Math.floor(down/3600);down%%=3600;
+		mins=Math.floor(down/60);secs=down%%60;
+		if(weeks>1)tick+=weeks+" weeks, ";
+		else if(weeks==1)tick+="1 week, ";
+		if(days>1)tick+=days+" days, ";
+		else if(days==1)tick+="1 day, ";
+		if(hrs>1)tick+=hrs+" hours, ";
+		else if(hrs==1)tick+="1 hour, ";
+		if(mins>1)tick+=mins+" minutes, ";
+		else if(mins==1)tick+="1 minute, ";
+		tick+=secs+" second";if(secs!=1)tick+="s";
+		window.status=tick;
+		if(left)window.setTimeout("Update("+left+");",1000);
+		else alert("Deadline!!");}
+	</script>
+	""" % (when - now))
 #	----------------------------------------------------------------------
 def showMapButtons():
+	game = page.game
+	if 'unlisted' in game.status and page.pwdFlag < 2: return
 	file, game = mapName(), page.game
 	map = host.gameMapDir + '/' + file
 	gif = os.path.exists(map + '.gif') | (os.path.exists(map + '_.gif') * 2)
@@ -180,9 +181,8 @@ def showMapButtons():
 #	----------------------------------------------------------------------
 def showResultsText(subject = None, align = 1):
 	game = page.game
-	pwdFlag = (isinstance(page.power, Power) and
-		page.power.isValidPassword(page.password))
-	if pwdFlag: power = page.power.name
+	if 'unlisted' in game.status and page.pwdFlag < 2: return
+	if page.pwdFlag > 1: power = page.power.name
 	elif 'BLIND' in game.rules: return
 	else: power = ''
 	backList, forwardList = [], []
@@ -203,7 +203,7 @@ def showResultsText(subject = None, align = 1):
 				if matching:
 					if topic == matching: matching = False
 				else:
-					# In case te results file went last.
+					# In case the results file went lost.
 					if not backList and topic.split()[-1] == game.phaseAbbr():
 						backList, forwardList = forwardList, []
 					forwardList += [topic]
@@ -228,8 +228,8 @@ def showResultsText(subject = None, align = 1):
 	if not backList and not forwardList: return
 	page.write('<form name=results method=post>')
 	hideBack('Read')
-	apprise('file', 'results')
-	if fileNames: apprise('files', '|'.join(fileNames))
+	page.apprise('file', 'results')
+	if fileNames: page.apprise('files', '|'.join(fileNames))
 	page.write("""
 		%s<b>Results:</b>
 		%s<select name="subject" class="inputBox"
@@ -279,9 +279,9 @@ def showDocList(files, beforeEnd = 0):
 		</form>
 		""")
 #	----------------------------------------------------------------------
-def showAbsenceInput():
-	if 'terminated' in page.game.status or 'completed' in page.game.status:
-		return
+def showAbsenceInfo():
+	if ('terminated' in page.game.status or 'completed' in page.game.status
+	or 'NO_DEADLINE' in page.game.rules): return
 	page.write("""
 		<script language="javascript" type="text/javascript"
 		src="<URL>/scripts/dater"></script>
@@ -393,8 +393,8 @@ def showLoginForm(showElimPowers = 0):
 		else document.powerForm.submit();}</script>
 		<form name=powerForm method=post onSubmit=maySubmit()>
 		""")
-	apprise('page', 'Status')
-	reprise(['game'])
+	page.apprise('page', 'Status')
+	page.reprise(['game'])
 	page.write("""
 		<tr valign=bottom><td height=10 colspan=3><!hr></td></tr>
 		<tr><td colspan=2 class="bodycopy" nowrap><b>Log in as:</b>&nbsp;
@@ -434,8 +434,8 @@ def showInfo(name, value, left = 0):
 #	----------------------------------------------------------------------
 def showVariantInfo():
 	game, power, ceoInfo = page.game, page.power, ''
-	pwdFlag = isinstance(power, Power) and power.isValidPassword(page.password)
-	omniscient = pwdFlag and (power.name == 'MASTER' or power.omniscient)
+	omniscient = (page.pwdFlag > 1 and power.omniscient or
+		page.pwdFlag > 3 and power.name == 'MASTER')
 	if (not omniscient and 'completed' not in page.game.status and
 		'HIDE_DUMMIES' in game.rules): return
 	for who in game.powers:
@@ -481,16 +481,17 @@ def showGameInfo():
 		for x in rules]
 	showInfo('<a target=rules href=<URL>?page=Rules>Rules</a>',
 		rules and '<tt><b>' + ', '.join(rules) + '.' or '')
-	if game.phase == 'FORMING': showInfo('Time Zone', game.zone or 'UTC (GMT)')
-	if game.phase == 'COMPLETED' and 'NOT' in game.timing:
-		del game.timing['NOT']
-	for key, val in game.timing.items(): timing += ' ' + key + ' ' + val
-	timing = timing or 'NEXT 1D MOVE 3D'
-	if 'DAYS' not in game.timing: timing += ' DAYS -MTWTF-'
-	showInfo('<a target=rules href=<URL>?page=Status#timing>Timing</a>',
-			'<tt><b>' + timing)
+	if game.phase == 'FORMING': showInfo('Time Zone', game.zone.__repr__() or 'UTC (GMT)')
+	if 'NO_DEADLINE' not in game.rules:
+		if game.phase == 'COMPLETED' and 'NOT' in game.timing:
+			del game.timing['NOT']
+		for key, val in game.timing.items(): timing += ' ' + key + ' ' + val
+		timing = timing or 'NEXT 1D MOVE 3D'
+		if 'DAYS' not in game.timing: timing += ' DAYS -MTWTF-'
+		showInfo('<a target=rules href=<URL>?page=Status#timing>Timing</a>',
+				'<tt><b>' + timing)
 	if game.avail: showInfo('Last Accessed',
-		time.ctime(os.path.getmtime(game.file('status'))))
+		Time('GMT', os.path.getmtime(game.file('status'))).cformat())
 	if game.start: showInfo('Game Started', game.start)
 	if game.phase == 'COMPLETED':
 		showInfo('Game Ended', game.end)
@@ -525,16 +526,14 @@ def showGameInfo():
 			'Terminated by GameMaster</blink></font>')
 	elif game.phase not in ('FORMING', 'COMPLETED'):
 		if (game.deadline and 'HIDE_LATE_POWERS' in game.rules
-		and game.Time() > game.deadline and not game.avail):
+		and game.getTime() > game.deadline and not game.avail):
 			late = game.latePowers()
 			if late: showInfo('Late Power' + 's'[len(late) < 2:],
 				'(Identit%s Concealed by Rule)' % ('ies', 'y')[len(late) == 1])
 	page.write('</table>')
 #	----------------------------------------------------------------------
 def gameHeader():
-	pwdFlag = (isinstance(page.power, Power) and
-		page.power.isValidPassword(page.password))
-	game, power = page.game, pwdFlag and page.power or None
+	game, power = page.game, page.pwdFlag > 1 and page.power or None
 	page.write(
 		"""
 		<tr>
@@ -568,11 +567,10 @@ def gameHeader():
 			'<br><font color=yellow size=2>-- Waiting to replace %s --' %
 			', '.join([game.anglify(x[:x.find('-')]) + x[x.find('-'):]
 				for x in game.avail]))
-		elif game.deadline < game.Time():
+		elif game.deadline < game.getTime():
 			if late:
-				if power and (power.name in late
-				or [1 for x in power.vassals(indirect = False)
-				if x.name in late]): page.write(
+				if power and (power.name in late or [1 for x in power.vassals()
+					if x.name in late]): page.write(
 					'<br><font size=+1><blink>You Are Late!</blink></font>')
 				elif (power and (power.name == 'MASTER' or power.omniscient)
 				or 'HIDE_LATE_POWERS' not in game.rules): page.write(
@@ -612,11 +610,18 @@ def gameHeader():
 			elif game.await == 2:
 				page.write('<br>Waiting for the Master to process the phase.')
 		page.write('</td></tr>')
-	if game.private: page.write(
-		'<tr><th bgcolor="yellow" align=center class="bodycopy">'
-		'<font color=red>'
-		'This is a private game including specific players;<br>'
-		'it may include players who know each other.</th></tr>')
+	warnings = []
+	if game.private: warnings += ['This is a private game including specific players;',
+		'it may include players who know each other.']
+	if 'unlisted' in game.status:
+		warnings += ['This is an <a href=<PAGE>Email#unlisted>unlisted</a> game.']
+		if page.pwdFlag in (2, 3):
+			warnings[-1] = warnings[-1][:-1] + ';'
+			warnings += ['if you disagree, contact the GM or Judgekeeper.']
+	if warnings: page.write("""
+		<tr><th bgcolor="yellow" align=center class="bodycopy">
+		<font color=red>%s</font></th></tr>
+		""" % '<br>\n'.join(warnings))
 	page.write(
 		"""
 			<tr><td height=5><!--SPACER--></td></tr>
@@ -676,23 +681,23 @@ def showProposal():
 			else document.proposalForm.proposal.selectedIndex=%d;}</script>
 			<form name=proposalForm %s>
 			""" % (now,
-			('onSubmit="return false"', 'method=post')[page.pwdFlag == 1]))
+			('onSubmit="return false"', 'method=post')[page.pwdFlag > 2]))
 		hideBack('Status')
 		page.write("""
 			<tr valign=top><td class="bodycopy">
 			<b>Goal:</b></td><td align=right class="bodycopy">
 			<select name=proposal onchange=makeProp() class="inputBox">
 			""")
-		if 1 in (vote, page.pwdFlag):
+		if vote == 1 or page.pwdFlag > 2:
 			page.write('<option value=1%s>A solo victory for %s</option>' %
 				(' selected' * (vote == 1), powerName))
 		for way in range((dias, 2)['NO_DIAS' in game.rules], dias + 1):
-			if vote == way or page.pwdFlag == 1: page.write(
+			if vote == way or page.pwdFlag > 2: page.write(
 				'<option value=%d%s>A %sdraw including %s</option>' %
 				(way == dias and -1 or way, ' selected' * (vote == way),
 				('%d-way ' % way, '')['BLIND' in game.rules],
 				powerName + ' (DIAS)' * (way == dias)))
-		if vote == 0 or page.pwdFlag == 1: page.write(
+		if vote == 0 or page.pwdFlag > 2: page.write(
 			'<option value=0%s>%s</option>' % (' selected' * (vote == 0),
 			('A concession to another power',
 			'Any result NOT including ' + powerName)
@@ -751,7 +756,7 @@ def showProposal():
 			</script><form name=proposalForm method=post>
 			""")
 		hideBack('Status')
-		apprise('proposal', '')
+		page.apprise('proposal', '')
 		page.write("""
 			<tr><td class=bodycopy><b>Endgame:</td>
 			<td colspan=2 align=right>
@@ -760,9 +765,7 @@ def showProposal():
 			""")
 #	----------------------------------------------------------------------
 def showMessages():
-	pwdFlag = (isinstance(page.power, Power) and
-		page.power.isValidPassword(page.password))
-	if pwdFlag and page.power.name != 'MASTER' and page.power.msg:
+	if page.pwdFlag in (2, 3) and page.power.msg:
 		page.write('<tr><td class=bodycopy valign=top><b>Message:</b></td>'
 			'<td valign=top class=bodycopy colspan=2><b><font color=red>')
 		for msg in page.power.msg: page.write(msg + '<br>')
@@ -772,9 +775,9 @@ def showControlInfo():
 	game, power = page.game, page.power
 	if power.ceo:
 		page.write('<form name=ceoForm method=post>')
-		apprise('page', 'Status')
-		reprise(['game', 'password'])
-		apprise('power', power.ceo[0])
+		page.apprise('page', 'Status')
+		page.reprise(['game', 'password'])
+		page.apprise('power', power.ceo[0])
 		page.write("""
 			<tr><td class=bodycopy><b>Controller:</b></td>
 			<td class=bodycopy align=right>%s</td>
@@ -782,17 +785,18 @@ def showControlInfo():
 			</td></tr></form>
 			""" % game.anglify(power.ceo[0]))
 		return
-	headsUp = [x.name for x in power.vassals(all = True)]
+	headsUp = [x.name for x in power.vassals(all = True, indirect = True)]
 	if headsUp:
 		page.write('<form name=ceoForm method=post>')
-		apprise('page', 'Status')
-		reprise(['game', 'password'])
+		page.apprise('page', 'Status')
+		page.reprise(['game', 'password'])
 		page.write("""
-			<tr><td class=bodycopy nowrap><b>Controller Of:</b></td>
+			<tr><td class=bodycopy nowrap><b>%s:</b></td>
 			<td align=right>
 			<select class=inputBox
 			name=power onChange=document.ceoForm.submit()>
-			""")
+			""" % ('Controller Of', 'Power')[power.omniscient
+			or power.name == 'MASTER'])
 		for country in headsUp:
 			page.write('<option value="%s">%s</option>' %
 				(country, game.anglify(country)))
@@ -816,7 +820,7 @@ def footer():
 		</table>
 		</body>
 		</html>
-		""" % time.gmtime()[0])
+		""" % Time('GMT').tuple()[0])
 #	----------------------------------------------------------------------
 def showReadyNotice():
 	game = page.game
@@ -879,7 +883,7 @@ def showPressOptions():
 </table></td>
 			""")
 	elif readers:
-		apprise('recipient', readers[0])
+		page.apprise('recipient', readers[0])
 		page.write("""
 			<th><input class=inputSubmit type=submit value="Mail the %s">
 			</th>
@@ -909,7 +913,7 @@ def showWaitNotice():
 def showReceiptFlag():
 	if not page.power.address: return
 	if 'ALWAYS_CONFIRM' in page.game.rules:
-		apprise('receipt', 1)
+		page.apprise('receipt', 1)
 	else:
 		page.write(
 			"""
@@ -918,11 +922,12 @@ def showReceiptFlag():
 			""")
 #	----------------------------------------------------------------------
 def showWaitFlag():
-	if page.pwdFlag != 1: return
+	if page.pwdFlag < 3: return
 	showReceiptFlag()
 	if (('NO_MINOR_WAIT' in page.game.rules and page.game.phaseType != 'M')
 	or 'REAL_TIME' in page.game.rules
-	or not page.game.deadline or page.game.deadline < page.game.Time()): return
+	or not page.game.deadline or page.game.deadline < page.game.getTime()):
+		return
 	page.write(
 		"""
 		<tr><td class=bodycopy align=center>
@@ -932,7 +937,12 @@ def showWaitFlag():
 #	----------------------------------------------------------------------
 def showAdjustList():
 	game, power, shown = page.game, page.power, 0
-	for who in [power] + power.vassals():
+	#	-------------------------------
+	#	Obtain default orders for dummy
+	#	and nearly eliminated powers.
+	#	-------------------------------
+	game.latePowers()
+	for who in [power] + power.vassals(indirect = True):
 		if len(who.centers) == 0: continue
 		count = len(who.centers) - len(who.units)
 		if [x for x in who.centers if x in who.homes]:
@@ -985,14 +995,14 @@ def showAdjustList():
 		for which in range(abs(count)):
 			order = who.adjust[which:which + 1]
 			page.write('<b>%s <select name=adjust class=inputBox>' % action.title())
-			if page.pwdFlag == 1 or not order:
+			if page.pwdFlag > 2 or not order:
 				page.write('<option value=\'%s(NMR)\'>(NMR)' %
 					(who is not power and who.name + ' ' or ''))
 			for ord in list:
 				syntax = action + ' ' + ord
 				select = ' selected' * (syntax in order)
 				if who is not power: syntax = who.name + ' ' + syntax
-				if select or page.pwdFlag == 1: page.write(
+				if select or page.pwdFlag > 2: page.write(
 					'<option value=\'%s\'%s>' % (syntax, select) + ord)
 			page.write('</select><br>')
 	if shown: page.write('</p></td></tr>')
@@ -1000,7 +1010,12 @@ def showAdjustList():
 #	----------------------------------------------------------------------
 def showRetreatList():
 	game, power, shown = page.game, page.power, 0
-	for who in [power] + power.vassals():
+	#	-------------------------------
+	#	Obtain default orders for dummy
+	#	and nearly eliminated powers.
+	#	-------------------------------
+	game.latePowers()
+	for who in [power] + power.vassals(indirect = True):
 		if not who.retreats or who.goner: continue
 		if not shown:
 			shown = 1
@@ -1020,7 +1035,7 @@ def showRetreatList():
 				page.write('<tr><td class=bodycopy align=right>' +
 					unit.replace(' ', '&nbsp;') + '</td>')
 				page.write('<td><select name=adjust class=inputBox>')
-				if not who.adjust or page.pwdFlag == 1:
+				if not who.adjust or page.pwdFlag > 2:
 					page.write('<option value=\'%s(NMR)\'>(NMR)' %
 						(who is not power and who.name + ' ' or ''))
 				choices = ['DISBAND'] + ['- ' + x for x in who.retreats[unit]]
@@ -1028,19 +1043,26 @@ def showRetreatList():
 					ord = 'RETREAT %s ' % unit + choice
 					select = ' selected' * (ord in who.adjust)
 					if who is not power: ord = who.name + ' ' + ord
-					if select or page.pwdFlag == 1: page.write(
+					if select or page.pwdFlag > 2: page.write(
 						'<option value=\'%s\'%s>' % (ord, select) + choice)
 				page.write('</select></td></tr>')
-			page.write('</table')
+			page.write('</table>')
 	if shown: page.write('</td></tr>')
 	return shown
 #	----------------------------------------------------------------------
+def changeButton():
+	page.write("""
+		<tr><td></td></tr><tr><td align=center colspan=3>
+		<%sinput type=submit
+		class=inputSubmit value="Submit Updates">
+		</td></tr>
+		</form>
+		""" % '!'[page.pwdFlag > 2:])
+#	----------------------------------------------------------------------
 def viewFile():
 	if not page.file: return
-	pwdFlag = (isinstance(page.power, Power) and
-		page.power.isValidPassword(page.password))
-	if page.file.split('.')[0] in ('access', 'results', 'status') and not (
-		pwdFlag and page.power.name == 'MASTER'):
+	if page.file.split('.')[0] in ('access', 'results', 'status') and (
+		page.pwdFlag < 4):
 		return finished('Forbidden To Read')
 	page.write("""
 		<tr valign=top bgcolor="#CCCCCC">
@@ -1067,8 +1089,6 @@ def viewFile():
 def showResults():
 	if 'subject' not in vars(page): return viewFile()
 	page.setdefault('files')
-	pwdFlag = (isinstance(page.power, Power) and
-		page.power.isValidPassword(page.password))
 	page.write("""
 		<tr valign=top bgcolor="#CCCCCC">
 		<td align=center class="grey"><b>Results</b></td></tr>
@@ -1092,7 +1112,7 @@ def showResults():
 				if showing < 2: continue
 				if line.startswith('SHOW'):
 					showTo = line[:-1].split()[1:]
-					blind = showTo and not (pwdFlag and
+					blind = showTo and not (page.pwdFlag > 1 and
 						page.power.name in showTo)
 				elif not blind and (line[:-1] or lastLine):
 					lastLine = line[:-1]
@@ -1105,7 +1125,7 @@ def showResults():
 	forward = showResultsText(page.subject, 0)
 	if forward:
 		page.write('</td></tr><tr><td align=center class=bodycopy>')
-		if pwdFlag and page.power.name == 'MASTER':
+		if page.pwdFlag > 3:
 			word = page.subject.split()
 			phase = len(word) > 2 and word[1] in ('results',
 				'phase') and word[-1] or 'FORMING'
@@ -1149,36 +1169,18 @@ def sendPress():
 		'E-mail service down; message queued for delivery when restored') *
 		(type(socket.gethostname) is not type(len)))
 #	----------------------------------------------------------------------
-def apprise(option, value):
-	try: value = value.name
-	except: pass
-	page.write('<input type=hidden name="%s" value="%s">' % (option, value))
-#	----------------------------------------------------------------------
-def comprise(options):
-	for option in options:
-		page.write('<input type=hidden name="%s">' % option)
-#	----------------------------------------------------------------------
-def surprise(option, fallBack):
-	try: apprise(option, vars(page)[option])
-	except: apprise(option, fallBack)
-#	----------------------------------------------------------------------
-def reprise(options):
-	for option in options:
-		try: apprise(option, vars(page)[option])
-		except: pass
-#	----------------------------------------------------------------------
 def hideBack(target):
-	apprise('page', target)
-	surprise('backpage', page.page)
-	reprise(['game', 'power', 'password'])
+	page.apprise('page', target)
+	page.surprise('backpage', page.page)
+	page.reprise(['game', 'power', 'password'])
 #	----------------------------------------------------------------------
 def goBack(caption = None, auto = 0):
 	if 'backpage' in vars(page):
 		if not caption: caption = 'Return To The %s Page' % page.backpage
 		if auto: caption += ' [Automatic In %d Seconds]' % auto
 		page.write('<form method=post name=form>')
-		apprise('page', page.backpage)
-		reprise(['game', 'power', 'password'])
+		page.apprise('page', page.backpage)
+		page.reprise(['game', 'power', 'password'])
 		page.write("""
 			<input type=submit class=inputSubmit value="%s">
 			</form>
@@ -1188,7 +1190,7 @@ def goBack(caption = None, auto = 0):
 		page.write("""
 			<form method = post>
 			<input type=button class=inputSubmit value="%s"
-			onclick="alert('No backpage'); window.history.back()">
+			onclick="window.history.back()">
 			</form>
 			""" % caption)
 #	----------------------------------------------------------------------
@@ -1350,9 +1352,7 @@ def updateOffPhases():
 	page.game.updateOffPhases(page.power, page.adjust)
 #	----------------------------------------------------------------------
 def checkPassword():
-	page.pwdFlag = (isinstance(page.power, Power) and
-		page.power.isValidPassword(page.password))
-	if page.pwdFlag: return
+	if page.pwdFlag > 1: return
 	page.write(
 		"""
 		<script>
@@ -1378,14 +1378,10 @@ def loadGame():
 			</script>
 			""" % host.dpjudgeURL)
 		raise SystemExit
-	try: page.power = [x for x in page.game.powers if x.name in (page.power,
-		'_' + page.power)][0]
-	except: 
-		if page.power == 'MASTER': page.power = Power(page.game, 'MASTER')
 #	----------------------------------------------------------------------
 def mapName():
 	file = page.game.name
-	if ('BLIND' in page.game.rules and page.power and page.pwdFlag
+	if ('BLIND' in page.game.rules and page.pwdFlag > 1
 	and page.game.phase != 'COMPLETED'):
 		if page.power.name != 'MASTER': file += ('.' +
 			(page.power.abbrev or 'O') + `hash((page.power.password
@@ -1442,19 +1438,12 @@ def checkProposal():
 def checkAbsence():
 	startDate = 'startdate' in vars(page) and page.startdate or ''
 	endDate = 'enddate' in vars(page) and page.enddate or ''
-	nope = line = ''
 	if startDate and endDate:
-		line = 'Set absence from %s to %s.' % (startDate, endDate)
 		nope = normDate(startDate) + '-' + normDate(endDate)
-	elif endDate:
-		line = 'Set absence to %s.' % endDate
-		nope = '-' + normDate(endDate)
-	elif startDate:
-		line = 'Set absence on %s.' % startDate
-		nope = normDate(startDate)
-	else:
-		line = 'No absence set.'
-	if nope: page.game.setAbsence(page.power, nope, line)
+	elif endDate: nope = '-' + normDate(endDate)
+	elif startDate: nope = normDate(startDate)
+	else: nope = ''
+	page.game.setAbsence(page.power, nope)
 #	----------------------------------------------------------------------
 def normDate(date):
 	dots = date.split('-')
@@ -1475,13 +1464,14 @@ def powerInfo():
 		except: pass
 	rules = rules and '<tt><b>' + ', '.join(rules) + '.' or ''
 	showInfo('<a target=rules href=<URL>?page=Rules>Rules</a>', rules, 1)
-	if game.phase == 'COMPLETED' and 'NOT' in game.timing:
-		del game.timing['NOT']
-	for key, val in game.timing.items(): timing += ' ' + key + ' ' + val
-	timing = timing or 'NEXT 1D MOVE 3D'
-	if 'DAYS' not in game.timing: timing += ' DAYS -MTWTF-'
-	showInfo('<a target=rules href=<URL>?page=Status#timing>Timing</a>',
-			'<tt><b>' + timing, 1)
+	if 'NO_DEADLINE' not in game.rules:
+		if game.phase == 'COMPLETED' and 'NOT' in game.timing:
+			del game.timing['NOT']
+		for key, val in game.timing.items(): timing += ' ' + key + ' ' + val
+		timing = timing or 'NEXT 1D MOVE 3D'
+		if 'DAYS' not in game.timing: timing += ' DAYS -MTWTF-'
+		showInfo('<a target=rules href=<URL>?page=Status#timing>Timing</a>',
+				'<tt><b>' + timing, 1)
 	page.write('<tr><td colspan=3><HR></td></tr>')
 #	----------------------------------------------------------------------
 def pouchLinks():
@@ -1523,16 +1513,15 @@ def pressCode(text, lineNum = None):
 	return map(long, result)
 #	----------------------------------------------------------------------
 def showPressArchive(selected = 0, filter = 0):
+	game = page.game
+	if 'unlisted' in game.status and page.pwdFlag < 2: return []
 #	if 'TZAR' not in `page.power`: return []
 	file = page.game.file('press')
-	if not os.path.exists(file): return
-	pwdFlag = (isinstance(page.power, Power) and
-		page.power.isValidPassword(page.password))
-	power = pwdFlag and page.power.name or ''
+	if not os.path.exists(file): return []
+	power = page.pwdFlag > 1 and page.power.name or ''
 	thePower = power.encode('latin-1')
 	file, items, validCodes, involved = open(file), [], [], []
-	omniscient = pwdFlag and ((power == 'MASTER') or
-		power and page.power.omniscient)
+	omniscient = page.pwdFlag == 2 or page.pwdFlag > 3
 	for lineNum, line in enumerate(file):
 		if not line.startswith('::'): continue
 		data, receivers = line.strip().upper().split(), []

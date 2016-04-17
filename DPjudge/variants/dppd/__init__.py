@@ -1,8 +1,8 @@
 #!/usr/bin/env python -O
 
-#	------------------------------------------------------------------
-#	Subpackage DPjudge.dppd, also an executable to handle inbound mail
-#	------------------------------------------------------------------
+#	---------------------------------------------------------------------------
+#	Subpackage DPjudge.variants.dppd, also an executable to handle inbound mail
+#	---------------------------------------------------------------------------
 
 from DPjudge import Game
 

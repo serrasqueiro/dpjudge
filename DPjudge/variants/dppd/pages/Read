@@ -54,7 +54,7 @@ page.include('functions')
 </tr>
 <:
 def showPlayerData(ids):
-	if type(ids) is not list: ids = [ids]
+	if type(ids) is not list: ids = [ids['id']]
 	for id in ids:
 		player = page.dppd[id]
 		status = player.get('status', 'ACTIVE')

@@ -389,7 +389,7 @@ class Map:
 			#	------------------------------------------
 			#	Text-Only specification (no .ps available)
 			#	------------------------------------------
-			elif upword == 'TEXTONLY': self.textonly = 1
+			elif upword == 'TEXTONLY': self.textOnly = 1
 			#	----------------------------------
 			#	Centers needed to obtain a VICTORY
 			#	----------------------------------
@@ -1021,7 +1021,7 @@ class Map:
 	def isValidUnit(self, unit, noCoastOK = 0, shutOK = 0):
 		unit, locale = unit.upper().split()
 		type = self.areatype(locale)
-		if unit == '?': return type
+		if unit == '?': return not not type
 		if shutOK and type == 'SHUT': return 1
 		if unit == 'A': return ('/' not in locale
 			and type in ('LAND', 'COAST', 'PORT'))
@@ -1048,7 +1048,9 @@ class Map:
 		year = int(now[1])
 		which = ((self.seq.index(now[0] + ' ' + now[2]) + 1) %
 			len(self.seq))
-		while 1:
+		n = len(self.seq)
+		while n:
+			n -= 1
 			new = self.seq[which].split()
 			if new[0] == 'IFYEARDIV':
 				if '=' in new[1]: div, mod = map(int, new[1].split('='))
@@ -1056,18 +1058,20 @@ class Map:
 				if year % div != mod: which = -1
 			elif new[0] == 'NEWYEAR': year += len(new) == 1 or int(new[1])
 			elif phaseType in (None, new[1][0]):
-				if skip == 0: break
+				if skip == 0: return ' '.join([new[0], `year`, new[1]])
 				skip -= 1
+				n = len(self.seq)
 			which += 1
 			which %= len(self.seq)
-		return ' '.join([new[0], `year`, new[1]])
 	#	----------------------------------------------------------------------
 	def findPreviousPhase(self, phase, phaseType = None, skip = 0):
 		now = phase.split()
 		if len(now) < 3: return phase
 		year = int(now[1])
 		which = self.seq.index(now[0] + ' ' + now[2])
-		while 1:
+		n = len(self.seq)
+		while n:
+			n -= 1
 			which -= 1
 			if which == -1:
 				for new in [x.split() for x in self.seq]:
@@ -1080,9 +1084,9 @@ class Map:
 			if new[0] == 'IFYEARDIV': pass
 			elif new[0] == 'NEWYEAR': year -= len(new) == 1 or int(new[1])
 			elif phaseType in (None, new[1][0]):
-				if skip == 0: break
+				if skip == 0: return ' '.join([new[0], `year`, new[1]])
 				skip -= 1
-		return ' '.join([new[0], `year`, new[1]])
+				n = len(self.seq)
 	#	----------------------------------------------------------------------
 	def comparePhases(self, phase1, phase2):
 		if len(phase1.split()) == 1:

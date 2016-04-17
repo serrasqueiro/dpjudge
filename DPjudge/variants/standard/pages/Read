@@ -27,6 +27,7 @@ gameHeader()
 </tr>
 <:
 if page.file == 'results': showResults()
+elif page.file == 'access': showAccessLog()
 else: viewFile()
 :>
 </td>

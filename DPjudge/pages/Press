@@ -91,9 +91,9 @@ def showPressArea():
 		<center><form method=post name=press>
 		""")
 	hideBack('Update')
-	apprise('phase', page.game.phaseAbbr())
+	page.apprise('phase', page.game.phaseAbbr())
 	for power in page.recipient:
-		apprise('recipient', power)
+		page.apprise('recipient', power)
 	if page.recipient == ['All']: header = 'Broadcast Message'
 	else: header = 'Press ' + page.game.listReaders(page.recipient)
 	page.write(
@@ -110,7 +110,7 @@ def showPressArea():
 		or ('YELLOW_PRESS' in rules
 		and page.recipient == ['All'])):
 			page.write('<b>(Press will be sent Anonymously)</b>')
-			apprise('claimFrom', '(ANON)')
+			page.apprise('claimFrom', '(ANON)')
 		elif 'WHITE_GREY' in rules: page.write(
 			"""
 			<P><b>Send Press</b>

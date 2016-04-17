@@ -5,7 +5,8 @@ def showOrderList():
 
 	power, game = page.power, page.game
 	dummyProxy = 'PROXY_OK' in game.rules and 'HIDE_DUMMIES' in game.rules
-	vassals = [x for x in power.vassals() if x.units or dummyProxy]
+	vassals = [x for x in power.vassals(indirect = True)
+		if x.units or dummyProxy]
 	active = power.units or ('PROXY_OK' in game.rules and
 		not power.isDummy(True) and (power.centers or vassals))
 	if not active and not vassals: return
@@ -42,12 +43,14 @@ def showOrderList():
 		else:
 			if active:
 				if power.orders:
-					orders += [u + ' ' + o for u, o in power.orders.items()]
+					orders += [u + ' ' + o for u, o in power.orders.items()] + [
+						u for u in power.units if u not in power.orders]
 				else: orders += power.units or ['(NMR)']
 			for who in vassals:
 				orders += ['[' + who.name + ']']
 				if who.orders:
-					orders += [u + ' ' + o for u, o in who.orders.items()]
+					orders += [u + ' ' + o for u, o in who.orders.items()] + [
+						u for u in who.units if u not in who.orders]
 				else: orders += who.units or ['(NMR)']
 	rows = max(len(orders), 19) + 1
 	orders = '\n'.join(orders)
@@ -82,9 +85,9 @@ def showLists(orders = 0):
 	else:
 		page.write('<form %s>' %
 			('onSubmit="return false"',
-			'method=post name=UpdateForm')[page.pwdFlag == 1])
+			'method=post name=UpdateForm')[page.pwdFlag > 2])
 		hideBack('Update')
-		apprise('phase', page.game.phaseAbbr())
+		page.apprise('phase', page.game.phaseAbbr())
 		if page.game.phaseType == 'M': shown = showOrderList()
 		elif page.game.phaseType == 'A': shown = showAdjustList()
 		elif page.game.phaseType == 'R': shown = showRetreatList()

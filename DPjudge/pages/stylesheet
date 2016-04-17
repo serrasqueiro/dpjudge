@@ -115,6 +115,7 @@ A:VISITED {
 	font-size:			10px;
 	font-weight:		bold;
 	width:				11em;
+	margin:				1px;
 	cursor:				hand;
 }
 .inputBox {

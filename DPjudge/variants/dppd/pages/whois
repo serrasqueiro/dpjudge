@@ -10,7 +10,7 @@ import urllib
 #	header that we return to the requesting judge with that
 #	same message body (it will then fulfill the request).
 #	-------------------------------------------------------
-data, name = page.dppd.lookup(urllib.quote(page.email, '@')), ''
+data, name = page.dppd.lookup(page.get('email')), ''
 if data.get('id') is None: id = 'NO-ID'
 else:
 	status = data.get('status', 'ACTIVE')

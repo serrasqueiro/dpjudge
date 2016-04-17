@@ -88,17 +88,25 @@ listGames('payola')
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
+	<!--
 	<li><a href="http://groups.yahoo.com/group/payola/join">Join</a>
 		the <a href="http://groups.yahoo.com/group/payola">List</a>
 		to talk with other Payolaphiles.
+	-->
 	<li>Catch up by reading
-		<a href="http://groups.yahoo.com/group/payola/archive">the List's
-		archives</a>.
+		<a href="http://groups.yahoo.com/group/payola/archive">the old
+		Payola List's archives</a>.
+	<!--
 	<li>If you're already on the List,
 		<a href=mailto:payola@yahoogroups.com>send mail to the List</a>.
 	<li>You're encouraged to make game announcements and the like on the
 		regular <a href="http://groups.yahoo.com/group/dpjudge">DPjudge
 		Mailing List</a>.
+	-->
+	<li>The discussion has now moved to the
+		<a href="https://www.facebook.com/groups/989418777786642/">DPjudge
+		Facebook group</a>. Join there to keep abreast of current trends
+		and participate in them.
 	</td>
 	</tr>
 	</table>

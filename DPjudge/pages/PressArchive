@@ -25,9 +25,7 @@ gameHeader()
 </tr>
 <:
 showReadyNotice()
-pwdFlag = (isinstance(page.power, Power) and
-	page.power.isValidPassword(page.password))
-if pwdFlag:
+if page.pwdFlag > 1:
 	page.write('<tr><td><br>')
 	powerHeader()
 	page.write('<br></td></tr>')

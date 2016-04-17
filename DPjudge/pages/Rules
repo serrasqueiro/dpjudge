@@ -92,7 +92,10 @@ page.include('functions')
 		<b>&middot;</b><a href="#2.2">Unit Order Rules</a><br>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b>&middot;</b><a href="#2.3">Late and Vacant Power Rules</a><hr>
+		<b>&middot;</b><a href="#2.3">Late and Vacant Power Rules</a><br>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b>&middot;</b><a href="#2.4">Game Conclusion Rules</a><hr>
 
 		<b>&middot;</b>&nbsp;<a href="#3.">Payola Game Rules</a><br>
 		&nbsp;&nbsp;
@@ -124,143 +127,145 @@ page.include('functions')
 onchange=document.location.replace('#'+document.find.rule.options[document.find.rule.selectedIndex].value);document.find.rule.selectedIndex=0>
 <option>Look Up A Rule...</option>
 <optgroup label="Rules for All Variants">
-<option value=ALWAYS_CONFIRM>ALWAYS_CONFIRM</option>
-<option value=ALWAYS_WAIT>ALWAYS_WAIT</option>
-<option value=BACKSEAT_PRESS>BACKSEAT_PRESS</option>
-<option value=FLEX_SETUP>BLANK_BOARD</option>
-<option value=BLIND>BLIND</option>
-<option value=BROADCAST_ORDERS>BROADCAST_ORDERS</option>
-<option value=BUILD_ANY>BUILD_ANY</option>
-<option value=CD_BUILDS>CD_BUILDS</option>
-<option value=CD_DUMMIES>CD_DUMMIES</option>
-<option value=CD_RETREATS>CD_RETREATS</option>
-<option value=CIVIL_DISORDER>CIVIL_DISORDER</option>
-<option value=CIVIL_PREVIEW>CIVIL_PREVIEW</option>
-<option value=COASTAL_CONVOY>COASTAL_CONVOY</option>
-<option value=COASTAL_CRAWL>COASTAL_CRAWL</option>
-<option value=DEFAULT_UNORDERED>DEFAULT_UNORDERED</option>
-<option value=DUMMY_FIRE>DUMMY_FIRE</option>
-<option value=EAVESDROP>EAVESDROP</option>
-<option value=FAKE_PRESS>FAKE_PRESS</option>
-<option value=FICTIONAL_OK>FICTIONAL_OK</option>
-<option value=FLEX_SETUP>FLEX_SETUP</option>
-<option value=FRIENDLY_FIRE>FRIENDLY_FIRE</option>
-<option value=FTF_PRESS>FTF_PRESS</option>
-<option value=GARRISON>GARRISON</option>
+<option>ALWAYS_CONFIRM</option>
+<option>ALWAYS_WAIT</option>
+<option>BACKSEAT_PRESS</option>
+<option>BLANK_BOARD</option>
+<option>BLIND</option>
+<option>BROADCAST_ORDERS</option>
+<option>BUILD_ANY</option>
+<option>CD_BUILDS</option>
+<option>CD_DUMMIES</option>
+<option>CD_RETREATS</option>
+<option>CIVIL_DISORDER</option>
+<option>CIVIL_PREVIEW</option>
+<option>COASTAL_CONVOY</option>
+<option>COASTAL_CRAWL</option>
+<option>DEFAULT_UNORDERED</option>
+<option>DUMMY_FIRE</option>
+<option>EAVESDROP</option>
+<option>FAKE_PRESS</option>
+<option>FICTIONAL_OK</option>
+<option>FLEX_SETUP</option>
+<option>FRIENDLY_FIRE</option>
+<option>FTF_PRESS</option>
+<option>GARRISON</option>
 <option value=GREEK>GREEK (BLIND)</option>
-<option value=GREY_PRESS>GREY_PRESS</option>
-<option value=HIBERNATE>HIBERNATE</option>
-<option value=HIDE_ABSENTEES>HIDE_ABSENTEES</option>
-<option value=HIDE_BUILDS>HIDE_BUILDS</option>
-<option value=HIDE_DUMMIES>HIDE_DUMMIES</option>
-<option value=HIDE_EXTENDERS>HIDE_EXTENDERS</option>
-<option value=HIDE_LATE_POWERS>HIDE_LATE_POWERS</option>
-<option value=HIDE_PROPOSER>HIDE_PROPOSER</option>
-<option value=HOLD_WIN>HOLD_WIN</option>
-<option value=HOME_BUILDS>HOME_BUILDS</option>
-<option value=IMMOBILE_DUMMIES>IMMOBILE_DUMMIES</option>
-<option value=LATE_CHANGES>LATE_CHANGES</option>
-<option value=LATE_SEND>LATE_SEND</option>
-<option value=LIST_UNORDERED>LIST_UNORDERED</option>
-<option value=LIST_WAITERS>LIST_WAITERS</option>
-<option value=MOBILIZE>MOBILIZE</option>
-<option value=MUST_ORDER>MUST_ORDER</option>
-<option value=MUTE_OBSERVERS>MUTE_OBSERVERS</option>
+<option>GREY_PRESS</option>
+<option>HIBERNATE</option>
+<option>HIDE_ABSENTEES</option>
+<option>HIDE_BUILDS</option>
+<option>HIDE_DUMMIES</option>
+<option>HIDE_EXTENDERS</option>
+<option>HIDE_LATE_POWERS</option>
+<option>HIDE_PROPOSER</option>
+<option>HOLD_WIN</option>
+<option>HOME_BUILDS</option>
+<option>IMMOBILE_DUMMIES</option>
+<option>LAST_MAN_STANDING</option>
+<option>LATE_CHANGES</option>
+<option>LATE_SEND</option>
+<option>LIST_UNORDERED</option>
+<option>LIST_WAITERS</option>
+<option>MOBILIZE</option>
+<option>MUST_ORDER</option>
+<option>MUTE_OBSERVERS</option>
 <option value=MYOPIC>MYOPIC (BLIND)</option>
-<option value=NO_ABSENCES>NO_ABSENCES</option>
-<option value=NO_DEADLINE>NO_DEADLINE</option>
-<option value=NO_DIAS>NO_DIAS</option>
-<option value=NO_DRAW>NO_DRAW</option>
-<option value=NO_EOG>NO_EOG</option>
-<option value=NO_FACTORIES>NO_FACTORIES</option>
-<option value=NO_LATE_CHANGES>NO_LATE_CHANGES</option>
-<option value=NO_LATE_RECEIVE>NO_LATE_RECEIVE</option>
-<option value=NO_MILITIA>NO_MILITIA</option>
-<option value=NO_MINOR_WAIT>NO_MINOR_WAIT</option>
+<option>NO_ABSENCES</option>
+<option>NO_DEADLINE</option>
+<option>NO_DIAS</option>
+<option>NO_DRAW</option>
+<option>NO_EOG</option>
+<option>NO_FACTORIES</option>
+<option>NO_LATE_CHANGES</option>
+<option>NO_LATE_RECEIVE</option>
+<option>NO_MILITIA</option>
+<option>NO_MINOR_WAIT</option>
 <option value=PUBLIC_PRESS>NO_PARTIAL (PUBLIC_PRESS)</option>
-<option value=NO_PARTISANS>NO_PARTISANS</option>
-<option value=NO_PRESS>NO_PRESS</option>
-<option value=NO_PROXY>NO_PROXY</option>
-<option value=NO_QUARTER>NO_QUARTER</option>
-<option value=NO_RESERVES>NO_RESERVES</option>
-<option value=NO_RETREAT>NO_RETREAT</option>
-<option value=NO_RETURN>NO_RETURN</option>
-<option value=NO_REVEAL>NO_REVEAL</option>
+<option>NO_PARTISANS</option>
+<option>NO_PRESS</option>
+<option>NO_PROXY</option>
+<option>NO_QUARTER</option>
+<option>NO_RESERVES</option>
+<option>NO_RETREAT</option>
+<option>NO_RETURN</option>
+<option>NO_REVEAL</option>
 <option value=NO_SCS_SEE>NO_SCS_SEE (BLIND)</option>
 <option value=NO_UNITS_SEE>NO_UNITS_SEE (BLIND)</option>
-<option value=ORDER_ANY>ORDER_ANY</option>
+<option>ORDER_ANY</option>
 <option value=OWN_SCS_SEE>OWN_SCS_SEE (BLIND)</option>
-<option value=PLAYER_DEADLINES>PLAYER_DEADLINES</option>
-<option value=PORTAGE_CONVOY>PORTAGE_CONVOY</option>
-<option value=POWER_CHOICE>POWER_CHOICE</option>
-<option value=PRESS_MASTER>PRESS_MASTER</option>
-<option value=PREVIEW>PREVIEW</option>
-<option value=PROPOSE_DIAS>PROPOSE_DIAS</option>
-<option value=PROXY_OK>PROXY_OK</option>
-<option value=PUBLIC_PRESS>PUBLIC_PRESS</option>
-<option value=REAL_TIME>REAL_TIME</option>
-<option value=REMOTE_BUILDS>REMOTE_BUILDS</option>
-<option value=REMOTE_PRESS>REMOTE_PRESS</option>
-<option value=SAFE_CONVOYS>SAFE_CONVOYS</option>
+<option>PLAYER_DEADLINES</option>
+<option>PORTAGE_CONVOY</option>
+<option>POWER_CHOICE</option>
+<option>PRESS_MASTER</option>
+<option>PREVIEW</option>
+<option>PROPOSE_DIAS</option>
+<option>PROXY_OK</option>
+<option>PUBLIC_PRESS</option>
+<option>REAL_TIME</option>
+<option>REMOTE_BUILDS</option>
+<option>REMOTE_PRESS</option>
+<option>SAFE_CONVOYS</option>
 <option value=SEE_ALL_SCS>SEE_ALL_SCS (BLIND)</option>
 <option value=SEE_NO_SCS>SEE_NO_SCS (BLIND)</option>
 <option value=SEE_NO_UNITS>SEE_NO_UNITS (BLIND)</option>
-<option value=SHARED_VICTORY>SHARED_VICTORY</option>
-<option value=SHOW_PHANTOM>SHOW_PHANTOM</option>
-<option value=SIGNAL_SUPPORT>SIGNAL_SUPPORT</option>
-<option value=SILENT_ABSENCES>SILENT_ABSENCES</option>
-<option value=SILENT_JOIN>SILENT_JOIN</option>
-<option value=SMART_CD>SMART_CD</option>
-<option value=START_MASTER>START_MASTER</option>
-<option value=TEAM_VICTORY>TEAM_VICTORY</option>
-<option value=TORN_ALLEGIANCE>TORN_ALLEGIANCE</option>
-<option value=TOUCH_PRESS>TOUCH_PRESS</option>
+<option>SHARED_VICTORY</option>
+<option>SHOW_PHANTOM</option>
+<option>SIGNAL_SUPPORT</option>
+<option>SILENT_ABSENCES</option>
+<option>SILENT_JOIN</option>
+<option>SMART_CD</option>
+<option>SOLITAIRE</option>
+<option>START_MASTER</option>
+<option>TEAM_VICTORY</option>
+<option>TORN_ALLEGIANCE</option>
+<option>TOUCH_PRESS</option>
 <option value=TROJAN>TROJAN (BLIND)</option>
-<option value=UNITS_ADAPT>UNITS_ADAPT</option>
+<option>UNITS_ADAPT</option>
 <option value=UNITS_SEE_OTHER>UNITS_SEE_OTHER (BLIND)</option>
 <option value=UNITS_SEE_SAME>UNITS_SEE_SAME (BLIND)</option>
-<option value=VASSAL_DUMMIES>VASSAL_DUMMIES</option>
+<option>VASSAL_DUMMIES</option>
 <option value=VENETIAN>VENETIAN (BLIND)</option>
-<option value=VICTORY_HOMES>VICTORY_HOMES</option>
-<option value=WEAK_BOUNCES>WEAK_BOUNCES</option>
-<option value=WEAK_CONVOYS>WEAK_CONVOYS</option>
-<option value=WHITE_GREY>WHITE_GREY</option>
-<option value=YELLOW_PRESS>YELLOW_PRESS</option>
+<option>VICTORY_HOMES</option>
+<option>WEAK_BOUNCES</option>
+<option>WEAK_CONVOYS</option>
+<option>WHITE_GREY</option>
+<option>YELLOW_PRESS</option>
 
 <optgroup label="Rules for the Standard Variant">
-<option value=CD_SUPPORTS>CD_SUPPORTS</option>
-<option value=NO_CHECK>NO_CHECK</option>
+<option>CD_SUPPORTS</option>
+<option>NO_CHECK</option>
 
 <optgroup label="Rules for the Payola Variant">
-<option value=ANON_TRANSFER>ANON_TRANSFER</option>
-<option value=TINCUP>BLIND</option>
-<option value=DIRECT_ONLY>DIRECT_ONLY</option>
-<option value=EBAYOLA>EBAYOLA</option>
-<option value=EXCHANGE>EXCHANGE</option>
-<option value=FLAT_TAX>FLAT_TAX</option>
-<option value=HIDE_COST>HIDE_COST</option>
-<option value=HIDE_OFFERS>HIDE_OFFERS</option>
-<option value=LIMIT_OFFERS>LIMIT_OFFERS</option>
-<option value=NO_DONATIONS>NO_DONATIONS</option>
-<option value=NO_HOARDING>NO_HOARDING</option>
-<option value=NO_LEDGERS>NO_LEDGERS</option>
-<option value=NO_PLATEAU>NO_PLATEAU</option>
-<option value=NO_SAVINGS>NO_SAVINGS</option>
-<option value=NO_TRANSFER>NO_TRANSFER</option>
-<option value=ONE_TRANSFER>ONE_TRANSFER</option>
-<option value=PAYOLA_CLASSIC>PAYOLA_CLASSIC</option>
-<option value=PAY_DUMMIES>PAY_DUMMIES</option>
-<option value=PUBLIC_TOTALS>PUBLIC_TOTALS</option>
-<option value=REMOTE_BRIBE>REMOTE_BRIBE</option>
-<option value=RESTRICT_SIGNAL>RESTRICT_SIGNAL</option>
-<option value=TOUCH_BRIBE>TOUCH_BRIBE</option>
-<option value=VASSAL_TRANSFERS>VASSAL_DUMMIES</option>
-<option value=ZEROSUM>ZEROSUM</option>
-<option value=ZERO_FOREIGN>ZERO_FOREIGN</option>
+<option>ANON_TRANSFER</option>
+<option>BLIND</option>
+<option>DIRECT_ONLY</option>
+<option>EBAYOLA</option>
+<option>EXCHANGE</option>
+<option>FLAT_TAX</option>
+<option>HIDE_COST</option>
+<option>HIDE_OFFERS</option>
+<option>LIMIT_OFFERS</option>
+<option>NO_DONATIONS</option>
+<option>NO_HOARDING</option>
+<option>NO_LEDGERS</option>
+<option>NO_PLATEAU</option>
+<option>NO_SAVINGS</option>
+<option>NO_TRANSFER</option>
+<option>ONE_TRANSFER</option>
+<option>PAYOLA_CLASSIC</option>
+<option>PAY_DUMMIES</option>
+<option>PUBLIC_TOTALS</option>
+<option>REMOTE_BRIBE</option>
+<option>RESTRICT_SIGNAL</option>
+<option>TOUCH_BRIBE</option>
+<option>VASSAL_DUMMIES</option>
+<option>ZEROSUM</option>
+<option>ZERO_FOREIGN</option>
 
 <optgroup label="Rules for the Crystal Ball Variant">
-<option value=LIMIT_LISTS>LIMIT_LISTS</option>
-<option value=PUBLIC_LISTS>PUBLIC_LISTS</option>
+<option>LIMIT_LISTS</option>
+<option>PUBLIC_LISTS</option>
 </select>
 </form>
 	</td>
@@ -312,6 +317,33 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	<a href="<PAGE>about_hundred">Hundred variant</a>,
 	France begins with an army in Provence), these units will indeed
 	be placed on the map as usual.
+<!-- RULE END -->
+
+<a name=SOLITAIRE></a><p><dt><b><tt>SOLITAIRE</tt></b></dt><dd>
+<!-- RULE SOLITAIRE +NO_DEADLINE +CD_DUMMIES +DEFAULT_UNORDERED +ALWAYS_WAIT -->
+	A <tt>SOLITAIRE</tt> game is a game where all powers are dummies
+	controlled by the Master. This can be used to test a certain
+	scenario or to solve a puzzle on the Diplomacy board, such as
+	the <a href=<POUCH>/Zine/list.html#Holmes>Sherlock Holmes riddles</a> published in the
+	<a href=<POUCH>/Zine>Diplomatic Pouch Zine</a>. A <tt>PRIVACY</tt> password will be
+	automatically assigned, because these are typically private
+	games. After allowing the game to form, all powers will become
+	dummies and the game starts immediately. The <tt>FORMING</tt> phase
+	simply gets skipped. Make sure to have all relevant rules in place
+	during preparation or when creating the game.
+	The following rules are automatically included:
+	<ul>
+	<li><a href=#NO_DEADLINE><tt>NO_DEADLINE</tt></a></li>
+	<li><a href=#CD_DUMMIES><tt>CD_DUMMIES</tt></a></li>
+	<li><a href=#DEFAULT_UNORDERED><tt>DEFAULT_UNORDERED</tt></a></li>
+	<li><a href=#ALWAYS_WAIT><tt>ALWAYS_WAIT</tt></a></li>
+	</ul>
+	To advance a turn the Master needs to push the Process Turn button
+	or send a <tt>PROCESS</tt> command by e-mail. Use <tt>ROLLBACK</tt>
+	and <tt>ROLLFORWARD</tt> to undo and redo phases, either by e-mail
+	or from the corresponding Results page. Note that the
+	Master <tt>CONTROL</tt>s all powers, and thus can give orders to
+	each of them in a single message.
 <!-- RULE END -->
 
 <a name=SILENT_JOIN></a><p><dt><b><tt>SILENT_JOIN</tt></b></dt><dd>
@@ -1660,6 +1692,25 @@ the course of the game.
 	Crystal Ball Diplomacy games.)</i>
 <!-- RULE END -->
 </dl>
+</dl>
+
+		<a name="2.4"></a>
+<p><HR><br><dt><b>2.4 Game Conclusion</b>
+<!-- RULE GROUP 10 Game Conclusion -->
+<dl>
+<a name=LAST_MAN_STANDING></a><p><dt><b><tt>LAST_MAN_STANDING</tt></b><dd>
+<!-- RULE LAST_MAN_STANDING +SOLITAIRE -->
+	"Last Man Standing" is a <a href="#SOLITAIRE"><tt>SOLITAIRE</tt></a>
+	game where the objective is to reduce the whole board to a single
+	remaining unit in a minimal number of game years subject to various
+	conditions. Typical conditions are that no neutral centers are taken
+	and that all powers still have at least one unit at the halfway point.
+	Usually the surviving unit and its final destination are known up front
+	and the game begins with all units in their usual starting position.
+	For a number of such puzzles, see the Last Man Standing section in the
+	<a href=<POUCH>/Zine>Diplomatic Pouch Zine</a>.
+<!-- RULE END -->
+
 </dl>
 		<!--BODYCOPY ENDS HERE-->
 	</td>

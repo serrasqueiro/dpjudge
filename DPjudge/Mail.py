@@ -5,6 +5,8 @@ import os
 
 import host
 
+from Time import Time
+
 class Mail:
 	#	----------------------------------------------------------------------
 	def __init__(self, sendTo, subject, copy = '', mailAs = '', header = ''):
@@ -93,9 +95,5 @@ class Mail:
 			except: pass
 	#	----------------------------------------------------------------------
 	def logTimeFormat(self):
-		import time
-		if hasattr(host, 'timeZone') and host.timeZone:
-			return time.strftime('%a, %d %b %Y %H:%M:%S ') + host.timeZone
-		else:
-			return time.strftime('%a, %d %b %Y %H:%M:%S %Z')
+		return Time('GMT').format(2)
 	#	----------------------------------------------------------------------

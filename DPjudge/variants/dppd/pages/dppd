@@ -108,22 +108,27 @@ def leftside():
 	page.write('<table border=0 cellpadding=10 cellspacing=0>')
 	if id is not None:
 		myGroupButton = ''
-		page.dppd.db.execute("""
-		SELECT Count(*) group_count
-		  FROM Groups t1
-			   INNER JOIN Members t2 ON t1.id = t2.group_id
-			   INNER JOIN GroupStatus t3 ON t1.curr_status = t3.id
-			   INNER JOIN MemberStatus t4 ON t2.curr_status = t4.id
-		 WHERE t3.status_id <> 2
-		   AND t4.status_id <> 2
-		   AND t2.user_id = %d
-		""" % id)
-		groups = page.dppd.db.fetchone()['group_count']
-		if groups:
-			myGroupButton = """
-				<input type=button value="My Groups"
-				  onclick=setPage('Groups') class=inputSubmit2>
-			"""
+		#	--------------------------------------
+		#	Removing, since there's no Groups page
+		#	and I have no clue what the purpose is
+		#	--------------------------------------
+		if 0:
+			page.dppd.db.execute("""
+			SELECT Count(*) group_count
+			  FROM Groups t1
+				   INNER JOIN Members t2 ON t1.id = t2.group_id
+				   INNER JOIN GroupStatus t3 ON t1.curr_status = t3.id
+				   INNER JOIN MemberStatus t4 ON t2.curr_status = t4.id
+			 WHERE t3.status_id <> 2
+			   AND t4.status_id <> 2
+			   AND t2.user_id = %d
+			""" % id)
+			groups = page.dppd.db.fetchone()['group_count']
+			if groups:
+				myGroupButton = """
+					<P><HR><input type=button value="My Groups"
+					  onclick=setPage('Groups') class=inputSubmit2>
+				"""
 		page.write("""
 		<script>
 		function setPage(x)
@@ -140,25 +145,27 @@ def leftside():
 		<tr nowrap>
 			<td>
 				<input type="button" value="My Games"
-					onclick=setPage('Login') class="inputSubmit2">
+					onclick=setPage('Login') class="inputSubmit2"><br>
 				<input type="button" value="My Addresses"
-					onclick=setPage('Email') class="inputSubmit2">
+					onclick=setPage('Email') class="inputSubmit2"><br>
 				<input type="button" value="Change Password"
-					onclick=setPage('Passchange') class="inputSubmit2">
+					onclick=setPage('Passchange') class="inputSubmit2"><br>
 				<P class=bodycopy><hr><p class=bodycopy>
-				New Game Name:<br><input type=text class=inputBox name=newGame>
-				New Game Password:<br><input type=password class=inputBox name=newPass>
+				New Game Name:<br>
+				<input type=text class=inputBox name=newGame>
+				New Game Password:<br>
+				<input type=password class=inputBox name=newPass>
 				Variant:<br><select class=bodycopy name=newVariant>
 				<option value=STANDARD selected>STANDARD</option>
 				<option value=PAYOLA>PAYOLA</option>
-				<option value=XTALBALL>XTALBALL</option></select>
+				<option value=XTALBALL>XTALBALL</option></select><br>
 				<input type=button class=inputSubmit2 value="Start New Game" onclick=setPage('Login')>
-				<P><HR>%s
+				%s
+				<!--
 				<P class=bodycopy align=center>
 				Someday, a couple of buttons
 				called<br>"Search Games"<br>and<br>"Search Players"<br>
 				will be here.
-				<!--
 				<input type="button" value="Search Games"
 					onclick=setPage('Search') class="inputSubmit2">
 				<input type="button" value="Search Players"

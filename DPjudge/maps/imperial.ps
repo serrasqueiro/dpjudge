@@ -441,12 +441,20 @@
 % * DisbandUnit
 % * RemoveUnit
 %
-% * ArrowArrive  used in blind games
+% * ArrowArriveArmy  used in blind games
+% * ArrowArriveFleet
 % * ArrowDepart
-% * ArrowRetreatArrive
-% * ArrowRetreatDepart
+% * ArrowRefugeArmy
+% * ArrowRefugeFleet
+% * ArrowFlee
+% * ArrowSupportArrive
+% * ArrowSupportDepart
+% * ArrowConvoyArrive
+% * ArrowConvoyDepart
 % * FindUnit
 % * LoseUnit
+% * LoseArriveUnit
+% * LoseRefugeUnit
 %
 % * Controls    used for vassals; adds an extra outline to every unit and 
 %               sc in the controller's color
@@ -2105,6 +2113,14 @@ Countries {
   SingleArrowArrive
 } bd
 
+/ArrowArriveArmy { % x y => -
+  ArrowArrive
+} bd
+
+/ArrowArriveFleet { % x y => -
+  ArrowArrive
+} bd
+
 % draw an arrow indicating a departure order from a source point
 /SingleArrowDepart {
 
@@ -2138,7 +2154,7 @@ Countries {
 } bd
 
 % draw an arrow indicating an arrival order to a destination point during retreat
-/SingleArrowRetreatArrive {
+/SingleArrowRefuge {
 
 % positon origin at base of arrow with arrow point along x axis
   gsave
@@ -2177,19 +2193,44 @@ Countries {
   grestore
 } bind def
 
-/ArrowRetreatArrive { % x y => -
+/ArrowRefuge { % x y => -
   SwitchToMapMode
 
   DoublePoint {
-    SingleArrowRetreatArrive
+    SingleArrowRefuge
   } if
-  SingleArrowRetreatArrive
+  SingleArrowRefuge
+} bd
+
+/ArrowRefugeArmy { % x y => -
+  ArrowRefuge
+} bd
+
+/ArrowRefugeFleet { % x y => -
+  ArrowRefuge
 } bd
 
 % draw an arrow indicating a departure order from a source point during retreat
-/ArrowRetreatDepart {
+/ArrowFlee {
   gsave Red ArrowDepart grestore
 } bind def
+
+% support and convoy arrows for arriving and departing units
+/ArrowSupportArrive {
+	2 copy exch 40 MapUnitScale mul add exch ArrowSupport
+} bd
+
+/ArrowSupportDepart {
+	2 copy exch 34 MapUnitScale mul sub exch ArrowSupport
+} bd
+
+/ArrowConvoyArrive {
+	2 copy exch 40 MapUnitScale mul add exch ArrowConvoy
+} bd
+
+/ArrowConvoyDepart {
+	2 copy exch 34 MapUnitScale mul sub exch ArrowConvoy
+} bd
 
 % draw the given name centered just below the specified point
 /SingleDrawName { % x y str => -
@@ -2488,6 +2529,14 @@ Countries {
   (?) Red show
   grestore
 } bind def
+
+/LoseArriveUnit { % x y => -
+  pop pop
+} bd
+
+/LoseRefugeUnit { % x y => -
+  pop pop
+} bd
 
 % Connection
 
