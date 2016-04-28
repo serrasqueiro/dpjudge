@@ -69,7 +69,7 @@ class Page:
 			except: self.user = -1
 		#	---------------------------------------------------------------
 		#	Values for pwdFlag:
-		#	 0: Bad or no password
+		#	 0: Bad or no password or power
 		#	 1: Valid DPPD user, but no power specified or not in control
 		#	 2: Good enough to provide read-only access (omniscient)
 		#	 3: Valid password for power (player is or controls power)
@@ -77,7 +77,7 @@ class Page:
 		#	 5: Host password (Judgekeeper)
 		#	---------------------------------------------------------------
 		self.pwdFlag = 0
-		if not self.password: pass
+		if not self.password or not hasattr(self.power, 'name'): pass
 		elif self.password == host.judgePassword: self.pwdFlag = 5
 		elif self.game:
 			if self.password == self.game.password: self.pwdFlag = 4

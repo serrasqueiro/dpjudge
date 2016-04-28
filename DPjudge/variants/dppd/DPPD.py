@@ -80,31 +80,28 @@ class DPPD(dict):
 	def lookup(self, email = '', name = '', id = None):
 		if name: name = ' '.join(name.upper().split())
 		results = []
-		if email:
-			if email.count('@') == 1: user, domain = email.lower().split('@')
-			else: user, domain = email, ''
 		if id is not None: self.db.execute(
 			"""
 			select * from User where id = %s
-			""", id)
+			""", [id])
 		elif name: self.db.execute(
 			"""
 			select * from User
 			where name like %s or name like %s
 			""", map(lambda x: x % name.encode('latin-1'), ('%s%%', '%% %s')))
-		else:
-			howmany = email.count('@')
-			at = '@' * ('@' in email)
-			try: user, domain = email.split('@')
-			except: user, domain = email, ''
-			where = 2 + (domain[-6:-2] == '.co.') # .co.uk, .co.nz, etc.
-			domain = '.'.join(domain.split('.')[-where:])
+		elif email:
+			if email.count('@') == 1:
+				user, domain, at = email.lower().split('@') + ['@%']
+				where = 2 + (domain[-6:-2] == '.co.') # .co.uk, .co.nz, etc.
+				domain = '.'.join(domain.split('.')[-where:])
+			else: user, domain, at = email, '', ''
 			self.db.execute(
 			"""
 			select * from User, Email
 			where address like %s
 			and id = userID
-			""", '%s%s%%%s' % (user, at, domain))
+			""", ['%%%s%s%s%%' % (user, at, domain)])
+		else: return
 		for x in self.keys(): del self[x]
 		for data in self.db.fetchall(): self[data['id']] = data
 		results = self.keys()
