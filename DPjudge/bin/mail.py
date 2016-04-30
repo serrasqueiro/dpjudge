@@ -195,7 +195,7 @@ class Procmail:
 				power, game = power[power[0] == '_':].upper(), game.lower()
 				try: password = self.sanitize(word[2])
 				except: password = ''
-				if upword == 'TAKEOVER':
+				if upword[0] == 'T':
 					if '<' in password or '>' in password:
 						self.respond("Password cannot contain '<' or '>'")
 				if upword[0] != 'S': joiner = word[0].upper()
@@ -462,9 +462,12 @@ class Procmail:
 					'Thank you for your service.' % (game.name,
 					game.master[2].replace('_', ' '), game.master[1]))
 				game.mail.close()
-				self.respond('You are now the Master of game ' + game.name)
-			response = self.power.takeover(self.dppd, self.email, password)
-			if response: self.respond(response)
+				self.response += [
+					"You are now the Master of game '%s'.\n\n"
+					'Welcome to the %s' % (game.name, host.dpjudgeNick)]
+			else:
+				response = self.power.takeover(self.dppd, self.email, password)
+				if response: self.respond(response)
 		#	-------------------------------------------------------
 		#	Add the new power, then process the rest of the message
 		#	-------------------------------------------------------
