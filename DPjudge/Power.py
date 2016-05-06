@@ -174,7 +174,7 @@ class Power:
 		if phase[0] == '?':
 			phase = self.game.outcome and self.game.outcome[0] or ''
 		if not resigned and not dummy:
-			if not password or self.isValidPassword(password) != 1:
+			if not password or self.isValidPassword(password) < 3:
 				return ('You need to specify the password of the current ' +
 					'player in order to take over.')
 		elif not password:
