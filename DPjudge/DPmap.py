@@ -334,10 +334,11 @@ class PostScriptMap:
 						self.addError('UNIT MISMATCH: %s %s %s BECAME %s' %
 							(power, piece['type'], si['name'], unit))
 						piece['type'] = unit
-					piece['state'] = state
 					if after:
 						di = di or si
 						si = piece.get('loc')
+						if state == 'H' and si != di: state = si and 'M' or 'A'
+					piece['state'] = state
 					#if piece['state'] not in 'HD':
 						#piece, draw = self.addUnit(power, unit, si, phase,
 						#	state), 1 - after
