@@ -414,7 +414,7 @@ class Procmail:
 				and command != 'RESIGN'): self.respond(
 					"You are already playing game '%s'" % game.name)
 			else: continue
-			if existing.isValidPassword(password) != 1:
+			if existing.isValidPassword(password) < 3:
 				self.respond("Incorrect password to modify player ID '%s'" %
 					existing.name)
 			if command != 'RESIGN': del game.powers[num]
@@ -604,9 +604,9 @@ class Procmail:
 		else:
 			try: power = [x for x in self.game.powers
 				if x.name[x.name[0] == '_':].replace('+', '') == powerName
-				and (newPass or x.isValidPassword(password))][0]
+				and (newPass or x.isValidPassword(password) > 2)][0]
 			except:
-				if mustBe: self.respond('Invalid power or password specified')
+				if mustBe: self.respond('Invalid power "%s" or password "%s" specified' % (powerName, password))
 				power = None
 		self.power = power
 	#	----------------------------------------------------------------------
