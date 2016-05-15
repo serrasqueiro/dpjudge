@@ -892,6 +892,14 @@
 	p k
 	r
 } bd
+/FindArriveUnit {
+	SwitchToMapMode
+	s
+	exch 64 add exch 14.4 add t
+	.8 .8 x
+	0 0 FindUnit
+	r
+} bd
 /LoseUnit {
 	SwitchToMapMode
 	s
@@ -913,14 +921,6 @@
 	SwitchToMapMode
 	s
 	exch 64 add exch 14.4 add t
-	.8 .8 x
-	0 0 LoseUnit
-	r
-} bd
-/LoseRefugeUnit {
-	SwitchToMapMode
-	s
-	exch 83.8 add exch 14.4 add t
 	.8 .8 x
 	0 0 LoseUnit
 	r

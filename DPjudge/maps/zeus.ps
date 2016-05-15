@@ -932,6 +932,14 @@
 	p k
 	r
 } bd
+/FindArriveUnit {
+	SwitchToMapMode
+	s
+	exch 64 add exch 14.4 add t
+	.8 .8 x
+	0 0 FindUnit
+	r
+} bd
 /LoseUnit {
 	SwitchToMapMode
 	s
@@ -953,14 +961,6 @@
 	SwitchToMapMode
 	s
 	exch 64 add exch 14.4 add t
-	.8 .8 x
-	0 0 LoseUnit
-	r
-} bd
-/LoseRefugeUnit {
-	SwitchToMapMode
-	s
-	exch 83.8 add exch 14.4 add t
 	.8 .8 x
 	0 0 LoseUnit
 	r
@@ -1273,11 +1273,14 @@
 /FrameMap {
 	s
 	/fk {
+		6.52 6.52 t .9883 .988 x
 		p
 		s 17.4 w Black k r
 		clipsave clip k cliprestore
+		1.0118 1.0122 x -6.52 -6.52 t
 	} bd
 	.4599 .4599 x 52.36 205.48 t
+	1.0118 1.0122 x -6.52 -6.52 t
 	4.35 w LandBrown
 	ShapeSides
 	r
