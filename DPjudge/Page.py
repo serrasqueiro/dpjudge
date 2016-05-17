@@ -30,6 +30,7 @@ class Page:
 		#	DPPD status.
 		#   -----------------------------------------------------------------
 		if host.bannerHtml and (
+			Time(when = host.bannerExpireDate) > Time()) and (
 			not self.page or self.page[0].lower() != self.page[0]):
 			self.write(self.adaptToHTML(host.bannerHtml))
 		if self.game:
