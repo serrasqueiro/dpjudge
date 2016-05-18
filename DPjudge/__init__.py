@@ -18,7 +18,7 @@ for (var, value) in [
 	('gameMapSubDir', 'maps'),
 	('dpjudgeURL', 'http://localhost'),
 	('zoneFileName', 'zone.tab'), ('timeZone', ''), ('showGMT', 0),
-	('bannerHtml', ''), ('bannerExpireDate', ''),
+	('headerHtml', ''), ('bannerHtml', ''), ('bannerExpireDate', ''),
 	('tester', ''),
 	('openingsList', ''), ('openingsAddress', ''),
 	('dppd', ''), ('dppdSubURL', '?variant=dppd'),
