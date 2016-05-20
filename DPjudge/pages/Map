@@ -513,7 +513,10 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 <p><dt><b><tt>TEAM[S] <i>powerName-...-powerName ...</i></tt></b><dd>
 	This command creates teams that can be controlled by a single player. The first power name becomes the controlling (main) power, the other powers, connected to the first one by hyphens, become dummies controlled by the main power. Only the main power can be a non-map power. More than one team can be specified on the same line by separating them with spaces. If the power name contains a hyphen, omit it. For example an Empire game could have the following team pairings:<br>
 	&nbsp;&nbsp;
-	TEAMS B.C.-California Cuba-Florida Heartland-Mexico NewYork-Peru Quebec-Texas
+	TEAMS B.C.-California Cuba-Florida Heartland-Mexico<br>
+	&nbsp;&nbsp;
+	TEAMS NewYork-Peru Quebec-Texas<br>
+	Note: Team games are called duplex games on KL judges.
 
 <a name=NEWHOMES></a>
 <p><dt><b><tt>NEWHOMES <i>year...</i></tt></b><dd>

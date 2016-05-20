@@ -1475,7 +1475,8 @@ class Game:
 	def fileSummary(self, reveal = 0, roll = 0):
 		text, fileName = self.summary(reveal = reveal), self.file('summary')
 		if not text: return
-		if roll or self.tester or ('NO_REVEAL' in self.rules and not reveal):
+		if roll or self.tester or ('NO_REVEAL' in self.rules
+		and not reveal) or 'SOLITAIRE' in self.rules:
 			file = open(fileName, 'w')
 			temp = '<pre>\n%s</pre>\n' % text
 			file.write(temp.encode('latin-1'))
@@ -2458,8 +2459,9 @@ class Game:
 			return 'Cannot ROLLBACK forming game'
 		waiting = self.status[1] == 'waiting'
 		expected = ('active', 'completed')[self.phase == 'COMPLETED']
-		if not includeFlags & 16 and (not waiting and
-			self.status[1] != 'active' or self.error):
+		if not includeFlags & 16 and (not waiting
+		and self.status[1] not in ['completed', 'active'][
+			'SOLITAIRE' not in self.rules:] or self.error):
 			return ('ROLLBACK can only occur on an active or waiting, ' +
 				'error-free game')
 		if self.status[1] != expected: self.changeStatus(expected)

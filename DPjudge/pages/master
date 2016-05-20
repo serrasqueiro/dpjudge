@@ -561,9 +561,8 @@ def addOption(option):
 #	----------------------------------------------------------------------
 def addRoll(phase, forward = 0):
 	game = page.game
-	if page.power.name != 'MASTER' or game.phase == 'COMPLETED' and (
-		forward or not page.password or host.judgePassword != page.password):
-		return
+	if page.pwdFlag < 4 + (not forward and game.phase == 'COMPLETED'
+	and 'SOLITAIRE' not in game.rules): return
 	if forward:
 		if phase != 'FORMING': phase = game.phaseLong(phase)
 		phase = game.probeNextPhase(phase)

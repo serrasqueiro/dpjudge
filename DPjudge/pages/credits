@@ -10,6 +10,9 @@
 <li><b>Mix-In Rule Variants:</b>
 	<dd><b><a href="<PAGE>Rules#BLIND">Blind</a>:</b>
 		Adapted from Joan C. Artes by Manus Hand
+	<dd><b><a href="<POUCH>/Zine/W1998A/Duewer/exchange.html">Exchange
+		Payola</a>:</b> Bruce Duewer
+		<font color=red><i>(stocks/leadership votes currently by GM)</i></font>
 	<dd><b><a href="<PAGE>Map#FACTORIES">Factories</a>:</b>
 		Manus Hand
 	<dd><b><a href="<PAGE>Rules#FLEX_SETUP">Flexible
@@ -17,8 +20,13 @@
 		Woolley</a>
 	<dd><b><a href="<PAGE>Rules#GARRISON">Garrison</a>:</b>
 		Wilson Hsieh and Manus Hand
+	<dd><b><a href="<PAGE>Rules#LAST_MAN_STANDING">Last Man Standing</a>:</b>
+		<a href="<POUCH>/Zine/S2015M/Holmes/lastman.htm">Mario Huys and
+		Manus Hand</a>
 	<dd><b><a href="<PAGE>Map#LEAGUE">Leagues</a>:</b>
 		Baron M. Powell and Manus Hand (after Ambition & Empire)
+	<dd><b><a href="<PAGE>Map#MILITIA">Militia</a>:</b>
+		Matt Ready and Manus Hand
 	<dd><b><a href="<PAGE>Status#ROTATE">Missing Man (Control Rotation)</a>:</b>
 		<a href="<POUCH>/Zine/S1995M/Hand/Missing.html">Scott Kasch</a>
 		and Manus Hand
@@ -30,19 +38,16 @@
 		Baron M. Powell and Manus Hand
 	<dd><b><a href="<PAGE>Map#RESERVES">Reserves</a>:</b>
 		Baron M. Powell and Manus Hand
-	<dd><b><a href="<PAGE>Map#MILITIA">Militia</a>:</b>
-		Matt Ready and Manus Hand
-	<dd><b><a href="<POUCH>/Zine/S1998R/Norman/VarLength.html">Variable
-		Length</a>:</b> David Norman
-	<dd><b><a href="<POUCH>/Zine/W1998A/Duewer/exchange.html">Exchange
-		Payola</a>:</b> Bruce Duewer
-		<font color=red><i>(stocks/leadership votes currently by GM)</i></font>
-	<dd><b><a href="<PAGE>Rules#ZEROSUM">Zero Sum Payola</a>:</b>
-		Michael Schmahl
+	<dd><b><a href="<PAGE>Map#TEAM">Teams</a>:</b>
+		Mario Huys
 	<dd><b><a href="<PAGE>Rules#TOUCH_BRIBE">Touch Bribe Payola</a>:</b>
 		Matt Ready
+	<dd><b><a href="<POUCH>/Zine/S1998R/Norman/VarLength.html">Variable
+		Length</a>:</b> David Norman
 	<dd><b><a href="<PAGE>Rules#VASSAL_DUMMIES">Vassals</a>:</b>
 		Joseph Wheeler
+	<dd><b><a href="<PAGE>Rules#ZEROSUM">Zero Sum Payola</a>:</b>
+		Michael Schmahl
 </li>
 <li><b><a href=<PAGE>Map>Map Variants</a>:</b>
 	<dd><b><a href="<PAGE>about_1897">1897</a></b> (7 players):
