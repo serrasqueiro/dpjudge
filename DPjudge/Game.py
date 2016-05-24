@@ -2812,7 +2812,7 @@ class Game:
 				strength + self.supports[unit][0], []).append(
 				[unit, self.supports[unit][1]])
 	#	----------------------------------------------------------------------
-	def checkDisruptions(self, mayConvoy, result):
+	def checkDisruptions(self, mayConvoy, result, coresult = None):
 		#	------------------------------------------------
 		#	On entry, mayConvoy is the unit:order dictionary
 		#	for all convoys that have a chance to succeed.
@@ -2833,6 +2833,7 @@ class Game:
 				elif (len(strongest) > 1
 				and 'SAFE_CONVOYS' not in self.rules): continue
 				self.result[unit] = [result]
+				if coresult: self.result[convoyer] = [coresult]
 	#	----------------------------------------------------------------------
 	def boing(self, unit):
 		#	------------------------------------------
@@ -3069,6 +3070,8 @@ class Game:
 		#	STEPS 4 AND 5.  DETERMINE CONVOY DISRUPTIONS
 		#	--------------------------------------------
 		cut, cutters = 1, []
+		coresult = 'cut' * ('WEAK_CONVOYS' in self.rules or
+			'SAFE_CONVOYS' in self.rules)
 		while cut:
 			cut = 0
 			self.strengths()
@@ -3087,7 +3090,7 @@ class Game:
 			#	         VOID SUPPORTS THESE CONVOYERS WERE GIVEN,
 			#	         AND ALLOW CONVOYING UNITS TO CUT SUPPORT.
 			#	--------------------------------------------------
-			self.checkDisruptions(mayConvoy, 'no convoy')
+			self.checkDisruptions(mayConvoy, 'no convoy', coresult)
 			for unit in mayConvoy:
 				if 'no convoy' in self.result[unit]:
 					for sup, help in self.command.items():
