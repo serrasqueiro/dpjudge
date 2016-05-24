@@ -2436,6 +2436,7 @@ class Game:
 		self.tester = self.tester[:-1]
 		self.deadline = deadline
 		self.map.textOnly = textOnly
+		self.save()
 		self.makeMaps()
 		return error
 	#	---------------------------------------------------------------------
@@ -3070,8 +3071,6 @@ class Game:
 		#	STEPS 4 AND 5.  DETERMINE CONVOY DISRUPTIONS
 		#	--------------------------------------------
 		cut, cutters = 1, []
-		coresult = 'cut' * ('WEAK_CONVOYS' in self.rules or
-			'SAFE_CONVOYS' in self.rules)
 		while cut:
 			cut = 0
 			self.strengths()
@@ -3090,7 +3089,7 @@ class Game:
 			#	         VOID SUPPORTS THESE CONVOYERS WERE GIVEN,
 			#	         AND ALLOW CONVOYING UNITS TO CUT SUPPORT.
 			#	--------------------------------------------------
-			self.checkDisruptions(mayConvoy, 'no convoy', coresult)
+			self.checkDisruptions(mayConvoy, 'no convoy', 'disrupted')
 			for unit in mayConvoy:
 				if 'no convoy' in self.result[unit]:
 					for sup, help in self.command.items():
@@ -3159,7 +3158,8 @@ class Game:
 			site = unit[2:5]
 			loser = self.occupant(order.split()[-1], anyCoast = 1)
 			if loser and (self.command[loser][0] != '-' or self.result[loser]):
-				self.result[loser] += ['dislodged']
+				self.result[loser] = [x for x in self.result[loser]
+					if x != 'disrupted'] + ['dislodged']
 				self.dislodged[loser] = site
 				#	-----------------------------------------------------
 				#	Check for a dislodged swapper (attacker and dislodged
