@@ -2436,6 +2436,7 @@ class Game:
 		self.tester = self.tester[:-1]
 		self.deadline = deadline
 		self.map.textOnly = textOnly
+		self.save()
 		self.makeMaps()
 		return error
 	#	---------------------------------------------------------------------
@@ -2812,7 +2813,7 @@ class Game:
 				strength + self.supports[unit][0], []).append(
 				[unit, self.supports[unit][1]])
 	#	----------------------------------------------------------------------
-	def checkDisruptions(self, mayConvoy, result):
+	def checkDisruptions(self, mayConvoy, result, coresult = None):
 		#	------------------------------------------------
 		#	On entry, mayConvoy is the unit:order dictionary
 		#	for all convoys that have a chance to succeed.
@@ -2833,6 +2834,7 @@ class Game:
 				elif (len(strongest) > 1
 				and 'SAFE_CONVOYS' not in self.rules): continue
 				self.result[unit] = [result]
+				if coresult: self.result[convoyer] = [coresult]
 	#	----------------------------------------------------------------------
 	def boing(self, unit):
 		#	------------------------------------------
@@ -3087,7 +3089,7 @@ class Game:
 			#	         VOID SUPPORTS THESE CONVOYERS WERE GIVEN,
 			#	         AND ALLOW CONVOYING UNITS TO CUT SUPPORT.
 			#	--------------------------------------------------
-			self.checkDisruptions(mayConvoy, 'no convoy')
+			self.checkDisruptions(mayConvoy, 'no convoy', 'disrupted')
 			for unit in mayConvoy:
 				if 'no convoy' in self.result[unit]:
 					for sup, help in self.command.items():
@@ -3156,7 +3158,8 @@ class Game:
 			site = unit[2:5]
 			loser = self.occupant(order.split()[-1], anyCoast = 1)
 			if loser and (self.command[loser][0] != '-' or self.result[loser]):
-				self.result[loser] += ['dislodged']
+				self.result[loser] = [x for x in self.result[loser]
+					if x != 'disrupted'] + ['dislodged']
 				self.dislodged[loser] = site
 				#	-----------------------------------------------------
 				#	Check for a dislodged swapper (attacker and dislodged
