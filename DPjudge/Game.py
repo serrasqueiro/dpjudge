@@ -195,15 +195,20 @@ class Game:
 		#	-------------------------------------
 		if not map.isValidUnit(unit):
 			return error.append('ORDER TO INVALID UNIT: ' + unit)
-		if orderType in ('S', 'C') and word[1:] and word[1] in ('A', 'F'):
-			other = ' '.join(word[1:3])
+		if orderType in ('S', 'C') and word[1:]:
+			if word[1] in ('A', 'F'):
+				alter, other = word[1:3]
+			else:
+				alter, other = '?', word[1]
+			other = alter + ' ' + other
 			if not map.isValidUnit(other, 1):
 				return error.append('ORDER INCLUDES INVALID UNIT: ' + other)
-			if len(word) == 5:
-				other = (word[1], '?')[signal and
-					orderType == 'S'] + ' ' + word[4]
+			if len(word) == 5 - (alter == '?'):
+				if signal and orderType == 'S': alter = '?'
+				other = alter + ' ' + word[-1]
 				if not map.isValidUnit(other, 1):
-					return error.append('IMPOSSIBLE ORDER FOR ' + unit)
+					return error.append('ORDER INCLUDES INVALID UNIT ' +
+						'DESTINATION ' + other)
 		if 'FICTIONAL_OK' in rules: pass
 		elif not status:
 			return error.append('ORDER TO NON-EXISTENT UNIT: ' + unit)

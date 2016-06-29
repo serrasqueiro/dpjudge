@@ -385,10 +385,11 @@ class PostScriptMap:
 			#	SUPPORT
 			#	-------
 			elif order[0] == 'S':
-				if 'ARMY' in word[orderWord:] or 'FLEET' in word[orderWord:]:
-					try: where = word[orderWord:].index('ARMY')
-					except: where = word[orderWord:].index('FLEET')
-				else: continue
+				if 'ARMY' in word[orderWord:]:
+					where = word[orderWord:].index('ARMY')
+				elif 'FLEET' in word[orderWord:]:
+					where = word[orderWord:].index('FLEET')
+				else: where = 0
 				where += orderWord + 1
 				mover = None
 				try:
