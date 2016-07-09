@@ -867,14 +867,24 @@ def showPressOptions():
 <td><table cellspacing=0>
 <tr><td class="bodycopy" nowrap><b>Send Press To:</b></td></tr>
 			""")
-		for power in readers:
+		omniscient, player = page.power.omniscient or page.power.name == 'MASTER', ''
+		for reader in readers:
+			if omniscient:
+				if reader in ('JUDGEKEEPER', 'ALL'): player = ''
+				elif reader == 'MASTER': player = ' (%s)' % (page.game.master[2])
+				else:
+					try: player = ' (%s)' % ([x for x in page.game.powers
+						if x.name == reader][0].player[0].split('|')[2])
+					except: player = ''
+				if player: player = player.replace('_', ' ')
+			#else: player = ''
 			page.write(
 				"""
 <tr><td class="bodycopy" nowrap>
 <input type=checkbox name=recipient value=%s%s>
-<b>%s</b></td></tr>
-				""" % (power, 'ALL' in readers and ' onclick=reclick(%d)' %
-				(power == 'ALL') or '', page.game.anglify(power)))
+<b>%s</b>%s</td></tr>
+				""" % (reader, 'ALL' in readers and ' onclick=reclick(%d)' %
+				(reader == 'ALL') or '', page.game.anglify(reader), player))
 		page.write(
 			"""
 <tr><td align=center>
@@ -1452,7 +1462,12 @@ def normDate(date):
 def powerInfo():
 	game = page.game
 	variant, timing = [], ''
-	if game.map.name != game.variant: variant += [game.map.name.title()]
+	if game.map.name != game.variant:
+		text = game.map.name.title()
+		if os.path.isfile('<PKG>/pages/about_' + text.lower()):
+			text = ('<a target=new href=<URL>?page=about_%s>%s</a>' %
+				(text.lower(), text))
+		variant += [text]
 	if game.variant: variant += [game.variant.title()]
 	if 'NO_DIAS' in game.rules: variant += ['No DIAS']
 	showInfo(' '.join(['Trial', 'Variant'][not game.map.trial:]),
@@ -1539,8 +1554,7 @@ def showPressArchive(selected = 0, filter = 0):
 		if (not omniscient and thePower != sender and thePower not in receivers
 		and 'ALL' not in receivers): continue
 		code = pressCode(line, lineNum)
-		item = '<option %svalue=%s>%s' % ('selected ' * (selected == code),
-			code, phase)
+		item = phase
 		if not omniscient or sender == power: omni = ''
 		else: omni = ' from ' + page.game.anglify(sender.decode('latin-1'))
 		if omni or thePower == sender:
@@ -1567,8 +1581,8 @@ def showPressArchive(selected = 0, filter = 0):
 		if (not filter or filter in item.replace(',', ' ').split()
 		or 'sent' in item.split()
 		or (filter.upper() == power and 'from' not in item.split())):
-			if len(item) > 113: item = item[:110] + '...'
-			items = [item] + items
+			if len(item) > 60: item = item[:57] + '...'
+			items = ['<option %svalue=%s>%s</option>' % ('selected ' * (selected == code), code, item)] + items
 			validCodes.append(code)
 	file.close()
 	if not validCodes: return []

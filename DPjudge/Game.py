@@ -2203,10 +2203,10 @@ class Game:
 		return text
 	#	----------------------------------------------------------------------
 	def listReaders(self, who):
-		if who in (['All'], ['All!']): return ''
+		if not who or who in (['All'], ['All!']): return ''
 		who = map(self.anglify, who)
-		if len(who) > 1: who[-1] = 'and ' + who[-1]
-		return ' to ' + ', '[len(who) < 3:].join(who)
+		if len(who) == 1: return ' to ' + who[0]
+		return ' to ' + ', '.join(who[:-1]) + ' and ' + who[-1]
 	#	----------------------------------------------------------------------
 	def deliverPress(self, sender, reader, email, recipient, message,
 					 claimFrom, claimTo, subject = None, fromSender = 0):

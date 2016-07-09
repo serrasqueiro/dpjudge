@@ -63,9 +63,8 @@ powerHeader()
 		<!--MAPS, RESULTS, ENDGAME TABLE BEGINS HERE-->
 		<table border=0 align=center>
 <:
-if page.power.name != 'MASTER':
-	showMessages()
-	powerInfo()
+showMessages()
+powerInfo()
 showMapButtons()
 showResultsText()
 showPressArchive()

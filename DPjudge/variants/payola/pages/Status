@@ -156,9 +156,8 @@ def showBalance():
 			""" % page.power.balance)
 #	----------------------------------------------------------------------
 
-if page.power.name != 'MASTER':
-	showMessages()
-	powerInfo()
+showMessages()
+powerInfo()
 showMapButtons()
 showResultsText()
 showPressArchive()
