@@ -385,10 +385,11 @@ class PostScriptMap:
 			#	SUPPORT
 			#	-------
 			elif order[0] == 'S':
-				if 'ARMY' in word[orderWord:] or 'FLEET' in word[orderWord:]:
-					try: where = word[orderWord:].index('ARMY')
-					except: where = word[orderWord:].index('FLEET')
-				else: continue
+				if 'ARMY' in word[orderWord:]:
+					where = word[orderWord:].index('ARMY')
+				elif 'FLEET' in word[orderWord:]:
+					where = word[orderWord:].index('FLEET')
+				else: where = 0
 				where += orderWord + 1
 				mover = None
 				try:
@@ -438,7 +439,8 @@ class PostScriptMap:
 			#	Found
 			#	-----
 			elif order[0] == 'F':
-				order, graph, submsg = '', 'FindUnit', 'FOUND'
+				order, submsg = '', 'FOUND'
+				graph = 'Find' + 'Arrive' * (not si) + 'Unit'
 				if section in 'DRAU': 
 					self.discoveries.setdefault(section, {}).setdefault(
 						power + ' F', []).append(unit + ' ' + (si or di)['nick'])
@@ -633,8 +635,8 @@ class PostScriptMap:
 			('ArrowRefugeArmy', 2), ('ArrowRefugeFleet', 2), ('ArrowFlee', 2),
 			('ArrowSupportArrive', 4), ('ArrowSupportDepart', 4),
 			('ArrowConvoyArrive', 4), ('ArrowConvoyDepart', 4),
-			('FindUnit', 2),
-			('LoseUnit', 2), ('LoseArriveUnit', 2), ('LoseRefugeUnit', 2),
+			('FindUnit', 2), ('FindArriveUnit', 2),
+			('LoseUnit', 2), ('LoseArriveUnit', 2),
 		]
 		# Vassal orders 
 		self.procs += [

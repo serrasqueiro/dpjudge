@@ -29,9 +29,12 @@ class Page:
 		#	and bin/mail.py will be confused about a JOIN (etc.)'ing player's
 		#	DPPD status.
 		#   -----------------------------------------------------------------
-		if host.bannerHtml and (
-			not self.page or self.page[0].lower() != self.page[0]):
-			self.write(self.adaptToHTML(host.bannerHtml))
+		if not self.page or self.page[0].lower() != self.page[0]:
+			if host.bannerHtml and (
+				Time(when = host.bannerExpireDate) > Time()):
+				self.write(self.adaptToHTML(host.bannerHtml))
+			if host.headerHtml:
+				self.write(self.adaptToHTML(host.headerHtml))
 		if self.game:
 			game = self.game.lower().replace('%23', '#')
 			self.game = Status().load(game)

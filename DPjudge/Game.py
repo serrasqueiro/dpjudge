@@ -195,15 +195,20 @@ class Game:
 		#	-------------------------------------
 		if not map.isValidUnit(unit):
 			return error.append('ORDER TO INVALID UNIT: ' + unit)
-		if orderType in ('S', 'C') and word[1:] and word[1] in ('A', 'F'):
-			other = ' '.join(word[1:3])
+		if orderType in ('S', 'C') and word[1:]:
+			if word[1] in ('A', 'F'):
+				alter, other = word[1:3]
+			else:
+				alter, other = '?', word[1]
+			other = alter + ' ' + other
 			if not map.isValidUnit(other, 1):
 				return error.append('ORDER INCLUDES INVALID UNIT: ' + other)
-			if len(word) == 5:
-				other = (word[1], '?')[signal and
-					orderType == 'S'] + ' ' + word[4]
+			if len(word) == 5 - (alter == '?'):
+				if signal and orderType == 'S': alter = '?'
+				other = alter + ' ' + word[-1]
 				if not map.isValidUnit(other, 1):
-					return error.append('IMPOSSIBLE ORDER FOR ' + unit)
+					return error.append('ORDER INCLUDES INVALID UNIT ' +
+						'DESTINATION ' + other)
 		if 'FICTIONAL_OK' in rules: pass
 		elif not status:
 			return error.append('ORDER TO NON-EXISTENT UNIT: ' + unit)
@@ -1475,7 +1480,8 @@ class Game:
 	def fileSummary(self, reveal = 0, roll = 0):
 		text, fileName = self.summary(reveal = reveal), self.file('summary')
 		if not text: return
-		if roll or self.tester or ('NO_REVEAL' in self.rules and not reveal):
+		if roll or self.tester or ('NO_REVEAL' in self.rules
+		and not reveal) or 'SOLITAIRE' in self.rules:
 			file = open(fileName, 'w')
 			temp = '<pre>\n%s</pre>\n' % text
 			file.write(temp.encode('latin-1'))
@@ -2197,10 +2203,10 @@ class Game:
 		return text
 	#	----------------------------------------------------------------------
 	def listReaders(self, who):
-		if who in (['All'], ['All!']): return ''
+		if not who or who in (['All'], ['All!']): return ''
 		who = map(self.anglify, who)
-		if len(who) > 1: who[-1] = 'and ' + who[-1]
-		return ' to ' + ', '[len(who) < 3:].join(who)
+		if len(who) == 1: return ' to ' + who[0]
+		return ' to ' + ', '.join(who[:-1]) + ' and ' + who[-1]
 	#	----------------------------------------------------------------------
 	def deliverPress(self, sender, reader, email, recipient, message,
 					 claimFrom, claimTo, subject = None, fromSender = 0):
@@ -2435,6 +2441,7 @@ class Game:
 		self.tester = self.tester[:-1]
 		self.deadline = deadline
 		self.map.textOnly = textOnly
+		self.save()
 		self.makeMaps()
 		return error
 	#	---------------------------------------------------------------------
@@ -2458,8 +2465,9 @@ class Game:
 			return 'Cannot ROLLBACK forming game'
 		waiting = self.status[1] == 'waiting'
 		expected = ('active', 'completed')[self.phase == 'COMPLETED']
-		if not includeFlags & 16 and (not waiting and
-			self.status[1] != 'active' or self.error):
+		if not includeFlags & 16 and (not waiting
+		and self.status[1] not in ['completed', 'active'][
+			'SOLITAIRE' not in self.rules:] or self.error):
 			return ('ROLLBACK can only occur on an active or waiting, ' +
 				'error-free game')
 		if self.status[1] != expected: self.changeStatus(expected)
@@ -2810,7 +2818,7 @@ class Game:
 				strength + self.supports[unit][0], []).append(
 				[unit, self.supports[unit][1]])
 	#	----------------------------------------------------------------------
-	def checkDisruptions(self, mayConvoy, result):
+	def checkDisruptions(self, mayConvoy, result, coresult = None):
 		#	------------------------------------------------
 		#	On entry, mayConvoy is the unit:order dictionary
 		#	for all convoys that have a chance to succeed.
@@ -2831,6 +2839,7 @@ class Game:
 				elif (len(strongest) > 1
 				and 'SAFE_CONVOYS' not in self.rules): continue
 				self.result[unit] = [result]
+				if coresult: self.result[convoyer] = [coresult]
 	#	----------------------------------------------------------------------
 	def boing(self, unit):
 		#	------------------------------------------
@@ -3085,7 +3094,7 @@ class Game:
 			#	         VOID SUPPORTS THESE CONVOYERS WERE GIVEN,
 			#	         AND ALLOW CONVOYING UNITS TO CUT SUPPORT.
 			#	--------------------------------------------------
-			self.checkDisruptions(mayConvoy, 'no convoy')
+			self.checkDisruptions(mayConvoy, 'no convoy', 'disrupted')
 			for unit in mayConvoy:
 				if 'no convoy' in self.result[unit]:
 					for sup, help in self.command.items():
@@ -3154,7 +3163,8 @@ class Game:
 			site = unit[2:5]
 			loser = self.occupant(order.split()[-1], anyCoast = 1)
 			if loser and (self.command[loser][0] != '-' or self.result[loser]):
-				self.result[loser] += ['dislodged']
+				self.result[loser] = [x for x in self.result[loser]
+					if x != 'disrupted'] + ['dislodged']
 				self.dislodged[loser] = site
 				#	-----------------------------------------------------
 				#	Check for a dislodged swapper (attacker and dislodged
