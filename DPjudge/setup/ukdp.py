@@ -534,4 +534,20 @@ We want to sync this database often, just like we did for dpforge. For that reas
 
 Of course this would mean that every night whatever updates were made to the dplodge database for games running on UKDP would go lost. To prevent that from happening we extend the host.dppdURL parameter with a second address pointing to the USDP dppd, so that both databases get updated at the same time.
 
+---
+
+The disks of UKDP tend to fill up rather quickly. The primary reason are the massive log-files that are bombarded with spam mail and the like. To counter that, USDP had implemented a logrotate schedule by creating a file in /etc/logrotate.d with the following contents:
+/home/dpjudge/log/*.log {
+	weekly
+	missingok
+	rotate 52
+	maxsize 500000
+	compress
+	delaycompress
+	notifempty
+	su dpjudge
+	create 640 dpjudge dpjudge
+}
+Make sure there's an "include /etc/logrotate.d" line in /etc/logrotate.conf and that you are logged in as root to make the changes, adapting to the ukdp situation as required.
+
 """
