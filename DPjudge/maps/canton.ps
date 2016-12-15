@@ -169,6 +169,7 @@
 		SeaBlue 0 0 806 611 rectfill
 		IncludeLand
 		IncludeInternalBorders
+		IncludeCanals
 		IncludeBorders
 		IncludeMountain
 		IncludeLake
@@ -1263,8 +1264,16 @@
 	.1667 .1667 x
 	/fk { k } bd
 	3 w [ 18 6 ] 9 d BorderBlack
-	OutlineInternal1Dimblack
+	OutlineInternal1Black
 	OutlineInternal2Dimblack
+	r
+} bd
+/IncludeCanals {
+	s
+	.1667 .1667 x
+	/fk { k } bd
+	7.5 w [ 6 9 ] 4.5 d SeaBlue
+	OutlineInternal1Blue
 	r
 } bd
 /IncludeBorders {
@@ -1945,7 +1954,7 @@
 	4104 46 4012 46 3996 60 c
 	fk
 } bd
-/OutlineInternal1Dimblack {
+/OutlineInternal1Black {
 	726 3660 m
 	780 3630 l
 	804 3570 l
@@ -2120,11 +2129,10 @@
 	270 2574 l
 	fk
 	264 2436 m
-	339 2511 428 2580 540 2580 c
-	fk
-	552 2580 m
-	621 2556 584 2520 618 2472 c
-	630 2454 656 2453 666 2430 c
+	285 2457 302 2491 330 2508 c
+	377 2535 545 2624 600 2556 c
+	613 2539 598 2514 606 2496 c
+	618 2465 653 2460 666 2430 c
 	670 2418 662 2400 666 2388 c
 	674 2355 707 2328 732 2304 c
 	fk
@@ -2449,6 +2457,14 @@
 	fk
 	2934 330 m
 	2892 318 l
+	fk
+} bd
+/OutlineInternal1Blue {
+	258 3216 m
+	300 3216 l
+	fk
+	150 2712 m
+	156 2622 l
 	fk
 } bd
 /OutlineNational1Black {
