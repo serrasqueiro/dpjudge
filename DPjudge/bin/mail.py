@@ -665,7 +665,9 @@ class Procmail:
 							self.respond('Broadcast press not allowed')
 					elif ('PUBLIC_PRESS' in rules
 					and (claimTo or readers not in (['All'], ['MASTER']))):
-						self.respond('Private press not allowed')
+						self.respond('Private press not allowed' +
+							' before the start of the game' * (game.phase == 'FORMING') +
+							' after the end of the game' * (game.phase == 'COMPLETED'))
 					if 'NO_PRESS' in rules and readers != ['MASTER']:
 						self.respond('Private press allowed only to Master')
 					if 'FAKE_PRESS' not in rules:
