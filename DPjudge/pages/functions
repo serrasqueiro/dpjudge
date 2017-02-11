@@ -335,13 +335,13 @@ def showAbsenceInfo():
 					SubmitAbsence('', endDate);
 				}
 			} else if (endDate == '') {
-				if (confirm('Set absence on ' + startDate + '?')) {
+				if (confirm('Set absence for ' + startDate + '?')) {
 					SubmitAbsence(startDate, '');
 				}
 			} else if (NormDate(endDate) < NormDate(startDate)) {
 				alert('Choose an end date on or after ' + startDate + '.');
 			} else if (NormDate(endDate) == NormDate(startDate)) {
-				if (confirm('Set absence on ' + startDate + '?')) {
+				if (confirm('Set absence for ' + startDate + '?')) {
 					SubmitAbsence(startDate, '');
 				}
 			} else if (!isMaster && (NormDate(endDate) -
