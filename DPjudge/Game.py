@@ -4908,7 +4908,7 @@ class Game:
 		else:
 			full = len(nope) > 8
 			date = self.getTime(nope, 3 + 2 * full) 
-			line = 'on %s' % date.format(4 - 4 * full)
+			line = 'for %s' % date.format(4 - 4 * full)
 		for who in (1, 0):
 			who = ([x.name for x in self.powers
 				if x.type != 'MONITOR'] *

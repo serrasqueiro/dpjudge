@@ -19,8 +19,11 @@ class Procmail:
 		lineNo = joining = 0
 		part = input = email.message_from_file(os.sys.stdin)
 		addy = part.get('reply-to', part['from']) or ''
-		if '@' in addy: self.email = ([x for x in addy.split() if '@' in x][0]
-							.lower().strip('<",>'))
+		if '@' in addy:
+			self.email = [x for x in addy.split() if '@' in x][0]
+			pre, post = self.email.split('@')[:2]
+			pre, post = pre.split('<')[-1], post.split('>')[0]
+			self.email = (pre + '@' + post).lower().strip('<",>')
 		self.subject = part.get('subject', '')
 		self.dppd = None #part.get('DPPD','').split()
 		ip = [x for x in part.get_all('received',[]) if x[:4] == 'from'] or ['']
@@ -923,7 +926,7 @@ class Procmail:
 					if 'NO_ABSENCES' in game.rules and not self.isMaster(power):
 						self.respond('Only the Master is allowed to ' +
 							'SET ABSENCE in this game')
-					if word[2] in ('ON', 'FROM'): del word[2]
+					if word[2] in ('ON', 'FROM', 'FOR'): del word[2]
 					now, dates, oldline = game.getTime(npar=6), [word[2:]], None
 					where = ('TO' in word and word.index('TO') or
 						'UNTIL' in word and word.index('UNTIL'))
