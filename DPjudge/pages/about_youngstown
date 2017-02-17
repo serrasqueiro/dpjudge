@@ -26,7 +26,7 @@ page.include('functions')
 		<tbody><tr>
 		<td class="bodycopy" align="center">
 		<a href="<URL>?page=About">about the DPjudge</a> |
-		<a href="http://www.diplom.org/dpjudge/dppd">the DPPD</a> |
+		<a href="<DPPD>">the DPPD</a> |
 		<a href="<URL>?page=Questions">common questions</a></td>
 		</tr>
 		</tbody></table>

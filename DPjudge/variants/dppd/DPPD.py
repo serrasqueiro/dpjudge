@@ -77,36 +77,85 @@ class DPPD(dict):
 			where id = %s
 			""", (self[id]['password'], self[id]['status'], self[id]['id']))
 	#	----------------------------------------------------------------------
-	def lookup(self, email = '', name = '', id = None):
+	def lookup(self, email = '', name = '', id = None, exact = 0):
 		if name: name = ' '.join(name.upper().split())
 		results = []
 		if id is not None: self.db.execute(
 			"""
 			select * from User where id = %s
 			""", [id])
-		elif name: self.db.execute(
-			"""
-			select * from User
-			where name like %s or name like %s
-			""", map(lambda x: x % name.encode('latin-1'), ('%s%%', '%% %s')))
+		elif name:
+			if exact: self.db.execute(
+				"""
+				select * from User
+				where name = %s
+				""", name.encode('latin-1'))
+			else: self.db.execute(
+				"""
+				select * from User
+				where name like %s or name like %s
+				""", map(lambda x: x % name.encode('latin-1'),
+				('%s%%', '%% %s')))
 		elif email:
-			if email.count('@') == 1:
-				user, domain, at = email.lower().split('@') + ['@%']
-				where = 2 + (domain[-6:-2] == '.co.') # .co.uk, .co.nz, etc.
-				domain = '.'.join(domain.split('.')[-where:])
-			else: user, domain, at = email, '', ''
-			self.db.execute(
-			"""
-			select * from User, Email
-			where address like %s
-			and id = userID
-			""", ['%%%s%s%s%%' % (user, at, domain)])
+			if exact:
+				self.db.execute(
+					"""
+					select * from User, Email
+					where address = %s
+					and id = userID
+					""", email.lower().split())
+			else:
+				if email.count('@') == 1:
+					user, domain, at = email.lower().split('@') + ['@%']
+					where = 2 + (domain[-6:-2] == '.co.') # .co.uk, .co.nz, etc.
+					domain = '.'.join(domain.split('.')[-where:])
+				else: user, domain, at = email, '', ''
+				self.db.execute(
+					"""
+					select * from User, Email
+					where address like %s
+					and id = userID
+					""", ['%%%s%s%s%%' % (user, at, domain)])
 		else: return
 		for x in self.keys(): del self[x]
 		for data in self.db.fetchall(): self[data['id']] = data
 		results = self.keys()
 		if len(results) == 1: return self[data['id']]
 		return results or None
+	#	----------------------------------------------------------------------
+	def address(self, name = '', id = None, active = 2, dict = 0):
+		#	-----------------------------------------
+		#	Name has to be in full.
+		#	Values for active:
+		#	0: Inactive addresses only
+		#	1: Primary e-mail address
+		#	2: All active addresses, including primary
+		#	3: All e-mail addresses
+		#	-----------------------------------------
+		results = []
+		if active == 0:
+			cond = ' and status = "INACTIVE"'
+		elif active == 1:
+			cond = ' and status = "PRIMARY"'
+		elif active == 2:
+			cond = ' and status <> "INACTIVE"'
+		else: cond = ''
+		if name:
+			name = ' '.join(name.upper().split())
+			self.db.execute(
+				"""
+				select address, Email.status from User, Email
+				where name = %s and id = userId
+				""" + cond, name.encode('latin-1'))
+		elif id is not None: self.db.execute(
+			"""
+			select address, status from Email
+			where userId = %s
+			""" + cond, [id])
+		else: return None
+		results = self.db.fetchall()
+		if dict: return results
+		return [data['address'] for data in results]
 	#	----------------------------------------------------------------------
 	def verify(self, password, email = '', name = '', id = None):
 		if not password: return 'No password'

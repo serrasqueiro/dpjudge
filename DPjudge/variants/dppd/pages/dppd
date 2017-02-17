@@ -6,9 +6,11 @@ def login():
 	if 'id' in vars(page):
 		try: data = page.dppd.lookup(id = int(page.id))
 		except: data = None
-	else: data = page.dppd.lookup(email = page.email)
+	elif page.email: data = page.dppd.lookup(email = page.email)
+	else: data = page.dppd.lookup(name = page.name, exact = 1)
 	page.id = None
-	if not data: item = 'wrong e-mail address or password.'
+	if not data: item = 'wrong %s or password.' % (page.email and
+		'e-mail address' or 'name')
 	elif page.password.upper() == host.judgePassword.upper():
 		page.id = data['id']
 	elif data['status'] == 'ACTIVE':

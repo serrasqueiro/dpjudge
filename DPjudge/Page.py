@@ -212,7 +212,7 @@ class Page:
 				.replace('<KEEPER>',	host.judgekeeper)
 				.replace('<PKG>',	host.packageDir)
 				.replace('<DPPD>',	dppdURL)
-				.replace('<POUCH>',	'http://www.diplom.org'))
+				.replace('<POUCH>',	'http://www.diplomatic-pouch.org'))
 			inCode = not inCode
 			if inCode:
 				stuff = stuff.strip()
