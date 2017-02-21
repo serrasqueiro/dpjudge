@@ -1630,7 +1630,7 @@ the course of the game.
 <dl>
 <!-- RULE GROUP 3 Movement Order -->
 <a name=NO_CHECK></a><p><dt><b><tt>NO_CHECK</tt></b><dd>
-<!-- RULE NO_CHECK !SHOW_PHANTOM +DEFAULT_UNORDERED -->
+<!-- RULE NO_CHECK !SHOW_PHANTOM !SIGNAL_SUPPORT +DEFAULT_UNORDERED -->
 	This rule emulates face-to-face play, in which players could (by
 	accident or design) issue invalid orders to their units.  This rule
 	is also useful in <tt>NO_PRESS</tt> games to allow for limited

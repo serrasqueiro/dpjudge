@@ -79,6 +79,7 @@ class DPPD(dict):
 	#	----------------------------------------------------------------------
 	def lookup(self, email = '', name = '', id = None, exact = 0):
 		if name: name = ' '.join(name.upper().split())
+		if email: email = email.strip()
 		results = []
 		if id is not None: self.db.execute(
 			"""
@@ -132,6 +133,7 @@ class DPPD(dict):
 		#	2: All active addresses, including primary
 		#	3: All e-mail addresses
 		#	-----------------------------------------
+		if name: name = ' '.join(name.upper().split())
 		results = []
 		if active == 0:
 			cond = ' and status = "INACTIVE"'

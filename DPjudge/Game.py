@@ -476,71 +476,86 @@ class Game:
 		return 1
 	#	----------------------------------------------------------------------
 	def expandOrder(self, word):
-		#	---------------------------------
-		#	Provide spacing around dashes and
-		#	vertical bars; change -> into -
-		#	---------------------------------
-		error, result = self.error, ''
-		for ch in ' '.join(word):
-			if result and ((ch in '|-' and result[-1] != ' ')
-			or (ch != ' ' and result[-1] in '|-')):
-				result += ' '
-				if result[-2] + ch == '->': continue
-			result += ch
-		#	--------------------------------------
-		#	Isolate a punctuation mark at the end,
-		#	commonly found in DPeye syntax
-		#	--------------------------------------
-		if len(result) > 1 and result[-2] != ' ' and result[-1] in '?+*!|~':
-			result = result[:-1] + ' ' + result[-1]
-		#	------------------------------------
-		#	Convert aliases to recognized tokens
-		#	------------------------------------
-		final, result, which = [], result.split(), 0
-		if 'NO_CHECK' in self.rules: [error.append('AMBIGUOUS PLACENAME: ' + x)
-			for x in result if x.upper() in self.map.unclear]
-		while which < len(result):
-			#	---------------------------------------------
-			#	Concatenate everything after a proxy request.
-			#	---------------------------------------------
-			if 'P' in final:
-				item, parsed = result[which].upper(), 1
-				if final[-1] != 'P' or final[-2:] == ['P'] * 2:
-					final[-1] += item
-					item = ''
-			else:
-				item, parsed = self.map.alias(result[which:])
-				#	---------------------------------
-				#	Insert "-" between two locations.
-				#	---------------------------------
-				if (item and len(item.split('/')[0]) == 3 and
-					final and len(final[-1].split('/')[0]) == 3): final += ['-']
-			if item: final += [item]
-			which += parsed or 1
-			if not parsed and 'NO_CHECK' in self.rules:
-				error += ['UNRECOGNIZED DATA IN ORDER: ' + item]
-		#	------------------------------------------
-		#	Replace proxy target with full power name.
-		#	------------------------------------------
-		if 'P' in final and final[-1] != 'P':
-			who, parsed = self.getPower(final[-1], 0)
-			if who: final[-1] = who.name
-		#	-------------------------------
-		#	Remove the "H" from any order
-		#	having the form "u xxx S xxx H"
-		#	-------------------------------
-		if len(final) > 5 and final[2] == 'S':
-			if (len(final), final[5]) == (6, 'H'): del final[5]
-			elif ('NO_CHECK' in self.rules
-			and len(final) == 7 and '/' in final[6]):
-				error += ['COAST NOT ALLOWED IN SUPPORT ORDER: ' + 
-					' '.join(word)]
-				#   --------------------------------------------
-				#   Comment out the above error += command to
-				#   allow coastal designation in a support order
-				#   in a NO_CHECK game to be silently ignored.
-				#   --------------------------------------------
-				final[6] = final[6][:3]
+		error, result = self.error, self.map.compact(' '.join(word))
+		result = self.map.vet(self.map.rearrange(result), 1)
+		#	---------------
+		#	Weed out errors
+		#	---------------
+		final, order = [], ''
+		for x, y in result:
+			if y < 1:
+				if y == -1:
+					error.append('UNKNOWN POWER OR PLACENAME: ' + x)
+					continue
+				elif y == -2:
+					error.append('UNKNOWN UNIT TYPE: ' + x)
+					continue
+				elif y == -3:
+					error.append('UNKNOWN PLACENAME: ' + x)
+				elif y == -4:
+					z = x.split('/')[0]
+					if z in self.map.aliases.values():
+						error.append('UNKNOWN COAST: ' + x)
+						x, y = z, -3
+					else:
+						error.append('UNKNOWN PLACENAME: ' + x)
+				elif y == -5:
+					error.append('UNKNOWN ORDER TYPE: ' + x)
+					continue
+				else:
+					error.append('UNRECOGNIZED DATA IN ORDER: ' + x)
+					continue
+				y = -y
+			if y == 1:
+				#	------------------------------
+				#	Remove power names
+				#	Checking ownership of the unit
+				#	might be better
+				#	------------------------------
+				continue
+			elif y == 5:
+				#	-------------------------------
+				#	Remove the "H" from any order
+				#	having the form "u xxx S xxx H"
+				#	-------------------------------
+				if order == 'S' and x == 'H': continue
+				order += x
+			elif y == 6:
+				#	-----------------------------------
+				#	Treat each move order the same
+				#	Eventually we'd want to distinguish
+				#	between them
+				#	-----------------------------------
+				x = '-'
+				order += x
+			elif y == 7:
+				order = ''
+			if 'NO_CHECK' in self.rules:
+				#	----------------------------------
+				#	Spot ambiguous placenames and
+				#	coasts in support and convoy oders
+				#	----------------------------------
+				if y == 3:
+					if x in self.map.unclear: 
+						error.append('AMBIGUOUS PLACENAME: ' + x)
+				if y == 4:
+					if x.split('/')[0] in self.map.unclear:
+						error.append('AMBIGUOUS PLACENAME: ' + x)
+					#   --------------------------------------------------
+					#   The below error, disallowing coastal designations
+					#	in the destinations of support and portage convoy
+					#	orders in a NO_CHECK game is no longer desired
+					#	all the time; instead they should get silently
+					#	suppressed in order to facilitate processing
+					#	orders copied from a results file into the Master
+					#	order box or through e-mail, e.g. when moving over
+					#	a game from a different Judge
+					#   --------------------------------------------------
+					if order and order[0] in 'SC' and order[-1] == '-':
+						error += ['COAST NOT ALLOWED IN %s ORDER: ' % 
+							('CONVOY', 'SUPPORT')[order[0] == 'S'] + x]
+						x, y = x.split('/')[0], 3
+			final += [x]
 		#	-------------------------------------------------------------
 		#	Default any fleet move's coastal destination, then we're done
 		#	-------------------------------------------------------------
@@ -4291,19 +4306,25 @@ class Game:
 		ambiguous = ambiguous and len(word) > 1
 		if not ambiguous: item, parsed = ''.join(word), len(word)
 		elif word[0][0] in '([':
-			item, parsed = word[0], 1
-			if item[-1] in '])': ambiguous = 0
-			else:
+			item, parsed, ambiguous = word[0], 1, 0
+			if item[-1] not in '])':
 				for tail in word[1:]:
 					if tail[0] in '([': break
 					item += tail
 					parsed += 1
-					if tail[-1] in '])':
-						ambiguous = 0
-						break
+					if tail[-1] in '])': break
+				else: ambiguous = 1
+		else:
+			item, parsed, ambiguous = word[0], 1, 0
+			if item[-1] != ':':
+				for tail in word[1:]:
+					item += tail
+					parsed += 1
+					if tail[-1] == ':': break
+				else: ambiguous = 1
 		if ambiguous: item, parsed = word[0], 1
 		item = item.upper()
-		upword = item[item[:1] in '([':len(item) - (item[-1:] in '])')]
+		upword = item[item[:1] in '([':len(item) - (item[-1:] in ']):')]
 		if not upword: return ('', 0)
 		ambiguous = ambiguous and upword == item
 		powers = [x for x in self.powers if upword in
@@ -4311,7 +4332,7 @@ class Game:
 		if powers: return (powers[0], parsed)
 		if ambiguous and len(word[0]) > 1:
 			item, parsed = ''.join(word).upper(), len(word)
-			upword = item[item[:1] in '([':len(item) - (item[-1:] in '])')]
+			upword = item[item[:1] in '([':len(item) - (item[-1:] in ']):')]
 			powers = [x for x in self.powers if upword == x.name]
 			if powers: return (powers[0], parsed)
 		return ('', 0)
@@ -4589,11 +4610,12 @@ class Game:
 			order = order.strip()
 			if not order: continue
 			word = self.expandOrder([order])
-			if word[-1] in '+*-!': word = word[-1:] + word[:-1]
+			if word[-1] in 'BDK': word = word[-1:] + word[:-1]
 			if word[-1] in 'RH': word = word[-1:] + word[:-1]
-			if word[0] == '+': word[0] = 'BUILD'
-			elif word[0] in '*R-': word[0] = 'REMOVE'
-			elif word[0] in '!H': word[0] = 'KEEP'
+			if word[0] == 'B': word[0] = 'BUILD'
+			elif word[0] in 'RD': word[0] = 'REMOVE'
+			elif word[0] in 'KH': word[0] = 'KEEP'
+			elif word[0] == 'V': word[0] = 'WAIVED'
 			if word[0] == orderType: pass
 			elif word[0] in ('BUILD', 'REMOVE'):
 				self.error += [word[0] + ' NOT ALLOWED: ' + order]
@@ -4614,7 +4636,7 @@ class Game:
 					and ('KEEP ' + unit) not in kept): adjust += [order]
 					else: self.error += ['MULTIPLE ORDERS FOR UNIT: ' + unit]
 				else: self.error += ['BAD ADJUSTMENT ORDER: ' + order]
-			elif len(word) == 2 and word[1] in ('WAIVE', 'WAIVED'):
+			elif len(word) == 2 and word[1] in ('WAIVE', 'WAIVED', 'V'):
 				if len(adjust) < need: adjust += ['BUILD WAIVED']
 			elif len(word) == 3:
 				site = word[2][:3]
@@ -4666,9 +4688,9 @@ class Game:
 		adjust, retreated = [], []
 		for order in orders:
 			word = self.addUnitTypes(self.expandOrder([order]))
-			if word[0] == 'RETREAT' or (word[0] == 'R' and len(word) > 3):
+			if word[0] == 'R' and len(word) > 3:
 				del word[0]
-			if word[0] in '+*R-': word = word[1:] + word[:1]
+			if word[0] in 'RD': word = word[1:] + word[:1]
 			unit = ' '.join(word[:2])
 			try: unit = [x for x in power.retreats
 				if x == unit or x.startswith(unit + '/')][0]
@@ -4679,9 +4701,9 @@ class Game:
 				self.error.append('TWO ORDERS FOR RETREATING UNIT: ' + unit)
 				continue
 			word[1] = unit[2:]
-			if len(word) == 3 and (word[2] == 'DISBAND' or word[2] in '*R-'):
+			if len(word) == 3 and word[2] in 'RD':
 				word[2] = 'DISBAND'
-			elif len(word) == 4 and (word[2] == 'RETREAT' or word[2] in 'R-'):
+			elif len(word) == 4 and word[2] in 'R-':
 				word[2] = '-'
 				if word[3] not in power.retreats[unit]:
 					self.error.append('INVALID RETREAT DESTINATION: ' +
