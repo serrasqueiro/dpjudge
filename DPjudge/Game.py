@@ -939,7 +939,7 @@ class Game:
 	#	----------------------------------------------------------------------
 	def determinePower(self, word):
 		error = self.error
-		upword = word[0].replace('+', '').replace('-', '').upper()
+		upword = self.map.normPower(word[0])
 		#	-----------------------
 		#	Powers and other player
 		#	types (observers, etc.)
@@ -948,10 +948,10 @@ class Game:
 		or (len(word) == 2 and upword in (self.playerTypes +
 				['POWER', 'OBSERVER', 'MONITOR'])
 		and (upword == 'POWER'
-		or word[1].upper() not in self.map.powers))):
+		or self.map.normPower(word[1]) not in self.map.powers))):
 			word.reverse()
 			for power in self.powers:
-				if word[0] == power.name: break
+				if self.map.normPower(word[0]) == power.name: break
 			else:
 				if self.phase == 'FORMING':
 					if len(word) == 1: word += ['POWER']
