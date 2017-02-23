@@ -11,10 +11,10 @@ class Map:
 		homes, locName, locType, locAbut, abutRules = {}, {}, {}, {}, {}
 		ownWord, abbrev, centers, units, powName, flag = {}, {}, {}, {}, {}, {}
 		rules, files, powers, scs, owns, inhabits = [], [], [], [], [], []
-		flow, unclear, size, homeYears, dummies, locs = [], [], [], [], [], []
+		flow, size, homeYears, dummies, locs = [], [], [], [], []
 		reserves, militia, flagDirs, error, notify = [], [], [], [], []
 		dynamic, factory, partisan, alternative, hidden = {}, {}, {}, {}, {}
-		controls, leagues, directives, phaseAbbrev = {}, {}, {}, {}
+		controls, leagues, directives, phaseAbbrev, unclear = {}, {}, {}, {}, {}
 		if host.notify and host.judgekeeper and (trial or host.notify > 1):
 			notify = [host.judgekeeper]
 		unitNames = {
@@ -515,9 +515,9 @@ class Map:
 				self.locName[name] = self.aliases[normed] = word[0]
 				for alias in word[1:]:
 					unclear = alias[-1] == '?'
-					normed = self.norm(
-						unclear and alias[:-1] or alias)
-					if unclear: self.unclear += [normed]
+					normed = unclear and alias[:-1].replace('+',
+						' ').upper() or self.norm(alias)
+					if unclear: self.unclear[normed] = word[0]
 					elif normed in self.aliases:
 						if self.aliases[normed] != word[0]:
 							error += ['DUPLICATE MAP ALIAS OR POWER: ' + alias]
@@ -1074,6 +1074,13 @@ class Map:
 			alias, alias2 = alias2, alias[:-2]
 		else: return alias, i
 		#	---------------------------------------------
+		#	Check if the location is also an ambiguous
+		#	power name and replace with its alternative
+		#	if that's the case
+		#	---------------------------------------------
+		if alias in self.powers and alias in self.unclear:
+			alias = self.unclear[alias]
+		#	---------------------------------------------
 		#	Check if the coast is mapped to another coast
 		#	---------------------------------------------
 		if alias + ' ' + alias2 in self.aliases:
@@ -1187,14 +1194,26 @@ class Map:
 			elif result[j][1] == 5: i = j
 			elif result[j][0] == '|': break
 		#	--------------------------------------------
-		#	Put the power before the unit.
+		#	Put the power before the unit, or replace it
+		#	with a location if there's ambiguity.
+		#	--------------------------------------------
+		vet = 0
+		for i in range(0, len(result)):
+			if result[i][1] == 1:
+				if vet > 0 and result[i][0] in self.unclear:
+					result[i] = (self.unclear[result[i][0]], 3)
+				elif vet == 1:
+					result[i+1:i+1] = result[i-1:i]
+					del result[i-1]
+				vet = 2
+			elif not vet and result[i][1] == 2: vet = 1
+			elif result[i][1] == 5: vet = 0
+			else: vet = 2
+		#	--------------------------------------------
 		#	Insert hyphens between subsequent locations.
 		#	--------------------------------------------
 		for i in range(len(result)-1, 1, -1):
-			if result[i][1] == 1 and result[i-1][1] == 2:
-				result[i+1:i+1] = result[i-1:i]
-				del result[i-1]
-			elif result[i][1] in (3, 4) and result[i-1][1] in (3, 4):
+			if result[i][1] in (3, 4) and result[i-1][1] in (3, 4):
 				result[i:i] = [('-', 6)]
 		#	--------------------------------------
 		#	Remove vertical bars at start and end.
