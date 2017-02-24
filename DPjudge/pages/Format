@@ -21,7 +21,7 @@ page.include('functions')
 	<td width=1 class="border"></td>
 	<td class="gameheader" align=center>
 		<!--HEADER GOES HERE-->
-		<b>Formatting Unit Orders At the DPjudge</b>
+		<b>Formatting Unit Orders at the DPjudge</b>
 		<!--INFORMATION LINKS TABLE BEGINS HERE-->
 		<table border=0 cellpadding=5 cellspacing=0 width=100%>
 		<tr>
