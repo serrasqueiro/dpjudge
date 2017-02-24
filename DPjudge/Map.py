@@ -515,6 +515,12 @@ class Map:
 				self.locName[name] = self.aliases[normed] = word[0]
 				for alias in word[1:]:
 					unclear = alias[-1] == '?'
+					#   --------------------------------
+					#   For ambiguous place names, let's
+					#   do just a minimal normalization,
+					#   otherwise they might become
+					#   unrecognizable (e.g. "THE")
+					#   --------------------------------
 					normed = unclear and alias[:-1].replace('+',
 						' ').upper() or self.norm(alias)
 					if unclear: self.unclear[normed] = word[0]

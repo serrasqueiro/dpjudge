@@ -2251,6 +2251,7 @@ class Game:
 			#	The message is being sent directly to a
 			#	player e-mail.  So format it ourselves.
 			#	---------------------------------------
+			#mail.write('\n'.join(self.mapperHeader()) + '\n')
 			if reader == sender.name: mail.write(
 				self.pressHeader(sender, recipient, reader) + ':\n\n')
 			mail.write('%s in %s:\n\n' % (
@@ -4895,8 +4896,10 @@ class Game:
 		return result
 	#	----------------------------------------------------------------------
 	def reportOrders(self, power, email = None):
+		header = '\n'.join(self.mapperHeader()) + '\n'
 		if not email and 'BROADCAST_ORDERS' in self.rules:
-			return self.mailPress(None, ['All'], self.playerOrders(power),
+			return self.mailPress(None, ['All'],
+				header + self.playerOrders(power),
 				subject = 'Diplomacy orders %s ' % self.name + self.phaseAbbr())
 		if email:
 			whoTo = email
@@ -4907,7 +4910,7 @@ class Game:
 		else: whoTo = power.address[0]
 		self.openMail('Diplomacy orders %s ' % self.name + self.phaseAbbr(),
 			mailTo = whoTo, mailAs = host.dpjudge)
-		self.mail.write(self.playerOrders(power))
+		self.mail.write(header + self.playerOrders(power))
 		self.mail.close()
 	#	----------------------------------------------------------------------
 	def setAbsence(self, power, nope):
