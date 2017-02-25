@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title><ID>: Tips and Tricks for Game Masters</title>
+<title><ID>: Tips and Tricks for GameMasters</title>
 <:
 page.include('stylesheet')
 page.include('functions')
@@ -21,7 +21,7 @@ page.include('functions')
 	<td width=1 class="border"></td>
 	<td class="gameheader" align=center>
 		<!--HEADER GOES HERE-->
-		<b>Tips and Tricks for Game Masters</b>
+		<b>Tips and Tricks for GameMasters</b>
 		<!--INFORMATION LINKS TABLE BEGINS HERE-->
 		<table border=0 cellpadding=5 cellspacing=0 width=100%>
 		<tr>
@@ -72,7 +72,7 @@ page.include('functions')
 <dd>
 Yes, you can. And this can also be applied to other DPjudge games, of course. If you don't have the game results handy, get a copy of the game history by e-mail with the <a href="http://www.floc.net/dpforge/?page=Email#history"><tt>HISTORY</tt></a> command or obtain them with the help of the Floc.net <a href="http://www.floc.net/observer.py?page=search_form">Search Games</a> tool.
 <p>
-Copy them over, submit and it will get accepted most of the times. Adjudication result markers (the portion between bracketed stars, e.g. <tt>"(* cut, dislodged *)"</tt> and power adjectives for support and convoy orders to foreign units will be automatically stripped. Every word in the order will be abbreviated as usual.
+Copy them over, submit and it will get accepted most of the times. Adjudication result markers (the portion between bracketed stars, e.g. <tt>"(* cut, dislodged *)"</tt>) and power adjectives for support and convoy orders to foreign units will be automatically stripped. Every word in the order will be abbreviated as usual when submitting orders.
 <p>
 One thing that may fail are invalid convoy orders (e.g. a convoy to Switzerland), which are commonly found in No-Press games as a crude form of communication. These orders will be refused by the DPjudge. You will be guided to an error screen that will tell you which orders failed. Correct these by hand before resubmitting.
 </dd>
@@ -86,14 +86,14 @@ Another approach is to enable the <a href="http://www.floc.net/dpforge/?page=Rul
 <p>
 <dt><b>Really? That's all there is to it?</b></dt>
 <dd>
-For regular games, yes. God knows what special rules have been implemented on the various Judges. If there's no equivalent on the DPjudge or it's on a map that's not yet supported, your best bet is to contact the <a href="mailto:<KEEPER>"><ID> judgekeeper</a> first.
+For regular games, yes. God knows what special rules have been implemented on the various Judges. If there's no equivalent on the DPjudge or it's on a map that's not yet supported, your best bet is to contact the <a href="mailto:<KEEPER>"><ID> judgekeeper</a>.
 <p>
 Oh wait, there's one more gotcha that will cause some pain. As for regular orders the destination coast in a support order for a fleet moving to a multi-coast site must be removed or the order will be refused, even in a <tt>NO_CHECK</tt> game. Luckily you will be warned right away, as this is one of the few checks that are enforced even with <tt>NO_CHECK</tt>.
 </dd>
 <p>
 <dt><b>Having to select each build one by one, especially at the end of the first year, is cumbersome and error-prone. Is there no faster way?</b></dt>
 <dd>
-Try e-mail. Just copy the adjustment or even retreat orders into the body of an e-mail after a <a href="http://www.floc.net/dpforge/?page=Email#signon"><tt>SIGNON</tt></a>, send and reload your browser page. You should receive a confirmation that the orders have been accepted. Fast and clean.
+Try e-mail. Just copy the adjustment or even retreat orders into the body of an e-mail after a <a href="http://www.floc.net/dpforge/?page=Email#signon"><tt>SIGNON</tt></a>, send and reload your browser page. There could be some lag of course. If so, it might be best to wait for the confirmation e-mail that the orders have been accepted. Fast and clean.
 </dd>
 </dl>
 		<!--BODYCOPY ENDS HERE-->
