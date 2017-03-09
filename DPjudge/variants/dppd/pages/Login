@@ -115,6 +115,7 @@ page.dppd.db.execute("""
 			where Game.id = Role.gameId and Game.judgeId = Judge.id
 			and Judge.id = '%s' and Role.userId = %d
 			and Game.status not in ('COMPLETED', 'TERMINATED')
+			order by Game.name
 			""" % (page.dpjudge, page.id))
 for info in page.dppd.db.fetchall():
 	game.phase = info['phase']
