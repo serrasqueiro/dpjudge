@@ -414,11 +414,11 @@ class Map:
 				data = [x.strip() for x in ' '.join(word[1:]).split(':')]
 				if not data: error += ['BAD %s DIRECTIVE IN MAP' % upword]
 				elif upword == 'IN': phase = data[0].upper()
-				elif (' ' in data[0] or data[-1] != 'M'
-				or not data[1:-1].isdigit()): error += ['BAD FROM DIRECTIVE']
 				else: phase = data[0].lower()
 				if phase == 'start': phase = 0
-				elif len(data) > 1:
+				elif (' ' in phase or phase[-1] != 'm'
+				or not phase[1:-1].isdigit()): error += ['BAD FROM DIRECTIVE']
+				if len(data) > 1:
 					self.dynamic.setdefault(phase, []).append(data[1])
 					phase = 0
 			elif phase: self.dynamic.setdefault(phase, []).append(line)
