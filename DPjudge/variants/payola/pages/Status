@@ -38,7 +38,7 @@ showReadyNotice()
 <:
 if not page.game.error and not page.game.map.error:
 	page.write('<td align=center class="grey"><b>Communications</b></td>')
-if (page.power.name != 'MASTER' and page.power.balance is not None
+if ((page.power.balance is not None or page.power.name == 'MASTER')
 and page.game.phase not in ('FORMING', 'COMPLETED')):
 	page.write('<td align=center class="grey"><b>O%sers</b></td>' %
 		('rd','ff')[page.game.phase[-1] == 'M'])
@@ -78,83 +78,6 @@ def showLedgerButton():
 			</form>
 			""")
 #	----------------------------------------------------------------------
-def showTransferForm():
-	page.game.findGoners()
-	if not ((not page.game.await
-		or page.power.type) # exchange investors can transfer at all times
-	and (page.power.balance > 0)
-	and ('NO_DONATIONS' not in page.game.rules or not page.power.goner)
-	and ('NO_TRANSFER' not in page.game.rules)
-	and ('ONE_TRANSFER' not in page.game.rules
-		or len(page.power.sent) != (len(page.game.powers) - 1))
-	and ('NO_LOOTING' not in page.game.rules or not page.power.isDummy())
-	and (not page.power.ceo)): return
-	page.write('<form name=transferForm method=post>')
-	hideBack('Transfer')
-	page.apprise('balance', page.power.balance)
-	page.write("""
-		<tr><td class=bodycopy><b>Transfer:</b></td>
-		<td class=bodycopy align=right>Send
-		<input class=inputBox name=amount size=3 value=0>
-		AgP%s to
-		<select class=inputBox name=beneficiary>
-		""" % ('ANON_TRANSFER' in page.game.rules and
-			' (anonymously)' or ''))
-	powers, others = [], []
-	for power in page.game.powers:
-		if 'VASSAL_DUMMIES' in page.game.rules and power.isDummy(): continue
-		if power.name not in page.power.sent:
-			if not power.type: powers += [power.name]
-			elif power.type not in ('OBSERVER', 'MONITOR'):
-				others += [power.name]
-	powers = sorted(powers) + sorted(others)
-	powers.remove(page.power.name)
-	for power in powers: page.write('<option value=%s>' % power + power)
-	page.write(
-		"""
-		</select></td>
-		<td><input class=inputSubmit type=submit value="Send"></td>
-		</tr></form>
-		""")
-#	----------------------------------------------------------------------
-def showBalance():
-	if page.power.type and len(page.power.funds) > 1:
-		page.write(
-			"""
-			<tr><td valign=top class=bodycopy><b>Portfolio:</b></td>
-			<td valign=top class=bodycopy align=right>
-			<table width=100%>
-			<tr>
-			<th width=25% valign=top class=bodycopy><u>Power</th>
-			<th width=25% valign=top class=bodycopy><u>Shares Owned</th>
-			<th width=25% valign=top class=bodycopy><u>Shares Issued</th>
-			<th width=25% valign=top class=bodycopy><u>Shares In IPO</th>
-			</tr>
-			""")
-		for stock, shares in page.power.funds.items():
-			for power in page.game.powers:
-				if not power.type and power.abbrev == stock: break
-			else: continue
-			issued = 0
-			for player in page.game.powers:
-				if player is not power: issued += player.funds.get(stock, 0)
-			page.write(
-				"""
-				<tr><td align=center class=bodycopy>%s</td>
-				<td align=center class=bodycopy>%d</td>
-				<td align=center class=bodycopy>%d</td>
-				<td align=center class=bodycopy>%d</td>
-				</tr>
-				""" % (power.name.title(),
-				shares, issued, power.funds.get(stock, 0)))
-		page.write('</table></td></tr>')
-	if page.power.balance is not None:
-		page.write(
-			"""
-			<tr><td class=bodycopy><b>Balance:</b></td>
-			<td class=bodycopy align=right>%d AgP</td></tr>
-			""" % page.power.balance)
-#	----------------------------------------------------------------------
 
 showMessages()
 powerInfo()
@@ -169,11 +92,9 @@ showDocList( (	('summary', 'Game Summary'),
 if (page.power.name != 'MASTER'
 and page.game.phase not in ('FORMING', 'COMPLETED')):
 	showProposal()
-	showControlInfo()
 	showLedgerButton()
-	showBalance()
-	if page.pwdFlag > 1: showTransferForm()
 showPricesButton()
+showControlInfo()
 showAbsenceInfo()
 if page.power.name == 'MASTER': showMasterCommands()
 :>
@@ -208,8 +129,7 @@ if not page.game.error:
 		</table>
 		</td>
 		""")
-if (page.power.name != 'MASTER'
-and page.game.phase not in ('FORMING', 'COMPLETED')): showPowerData()
+if page.game.phase not in ('FORMING', 'COMPLETED'): showPowerData()
 :>
 </tr>
 <:

@@ -112,11 +112,6 @@ def updatePower():
 	if page.game.await or page.phase != page.game.phaseAbbr(): lockedUp()
 	page.power.wait = (None, 1)['wait' in vars(page)]
 	unchanged = 1
-	if 'accept' in vars(page) and page.accept != page.power.accept:
-		page.game.checkAccept(page.power, page.accept)
-		if not page.game.error:
-			page.game.save()
-			unchanged = 0
 	if 'dividend' in vars(page):
 		updateExchangeDividends()
 		if not page.game.error:

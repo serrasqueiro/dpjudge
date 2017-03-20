@@ -1,5 +1,84 @@
 <:
 #	----------------------------------------------------------------------
+def showBalance():
+	if page.power.type and len(page.power.funds) > 1:
+		page.write(
+			"""
+			<tr><td valign=top class=bodycopy><b>Portfolio:</b></td>
+			<td valign=top class=bodycopy align=right>
+			<table width=100%>
+			<tr>
+			<th width=25% valign=top class=bodycopy><u>Power</th>
+			<th width=25% valign=top class=bodycopy><u>Shares Owned</th>
+			<th width=25% valign=top class=bodycopy><u>Shares Issued</th>
+			<th width=25% valign=top class=bodycopy><u>Shares In IPO</th>
+			</tr>
+			""")
+		for stock, shares in page.power.funds.items():
+			for power in page.game.powers:
+				if not power.type and power.abbrev == stock: break
+			else: continue
+			issued = 0
+			for player in page.game.powers:
+				if player is not power: issued += player.funds.get(stock, 0)
+			page.write(
+				"""
+				<tr><td align=center class=bodycopy>%s</td>
+				<td align=center class=bodycopy>%d</td>
+				<td align=center class=bodycopy>%d</td>
+				<td align=center class=bodycopy>%d</td>
+				</tr>
+				""" % (power.name.title(),
+				shares, issued, power.funds.get(stock, 0)))
+		page.write('</table></td></tr>')
+	if page.power.balance is not None:
+		page.write(
+			"""
+			<tr><td class=bodycopy><b>Balance:</b></td>
+			<td class=bodycopy align=right>%d AgP</td></tr>
+			""" % page.power.balance)
+#	----------------------------------------------------------------------
+def showTransferForm():
+	page.game.findGoners()
+	if not ((not page.game.await
+		or page.power.type) # exchange investors can transfer at all times
+	and (page.power.balance > 0)
+	and ('NO_DONATIONS' not in page.game.rules or not page.power.goner)
+	and ('NO_TRANSFER' not in page.game.rules)
+	and ('ONE_TRANSFER' not in page.game.rules
+		or len(page.power.sent) != (len(page.game.powers) - 1))
+	and ('NO_LOOTING' not in page.game.rules or not page.power.isDummy())
+	and (not page.power.ceo)): return
+	page.write('<form %s>' % ('onSubmit="return false"',
+		'method=post name=TransferForm')[page.pwdFlag > 2])
+	hideBack('Transfer')
+	page.apprise('balance', page.power.balance)
+	page.write("""
+		<tr><td class=bodycopy><b>%sTransfer:</b></td>
+		<td class=bodycopy align=right>
+		<table><tr><td>
+		<input class=inputBox name=amount size=3 value=0>
+		</td><td class=bodycopy>AgP&nbsp;to</td><td>
+		<select class=inputBox name=beneficiary>
+		""" % ('ANON_TRANSFER' in page.game.rules and
+			'Anonymous ' or ''))
+	powers, others = [], []
+	for power in page.game.powers:
+		if 'VASSAL_DUMMIES' in page.game.rules and power.isDummy(): continue
+		if power.name not in page.power.sent:
+			if not power.type: powers += [power.name]
+			elif power.type not in ('OBSERVER', 'MONITOR'):
+				others += [power.name]
+	powers = sorted(powers) + sorted(others)
+	powers.remove(page.power.name)
+	for power in powers: page.write('<option value=%s>' % power + power)
+	page.write(
+		"""
+		</select></td></tr></table></td>
+		<td><input class=inputSubmit type=submit value="Send"></td>
+		</tr></form>
+		""")
+#	----------------------------------------------------------------------
 def showAcceptList():
 	accept = page.power.accept
 	if (not accept or not (page.power.units or page.power.retreats)
@@ -8,26 +87,38 @@ def showAcceptList():
 	or (not page.power.centers and page.game.phaseType == 'A')): return
 	if ('VASSAL_DUMMIES' in page.game.rules
 	and not page.power.vassals(indirect = True)): return
-	page.write('<tr><td align=center class=bodycopy><b>Acceptance List: ')
-	page.write(page.game.await and '<tt>%s</tt></b>' % accept or
-		'</b><input class=inputBox name=accept maxlength=%d size=%d value=%s>' %
+	if not page.game.await:
+		page.write('<form %s>' % ('onSubmit="return false"',
+			'method=post name=AcceptForm')[page.pwdFlag > 2])
+		hideBack('Accept')
+	page.write('<tr><td class=bodycopy><b>Acceptance List: '
+		'</b></td><td align=right class=bodycopy>')
+	page.write(page.game.await and '<b><tt>%s</tt></b>' % accept or
+		'<input class=inputBox name=accept maxlength=%d size=%d value=%s>' %
 		(len(page.game.map.powers), len(page.game.map.powers) + 2, accept))
-	page.write('</td></tr>')
+	page.write('</td><td>')
+	page.write(page.game.await and '&nbsp;' or
+		'<input class=inputSubmit type=submit value="Set">')
+	page.write('</td></tr>' + '</form>' * (not page.game.await))
 #	----------------------------------------------------------------------
 def showPowerData():
 	game, power = page.game, page.power
-	if power.balance is None: return
+	if power.balance is None and power.name != 'MASTER': return
 	page.write('<td><table border=0 cellpadding=2 cellspacing=2 width=100%>')
-	if not game.await:
-		page.write('<form %s>' % ('onSubmit="return false"',
-		'method=post name=UpdateForm')[page.pwdFlag > 2])
-		hideBack('Update')
-		page.apprise('balance', power.balance)
-		page.apprise('phase', game.phaseAbbr())
-	showAcceptList()
+	if power.name != 'MASTER':
+		page.write('<tr><td><table width=100%>')
+		showBalance()
+		if page.pwdFlag > 1: showTransferForm()
+		showAcceptList()
+		page.write('</table><hr/></td></tr>')
 	if game.await:
 		showWaitNotice()
 		return page.write('</table></td>')
+	page.write('<form %s>' % ('onSubmit="return false"',
+		'method=post name=UpdateForm')[page.pwdFlag > 2])
+	hideBack('Update')
+	page.apprise('balance', power.balance)
+	page.apprise('phase', game.phaseAbbr())
 	if game.phaseType == 'M': shown = showOfferList()
 	elif game.phaseType == 'A':
 		showDividends()
@@ -42,6 +133,7 @@ def showPowerData():
 	page.write('</td>')
 #	----------------------------------------------------------------------
 def showDividends():
+	if page.power.name == 'MASTER': return
 	limit = page.power.dividendLimit()
 	if not limit: return
 	page.write(
@@ -66,18 +158,28 @@ def showOfferList():
 		<b>%s %s</b></font><br>
 		""" % (page.game.phaseName(form=2),
 			('Offer List','Orders')[selfControl]))
-	text = page.power.sheet[:] or selfControl and page.power.units or []
+	untext = '(NMR)'
 	if 'offers' in vars(page): text = page.offers.split('\012')
+	elif page.power.name == 'MASTER':
+		text, untext = [], []
+		for p in page.game.powers:
+			if p.balance is None or selfControl and p.isDummy(): continue
+			text += ['[' + p.name + ']' + ' %% %d AgP' % (int(p.balance))]
+			untext += text[-1:] + ['(NMR)', '']
+			text += p.sheet[:] or selfControl and p.units or ['(NMR)']
+			text += ['']
+		untext = '\n'.join(untext)
+	else: text = page.power.sheet[:] or selfControl and page.power.units or []
 	if selfControl: text = [x[x.startswith('0 : ') * 4:] for x in text]
 	page.write("""
-		<p><input onClick='document.UpdateForm.offers.value = "(NMR)"'
+		<p><input onClick='document.UpdateForm.offers.value = %s'
 		type=button value="Clear" class="inputSubmit">
-		""")
+		""" % json.dumps(untext))
 	if text:
 		page.write("""
 			&nbsp;&nbsp;<input onClick='document.UpdateForm.offers.value = %s'
 			type=button value="Revert" class="inputSubmit">
-			""" % json.dumps(text))
+			""" % json.dumps('\n'.join(text)))
 	if not text: text = ['(NMR)']
 	page.write('</p><p><textarea class=inputBox rows=%s cols=40 name=offers wrap=off>'
 			% (max(len(text), 19) + 1))
@@ -108,6 +210,16 @@ def showPricesButton(selected = ''):
 			<td><input class=inputSubmit type=submit value="Read"></td></tr>
 			""")
 		page.write('</form>')
+#	----------------------------------------------------------------------
+def checkAccept():
+	header, subheader = 'Acceptance List Unchanged', ''
+	if 'accept' in vars(page) and page.accept != page.power.accept:
+		subheader = page.game.checkAccept(page.power, page.accept)
+		if subheader: header = 'Acceptance List Refused'
+		else:
+			page.game.save()
+			header = 'Acceptance List Accepted'
+	finished(header, subheader)
 #	----------------------------------------------------------------------
 def doTransfer():
 	getter = [x for x in page.game.powers if page.beneficiary == x.name][0]

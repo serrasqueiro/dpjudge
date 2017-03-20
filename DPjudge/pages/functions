@@ -110,7 +110,8 @@ def showMapButtons():
 	file, game = mapName(), page.game
 	map = host.gameMapDir + '/' + file
 	gif = os.path.exists(map + '.gif') | (os.path.exists(map + '_.gif') * 2)
-	pdf, ps = os.path.exists(map + '.pdf'), os.path.exists(map + '.ps')
+	pdf = os.path.exists(map + '.pdf')
+	ps = not pdf and os.path.exists(map + '.ps')
 	if not (gif or pdf or ps): return
 	page.write('<tr class="bodycopy"><td valign=top><b>Maps:</b></td>')
 	if gif:
@@ -157,18 +158,12 @@ def showMapButtons():
 		#	--------------------------------------------------------------
 		page.write(
 			"""
-			<script>function showPdf(url){if(navigator.appName!="Netscape"
-			||navigator.plugins["Adobe Acrobat"])
-			{win=window.open(url,"_%s_","resizable=yes,menubar=no,"+
-			"status=no,directories=no,scrollbars=no,toolbar=no,location=no");
-			win.focus();}else window.location=url;return false;}</script>
 			<form>
 			<td class="bodycopy" align=right nowrap>By Season (PDF)</td>
-			<td><input type=button onClick=showPdf("%s/%s.pdf?t=%d");
-			class="inputSubmit" value='View'></td>
+			<td><a href="%s/%s.pdf?t=%d" target="_blank"><input type=button
+			class="inputSubmit" value='View'></a></td>
 			</form>
-			""" % (game.name, host.gameMapURL, file,
-				int(os.path.getmtime(map + '.pdf'))))
+			""" % (host.gameMapURL, file, int(os.path.getmtime(map + '.pdf'))))
 		if ps: page.write('</tr><tr><td></td>')
 	if ps: page.write(
 			"""

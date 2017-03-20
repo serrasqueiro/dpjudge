@@ -4330,28 +4330,32 @@ class Game:
 		ambiguous = ambiguous and upword == item
 		powers = [x for x in self.powers if upword in
 			[x.abbrev, x.name][ambiguous:]]
-		if powers: return (powers[0], parsed)
-		if ambiguous and len(word[0]) > 1:
+		if not powers and ambiguous and len(word[0]) > 1:
 			item, parsed = ''.join(word).upper(), len(word)
 			upword = item[item[:1] in '([':len(item) - (item[-1:] in ']):')]
 			powers = [x for x in self.powers if upword == x.name]
-			if powers: return (powers[0], parsed)
-		return ('', 0)
+		if not powers: return ('', 0)
+		#	----------------------------------------
+		#	Strip any comments immediately following
+		#	----------------------------------------
+		if parsed == len(word) or word[parsed][0] == '%':
+			return (powers[0], len(word))
+		return (powers[0], parsed)
 	#	----------------------------------------------------------------------
-	def parseOffPhases(self, power, adjust, clear = True):
-		powers, adjusts = [power], {power.name: []}
+	def distributeOrders(self, power, orders, clear = True):
+		powers, distributor = [power], {power.name: []}
 		curPower = power
-		for order in adjust:
+		for order in orders:
 			word = order.strip().split()
 			if not word: continue
 			who, parsed = self.getPower(word)
 			if who:
-				if who.name not in adjusts:
+				if who.name not in distributor:
 					if not power.controls(who):
 						self.error.append('NO CONTROL OVER ' + who.name)
 						return
 					powers += [who]
-					adjusts[who.name] = []
+					distributor[who.name] = []
 				word = word[parsed:]
 				if not word:
 					curPower = who
@@ -4359,12 +4363,12 @@ class Game:
 			else: who = curPower
 			if clear and len(word) == 1 and word[0][word[0][:1] in '([':len(
 				word[0]) - (word[0][-1:] in '])')].upper() in ('NMR', 'CLEAR'):
-				adjusts[who.name] = []
-			else: adjusts[who.name] += [' '.join(word)]
-		return [(x, adjusts[x.name]) for x in powers]
+				distributor[who.name] = []
+			else: distributor[who.name] += [' '.join(word)]
+		return [(x, distributor[x.name]) for x in powers]
 	#	----------------------------------------------------------------------
 	def updateOffPhases(self, power, adjust):
-		for who, adj in self.parseOffPhases(power, adjust, False):
+		for who, adj in self.distributeOrders(power, adjust, False):
 			self.addOffPhases(who, adj)
 		#	-----------------------------------------
 		#	Process the phase if everything is ready.
@@ -4586,7 +4590,7 @@ class Game:
 		return results + '\n'
 	#	----------------------------------------------------------------------
 	def updateAdjustOrders(self, power, orders):
-		for who, adj in self.parseOffPhases(power, orders):
+		for who, adj in self.distributeOrders(power, orders):
 			self.addAdjustOrders(who, adj)
 		if not self.error: self.process()
 		return self.error
@@ -4677,7 +4681,7 @@ class Game:
 		power.adjust, power.cd = adjust, 0
 	#	----------------------------------------------------------------------
 	def updateRetreatOrders(self, power, orders):
-		for who, adj in self.parseOffPhases(power, orders):
+		for who, adj in self.distributeOrders(power, orders):
 			self.addRetreatOrders(who, adj)
 		if not self.error: self.process()
 		return self.error
