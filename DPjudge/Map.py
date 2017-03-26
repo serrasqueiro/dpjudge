@@ -9,26 +9,65 @@ class Map:
 		victory = phase = validated = textOnly = flowSign = None
 		rootMap = rootMapDir = None
 		homes, locName, locType, locAbut, abutRules = {}, {}, {}, {}, {}
-		ownWord, abbrev, centers, units, powName, flag = {}, {}, {}, {}, {}, {}
+		ownWord, abbrev, units, centers, powName, flag = {}, {}, {}, {}, {}, {}
 		rules, files, powers, scs, owns, inhabits = [], [], [], [], [], []
-		flow, unclear, size, homeYears, dummies, locs = [], [], [], [], [], []
+		flow, size, homeYears, dummies, locs = [], [], [], [], []
 		reserves, militia, flagDirs, error, notify = [], [], [], [], []
 		dynamic, factory, partisan, alternative, hidden = {}, {}, {}, {}, {}
-		controls, leagues, directives, phaseAbbrev = {}, {}, {}, {}
+		controls, leagues, directives, phaseAbbrev, unclear = {}, {}, {}, {}, {}
 		if host.notify and host.judgekeeper and (trial or host.notify > 1):
 			notify = [host.judgekeeper]
-		aliases = {			'-': '-',		'H': 'H',		'P': 'P',
-			'A': 'A',		'F': 'F',		'S': 'S',		'C': 'C',
-			'B': '+',		'D': '*',		'K': '!',		'R': 'R',
-			'BUILD': '+',	'BUILDS': '+',	'DISBAND': '*',	'DISBANDS': '*',
-			'REMOVE': '*',	'REMOVES': '*',	'KEEP': '!',	'KEEPS': '!',
-			'RETREATS':		'RETREAT',
-			'ARMY': 'A',	'FLEET': 'F',	'SUPPORT': 'S',	'SUPPORTS': 'S',
-			'CONVOY': 'C',	'CONVOYS': 'C', 'HOLD': 'H',	'HOLDS': 'H',
-			'TO': '',		'MOVE': '-',	'MOVES': '-',	'M': '-',
-			'SEA': '',		'OCEAN': '',	'GULF': '',		'OF': '',
-			'THE': '',		'IN': '',		'AT': '',		'ON': '',
-			'PROXY': 'P'	}
+		unitNames = {
+			'A': 'ARMY',	'F': 'FLEET',	'W': 'WING'
+		}
+		#	-------------------------------------------------------------
+		#	Keywords are always single words. Put any word combinations
+		#	in aliases, where map locations and power names will be added
+		#	later.
+		#	Since 'East Coast' and 'West Coast' are actually spaces on
+		#	the Empire map, adding 'OF' helps to distinguish.
+		#	Aliases are only converted in a second pass, so if they
+		#	contain a keyword, you should replace the keyword with its
+		#	abbreviation (e.g. replace 'OF' with '\\').
+		#	The reason to add 'A F' (stands for 'A FLEET') and the like
+		#	instead of making 'A' a keyword mapping to '', is that 'A'
+		#	already stands for 'ARMY'. Remember, longer word combinations
+		#	get processed first.
+		#	-------------------------------------------------------------
+		keywords, aliases, nicks = {
+			'>': '',		'-': '-',		':': '',
+			'ARMY': 'A',	'FLEET': 'F',	'WING': 'W',	'THE': '',	
+			'NC': '/NC',	'SC': '/SC',	'EC': '/EC',	'WC': '/WC',
+			'MOVE': '',		'MOVES': '',	'MOVING': '',
+			'ATTACK': '',	'ATTACKS': '',	'ATTACKING': '',
+			'RETREAT': 'R',	'RETREATS': 'R',	'RETREATING': 'R',
+			'SUPPORT': 'S',	'SUPPORTS': 'S',	'SUPPORTING': 'S',	
+			'CONVOY': 'C',	'CONVOYS': 'C',	'CONVOYING': 'C', 
+			'HOLD': 'H',	'HOLDS': 'H',	'HOLDING': 'H',
+			'BUILD': 'B',	'BUILDS': 'B',	'BUILDING': 'B',
+			'DISBAND': 'D',	'DISBANDS': 'D',	'DISBANDING': 'D',
+			'REMOVE': 'D',	'REMOVES': 'D',	'REMOVING': 'D',
+			'WAIVE': 'V',	'WAIVES': 'V',	'WAIVING': 'V',	'WAIVED': 'V',
+			'KEEP': 'K',	'KEEPS': 'K',	'KEEPING': 'K',
+			'PROXY': 'P',	'PROXIES': 'P',	'PROXYING': 'P',
+			'IS': '',		'WILL': '',
+			'IN': '',		'AT': '',		'ON': '',	'TO': '',
+			'OF': '\\',		'FROM': '\\',	'WITH': '?',	'TSR': '=',
+			'VIA': '~',		'THROUGH': '~',	'OVER': '~',	'BY': '~',
+			'AND': '',		'OR': '|',
+			'BOUNCE': '|',	'CUT': '|',		'VOID': '?',
+			'DISLODGED': '~',				'DESTROYED': '*',
+		}, {
+			'NORTH COAST \\': '/NC \\',		'SOUTH COAST \\': '/SC \\',
+			'EAST COAST \\': '/EC \\',		'WEST COAST \\': '/WC \\',
+			'AN A': 'A',	'A F': 'F',		'A W': 'W',
+			'NO C': '?',	'~ C': '^',		'~ =': '=',		'? =': '=',
+			'~ LAND': '_',	'~ WATER': '_',	'~ SEA': '_',
+			'TRANS SIBERIAN RAILROAD': '=',	'V B': 'B V',
+		}, {
+			'M': 'MASTER',	'?': 'NEUTRAL',
+			'JK': 'JUDGEKEEPER',
+		}
 		vars(self).update(locals())
 		self.load()
 		self.validate()
@@ -378,11 +417,11 @@ class Map:
 				data = [x.strip() for x in ' '.join(word[1:]).split(':')]
 				if not data: error += ['BAD %s DIRECTIVE IN MAP' % upword]
 				elif upword == 'IN': phase = data[0].upper()
-				elif (' ' in data[0] or data[-1] != 'M'
-				or not data[1:-1].isdigit()): error += ['BAD FROM DIRECTIVE']
 				else: phase = data[0].lower()
 				if phase == 'start': phase = 0
-				elif len(data) > 1:
+				elif (' ' in phase or phase[-1] != 'm'
+				or not phase[1:-1].isdigit()): error += ['BAD FROM DIRECTIVE']
+				if len(data) > 1:
 					self.dynamic.setdefault(phase, []).append(data[1])
 					phase = 0
 			elif phase: self.dynamic.setdefault(phase, []).append(line)
@@ -466,17 +505,36 @@ class Map:
 				parts = [x.strip() for x in name.split('->')]
 				if len(parts) == 2: oldName, name = parts
 				elif len(parts) > 2: error += ['BAD RENAME DIRECTIVE: ' + name]
-				if not (word[0][0] + word[0][-1]).isalnum() or '-' in word[0]:
-					error += ['INVALID LOCATION ABBREVIATION: ' + name]
-				if oldName: self.rename(oldName, word[0])
-				if name in self.locName or name in self.aliases:
+				if (not (word[0][0] + word[0][-1]).isalnum()
+				or word[0] != self.norm(word[0]).replace(' ', '')):
+					error += ['INVALID LOCATION ABBREVIATION: ' + word[0]]
+				elif word[0] in self.keywords:
+					error += ['LOCATION ABBREVIATION IS RESERVED KEYWORD:' + word[0]]
+				elif word[0] in self.aliases:
+					error += ['DUPLICATE LOCATION ABBREVIATION: ' + word[0]]
+				if oldName: self.rename(oldName.rstrip('?'), word[0])
+				if name in self.keywords:
+					error += ['MAP LOCATION IS RESERVED KEYWORD:' + name]
+					normed = name
+				else: normed = self.norm(name)
+				if name in self.locName or normed in self.aliases:
 					error += ['DUPLICATE MAP LOCATION: ' + name]
-				self.locName[name] = self.aliases[self.normPower(name)] = word[0]
+				self.locName[name] = self.aliases[normed] = word[0]
 				for alias in word[1:]:
-					if alias[-1] == '?': self.unclear += [alias[:-1]]
-					elif alias in self.aliases:
-						error += ['DUPLICATE MAP ALIAS: ' + alias]
-					else: self.aliases[alias] = word[0]
+					unclear = alias[-1] == '?'
+					#   --------------------------------
+					#   For ambiguous place names, let's
+					#   do just a minimal normalization,
+					#   otherwise they might become
+					#   unrecognizable (e.g. "THE")
+					#   --------------------------------
+					normed = unclear and alias[:-1].replace('+',
+						' ').upper() or self.norm(alias)
+					if unclear: self.unclear[normed] = word[0]
+					elif normed in self.aliases:
+						if self.aliases[normed] != word[0]:
+							error += ['DUPLICATE MAP ALIAS: ' + alias]
+					else: self.aliases[normed] = word[0]
 			#	----------------------
 			#	Alternate flag graphic
 			#	----------------------
@@ -785,15 +843,72 @@ class Map:
 					else: self.renamePower(oldPower, power)
 				if power and not self.powName.get(power):
 					self.powName[power] = upword
+					normed = self.norm(power)
+					#	---------------------------------------
+					#	Add power to aliases even if the normed
+					#	form is identical. That way it becomes
+					#	part of the vocabulary.
+					#	---------------------------------------
+					if not normed:
+						error += ['POWER NAME IS EMPTY KEYWORD: ' + power]
+						normed = power
+					if normed not in self.aliases:
+						if '/' in normed:
+							error += ['POWER NAME CONTAINS "/": ' + power]
+						elif len(normed) == 1:
+							error += ['POWER NAME CAN BE CONFUSED WITH ' +
+								'ORDER TYPE OR UNIT TYPE: ' + normed]
+						self.aliases[normed] = power
+					elif self.aliases[normed] != power:
+						error += ['DUPLICATE POWER OR LOCATION: ' + normed]
 				upword = power or upword
 				if power and len(word) > 1 and word[1][0] == '(':
-					self.ownWord[upword] = word[1][1:-1] or power
-					if ':' in word[1]:
-						owner, abbrev = self.ownWord[upword].split(':')
-						self.ownWord[upword] = owner or power
-						self.abbrev[upword] = abbrev[:1].upper()
-						if not abbrev or self.abbrev[upword] in 'M?':
-							error += ['ILLEGAL POWER ABBREVIATION']
+					nicks = word[1][1:]
+					if nicks[-1] != ')':
+						error += ['SPACE OR MISSING CLOSING BRACKET IN ' +
+							'POWER NICKNAMES: ' + word[1]]
+					else: nicks = nicks[:-1]
+				else: nicks = ':' * (power and upword not in self.abbrev)
+				if nicks:
+					nicks = nicks.split(':')
+					if nicks and len(nicks[0]) > 1:
+						self.ownWord[upword] = nicks[0]
+						nicks = nicks[1:]
+					else: self.ownWord[upword] = power
+					normed = self.norm(self.ownWord[upword])
+					if not normed:
+						error += ['POWER OWN WORD IS EMPTY KEYWORD: ' +
+							self.ownWord[upword]]
+					elif normed == upword: pass
+					elif normed not in self.nicks: self.nicks[normed] = upword
+					elif self.nicks[normed] != upword:
+						error += ['DUPLICATE POWER NICKNAME: ' + normed]
+					initial = short = ''
+					for nick in nicks + [upword[:1] + ':', upword[:2] + ':']:
+						if not nick: continue
+						kind = 'NICKNAME'
+						if nick[-1] == ':':
+							nick = nick[:-1]
+							if len(nick) in (len(initial), len(short)):
+								continue
+						if len(nick) == 1:
+							kind = 'INITIAL'
+							nick = nick.upper()
+							if not initial:
+								self.abbrev[upword] = initial = nick
+						elif len(nick) == 2:
+							kind = 'ABBREVIATION'
+							short = nick = nick.upper()
+						else:
+							nick = self.norm(nick)
+							if not nick:
+								error += ['POWER NICKNAME IS EMPTY KEYWORD: ' +
+									nick]
+								continue
+						if nick == upword: pass
+						elif nick not in self.nicks: self.nicks[nick] = upword
+						elif self.nicks[nick] != upword:
+							error += ['DUPLICATE POWER ' + kind + ': ' + nick]
 					del word[1]
 				else: self.ownWord.setdefault(upword, upword)
 				reinit = upword in self.inhabits
@@ -897,6 +1012,8 @@ class Map:
 	def renamePower(self, old, new):
 		self.powName.pop(old, None)
 		[x.pop(old, None) for x in (self.ownWord, self.abbrev)]
+		[self.nicks.pop(x, None) for x in self.nicks
+			if self.nicks[x] == old]
 		if old == new: return
 		for data in (self.homes, self.units, self.centers,
 		self.factory, self.partisan, self.alternative, self.hidden):
@@ -914,9 +1031,6 @@ class Map:
 				data.remove(old)
 				data.append(new)
 			except: pass
-	#	----------------------------------------------------------------------
-	def normPower(self, power):
-		return power.replace('+', '').replace('-', '').upper()
 	#	----------------------------------------------------------------------
 	def drop(self, place, deCoast = 0):
 		[self.locs.remove(x) for x in self.locs if x.upper().startswith(place)]
@@ -937,13 +1051,249 @@ class Map:
 		[y.pop(x) for y in (self.locType, self.locAbut) for x in y.keys()
 			if x.startswith(place) or x.startswith(place.lower())]
 	#	----------------------------------------------------------------------
-	def alias(self, word):
+	def normPower(self, power):
+		return self.norm(power).replace(' ', '')
+	#	----------------------------------------------------------------------
+	def norm(self, phrase):
+		#	--------------------------------------
+		#	Replace commas, pluses and dashes
+		#	with spaces; remove dots; provide
+		#	spacing in front of slashes and
+		#	around brackets, colons, asterisks, 
+		#	vertical bars, percentage signs 
+		#	and other punctuation marks.
+		#	--------------------------------------
+		phrase = phrase.upper().replace('/', ' /').replace(' / ', '')
+		for x in '.': phrase = phrase.replace(x, '')
+		for x in '-+,': phrase = phrase.replace(x, ' ')
+		for x in '|%*:?!~()[]=_^': phrase = phrase.replace(x, ' ' + x + ' ')
+		#	--------------------------------------------
+		#	Replace keywords which, contrary to aliases,
+		#	all consist of a single word
+		#	--------------------------------------------
+		return ' '.join(
+			[self.keywords.get(x, x) for x in phrase.strip().split()])
+	#	----------------------------------------------------------------------
+	def compact(self, phrase):
+		word, nick, result = self.norm(phrase).split(), 1, []
+		while word:
+			alias, i = self.alias(word, nick)
+			if alias: result += alias.split()
+			word, nick = word[i:], 0
+		return result
+	#	----------------------------------------------------------------------
+	def alias(self, word, nick = 0):
+		#	------------------------------------------------
+		#	Assume that word already was subjected to norm()
+		#	Values for nick:
+		#	 0: Favor location aliases over power nicknames
+		#	 1: Favor nicknames if the word stands alone
+		#	 2: Favor nicknames over aliases
+		#	------------------------------------------------
+		alias = word[0]
+		if alias in '([':
+			for j in range(1, len(word)):
+				if word[j] == '])'[alias == '(']: break
+			else: return alias, 1
+			if j == 1: return '', 2
+			if word[1] + word[j-1] == '**':
+				word2 = word[2:j-1]
+			else:
+				word2 = word[1:j]
+				alias2 = self.aliases.get(' '.join(word2) + ' \\', '')
+				if alias2[-2:] == ' \\': return alias2[:-2], j+1
+			result = []
+			while word2:
+				alias2, i = self.alias(word2, 2)
+				if alias2: result += [alias2]
+				word2 = word2[i:]
+			return ' '.join(result), j+1
+		#	------------------------------------------
+		#	Find the longest stretch that has an alias
+		#	------------------------------------------
 		for i in range(len(word), 0, -1):
-			up = '+'.join(word[:i]).upper()
-			for key in (up, up.replace('+-+', '-')):
-				if key in self.locName.values(): return key, i
-				if key in self.aliases: return self.aliases[key], i
-		return word[0].upper(), 0
+			key = ' '.join(word[:i])
+			if nick == 2 or nick == 1 and (i == len(word)
+			or word[i] == '%') or (i < len(word)
+			and word[i] in self.unitNames.keys() + self.unitNames.values()):
+				if key in self.nicks:
+					alias = self.nicks[key] + ':'
+					break
+				elif i == 1 and key in self.powers:
+					alias = key + ':'
+				elif key in self.aliases:
+					alias = self.aliases[key]
+					break
+			else:
+				if key in self.aliases:
+					alias = self.aliases[key]
+					break
+				elif i == 1 and (key in self.locName.values()
+				or key in self.keywords.values()): pass
+				elif key in self.nicks:
+					alias = self.nicks[key] + ':'
+					break
+				elif i == 1 and key in self.powers:
+					alias = key + ':'
+					break
+		else: i = 1
+		#	------------------
+		#	Concatenate coasts
+		#	------------------
+		if i == len(word): return alias, i
+		if alias[:1] != '/' and ' ' not in alias:
+			alias2, j = self.alias(word[i:])
+			if alias2[:1] != '/' or ' ' in alias2: return alias, i
+		elif alias[-2:] == ' \\':
+			alias2, j = self.alias(word[i:])
+			if alias2[:1] == '/' or ' ' in alias2: return alias, i
+			alias, alias2 = alias2, alias[:-2]
+		else: return alias, i
+		#	---------------------------------------------
+		#	Check if the location is also an ambiguous
+		#	power name and replace with its alternative
+		#	if that's the case
+		#	---------------------------------------------
+		if alias in self.powers and alias in self.unclear:
+			alias = self.unclear[alias]
+		#	---------------------------------------------
+		#	Check if the coast is mapped to another coast
+		#	---------------------------------------------
+		if alias + ' ' + alias2 in self.aliases:
+			return self.aliases[alias + ' ' + alias2], i + j
+		return alias + alias2, i + j
+	#	----------------------------------------------------------------------
+	def vet(self, word, strict=0):
+		#	---------------------------------------------------------
+		#	Determines type of every word in a compacted order phrase
+		#	0: Undetermined
+		#	1: Power
+		#	2: Unit
+		#	3: Location
+		#	4: Coastal location
+		#	5: Order
+		#	6: Move separator (-=_^)
+		#	7: Non-move separator (|\?~) or result (*!?~+)
+		#	Separators are between other types of words, results
+		#	are at the end (or the start?)
+		#	Strict means verifying that the words actually exist,
+		#	instead of merely resembling a certain type
+		#	If they don't exist, the numbers become negative
+		#	---------------------------------------------------------
+		result = []
+		for thing in word:
+			if ' ' in thing: type = 0
+			elif len(thing) == 1:
+				if thing in self.unitNames: type = 2
+				elif thing.isalnum(): type = 5
+				elif thing in '-=_': type = 6
+				else: type = 7
+			elif thing[-1] == ':':
+				thing, type = thing[:-1], 1
+			elif '/' in thing:
+				if thing.find('/') == 3: type = 4
+				else: type = 1
+			elif len(thing) == 3: type = 3
+			else: type = 1
+			if strict and thing not in (self.locName.values() +
+				self.keywords.values() + self.powers.keys()): type = -type
+			result += [(thing, type)]
+		return result
+	#	----------------------------------------------------------------------
+	def rearrange(self, word):
+		#	--------------------------------------------------
+		#	Surround with vertical bars to simplify edge cases
+		#	--------------------------------------------------
+		result = self.vet(['|'] + word + ['|'])
+		#	------------------------------------------
+		#	Remove result tokens at the start and end,
+		#	as they are similar to separators, which
+		#	might generate confusion
+		#	------------------------------------------
+		result[0] = ('|', 0)
+		while result[-2][1] == 7: del result[-2]
+		if len(result) == 2: return []
+		result[0] = ('|', 7)
+		while result[1][1] == 7: del result[1]
+		#	------------------------------------------
+		#	Move "with" unit and location to the start
+		#	There should only be one, ignore the rest
+		#	------------------------------------------
+		found = 0
+		while ('?', 7) in result:
+			i = result.index(('?', 7))
+			del result[i]
+			if found: continue
+			for j in range(i, len(result)):
+				if result[j][1] in (1, 2): continue
+				if result[j][1] in (3, 4): j += 1
+				break
+			if j != i:
+				found = 1
+				for k in range(1, i):
+					if result[k][1] not in (1, 2): break
+				if k < i:
+					result[k:k] = result[i:j]
+					result[j:2*j-i] = []
+		#	----------------------------------------------------
+		#	Move "from" location before any preceding locations.
+		#	----------------------------------------------------
+		while ('\\', 7) in result:
+			i = result.index(('\\', 7))
+			del result[i]
+			if result[i][1] not in (3, 4): continue
+			for j in range(i-1, -1, -1):
+				if result[j][1] not in (3, 4) and result[j][0] != '~': break
+			if j+1 != i:
+				result[j+1:j+1] = result[i:i+1]
+				del result[i+1]
+		#	---------------------------------------------------------
+		#	Move "via" locations between the two preceding locations.
+		#	---------------------------------------------------------
+		while ('~', 7) in result:
+			i = result.index(('~', 7))
+			del result[i]
+			if (result[i][1] not in (3, 4) or result[i-1][1] not in (3, 4)
+			or result[i-2][1] not in (3, 4)): continue
+			for j in range(i+1, len(result)):
+				if result[j][1] not in (3, 4): break
+			result[j:j] = result[i-1:i]
+			del result[i-1]
+		#	---------------------------------
+		#	Move order beyond first location.
+		#	---------------------------------
+		i = 0
+		for j in range(1, len(result)):
+			if result[j][1] in (3, 4):
+				if i:
+					result[j+1:j+1] = result[i:i+1]
+					del result[i]
+				break
+			elif result[j][1] == 5: i = j
+			elif result[j][0] == '|': break
+		#	------------------------------
+		#	Put the power before the unit.
+		#	------------------------------
+		vet = 0
+		for i in range(0, len(result)):
+			if result[i][1] == 1:
+				if vet == 1:
+					result[i+1:i+1] = result[i-1:i]
+					del result[i-1]
+				vet = 2
+			elif not vet and result[i][1] == 2: vet = 1
+			elif result[i][1] == 5: vet = 0
+			else: vet = 2
+		#	--------------------------------------------
+		#	Insert hyphens between subsequent locations.
+		#	--------------------------------------------
+		for i in range(len(result)-1, 1, -1):
+			if result[i][1] in (3, 4) and result[i-1][1] in (3, 4):
+				result[i:i] = [('-', 6)]
+		#	--------------------------------------
+		#	Remove vertical bars at start and end.
+		#	--------------------------------------
+		return [x for x, y in result[1:-1]]
 	#	----------------------------------------------------------------------
 	def areatype(self, loc):
 		return self.locType.get(loc.upper()) or self.locType.get(loc.lower())
