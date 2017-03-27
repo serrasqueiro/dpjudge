@@ -107,11 +107,11 @@ Addition of Slovenia. Slovenia is a non-sc country hemmed in between Austria, Hu
 <p><li>
 Addition of the Volga-Baltic Sea waterway branching off of the Volga-Don waterway already present, with an additional branch to the White Sea, connecting all Russia's coastlines. The lake where these three new canal systems meet (Lake Onega, but unnamed on the map as it's not a space in its own right) is on the corner of St. Petersburg, Murmansk and Gorky, so fleets can move directly between any two of these spaces. Gorky is now a Russian port, capable of building fleets as well as armies.
 <p><li>
-(Trial version only, codenamed <b>Azov</b>) Addition of Sea of Azov, the northern part of the Eastern Black Sea separated from the rest by the Strait of Kerch.
+(Trial version only, codenamed <b>Azov</b>) Addition of Sea of Azov, the northern part of the Eastern Black Sea separated from the rest by the Strait of Kerch and from the Western Black Sea by the Perekop Isthmus. Given that a Strait is a water connection and an Isthmus a land connection, you can move fleets to and from the Eastern Black Sea, but not the Western Black Sea. For the same reason you need a convoy to move armies between Sevastopol and Rostov.
 <p><li>
 (Trial version only, codenamed <b>Azov</b>) The Don river, part of the waterway joining the Black Sea with the Caspian Sea, is on the border between Donbas and Rostov, enabling direct fleet movement between Donbas and Volga.
 <p><li>
-(Trial version only, codenamed <b>Midi</b>) Addition of the Canal du Midi, which runs from the Gulf of Lyons to the Bay of Biscay through Auvergne and Bordeaux, thereby providing another alternative to move fleets between the Mediterranean and the Atlantic. There's an ongoing debate whether the Canal, which in reality is too shallow to accommodate sea-going vessels, should be closed the first year to allow time for its deepening. The map itself doesn't currently enforce this restriction.
+(Trial version only, codenamed <b>Midi</b>) Addition of the Canal du Midi (or more accurately the Canal des Deux Mers &ndash;the Canal of the Two Seas&ndash; as it includes the Canal de Garonne which runs parallel to the river Garonne), which runs from the Gulf of Lyons to the Bay of Biscay through Auvergne and Bordeaux, thereby providing another alternative to move fleets between the Mediterranean and the Atlantic. There's an ongoing debate whether the Canal, which in reality is too shallow to accommodate sea-going vessels, should be closed the first year to allow time for its deepening, thereby mostly avoiding altering the French-Spanish opening strategies. The map itself doesn't currently enforce this restriction.
 </ol>
 
 		<!--BODYCOPY ENDS HERE-->

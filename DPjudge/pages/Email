@@ -137,8 +137,8 @@ page.include('functions')
 			<br>&middot;<a href=#revive>REVIVE</a></td>
 			<td width=20></td>
 			<td class="bodycopy">&middot;<a href=#official>OFFICIAL</a>
-			<br>&middot;<a href=#deadline>SET DEADLINE</a></td>
-			<br>&middot;<a href=#unlisted>SET UNLISTED</a></td>
+			<br>&middot;<a href=#deadline>SET DEADLINE</a>
+			<br>&middot;<a href=#unlisted>SET UNLISTED</a>
 			<br>&middot;<a href=#unlisted>SET LISTED</a></td>
 			</tr>
 			</table>
@@ -1020,6 +1020,7 @@ does, but tell me anyway.</b><br>
 	
 	<blockquote><tt>
 	CREATE mygamename masterPassword<br>
+	private privacyPassword<br>
 	desc A standard game on the standard map.<br>
 	map standard<br>
 	timing move 2d<br>
@@ -1028,7 +1029,7 @@ does, but tell me anyway.</b><br>
 	form<br>
 	Signoff
 	</tt></blockquote>
-	will create a game (named <tt>mygamename</tt>)
+	will create a private game (named <tt>mygamename</tt>)
 	that will be played on the standard map, that
 	will have two-day movement phase deadlines, and that will not allow press
 	but will allow landed fleets to convoy armies.

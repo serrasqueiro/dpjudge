@@ -1551,7 +1551,7 @@ def showPressArchive(selected = 0, filter = 0):
 			fakeFrom, fakeTo = receivers[which+1], receivers[which+2:]
 			receivers = receivers[:which]
 		else: fakeFrom, fakeTo = 0, []
-		if (not omniscient and thePower != sender and thePower not in receivers
+		if (thePower != sender and thePower not in receivers
 		and 'ALL' not in receivers): continue
 		code = pressCode(line, lineNum)
 		item = phase

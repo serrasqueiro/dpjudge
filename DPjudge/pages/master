@@ -420,7 +420,7 @@ def showStatusFile():
 			if trial: page.write('</optgroup>')
 		page.write("</select>")
 	else: page.write(game.map.name)
-	page.write("</td></tr>")
+	page.write('</td></tr>')
 	desc = ' '.join(game.desc)
 	page.write("""
 		<tr><td class="bodycopy" align="left"
@@ -499,6 +499,11 @@ def showStatusFile():
 	#	Buttons and links Section
 	#	-------------------------
 	page.write('<tr><td colspan=3><hr></td></tr>')
+	changeMasterButton()
+	#	--------------------------------
+	#	End of Buttons and links Section
+	#	--------------------------------
+	page.write('<tr><td colspan=3><hr></td></tr>')
 	page.write("""
 		<tr><td nowrap valign=top>
 		<a href=<URL>?page=StatusHelp target=status>
@@ -507,10 +512,9 @@ def showStatusFile():
 		<a href=<URL>?page=Rules target=rules>
 		<font color=red>[Game Rules Help]</font></a></td></tr>
 		""")
-	changeMasterButton()
-	#	--------------------------------
-	#	End of Buttons and links Section
-	#	--------------------------------
+	page.write('<tr><td align=center colspan=3>')
+	goBack()
+	page.write('</td></tr>')
 #	----------------------------------------------------------------------
 #
 #
