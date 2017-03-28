@@ -152,7 +152,7 @@ class Game:
 					if thru[army] in pools + pool: continue
 					can |= thru[not army] in (end, end[:3])
 					if can and (not via or via in pool
-					and 'NO_RETURN' not in self.rules): return 1
+					and 'CONVOY_BACK' in self.rules): return 1
 					if self.convoyer(army, thru): pool += [thru[army]]
 				size += 1
 			if via in pool:
@@ -369,7 +369,7 @@ class Game:
 			#	-------------------------------------------
 			src, orderType, visit = unitLoc, 'C-'[len(word) == 2], []
 			if (word[-1] == unitLoc
-			and (orderType < 'C' or 'NO_RETURN' in self.rules)):
+			and (orderType < 'C' or 'CONVOY_BACK' not in self.rules)):
 				return error.append('MOVING UNIT MAY NOT RETURN: %s ' %
 					unit + order)
 			if orderType == 'C':
@@ -382,9 +382,9 @@ class Game:
 				return error.append('BAD MOVE ORDER: %s ' % unit + order)
 			ride = word[1::2]
 			for num, to in enumerate(ride):
-				if to in visit and 'NO_RETURN' in rules: return error.append(
-					'CONVOYING UNIT USED TWICE IN SAME CONVOY: %s ' %
-					unit + order)
+				if to in visit and 'CONVOY_BACK' not in rules:
+					return error.append('CONVOYING UNIT USED TWICE ' +
+						'IN SAME CONVOY: %s ' % unit + order)
 				visit += [to]
 				if (not self.abuts(unitType, src, orderType, to)
 				and (len(word) == 2 or unitType == 'A'

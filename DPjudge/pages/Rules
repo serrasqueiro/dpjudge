@@ -141,6 +141,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option>CIVIL_PREVIEW</option>
 <option>COASTAL_CONVOY</option>
 <option>COASTAL_CRAWL</option>
+<option>CONVOY_BACK</option>
 <option>DEFAULT_UNORDERED</option>
 <option>DUMMY_FIRE</option>
 <option>EAVESDROP</option>
@@ -188,7 +189,6 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option>NO_QUARTER</option>
 <option>NO_RESERVES</option>
 <option>NO_RETREAT</option>
-<option>NO_RETURN</option>
 <option>NO_REVEAL</option>
 <option value=NO_SCS_SEE>NO_SCS_SEE (BLIND)</option>
 <option value=NO_UNITS_SEE>NO_UNITS_SEE (BLIND)</option>
@@ -742,15 +742,15 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	movement.
 <!-- RULE END -->
 
-<a name=NO_RETURN></a><p><dt><b><tt>NO_RETURN</tt></b><dd>
-<!-- RULE NO_RETURN -->
-    This rule forbids a unit being convoyed from returning to its origin
+<a name=CONVOY_BACK></a><p><dt><b><tt>CONVOY_BACK</tt></b><dd>
+<!-- RULE CONVOY_BACK -->
+    This rule allows a unit being convoyed from returning to its origin
     or traveling a path that includes a convoying unit more than once.
     For example, on the standard map, an army in Greece may be ordered to
     convoy to Naples along a path that travels through the Ionian Sea more
-    than once: <tt>A GRE-ION-ADR-ION-NAP</tt>.  This rule forbids such an order.
+    than once: <tt>A GRE-ION-ADR-ION-NAP</tt>.  Without this rule such an order would be forbidden.
     <P>
-    Use of this rule also invalidates orders given to convoyer units offering
+    Omission of this rule also invalidates orders given to convoyer units offering
     to be involved in convoys that would require that any convoyer be used
     more than once.  For example, on the standard map,
     <tt>F ADR C A GRE-NAP</tt> would be invalidated, due to
@@ -758,13 +758,16 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
     <a href="#COASTAL_CONVOY"><tt>COASTAL_CONVOY</tt></a> rule is not in
     effect) travel through <tt>F ION</tt> twice.
     <P>
-    <i>[Historical note: this rule originally was <tt>CONVOY_BACK</tt>, and
-    was used to <u>allow</u> return-pathing in convoy orders.  That rule was
+    <i>[Historical note: this rule was for a while called <tt>NO_RETURN</tt>, and
+    was used to <u>disallow</u> return-pathing in convoy orders.  The original <tt>CONVOY_BACK</tt> rule was
     created as an optional rule because of (and was not permitted in) DPjudge
     games that were simply Web front-ends for games being run on Ken Lowe
     judges, for the reason that the Ken Lowe judge had a 255-character line
     limit on orders.  When the DPjudge dropped the ability to be used to
-    front-end Ken Lowe judge games, this rule took its current form.]</i>
+    front-end Ken Lowe judge games, <tt>NO_RETURN</tt> was adopted.
+	Consideration of the potential exploits that can occur with exceedingly
+	bloated orders has led to the reintroduction of <tt>CONVOY_BACK</tt>.
+	When enabled, request that players use this ability in a civilized manner on penalty of eviction.]</i>
 <!-- RULE END -->
 </dl>
 
