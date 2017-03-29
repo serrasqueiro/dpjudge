@@ -1536,7 +1536,8 @@ def showPressArchive(selected = 0, filter = 0):
 	power = page.pwdFlag > 1 and page.power.name or ''
 	thePower = power.encode('latin-1')
 	file, items, validCodes, involved = open(file), [], [], []
-	omniscient = page.pwdFlag == 2 or page.pwdFlag > 3
+	#omniscient = page.pwdFlag == 2 or page.pwdFlag > 3
+	omniscient = power == 'MASTER' or page.power.omniscient
 	for lineNum, line in enumerate(file):
 		if not line.startswith('::'): continue
 		data, receivers = line.strip().upper().split(), []
@@ -1551,7 +1552,7 @@ def showPressArchive(selected = 0, filter = 0):
 			fakeFrom, fakeTo = receivers[which+1], receivers[which+2:]
 			receivers = receivers[:which]
 		else: fakeFrom, fakeTo = 0, []
-		if (thePower != sender and thePower not in receivers
+		if (not omniscient and thePower != sender and thePower not in receivers
 		and 'ALL' not in receivers): continue
 		code = pressCode(line, lineNum)
 		item = phase

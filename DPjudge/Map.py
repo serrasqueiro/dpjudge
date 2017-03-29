@@ -638,16 +638,16 @@ class Map:
 						error += ['DUMMIES REQUIRES LIST OF POWERS']
 					elif not power: error += ['DUMMY BEFORE POWER']
 					elif power not in self.dummies: self.dummies += [power]
-				elif word[1].upper() == 'ALL':
-					if len(word) == 2: self.dummies = self.powers[:]
-					elif word[2].upper() != 'EXCEPT':
-						error += ['NO EXCEPT AFTER %s ALL' % upword]
-					elif len(word) == 3:
-						error += ['NO POWER AFTER %s ALL EXCEPT' % upword]
-					else: self.dummies = [x for x in self.powers if x not in [
-						self.normPower(y) for y in word[3:]]]
-				else: self.dummies.extend([x for x in [self.normPower(y)
-					for y in word[1:]] if x not in self.dummies])
+				elif word[1].upper() != 'ALL':
+					self.dummies.extend([x for x in [self.normPower(y)
+						for y in word[1:]] if x not in self.dummies])
+				elif len(word) == 2: self.dummies = [x for x in self.homes.keys() if x != 'UNOWNED']
+				elif word[2].upper() != 'EXCEPT':
+					error += ['NO EXCEPT AFTER %s ALL' % upword]
+				elif len(word) == 3:
+					error += ['NO POWER AFTER %s ALL EXCEPT' % upword]
+				else: self.dummies = [x for x in self.homes.keys()
+					if x not in (['UNOWNED'] + [self.normPower(y) for y in word[3:]])]
 			#	-----------------------------------------------------------
 			#	Teams, a way to create dummies controlled by a single power
 			#	-----------------------------------------------------------
@@ -673,7 +673,7 @@ class Map:
 						#	-------------------------------------------------
 						leader = members[0]
 						for member in members[1:]:
-							if member not in self.powers:
+							if member not in self.homes.keys():
 								error += ['CONTROLLED POWER %s IS NOT A MAP POWER'
 									% member]
 								break
@@ -784,16 +784,16 @@ class Map:
 				if len(word) == 1:
 					if not power: error += ['UNPLAYED BEFORE POWER']
 					else: goners = [power]
-				elif word[1].upper() == 'ALL':
-					if len(word) == 2: goners = self.powers
-					elif word[2].upper() != 'EXCEPT':
-						error += ['NO EXCEPT AFTER UNPLAYED ALL']
-					elif len(word) == 3:
-						error += ['NO POWER AFTER UNPLAYED ALL EXCEPT']
-					else: goners = [x for x in self.powers if x not in [
-						y.upper().replace('+','') for y in word[3:]]]
-				else: goners = [x for x in [y.upper().replace('+','')
-					for y in word[1:]] if x in self.powers]
+				elif word[1].upper() != 'ALL':
+					goners = [self.normPower(x) for x in word[1:]]
+				elif len(word) == 2: goners = [x for x in self.homes.keys()
+					if x != 'UNOWNED']
+				elif word[2].upper() != 'EXCEPT':
+					error += ['NO EXCEPT AFTER UNPLAYED ALL']
+				elif len(word) == 3:
+					error += ['NO POWER AFTER UNPLAYED ALL EXCEPT']
+				else: goners = [x for x in self.homes.keys() if x not in (
+					['UNOWNED'] + [self.normPower(y) for y in word[3:]])]
 				power = None
 
 				for goner in goners:
