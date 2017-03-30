@@ -1,5 +1,5 @@
 %!PS-Adobe-3.0
-%%Title: Diplomacy Map (modern map)
+%%Title: Diplomacy Map (azov map)
 %%Creator: dpmap, using a map created with DPeye by Mario Huys (woelpad@gmail.com)
 %%DocumentPaperSizes: Letter
 %%LanguageLevel: 2
@@ -14,6 +14,7 @@
 
 % INFO
 %  573   83 ADA    Adana
+%  103  120 ADL    Andalusia
 %  315  149 ADR    Adriatic Sea
 %  425   62 AEG    Aegean Sea
 %  360  122 ALB    Albania
@@ -21,15 +22,14 @@
 %  159   67 ALG    Algeria
 %  232  242 ALS    Alsace
 %  519   80 ANA    Anatolia
-%  103  120 ADL    Andalusia
 %  552  125 ANK    Ankara
 %  332  117 APU    Apulia
 %  770  -52 ARA    Arabian Sea
 %  214  653 ARC    Arctic Ocean
 %  639  135 ARM    Armenia
 %  527  -89 ASW    Aswan
-%  314  214 AUS    Austria
-%  179  197 AUV    Auvergne
+%  308  218 AUS    Austria
+%  180  202 AUV    Auvergne
 %  671  129 AZE    Azerbaijan
 %  355  341 BAL    Baltic Sea
 %  134  154 BAR    Barcelona
@@ -38,8 +38,8 @@
 %  322  330 BHM    Bornholm Sea
 %  420  287 BIE    Bielorussia
 %  125  232 BIS    Bay of Biscay
-%  151  199 BOR    Bordeaux
-%  337  176 BOS    Bosnia
+%  151  198 BOR    Bordeaux
+%  337  169 BOS    Bosnia
 %  161  256 BRI    Brittany
 %  488  640 BRN    Barents Sea
 %  421  148 BUL    Bulgaria
@@ -47,8 +47,9 @@
 %  699  180 CAS    Caspian Sea
 %  645  184 CAU    Caucasus
 %  165  387 CLY    Clyde
-%  315  175 CRO    Croatia
+%  315  178 CRO    Croatia
 %  524  285 CRP    Central Russian Plateau
+%  331  -84 CSA    Central Sahara
 %  324  244 CZE    Czech Republic
 %  280  352 DEN    Denmark
 %  529  236 DON    Donbas
@@ -73,12 +74,12 @@
 %  348  200 HUN    Hungary
 %  118  580 ICE    Iceland
 %  356   64 ION    Ionian Sea
-%  133  363 IRE    Ireland
+%  128  353 IRE    Ireland
 %  115  315 IRI    Irish Sea
 %  666    1 IRK    Irak
 %  713   46 IRN    Iran
 %  712   96 IRN/NC Iran (north coast)
-%  755  -36 IRN/SC Iran (south coast)
+%  758  -27 IRN/SC Iran (south coast)
 %  542   -9 ISR    Israel
 %  470  106 IST    Istanbul
 %  476   75 IZM    Izmir
@@ -99,7 +100,7 @@
 %  380  135 MAC    Macedonia
 %   83  170 MAD    Madrid
 %  293   34 MAL    Maltese Sea
-%  206  197 MAR    Marseilles
+%  206  195 MAR    Marseilles
 %   53  257 MID    Mid Atlantic Ocean
 %  266  198 MIL    Milan
 %  452  220 MOL    Moldavia
@@ -116,7 +117,7 @@
 %  282  424 NWY    Norway
 %  475  230 ODE    Odessa
 %  188  238 PAR    Paris
-%  731  -27 PER    Persian Gulf
+%  735  -40 PER    Persian Gulf
 %  201  270 PIC    Picardy
 %  243  194 PIE    Piedmont
 %  417  235 POD    Podolia
@@ -130,13 +131,15 @@
 %    0  117 SAO    South Atlantic Ocean
 %  669  -70 SAU    Saudi Arabia
 %  288  253 SAX    Saxony
-%  360  157 SER    Serbia
+%  362  157 SER    Serbia
 %  495  214 SEV    Sevastopol
 %  714  436 SIB    Siberia
 %  321  273 SIL    Silesia
 %  531  -37 SIN    Sinai
 %  280  378 SKA    Skagerrak
 %  356  222 SLK    Slovakia
+%  310  199 SLN    Slovenia
+%  527  209 SOA    Sea of Azov
 %   83   98 SOG    Straits of Gibraltar
 %  445  385 STP    St-Petersburg
 %   68  142 SVE    Seville
@@ -146,9 +149,10 @@
 %  235   41 TUN    Tunisia
 %  271  157 TUS    Tuscany
 %  269  100 TYR    Tyrrhenian Sea
+%  151  369 ULS    Ulster
 %  571  484 URA    Urals
-%  288  168 VEN    Venice
-%  625  240 VOL    Volga
+%  288  169 VEN    Venice
+%  616  257 VOL    Volga
 %  162  313 WAL    Wales
 %  353  291 WAR    Warsaw
 %  482  162 WBS    Western Black Sea
@@ -235,6 +239,7 @@
 	SwitchToMapMode
 	MapForm execform
 	/Centers << Centers { pop true } forall >> def
+	DrawSupplies
 	UNOWNED
 } bd
 /VisitSupplies {
@@ -299,7 +304,7 @@
 	/WAR 368 286 s
 	/KIE 479 263 s
 	/PAR 204 249 s
-	/CRO 314 191 s
+	/CRO 325 191 s
 	/AUS 329 220 s
 	/MAD 101 161 s
 	/TUN 238 62 s
@@ -322,18 +327,18 @@
 	(ANK) 552 125 c
 	(APU) 332 117 c
 	(ASW) 527 -89 c
-	(AUV) 179 197 c
+	(AUV) 180 202 c
 	(AZE) 671 129 c
 	(BAR) 134 154 c
 	(BEL) 232 284 c
 	(BER) 303 295 c
-	(BOR) 151 199 c
+	(BOR) 151 198 c
 	(BRI) 161 256 c
 	(BUL) 421 148 c
 	(CAI) 509 -48 c
 	(CAU) 645 184 c
 	(CLY) 165 387 c
-	(CRO) 315 175 c
+	(CRO) 315 178 c
 	(DEN) 280 352 c
 	(DON) 529 236 c
 	(ESA) 441 -39 c
@@ -343,12 +348,13 @@
 	(GDA) 368 318 c
 	(GEO) 604 177 c
 	(GIB) 68 118 c
+	(GOR) 536 391 c
 	(GRE) 384 91 c
 	(HAM) 272 301 c
 	(HOL) 245 307 c
 	(ICE) 118 580 c
 	(IRK) 666 1 c
-	(IRE) 133 363 c
+	(IRE) 128 353 c
 	(ISR) 542 -9 c
 	(IST) 470 106 c
 	(IZM) 476 75 c
@@ -360,7 +366,7 @@
 	(LIT) 391 334 c
 	(LIV) 175 346 c
 	(LON) 195 315 c
-	(MAR) 206 197 c
+	(MAR) 206 195 c
 	(MON) 225 182 c
 	(MOR) 51 86 c
 	(MUR) 463 523 c
@@ -376,7 +382,7 @@
 	(ROS) 570 204 c
 	(RUM) 441 182 c
 	(SAU) 669 -70 c
-	(SER) 360 157 c
+	(SER) 362 157 c
 	(SEV) 495 214 c
 	(SVE) 68 142 c
 	(SIN) 531 -37 c
@@ -385,20 +391,21 @@
 	(SYR) 580 39 c
 	(TUN) 235 41 c
 	(TUS) 271 157 c
+	(ULS) 151 369 c
 	(URA) 571 484 c
-	(VEN) 288 168 c
-	(VOL) 625 240 c
+	(VEN) 288 169 c
+	(VOL) 616 257 c
 	(WAL) 162 313 c
 	(YOR) 196 343 c
 	(ALS) 232 242 l
 	(ARM) 639 135 l
-	(AUS) 314 214 l
+	(AUS) 308 218 l
 	(BIE) 420 287 l
-	(BOS) 337 176 l
+	(BOS) 337 169 l
 	(CRP) 524 285 l
+	(CSA) 331 -84 l
 	(CZE) 324 244 l
 	(FRA) 277 275 l
-	(GOR) 536 391 l
 	(HUN) 348 200 l
 	(KHA) 537 260 l
 	(KIE) 494 248 l
@@ -417,6 +424,7 @@
 	(SIB) 714 436 l
 	(SIL) 321 273 l
 	(SLK) 356 222 l
+	(SLN) 310 199 l
 	(SWI) 251 220 l
 	(WAR) 353 291 l
 	(WSA) 81 -21 l
@@ -444,10 +452,11 @@
 	(NAO) 72 448 w
 	(NTH) 227 382 w
 	(NWG) 261 536 w
-	(PER) 731 -27 w
+	(PER) 735 -40 w
 	(RED) 553 -79 w
 	(SKA) 280 378 w
 	(SAO) 0 117 w
+	(SOA) 527 209 w
 	(SOG) 83 98 w
 	(TYR) 269 100 w
 	(WBS) 482 162 w
@@ -455,7 +464,7 @@
 	(WHI) 506 572 w
 	(IRN) 713 46 g
 	(IRN/NC) 712 96 b
-	(IRN/SC) 755 -36 b
+	(IRN/SC) 758 -27 b
 	end
 } def
 /DrawSupplies {
@@ -463,6 +472,18 @@
 	UNOWNEDCENTER
 	{ SupplyCenters 3 1 roll 4 3 roll supply } bind
 	VisitSupplies
+} bd
+/PopulateTerritories {
+	SwitchToMapMode
+	s
+	UNOWNED
+	{ 2 copy DrawFleet DrawArmy pop } bind
+	{ DrawArmy pop } bind
+	{ DrawFleet pop } bind
+	{ DrawArmy pop } bind
+	{ DrawFleet pop } bind
+	VisitTerritories
+	r
 } bd
 /DrawAlias {
 	SwitchToMapMode
@@ -1448,7 +1469,7 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		24.1 133.22 458.2 443.57 rectclip .5545 .5545 x 71.66 340.27 t
+		25.1 135.14 456.2 439.71 rectclip .5496 .5496 x 75.67 345.88 t
 		ArrowColor
 		OkOrder
 	} if
@@ -1456,7 +1477,7 @@
 /FrameMap {
 	s
 	2 w LandBrown
-	22.1 130.22 m 484.3 130.22 l 484.3 579.78 l 22.1 579.78 l
+	22.1 132.14 m 484.3 132.14 l 484.3 577.86 l 22.1 577.86 l
 	p
 	s 8 w Black k r
 	clipsave clip k cliprestore
@@ -1503,6 +1524,7 @@
 	/fk { k } bd
 	2.5 w [ 2 3 ] 1.5 d SeaBlue
 	OutlineChartCanalLine
+	OutlineChartCanalDuMidiLine
 	r
 } bd
 /VisitColors {
@@ -2593,6 +2615,9 @@
 	169 359 m
 	153 359 l
 	fk
+	149 379 m
+	156 385 l
+	fk
 	173 410 m
 	176 380 l
 	fk
@@ -2629,10 +2654,12 @@
 	132 276 m
 	103 283 l
 	71 295 l
-	-30 316 l
-	fk
-	71 295 m
 	108 335 l
+	fk
+	103 347 m
+	0 373 l
+	0 168 l
+	30 165 l
 	fk
 	170 422 m
 	185 461 l
@@ -2800,8 +2827,8 @@
 	519 152 m
 	511 182 l
 	fk
-	30 165 m
-	-30 170 l
+	0 271 m
+	-30 271 l
 	fk
 	52 117 m
 	44 101 l
@@ -2859,7 +2886,7 @@
 	260 184 l
 	fk
 	269 182 m
-	280 207 l
+	280 208 l
 	fk
 	255 295 m
 	269 284 l
@@ -2959,21 +2986,21 @@
 	fk
 	431 358 m
 	472 370 l
-	495 369 l
+	480 370 l
 	fk
-	495 369 m
-	497 404 l
+	478 431 m
+	480 370 l
 	fk
-	497 404 m
+	468 439 m
 	422 455 l
 	fk
-	497 404 m
-	530 424 l
+	481 433 m
+	529 431 l
 	fk
-	530 424 m
+	529 431 m
 	511 520 l
 	fk
-	495 369 m
+	480 370 m
 	553 367 l
 	593 345 l
 	fk
@@ -2985,7 +3012,7 @@
 	582 413 l
 	fk
 	582 413 m
-	530 424 l
+	529 431 l
 	fk
 	582 413 m
 	627 437 l
@@ -3044,7 +3071,10 @@
 	456 -19 l
 	fk
 	473 -79 m
-	472 -100 l
+	433 -79 l
+	fk
+	230 -65 m
+	434 -65 l
 	fk
 	452 549 m
 	464 580 l
@@ -3263,6 +3293,15 @@
 	422 455 m
 	424 531 l
 	fk
+	149 379 m
+	136 374 l
+	136 369 l
+	140 366 l
+	143 368 l
+	144 366 l
+	144 363 l
+	147 358 l
+	fk
 	49 124 m
 	60 126 l
 	70 126 l
@@ -3297,7 +3336,7 @@
 	228 195 l
 	fk
 	271 212 m
-	280 207 l
+	280 208 l
 	fk
 	291 218 m
 	279 218 l
@@ -3357,7 +3396,7 @@
 	340 216 l
 	fk
 	340 216 m
-	327 200 l
+	321 206 l
 	fk
 	340 216 m
 	363 211 l
@@ -3366,16 +3405,20 @@
 	376 222 m
 	375 234 l
 	fk
-	327 200 m
-	296 203 l
+	321 206 m
+	298 205 l
 	fk
-	296 203 m
-	280 207 l
+	298 205 m
+	280 208 l
 	fk
-	296 195 m
-	296 203 l
+	303 189 m
+	298 205 l
 	fk
-	327 200 m
+	296 189 m
+	314 189 l
+	326 201 l
+	fk
+	321 206 m
 	348 188 l
 	fk
 	348 188 m
@@ -3467,9 +3510,6 @@
 	fk
 	568 249 m
 	567 241 l
-	fk
-	567 241 m
-	552 236 l
 	fk
 	463 297 m
 	449 329 l
@@ -3593,8 +3633,22 @@
 	fk
 } bd
 /OutlineChartCanalLine {
-	536 191 m
-	573 224 l
+	461 484 m
+	469 444 l
+	fk
+	477 431 m
+	457 420 l
+	fk
+	448 412 m
+	437 408 l
+	fk
+	481 432 m
+	491 382 l
+	600 367 l
+	603 253 l
+	fk
+	552 236 m
+	603 253 l
 	657 217 l
 	fk
 	272 326 m
@@ -3606,6 +3660,13 @@
 	fk
 	517 -31 m
 	514 -14 l
+	fk
+} bd
+/OutlineChartCanalDuMidiLine {
+	183 175 m
+	177 176 l
+	165 192 l
+	152 223 l
 	fk
 } bd
 {

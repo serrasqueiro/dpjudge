@@ -21,7 +21,7 @@ page.include('functions')
 	<td width=1 class="border"></td>
 	<td class="gameheader" align=center>
 		<!--HEADER GOES HERE-->
-		<b>Formatting Unit Orders At the DPjudge</b>
+		<b>Formatting Unit Orders at the DPjudge</b>
 		<!--INFORMATION LINKS TABLE BEGINS HERE-->
 		<table border=0 cellpadding=5 cellspacing=0 width=100%>
 		<tr>
@@ -392,8 +392,8 @@ Here is an example of a game where France controls England at the start of the g
 <td>
 <tt>F BRE - ENG</tt><br>
 <tt>[ENGLAND] F LON - NTH</tt><br>
-<tt>(ENGLAND) F EDI - NWG</tt><br>
 <tt>A PAR - PIC</tt><br>
+<tt>ENGLAND: F EDI - NWG</tt><br>
 <tt>A MAR - BUR</tt><br>
 <tt>ENGLAND A LVP - YOR</tt><br>
 </td>
@@ -402,16 +402,16 @@ Here is an example of a game where France controls England at the start of the g
 <tt>[E]</tt><br>
 <tt>F LON - NTH</tt><br>
 <tt>F EDI - NWG</tt><br>
-<tt>F R A N C E</tt><br>
+<tt>FRANCE</tt><br>
 <tt>A PAR - PIC</tt><br>
 <tt>A MAR - BUR</tt><br>
 <tt>E) A LVP - YOR</tt><br>
 </td>
 </tr>
 </table>
-Brackets, round or square, are optional in most cases.
+Brackets, round or square, or colons are optional in most cases.
 They are required when putting spaces in the power name, e.g. <tt>[NEW YORK]</tt>, but only when placing them directly in front of orders; this in order to avoid any ambiguities between power names, units and province names.
-Or also when using power initials in front of an order to avoid mix-ups with unit and command abbreviations (e.g. "<tt>R A MOS</tt>" could mean "Russian army Moscow" or "Remove army Moscow"). Luckily, in the case of initials a single bracket suffices, e.g. "<tt>R) A MOS</tt>".
+Or also when using power initials in front of an order to avoid mix-ups with unit and command abbreviations (e.g. "<tt>R A MOS</tt>" could mean "Russian army Moscow" or "Remove army Moscow"). Luckily, in the case of initials a single bracket suffices, e.g. "<tt>R) A MOS</tt>". Or simply use a colon, as in "<tt>R: A MOS</tt>".
 <p>
 <dt><b>Does this also work in e-mail?</b>
 <dd>

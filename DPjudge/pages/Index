@@ -126,6 +126,7 @@ for name in varNames:
 		<p class=bodycopy><b>For GameMasters:</b><p>
 		<a href=<URL>?page=Status>Game Status File</a><br>
 		<a href=<URL>?page=Map>Variant Map Files</a><br>
+		<a href=<URL>?page=Tips>Tips & Tricks</a><br>
 		</td></tr>
 		</form>
 		</td>

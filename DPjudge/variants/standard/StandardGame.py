@@ -84,14 +84,20 @@ class StandardGame(Game):
 					word = self.expandOrder(order.split())
 					word = self.addUnitTypes(word)
 					word = self.map.defaultCoast(word)
-					if not self.validOrder(power,
-						' '.join(word[:2]), ' '.join(word[2:]), report=0):
+					valid = self.validOrder(power,
+						' '.join(word[:2]), ' '.join(word[2:]), report=0)
+					if not valid:
 						power.orders['INVALID ' + unit[6:]] = order
 						del power.orders[unit]
 				#	-------------------------------------------------------
 				#	Non-NO_CHECK.  Validate the order and report all errors
 				#	-------------------------------------------------------
-				else: self.validOrder(power, unit, order)
+				else:
+					valid = self.validOrder(power, unit, order)
+				if valid == -1 and not order.endswith(' ?'):
+					power.orders[unit] += ' ?'
+				elif valid == 1 and order.endswith(' ?'):
+					power.orders[unit] = power.orders[unit][:-2]
 		#	-------------------------------------------------------------
 		#	Go validate the rest of the data read in from the status file
 		#	-------------------------------------------------------------
@@ -282,6 +288,9 @@ class StandardGame(Game):
 					curPower = who
 					continue
 			else: who = curPower
+			if 'orders' not in vars(who): return self.error.append(
+				'THE ' * (who.name in ('MASTER', 'JUDGEKEEPER')) +
+				who.name + ' HAS NO UNITS OF ITS OWN TO ORDER')
 			nmr = len(word) == 1 and word[0][word[0][:1] in '([':len(
 				word[0]) - (word[0][-1:] in '])')].upper() in ('NMR', 'CLEAR')
 			if who not in powers:

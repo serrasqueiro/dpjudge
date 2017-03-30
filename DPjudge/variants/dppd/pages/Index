@@ -36,11 +36,19 @@ leftside()
 	<td align=center class="bodycopy">
 		<!--CURRENT MEMBER FORM BEGINS HERE-->
 		<script>
+		function willLogin()
+		{
+			if (document.login.emailOrName.value.indexOf("@") < 0)
+				document.login.name.value = document.login.emailOrName.value;
+			else
+				document.login.email.value = document.login.emailOrName.value;
+			document.login.submit();
+		}
 		function mayLogin()
 		{
-			if(document.login.email.value=="")
+			if (document.login.emailOrName.value=="")
 			{
-				alert("E-Mail address is required.");
+				alert("Full name or e-mail address is required.");
 				return false;
 			}
 			if (document.login.password.value == ""
@@ -49,24 +57,24 @@ leftside()
 				alert("To login, specify or request your password.");
 				return false;
 			}
-			document.login.submit();
+			willLogin();
 		}
-		</script>
-		<form method=post name=login>
-		<input name=variant value=dppd type=hidden>
-		<input type=hidden name=page value=Login>
-		<table border=0 align=center>
-		<tr>
-		<td class="bodycopy" align="right"><b>E-Mail Address:&nbsp;</b></td>
-		<td><input name="email" type="text" class="inputBox" size=24></td>
-		</tr>
-		<tr>
-		<td class="bodycopy" align="right"><b>Your Password:&nbsp;</b></td>
-		<td><input name="password" type="password" class="inputBox" size=24
-	onchange='if(document.login.password.value!="")document.login.forgot.checked=false;reminder()'></td>
-		</tr>
-		<tr>
-		<script>
+		function loginKeyPress(e)
+		{
+		    // look for window.event in case event isn't passed in
+			e = e || window.event;
+			if (e.keyCode == 13)
+			{
+				if (document.login.emailOrName.value=="")
+					document.login.emailOrName.focus();
+				else if (document.login.password.value == ""
+				&& !document.login.forgot.checked)
+					document.login.password.focus();
+				else willLogin();
+				return false;
+			}
+			return true;
+		}
 		function reminder()
 		{
 			if (document.login.forgot.checked)
@@ -76,17 +84,40 @@ leftside()
 			}
 			else document.login.go.value = "Log In";
 		}
+		function remember()
+		{
+			if (document.login.password.value!="")
+			{
+				document.login.forgot.checked=false;
+				reminder();
+			}
+		}
 		</script>
+		<form method="post" name="login">
+		<input name="variant" value="dppd" type="hidden">
+		<input type="hidden" name="page" value="Login">
+		<input type="hidden" name="name">
+		<input type="hidden" name="email">
+		<table border=0 align="center">
+		<tr>
+		<td class="bodycopy" align="right"><b>Your Name or<br/>E-Mail Address:&nbsp;</b></td>
+		<td><input name="emailOrName" type="text" class="inputBox" size=24
+			onkeypress='loginKeyPress(event)'></td>
+		</tr>
+		<tr>
+		<td class="bodycopy" align="right"><b>Your Password:&nbsp;</b></td>
+		<td><input name="password" type="password" class="inputBox" size=24
+			onkeypress='loginKeyPress(event)' onchange='remember()'></td>
+		</tr>
+		<tr>
 		<td class="bodycopy" align="right"><b>Forgot Password?&nbsp;</b></td>
 		<td class="bodycopy"><input name="forgot" type="checkbox" value="1"
-			onclick=reminder()>
-			E-mail it to me</td>
+			onclick=reminder()> E-mail it to me</td>
 		</tr>
 		<tr>
 		<td></td>
 		<td><input name="go" type="button" value="Log In"
-			onclick=mayLogin() class="inputSubmit">
-			</td>
+			onclick=mayLogin() class="inputSubmit"></td>
 		</tr>
 			<tr><td align=center class=bodycopy colspan=2>
 			</td></tr>
@@ -109,6 +140,21 @@ leftside()
 	<td align=center class="bodycopy">
 		<!--NEW HERE FORM BEGINS HERE-->		
 		<script>
+		function registerKeyPress(e)
+		{
+		    // look for window.event in case event isn't passed in
+			e = e || window.event;
+			if (e.keyCode == 13)
+			{
+				if (document.reg.name.value=="") document.reg.name.focus();
+				else if (document.reg.email.value=="") document.reg.email.focus();
+				else if (document.reg.password.value=="") document.reg.password.focus();
+				else if (document.reg.confirm.value=="") document.reg.confirm.focus();
+				else checkPass();
+				return false;
+			}
+			return true;
+		}
 		function checkPass()
 		{
 			if (document.reg.name.value == ""
@@ -222,20 +268,23 @@ leftside()
 		<table border=0 align=center>
 		<tr>
 		<td class="bodycopy" align=right><b>Your Name:&nbsp;</b></td>
-		<td><input name="name" type="text" class="inputBox" size=24></td>
+		<td><input name="name" type="text" class="inputBox" size=24
+			onkeypress="registerKeyPress(event)"></td>
 		</tr>
 		<tr>
 		<td class="bodycopy" align=right><b>E-Mail Address:&nbsp;</b></td>
-		<td><input name="email" type="text" class="inputBox" size=24></td>
+		<td><input name="email" type="text" class="inputBox" size=24
+			onkeypress="registerKeyPress(event)"></td>
 		</tr>
 		<tr>
 		<td class="bodycopy" align=right><b>Your Password:&nbsp;</b></td>
-		<td><input name="password" type="password" class="inputBox" size=24>
-		</td>
+		<td><input name="password" type="password" class="inputBox" size=24
+			onkeypress="registerKeyPress(event)"></td>
 		</tr>
 		<tr>
 		<td class="bodycopy" align=right><b>Password Again:&nbsp;</b></td>
-		<td><input name="confirm" type="password" class="inputBox" size=24></td>
+		<td><input name="confirm" type="password" class="inputBox" size=24
+			onkeypress="registerKeyPress(event)"></td>
 		</tr>
 		<tr>
 		<td align=center colspan=2>

@@ -6,23 +6,33 @@ page.include('stylesheet')
 page.include('functions')
 page.include('dppd')
 
+if 'email' not in vars(page) or 'name' in vars(page): page.email = ''
 if 'forgot' in vars(page):
-	page.dppd.db.execute(
-		"""
-		select User.status, password from User, Email
-		where User.id = Email.userId and Email.address = '%s'
-		""" % page.email)
-	data = page.dppd.db.fetchone()
-	if data:
-		mail = Mail(page.email, 'DPPD Password Reminder', None, host.dppd)
-		what, reminder = 'password', data['password']
-		if data['status'] == 'PENDING':
-			what = 'registration confirmation number'
-			reminder = reminder.split('/')[0]
-		mail.write('Your DPjudge %s is: %s\n' % (what, reminder or '(blank)'))
-		mail.close()
-		alert = "Password reminder sent."
-	else: alert = 'No such DPjudge player - %s' % page.email
+	if page.email:
+		data = page.dppd.lookup(email = page.email)
+		addresses = [page.email]
+	else:
+		data = page.dppd.lookup(name = page.name, exact = 1)
+		if data: addresses = page.dppd.address(id = data['id'], active = 2)
+	if not data:
+		alert = 'No such DPjudge player - %s' % (page.email or page.name)
+	elif not addresses:
+		alert = 'No active active e-mail addresses registered for DPjudge player'
+		alert += '- %s\nAsk the Judgekeeper to add a new one' % (page.email or page.name)
+	else:
+		for address in addresses:
+			mail = Mail(address, 'DPPD Password Reminder', None, host.dppd)
+			what, reminder = 'password', data['password']
+			if data['status'] == 'PENDING':
+				what = 'registration confirmation number'
+				reminder = reminder.split('/')[0]
+			mail.write('Your DPjudge %s is: %s\n' % (what, reminder or '(blank)'))
+			mail.close()
+		alert = 'Password reminder sent'
+		if not page.email:
+			alert += ' to %s\nIf %s active' % (("this one isn't",
+				"none of these are")[len(addresses) > 1], ', '.join(addresses))
+			alert += ', ask the Judgekeeper to add a new one'
 	page.write(
 		"""
 		<script>
@@ -105,6 +115,7 @@ page.dppd.db.execute("""
 			where Game.id = Role.gameId and Game.judgeId = Judge.id
 			and Judge.id = '%s' and Role.userId = %d
 			and Game.status not in ('COMPLETED', 'TERMINATED')
+			order by Game.name
 			""" % (page.dpjudge, page.id))
 for info in page.dppd.db.fetchall():
 	game.phase = info['phase']

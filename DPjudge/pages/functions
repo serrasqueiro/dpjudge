@@ -110,7 +110,8 @@ def showMapButtons():
 	file, game = mapName(), page.game
 	map = host.gameMapDir + '/' + file
 	gif = os.path.exists(map + '.gif') | (os.path.exists(map + '_.gif') * 2)
-	pdf, ps = os.path.exists(map + '.pdf'), os.path.exists(map + '.ps')
+	pdf = os.path.exists(map + '.pdf')
+	ps = not pdf and os.path.exists(map + '.ps')
 	if not (gif or pdf or ps): return
 	page.write('<tr class="bodycopy"><td valign=top><b>Maps:</b></td>')
 	if gif:
@@ -157,18 +158,12 @@ def showMapButtons():
 		#	--------------------------------------------------------------
 		page.write(
 			"""
-			<script>function showPdf(url){if(navigator.appName!="Netscape"
-			||navigator.plugins["Adobe Acrobat"])
-			{win=window.open(url,"_%s_","resizable=yes,menubar=no,"+
-			"status=no,directories=no,scrollbars=no,toolbar=no,location=no");
-			win.focus();}else window.location=url;return false;}</script>
 			<form>
 			<td class="bodycopy" align=right nowrap>By Season (PDF)</td>
-			<td><input type=button onClick=showPdf("%s/%s.pdf?t=%d");
-			class="inputSubmit" value='View'></td>
+			<td><a href="%s/%s.pdf?t=%d" target="_blank"><input type=button
+			class="inputSubmit" value='View'></a></td>
 			</form>
-			""" % (game.name, host.gameMapURL, file,
-				int(os.path.getmtime(map + '.pdf'))))
+			""" % (host.gameMapURL, file, int(os.path.getmtime(map + '.pdf'))))
 		if ps: page.write('</tr><tr><td></td>')
 	if ps: page.write(
 			"""
@@ -1002,19 +997,23 @@ def showAdjustList():
 	###			page.write('<textarea name=adjust rows=%d cols=40>%s</textarea>' %
 	###				(abs(count), '\n'.join(who.adjust)))
 	###			return 1
+		page.write('<table>')
 		for which in range(abs(count)):
 			order = who.adjust[which:which + 1]
-			page.write('<b>%s <select name=adjust class=inputBox>' % action.title())
+			page.write('<tr><td class=bodycopy><b>%s</b></td>' % action.title())
+			page.write('<td><select name=adjust class=inputBox>')
 			if page.pwdFlag > 2 or not order:
-				page.write('<option value=\'%s(NMR)\'>(NMR)' %
+				page.write('<option value=\'%s(NMR)\'>(NMR)</option>' %
 					(who is not power and who.name + ' ' or ''))
 			for ord in list:
 				syntax = action + ' ' + ord
 				select = ' selected' * (syntax in order)
 				if who is not power: syntax = who.name + ' ' + syntax
 				if select or page.pwdFlag > 2: page.write(
-					'<option value=\'%s\'%s>' % (syntax, select) + ord)
-			page.write('</select><br>')
+					'<option value=\'%s\'%s>%s</option>' %
+					(syntax, select, ord))
+			page.write('</select></td></tr>')
+		page.write('</table>')
 	if shown: page.write('</p></td></tr>')
 	return shown
 #	----------------------------------------------------------------------
@@ -1046,7 +1045,7 @@ def showRetreatList():
 					unit.replace(' ', '&nbsp;') + '</td>')
 				page.write('<td><select name=adjust class=inputBox>')
 				if not who.adjust or page.pwdFlag > 2:
-					page.write('<option value=\'%s(NMR)\'>(NMR)' %
+					page.write('<option value=\'%s(NMR)\'>(NMR)</option>' %
 						(who is not power and who.name + ' ' or ''))
 				choices = ['DISBAND'] + ['- ' + x for x in who.retreats[unit]]
 				for choice in choices:
@@ -1054,7 +1053,8 @@ def showRetreatList():
 					select = ' selected' * (ord in who.adjust)
 					if who is not power: ord = who.name + ' ' + ord
 					if select or page.pwdFlag > 2: page.write(
-						'<option value=\'%s\'%s>' % (ord, select) + choice)
+						'<option value=\'%s\'%s>%s</option>' %
+						(ord, select, choice))
 				page.write('</select></td></tr>')
 			page.write('</table>')
 	if shown: page.write('</td></tr>')
@@ -1536,7 +1536,8 @@ def showPressArchive(selected = 0, filter = 0):
 	power = page.pwdFlag > 1 and page.power.name or ''
 	thePower = power.encode('latin-1')
 	file, items, validCodes, involved = open(file), [], [], []
-	omniscient = page.pwdFlag == 2 or page.pwdFlag > 3
+	#omniscient = page.pwdFlag == 2 or page.pwdFlag > 3
+	omniscient = power == 'MASTER' or page.power.omniscient
 	for lineNum, line in enumerate(file):
 		if not line.startswith('::'): continue
 		data, receivers = line.strip().upper().split(), []
@@ -1568,7 +1569,7 @@ def showPressArchive(selected = 0, filter = 0):
 			if 'ALL' in receivers:
 				item += 'Broadcast%s' % (' sent' * (thePower == sender)) + omni
 			else:
-				b = ','.join([page.game.anglify(x.decode('latin-1'))
+				b = ', '.join([page.game.anglify(x.decode('latin-1'))
 					for x in receivers])
 				item += 'Press%s to ' % omni + b.encode('latin-1')
 		else:

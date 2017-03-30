@@ -286,12 +286,14 @@ class PayolaGame(Game):
 	def checkAccept(self, power, accept = 0):
 		accept = accept and accept.upper() or power.accept
 		if len(accept) > len(self.map.powers):
-			return self.error.append('BAD ACCEPTANCE LIST FOR ' + power.name)
+			return 'Acceptance list too long'
 		accept += '?'[len(accept) == len(self.map.powers) or '?' in accept:]
 		powers = [x.abbrev for x in self.powers if x.abbrev] + ['?']
 		for letter in accept:
-			if letter not in powers or accept.count(letter) > 1:
-				return self.error.append('BAD ACCEPT LIST FOR ' + power.name)
+			if letter not in powers:
+				return 'Letter %s not a power initial' % letter
+			elif accept.count(letter) > 1:
+				return 'Letter %s appears more than once' % letter
 		power.accept = accept
 	#	----------------------------------------------------------------------
 	def parseOffer(self, power, offer):
@@ -378,7 +380,8 @@ class PayolaGame(Game):
 			if len(first) < 2:
 				return self.error.append('INCOMPLETE OFFER: ' + ' '.join(word))
 			unit, orders, newline = ' '.join(first[:2]), [], first[:2]
-			if word[:2] != ['0', ':']: newline = word[:2] + newline
+			if word[:2] != ['0', ':'] or 'PAY_DUMMIES' not in self.rules:
+				newline = word[:2] + newline
 			#	---------------------------------------
 			#	Check for 'Payola Classic' restrictions
 			#	---------------------------------------
@@ -868,7 +871,10 @@ class PayolaGame(Game):
 		for power in self.powers:
 			if power.centers:
 				if type(power.accept) not in (str, unicode): power.initAccept()
-				else: self.checkAccept(power)
+				else:
+					result = self.checkAccept(power)
+					if result: self.error.append('BAD ACCEPTANCE LIST FOR ' +
+						power.name)
 			if power.balance is None and not power.isEliminated(False, True):
 				self.error += ['NO BALANCE FOR ' + power.name]
 #		for subvar in ('ZEROSUM', 'EXCHANGE', 'FLAT_TAX'):
@@ -985,10 +991,22 @@ class PayolaGame(Game):
 				self.mail = None
 	#	----------------------------------------------------------------------
 	def updateOrders(self, power, offers):
+		for who, what in self.distributeOrders(power, offers):
+			self.addOrders(who, what)
+		#	-----------------------------------------
+		#	Process the phase if everything is ready.
+		#	-----------------------------------------
+		if not self.error: self.process()
+		return self.error
+	#	----------------------------------------------------------------------
+	def addOrders(self, power, offers):
 		#	---------------------------------------------------------
 		#	Offers for controlled powers should not be included here,
 		#	as each power has its own purse, acceptance list, etc.
 		#	---------------------------------------------------------
+		if 'offers' not in vars(power):
+			return offers and self.error.append(power.name +
+				' cannot issue offers') or 1
 		hadOffers, hasOffers = power.offers, None
 		for line in filter(None, offers):
 			word = line.strip().split()

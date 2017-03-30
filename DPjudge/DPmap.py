@@ -327,7 +327,7 @@ class PostScriptMap:
 			elif split > 1 and section == 'R':
 				piece, draw = self.addUnit(power, unit, si, 'R', state), -1
 			else:
-				after = section in 'RDU' and state != 'M'
+				after = section in 'RDU' and state not in 'MX'
 				piece = self.findUnit(power, si, after)
 				if piece: 
 					if piece['type'] != unit:

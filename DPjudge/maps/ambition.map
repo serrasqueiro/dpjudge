@@ -4,7 +4,7 @@ Abo                         = abo
 Adriatic Sea                = adr adriatic
 Aegean Sea                  = aeg aegean
 Algiers                     = alg algeria
-Andalusia                   = and
+Andalusia                   = adl and?
 Ankara                      = ank
 Armenia                     = arm
 Austrian Netherlands        = ane belgium bel
@@ -23,7 +23,7 @@ Budapest                    = bud
 Burgundy                    = bur burgandy
 Christiania                 = chr norway nwy
 Constantinople              = con
-Copenhagen                  = cop denmark den
+Copenhagen                  = cop denmark? den
 Courland                    = cou
 Crimea                      = cri sevastopol sev sevastapol
 Croatia                     = cro
@@ -104,13 +104,13 @@ COAST   ABO     ABUTS   BOT LAP KAR nov
 WATER   ADR     ABUTS   BOS CON CRO DAL ION PAP/EC TWS VEN VIE
 WATER   AEG     ABUTS   ANK CON EAS ION
 COAST   ALG     ABUTS   MOR TUN WES
-COAST   AND     ABUTS   BRC GIB MAD MAO POR WES
+COAST   ADL     ABUTS   BRC GIB MAD MAO POR WES
 COAST   ANK     ABUTS   AEG ARM BLA CON EAS SYR
 COAST   ARM     ABUTS   ANK BLA KAZ syr
 COAST   ANE     ABUTS   BUR ENG hew PIC UPR
 LAND    BAW     ABUTS   BAV BOH BUR DRE HEW SWI TYR
 WATER   BAL     ABUTS   BER BOT COP COU HLS/EC KON MEC POS SCA STO
-COAST   BRC     ABUTS   AND gas LAN leo LYO MAD WES
+COAST   BRC     ABUTS   ADL gas LAN leo LYO MAD WES
 WATER   BAR     ABUTS   CHR NOV NWG
 LAND    BAV     ABUTS   BAW BOH TYR VIE
 WATER   BLA     ABUTS   ANK ARM CON CRI KAZ WLA
@@ -134,7 +134,7 @@ COAST   EDI     ABUTS   IRE LVP YOR IRI NAO NTH
 WATER   ENG     ABUTS   IRI LON NTH PIC ANE UPR BRE WAL MAO
 LAND    GAL     ABUTS   POS WLA WAR LIT BUD BOH BRL
 COAST   GAS     ABUTS   brc BRE BUR lan LEO MAO PAR
-WATER   GIB     ABUTS   AND MAO MOR WES
+WATER   GIB     ABUTS   ADL MAO MOR WES
 WATER   BOT     ABUTS   ABO BAL COU KAR LAP LVN STO STP
 WATER   LYO     ABUTS   BRC LAN MAR SAV TUS SAR TYS WES
 COAST   HAN     ABUTS   ber HEL HEW HLS/WC mec
@@ -159,10 +159,10 @@ COAST   LVN     ABUTS   BOT COU LIT MOS STP
 COAST   LVP     ABUTS   EDI IRI WAL yor
 COAST   LON     ABUTS   ENG NTH WAL YOR
 LAND    LUS     ABUTS   BER HEW BRL DRE BOH
-LAND    MAD     ABUTS   AND BRC LEO POR
+LAND    MAD     ABUTS   ADL BRC LEO POR
 COAST   MAR     ABUTS   BUR LAN LYO SAV
 COAST   MEC     ABUTS   BAL BER han HLS/EC
-WATER   MAO     ABUTS   AND BRE GAS IRE LEO MOR POR NAO GIB ENG IRI
+WATER   MAO     ABUTS   ADL BRE GAS IRE LEO MOR POR NAO GIB ENG IRI
 LAND    MIL     ABUTS   SAV TUS VEN SWI
 COAST   MOR     ABUTS   ALG GIB MAO WES
 LAND    MOS     ABUTS   KAZ LVN NOV STP KIV ZAP LIT
@@ -175,7 +175,7 @@ COAST   PAP/WC  ABUTS   TUS TWS TYS
 COAST   pap     ABUTS   ADR TUS TWS TYS VEN
 LAND    PAR     ABUTS   BRE GAS PIC BUR
 COAST   PIC     ABUTS   ANE BRE BUR ENG PAR
-COAST   POR     ABUTS   AND LEO MAD MAO
+COAST   POR     ABUTS   ADL LEO MAD MAO
 COAST   POS     ABUTS   BAL BER BRL GAL KON LIT WAR
 COAST   STP     ABUTS   BOT KAR LVN MOS
 COAST   SAR     ABUTS   LYO TYS WES
@@ -196,7 +196,7 @@ COAST   VIE     ABUTS   ADR BAV BOH BUD CRO TYR VEN
 COAST   WAL     ABUTS   ENG IRI LON LVP yor
 COAST   WLA     ABUTS   BLA bos BUD CON CRI GAL LIT
 LAND    WAR     ABUTS   POS LIT GAL
-WATER   WES     ABUTS   ALG AND BRC GIB LYO ION MOR SAR TUN TYS
+WATER   WES     ABUTS   ALG ADL BRC GIB LYO ION MOR SAR TUN TYS
 COAST   YOR     ABUTS   EDI LON lvp NTH wal
 LAND    ZAP     ABUTS   CRI KAZ MOS KIV LIT
 

@@ -5,10 +5,10 @@ F THA
 A CAR
 A CIR
 
-EGYPT      (EGYPTIAN)       ALE MEM THE
+EGYPT      (EGYPTIAN)       ALE MEM THB
 F ALE
 A MEM
-A THE
+A THB
 
 GREECE     (GREEK)          SPA ATH MAC
 F SPA
@@ -45,7 +45,7 @@ Bithynia            = BIT
 Black Sea           = BLA
 Byzantium           = BYZ
 Cappadocia          = CAP
-Carthage            = CAR
+Carthago            = CAR Carthage?
 Chersonesus         = CHE
 Cilician Strait     = CIL
 Cirta               = CIR
@@ -90,7 +90,7 @@ Punic Sea           = PUN
 Ravenna             = RAV
 Reed Sea            = REE
 Rhaetia             = RHA
-Roma                = ROM
+Roma                = ROM Rome?
 Saguntum            = SAG
 Sahara              = SAH
 Sardinia            = SAD
@@ -103,7 +103,7 @@ Sparta              = SPA
 Syrian Sea          = SYR
 Tarraconensis       = TAR
 Thapsus             = THA
-Thebes              = THE
+Thebes              = THB THE?
 Tyre                = TYE
 Tyrrhenean Sea      = TYN
 Venetia             = VEN
@@ -111,7 +111,7 @@ Vindobona           = VIN
 
 WATER  ADR     ABUTS  ION APU RAV VEN DAL EPI
 WATER  AEG     ABUTS  SPA MAC BYZ MIL CRE MIN MES ATH
-COAST  ALE     ABUTS  CYR SIN GOP EGY MEM THE LIB
+COAST  ALE     ABUTS  CYR SIN GOP EGY MEM THB LIB
 COAST  ANT     ABUTS  CAP SID CIL dam
 COAST  APU     ABUTS  ADR RAV NEA ION rom
 LAND   ARA     ABUTS  DAM NAB JER SID TYE
@@ -119,7 +119,7 @@ LAND   ARM     ABUTS  CHE SIP DAM CAP
 COAST  ATH     ABUTS  SPA MAC EPI AEG ION
 WATER  AUS     ABUTS  TYN NEA SIC ION MES LIB GOT PUN
 PORT   BAL     ABUTS  LIG BER Tar Sag
-COAST  BAY     ABUTS  THE MEM pha mar sah
+COAST  BAY     ABUTS  THB MEM pha mar sah
 WATER  BER     ABUTS  IBE LIG PUN SAD BAL SAG MAU CAR
 COAST  BIT     ABUTS  BYZ SIP BLA gal
 WATER  BLA     ABUTS  BYZ DAC CHE SIP BIT
@@ -141,7 +141,7 @@ COAST  EPI     ABUTS  DAL ADR ION mac ill ATH
 COAST  ETR     ABUTS  ven rav rha MAS LIG ROM
 LAND   GAL     ABUTS  BYZ MIL BIT ISA SIP CAP
 LAND   GAU     ABUTS  LUS TAR MAS RHA
-WATER  GOP     ABUTS  JER SIN ALE EGY SYR THE
+WATER  GOP     ABUTS  JER SIN ALE EGY SYR THB
 WATER  GOS     ABUTS  GOT LIB CYR LEP
 WATER  GOT     ABUTS  GOS NUM LEP THA LIB AUS MES PUN
 WATER  IBE     ABUTS  SAG MAU BER
@@ -157,7 +157,7 @@ COAST  MAC     ABUTS  AEG BYZ dac ill epi ATH
 LAND   MAR     ABUTS  CYR MEM BAY PHA LEP
 COAST  MAS     ABUTS  TAR gau rha ETR LIG
 COAST  MAU     ABUTS  SAG IBE BER CAR cir sah
-COAST  MEM     ABUTS  BAY ALE THE mar cyr
+COAST  MEM     ABUTS  BAY ALE THB mar cyr
 WATER  MES     ABUTS  SPA ION AUS GOT LIB CRE AEG
 COAST  MIL     ABUTS  BYZ AEG ISA MIN CIL gal
 WATER  MIN     ABUTS  MIL AEG CRE EGY CIL
@@ -168,7 +168,7 @@ COAST  PET     ABUTS  NAB jer SIN REE
 LAND   PHA     ABUTS  SAH CIR NUM LEP MAR BAY
 WATER  PUN     ABUTS  CAR SAD TYN SIC BER AUS GOT THA
 COAST  RAV     ABUTS  APU VEN ADR rom etr
-WATER  REE     ABUTS  NAB PET SIN THE
+WATER  REE     ABUTS  NAB PET SIN THB
 LAND   RHA     ABUTS  GAU MAS ETR VEN SAM VIN
 COAST  ROM     ABUTS  ETR NEA LIG TYN rav apu
 COAST  SAG     ABUTS  MAU TAR IBE Bal BER lus
@@ -177,13 +177,13 @@ COAST  SAD     ABUTS  COR PUN TYN BER LIG
 LAND   SAM     ABUTS  CHE DAC ILL VIN RHA
 COAST  SIC     ABUTS  NEA TYN AUS PUN
 COAST  SID     ABUTS  TYE ANT dam ara SYR CIL
-COAST  SIN     ABUTS  GOP ALE JER THE PET REE
+COAST  SIN     ABUTS  GOP ALE JER THB PET REE
 COAST  SIP     ABUTS  BIT BLA CHE arm cap gal
 COAST  SPA     ABUTS  AEG ION MES ATH
 WATER  SYR     ABUTS  CIL CYP EGY GOP JER TYE SID
 COAST  TAR     ABUTS  SAG MAS lus gau Bal LIG
 COAST  THA     ABUTS  CAR NUM cir GOT PUN
-COAST  THE     ABUTS  BAY MEM ALE SIN GOP REE
+COAST  THB     ABUTS  BAY MEM ALE SIN GOP REE
 COAST  TYE     ABUTS  SID JER SYR ara
 WATER  TYN     ABUTS  NEA SIC AUS PUN SAD COR LIG ROM
 COAST  VEN     ABUTS  RAV ADR DAL vin rha etr
