@@ -312,7 +312,7 @@
 	0 8 t
 	s
 	.1667 .1667 x
-	-90 -82 t
+	-90 -46 t
 	39 3 m 37 8 l 32 12 l 32 25 l 27 38 l 34 46 l 34 54 l 26 63 l 16 59 l 16 52 l
 	19 41 l 13 28 l 12 37 l 6 49 l 5 60 l 1 69 l 7 78 l 8 90 l 12 93 l 19 91 l
 	30 80 l 38 86 l 45 97 l 50 123 l 58 133 l 65 135 l 67 146 l 75 153 l 69 160 l 57 159 l
@@ -324,13 +324,14 @@
 	81 9 l 76 5 l 70 10 l 71 18 l 53 31 l 55 42 l 41 37 l 37 23 l 43 12 l 49 7 l 49 3 l p
 	s 12 w Contrast k r Paint f
 	r
+	0 6 t
 	Offset aload pop m
 	MapUnitLetterFont z
 	Contrast Letter h
 	end
 } bd
 /ArmyTroopBBox [
-	-11.08 -4.32 8.52 16.45
+	-11.08 -.12 8.52 20.65
 ] def
 /DrawFleet {
 	SwitchToMapMode
@@ -434,7 +435,7 @@
 	0 8 t
 	s
 	.1667 .1667 x
-	-90 -82 t
+	-90 -46 t
 	39 3 m 37 8 l 32 12 l 32 25 l 27 38 l 34 46 l 34 54 l 26 63 l 16 59 l 16 52 l
 	19 41 l 13 28 l 12 37 l 6 49 l 5 60 l 1 69 l 7 78 l 8 90 l 12 93 l 19 91 l
 	30 80 l 38 86 l 45 97 l 50 123 l 58 133 l 65 135 l 67 146 l 75 153 l 69 160 l 57 159 l
@@ -446,13 +447,14 @@
 	81 9 l 76 5 l 70 10 l 71 18 l 53 31 l 55 42 l 41 37 l 37 23 l 43 12 l 49 7 l 49 3 l p
 	s s 36 w Outer k r 12 w Contrast k r Paint f
 	r
+	0 6 t
 	Offset aload pop m
 	MapUnitLetterFont z
 	Contrast Letter h
 	end
 } bd
 /ControlledArmyTroopBBox [
-	-12.48 -5.72 9.92 17.85
+	-12.48 -1.52 9.92 22.05
 ] def
 /PaintControlledSupply {
 	begin
@@ -829,7 +831,7 @@
 /SplitString {
 	7 dict begin
 	/nrChars xd
-	/indentString xd
+	/indentLength xd
 	/objectString xd
 	/objectLast objectString length 1 sub def
 	% Short string?
@@ -858,10 +860,10 @@
 			% The second part.
 			objectString splitIndex 1 add objectLast splitIndex sub getinterval
 			% Add indentation if needed.
-			indentString length 0 gt {
-				dup length indentString length add string
-				dup 0 indentString putinterval
-				dup indentString length 4 3 roll putinterval
+			indentLength 0 gt {
+				dup length indentLength add string
+				0 1 indentLength 1 sub { 1 index exch 32 put } for
+				dup indentLength 4 3 roll putinterval
 			} if
 			% Add white space of the first part.
 			/nonSpaceIndex objectLast 1 add def
@@ -921,7 +923,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		19 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
@@ -976,7 +978,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		17 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
@@ -1028,7 +1030,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		6 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
@@ -1095,7 +1097,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		19 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
