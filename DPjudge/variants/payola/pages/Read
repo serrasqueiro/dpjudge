@@ -48,7 +48,7 @@ def showPrices():
 	showPricesButton(page.phase)
 	page.write('</table></td></tr></table><hr>')
 	page.write('<table><tr><td><pre>')
-	file, show = open(page.game.file(page.file), encoding='latin-1'), 0
+	file = open(page.game.file(page.file), encoding='latin-1')
 	lines = []
 	for line in file:
 		if not done and 'MOVEMENT' in line:
