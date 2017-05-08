@@ -927,7 +927,7 @@ def showReceiptFlag():
 			""")
 #	----------------------------------------------------------------------
 def showWaitFlag():
-	if page.pwdFlag < 3: return
+	if page.pwdFlag < 3 or page.power.name == 'MASTER': return
 	showReceiptFlag()
 	if (('NO_MINOR_WAIT' in page.game.rules and page.game.phaseType != 'M')
 	or 'REAL_TIME' in page.game.rules
