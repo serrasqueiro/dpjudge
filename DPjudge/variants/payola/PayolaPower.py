@@ -124,7 +124,7 @@ class PayolaPower(Power):
 		full = []
 		for order in orders:
 			full += [' '.join(self.game.addUnitTypes(self.game.expandOrder(
-				unit.split() + order.split()), processing=1)[2:])]
+				unit + ' ' + order), processing=1)[2:])]
 		orders = full
 		if code == '!':
 			if 'H' not in orders: self.newOffer(':', unit, 'H')

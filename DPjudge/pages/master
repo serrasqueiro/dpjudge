@@ -847,7 +847,7 @@ def updateMaster():
 		game.mailPress(None, ['All!'], deathnote,
 			subject = 'Diplomacy deadline changed')
 	game.timing = None	# it will be in page.extra if given....
-	game.terrain = {}	# ditto this guy as well
+	game.terrain, game.teams = {}, []	# ditto for these guys
 	if game.tester and game.tester[-1:] == '!':
 		game.tester = ''	# and this one?
 	if 'corrupt' in game.status: return finished()

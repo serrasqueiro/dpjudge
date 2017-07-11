@@ -372,7 +372,7 @@ class PayolaGame(Game):
 			#	missing coasts (RUM-BUL becomes RUM-BUL/EC)
 			#	--------------------------------------------------
 			first = self.map.defaultCoast(self.addUnitTypes(
-				self.expandOrder(parts[0])))
+				self.expandOrder(' '.join(parts[0]))))
 			#	---------------------------------------------------
 			#	Validate the unit and check for disallowed wildcard
 			#	orders and and for 0 AgP bribes to foreign units.
@@ -430,7 +430,7 @@ class PayolaGame(Game):
 				#	--------------------------------------------------
 				if not orders: part = first[2:]
 				else: part = self.map.defaultCoast(self.addUnitTypes(
-					self.expandOrder(first[:2] + part)))[2:]
+					self.expandOrder(' '.join(first[:2] + part))))[2:]
 				if part and len(part[-1]) == 1 and not part[-1].isalpha():
 					part = part[:-1]
 				if not part: return self.error.append('NO %sORDER GIVEN: ' %

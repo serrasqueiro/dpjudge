@@ -39,9 +39,9 @@ class Inspector(object):
 			self.updateVars()
 			print('Loaded no game')
 	#	----------------------------------------------------------------------
-	def process(self, now = 0, email = None, roll = 0):
+	def process(self, now = 0, email = None):
 		if not self.game: return 'No game loaded'
-		result = self.game.process(now, email, roll)
+		result = self.game.process(now, email)
 		self.updateVars(self.game)
 		return result
 	#	----------------------------------------------------------------------

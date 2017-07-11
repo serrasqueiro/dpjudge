@@ -790,7 +790,7 @@ def showControlInfo():
 			<td align=right>
 			<select class=inputBox
 			name=power onChange=document.ceoForm.submit()>
-			""" % ('Controller Of', 'Power')[power.omniscient
+			""" % ('Controller Of', 'Power')[power.omniscient > 0
 			or power.name == 'MASTER'])
 		for country in headsUp:
 			page.write('<option value="%s">%s</option>' %
@@ -927,7 +927,7 @@ def showReceiptFlag():
 			""")
 #	----------------------------------------------------------------------
 def showWaitFlag():
-	if page.pwdFlag < 3: return
+	if page.pwdFlag < 3 or page.power.name == 'MASTER': return
 	showReceiptFlag()
 	if (('NO_MINOR_WAIT' in page.game.rules and page.game.phaseType != 'M')
 	or 'REAL_TIME' in page.game.rules
@@ -1004,11 +1004,11 @@ def showAdjustList():
 			page.write('<td><select name=adjust class=inputBox>')
 			if page.pwdFlag > 2 or not order:
 				page.write('<option value=\'%s(NMR)\'>(NMR)</option>' %
-					(who is not power and who.name + ' ' or ''))
+					(who is not power and '[%s] ' % who.name or ''))
 			for ord in list:
 				syntax = action + ' ' + ord
 				select = ' selected' * (syntax in order)
-				if who is not power: syntax = who.name + ' ' + syntax
+				if who is not power: syntax = '[%s] ' % who.name + syntax
 				if select or page.pwdFlag > 2: page.write(
 					'<option value=\'%s\'%s>%s</option>' %
 					(syntax, select, ord))
@@ -1046,12 +1046,12 @@ def showRetreatList():
 				page.write('<td><select name=adjust class=inputBox>')
 				if not who.adjust or page.pwdFlag > 2:
 					page.write('<option value=\'%s(NMR)\'>(NMR)</option>' %
-						(who is not power and who.name + ' ' or ''))
+						(who is not power and '[%s] ' % who.name or ''))
 				choices = ['DISBAND'] + ['- ' + x for x in who.retreats[unit]]
 				for choice in choices:
 					ord = 'RETREAT %s ' % unit + choice
 					select = ' selected' * (ord in who.adjust)
-					if who is not power: ord = who.name + ' ' + ord
+					if who is not power: ord = '[%s] ' % who.name + ord
 					if select or page.pwdFlag > 2: page.write(
 						'<option value=\'%s\'%s>%s</option>' %
 						(ord, select, choice))
@@ -1536,8 +1536,8 @@ def showPressArchive(selected = 0, filter = 0):
 	power = page.pwdFlag > 1 and page.power.name or ''
 	thePower = power.encode('latin-1')
 	file, items, validCodes, involved = open(file), [], [], []
-	#omniscient = page.pwdFlag == 2 or page.pwdFlag > 3
-	omniscient = power == 'MASTER' or page.power.omniscient
+	omniscient = (page.pwdFlag == 2 or page.pwdFlag > 3) and (
+		power == 'MASTER' or page.power.omniscient)
 	for lineNum, line in enumerate(file):
 		if not line.startswith('::'): continue
 		data, receivers = line.strip().upper().split(), []

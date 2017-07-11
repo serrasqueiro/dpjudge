@@ -36,7 +36,7 @@ class StandardGame(Game):
 				#	Even NO_CHECK games check that the order contains only
 				#	recognized tokens, and announce this error immediately
 				#	------------------------------------------------------
-				word = self.expandOrder(word)
+				word = self.expandOrder(upline)
 				if len(word) < 3 and (len(word) == 1 or word[1] != 'H'):
 					return self.error.append('BAD ORDER: ' + upline)
 				#	--------------------------------
@@ -56,7 +56,7 @@ class StandardGame(Game):
 				#	include them in the results file with annotation.
 				#	----------------------------------------------------
 				if 'NO_CHECK' in self.rules:
-					unit, order = 'ORDER ' + `len(power.orders) + 1`, upline
+					unit, order = 'ORDER %d' % (len(power.orders) + 1), upline
 				power.orders[unit], power.held = order, 1
 			else: return 0
 			return 1
@@ -81,7 +81,7 @@ class StandardGame(Game):
 				#	Convert NO_CHECK "ORDER"s to "INVALID" as appropriate
 				#	-----------------------------------------------------
 				if unit[:5] == 'ORDER':
-					word = self.expandOrder(order.split())
+					word = self.expandOrder(order)
 					word = self.addUnitTypes(word)
 					word = self.map.defaultCoast(word)
 					valid = self.validOrder(power,
@@ -181,7 +181,7 @@ class StandardGame(Game):
 						#	completely at this point.  Do this now.
 						#	---------------------------------------
 						word = self.map.defaultCoast(self.addUnitTypes(
-							self.expandOrder((unit + ' ' + order).split()), 1))
+							self.expandOrder(unit + ' ' + order), 1))
 						self.orders[' '.join(word[:2])] = ' '.join(word[2:])
 		#	------------------------------------------------
 		#	Add default HOLD orders for all unordered units.
@@ -224,16 +224,16 @@ class StandardGame(Game):
 		if 'LAST_MAN_STANDING' in self.rules: return []
 		return Game.determineWin(self, lastYear, func)
 	#	----------------------------------------------------------------------
-	def addOrder(self, power, word):
+	def addOrder(self, power, order):
 		#	-------------------------------
 		#	Check that the order is valid.
 		#	If not, self.error will say why
 		#	-------------------------------
-		word = self.map.defaultCoast(self.addUnitTypes(self.expandOrder(word)))
+		word = self.map.defaultCoast(self.addUnitTypes(self.expandOrder(order)))
 		if word and len(word[-1]) == 1 and not word[-1].isalpha():
 			word = word[:-1]
 		if len(word) < 2:
-			return self.error.append('BAD ORDER: ' + ' '.join(word))
+			return self.error.append('BAD ORDER: ' + order)
 		unit, order = ' '.join(word[:2]), ' '.join(word[2:])
 		owner = self.unitOwner(unit)
 		if (('FICTIONAL_OK' not in self.rules and not owner)
@@ -259,7 +259,7 @@ class StandardGame(Game):
 					power.orders['REORDER %d' % count] = ' '.join(word)
 				else: self.error += ['UNIT REORDERED: ' + unit]
 	#	----------------------------------------------------------------------
-	def process(self, now = 0, email = None, roll = 0):
+	def process(self, now = 0, email = None):
 		#	-------------------------------------------------------------
 		#	Convert all raw movement phase "ORDER"s in a NO_CHECK game to
 		#	standard orders before calling Game.process().  All "INVALID"
@@ -272,56 +272,40 @@ class StandardGame(Game):
 				orders, power.orders, cd = power.orders, {}, power.cd
 				for status, order in orders.items():
 					if status[:5] != 'ORDER': power.orders[status] = order
-					else: self.addOrder(power, order.split())
+					else: self.addOrder(power, order)
 				power.cd = cd
-		return Game.process(self, now, email, roll)
+		return Game.process(self, now, email)
 	#	----------------------------------------------------------------------
 	def updateOrders(self, power, orders):
-		curPower, hadOrders, hasOrders, powers = power, [], [], []
-		for line in orders:
-			word = line.strip().split()
-			if not word: continue
-			who, parsed = self.getPower(word)
-			if who:
-				word = word[parsed:]
-				if not word:
-					curPower = who
-					continue
-			else: who = curPower
-			if 'orders' not in vars(who): return self.error.append(
-				'THE ' * (who.name in ('MASTER', 'JUDGEKEEPER')) +
-				who.name + ' HAS NO UNITS OF ITS OWN TO ORDER')
-			nmr = len(word) == 1 and word[0][word[0][:1] in '([':len(
-				word[0]) - (word[0][-1:] in '])')].upper() in ('NMR', 'CLEAR')
-			if who not in powers:
-				if not power.controls(who): return self.error.append(
-					'NO CONTROL OVER ' + who.name + (
-					'PROXY_OK' in self.rules and 
-					' (NO NEED TO SPECIFY THE POWER FOR PROXIED UNITS)' or ''))
-				#	--------------------------------------------------
-				#	Empty orders before sticking any new orders in it.
-				#	--------------------------------------------------
-				hadOrders += [who.orders]
-				powers += [who]
-				who.orders = {}
-				if nmr: continue
-			elif nmr:
-				who.orders = {}
-				hasOrders = [x for x in hasOrders if x is not who]
-				continue
+		distributor = self.distributeOrders(power, orders,
+			proxy = 'PROXY_OK' in self.rules)
+		if not distributor: return 1
+		hadOrders, hasOrders = [], []
+		for who, what in distributor:
+			if 'orders' not in vars(who):
+				self.error.append(
+					'THE ' * (who.name in ('MASTER', 'JUDGEKEEPER')) +
+					who.name + ' HAS NO UNITS OF ITS OWN TO ORDER')
+				return 1
+			#	--------------------------------------------------
+			#	Empty orders before sticking any new orders in it.
+			#	--------------------------------------------------
+			hadOrders += [(who, who.orders)]
+			who.orders = {}
 			if 'NO_CHECK' in self.rules:
-				data = self.expandOrder(word)
-				if len(data) < 3 and (len(data) == 1 or data[1] != 'H'):
-					self.error.append('BAD ORDER: ' + line.upper())
-					continue
-				who.orders['ORDER %d' % (len(who.orders) + 1)] = ' '.join(word)
-			else: self.addOrder(who, word)
-			if who.orders and who not in hasOrders: hasOrders += [who]
+				for order in what:
+					data = self.expandOrder(order)
+					if len(data) < 3 and (len(data) == 1 or data[1] != 'H'):
+						self.error.append('BAD ORDER: ' + order)
+						continue
+					who.orders['ORDER %d' % (len(who.orders) + 1)] = order
+			else:
+				for order in what: self.addOrder(who, order)
+			if who.orders: hasOrders += [who]
 		#	------------------------------------------
 		#	Make sure the player can update his orders
 		#	------------------------------------------
-		if not powers: return 1
-		for who, oldOrders in zip(powers, hadOrders):
+		for who, oldOrders in hadOrders:
 			self.canChangeOrders(oldOrders, who.orders,
 				'PROXY_OK' in self.rules and not who.units)
 			if (not self.error and who.orders and
@@ -330,14 +314,14 @@ class StandardGame(Game):
 				[self.error.append('UNIT LEFT UNORDERED: ' +
 					(who.name + ' ', '')[who is power] + x)
 					for x in who.units if x not in who.orders]
-		if self.error: return self.error
+		if self.error: return 1
 		#	-------------------------------------------
 		#	Clear CD flag, even if orders were cleared.
 		#	-------------------------------------------
-		for who in powers: who.cd = 0
+		for who, what in hadOrders: who.cd = 0
 		if hasOrders:
 			self.logAccess(power, '', 'Orders updated')
-			if len(powers) == len(hasOrders): self.process()
+			if len(hadOrders) == len(hasOrders): self.process()
 			else: self.save()
 		else:
 			self.logAccess(power, '', 'Orders cleared')

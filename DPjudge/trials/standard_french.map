@@ -1,4 +1,5 @@
 USE standard.map
+LANGUAGE French
 
 adr     ->  Mer Adriatique                 = adr adriatique
 aeg     ->  Mer Égée                       = ege égé

@@ -174,12 +174,12 @@ def showOfferList():
 	page.write("""
 		<p><input onClick='document.UpdateForm.offers.value = %s'
 		type=button value="Clear" class="inputSubmit">
-		""" % json.dumps(untext))
+		""" % cgi.escape(json.dumps(untext)))
 	if text:
 		page.write("""
 			&nbsp;&nbsp;<input onClick='document.UpdateForm.offers.value = %s'
 			type=button value="Revert" class="inputSubmit">
-			""" % json.dumps('\n'.join(text)))
+			""" % cgi.escape(json.dumps('\n'.join(text))))
 	if not text: text = ['(NMR)']
 	page.write('</p><p><textarea class=inputBox rows=%s cols=40 name=offers wrap=off>'
 			% (max(len(text), 19) + 1))

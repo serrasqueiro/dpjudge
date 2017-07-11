@@ -260,9 +260,10 @@ class Power:
 			self.name == 'MASTER')
 	#	----------------------------------------------------------------------
 	def vassals(self, public = False, all = False, indirect = False):
-		return [x for x in self.game.powers if
-			(x.ceo[:1] == [self.name] or indirect and self.name == 'MASTER')
-			and (all or not x.isEliminated(public))]
+		return [x for x in self.game.powers
+			if x != self and (x.ceo[:1] == [self.name]
+			or indirect and (self.omniscient or self.name == 'MASTER'))
+			and (all or not x.isEliminated(public, True))]
 	#	----------------------------------------------------------------------
 	def isResigned(self):
 		return self.player[:1] == ['RESIGNED']
@@ -272,8 +273,9 @@ class Power:
 			public and 'HIDE_DUMMIES' in self.game.rules)
 	#	----------------------------------------------------------------------
 	def isEliminated(self, public = False, personal = False):
-		return not (self.units or self.centers or self.retreats or
-			(public and 'BLIND' in self.game.rules) or
+		return not ((not self.type and self.name != 'MASTER' and
+			self.units or self.centers or self.retreats or
+			(public and 'BLIND' in self.game.rules)) or
 			(not personal and self.vassals()))
 	#	----------------------------------------------------------------------
 	def isCD(self, after = 0):

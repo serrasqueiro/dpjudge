@@ -26,13 +26,9 @@ def showOrders():
 	if not alive and not vassals:
 		showWaitNotice()
 		return page.write('</table></td>')
-	which, shown = 'LATER', 0
-	if [x for x in game.powers if x.units and not x.list['SOONER']]:
-		which = 'SOONER'
-	if (('MOBILIZE' in game.rules or 'BLANK_BOARD' in game.rules)
-		and 'SKIP_FIRST' in game.rules): which = 'LATER'
+	which, shown = game.locks[-1], 0
 	page.write('<p>')
-	if not game.await:
+	if not game.await or power.omniscient:
 		page.write('<form %s>' % ('onSubmit="return false"',
 			'method=post name=UpdateForm')[page.pwdFlag > 2])
 		hideBack('Update')
@@ -40,21 +36,19 @@ def showOrders():
 	if game.phaseType != 'M':
 		if game.phaseType == 'A': shown = showAdjustList()
 		elif game.phaseType == 'R': shown = showRetreatList()
-		curPhase = game.phaseName(form = 2, phase = game.findNextPhase('M'))
-	else: curPhase, shown = game.phaseName(form = 2), not game.await
+		curPhase = game.findNextPhase('M')
+	else: curPhase, shown = game.phase, not game.await
+	if game.skip: curPhase = game.map.findNextPhase('M', curPhase, game.skip-1)
+	elif game.await: curPhase = game.map.findNextPhase('M', curPhase)
 	if not shown: showWaitNotice()
-	nextPhase = game.phaseName(form = 2,
-		phase = game.findNextPhase('M', skip = game.phaseType != 'M'))
-	if game.await or game.skip: curPhase = nextPhase
-	active = alive or ('PROXY_OK' in game.rules and
-		not power.isDummy(True) and vassals)
-	page.write(
-		"""
-		<tr><td class=bodycopy align=center><font size=2>
-		<p><b>%s Order List</b></font></p>
-		""" % curPhase)
-	if which == 'LATER':
-		for who in [power][:active] + vassals:
+	nextPhase = curPhase
+	for skip in range(game.skip, len(game.locks)-1):
+		page.write(
+			"""
+			<tr><td class=bodycopy align=center><font size=2>
+			<p><b>%s Order List</b></font></p>
+			""" % game.phaseName(form = 2, phase = nextPhase))
+		for who in [power][:alive] + vassals:
 			if who is not power:
 				page.write('</p><font size=2><b>%s</b></font><p>' %
 					game.anglify(who.name))
@@ -62,9 +56,10 @@ def showOrders():
 				<table cellspacing=0 cellpadding=5 border=1 width=80%>
 				<tr><td bgcolor=white class=bodycopy>
 				<pre><font size=2>"""
-			if not game.await: game.determineOrders(who, processing = 0)
-			for count, order in enumerate(who.list['SOONER']):
-				if game.await:
+			if not skip and not game.await:
+				game.determineOrders(who, processing = 0)
+			for count, order in enumerate(who.list[game.locks[skip]]):
+				if skip or game.await:
 					text += order + '\n'
 					continue
 				if who.notes[count] == 'ignored':
@@ -79,16 +74,16 @@ def showOrders():
 				else: start, end = '<font color=red>', '</font>'
 				text += start + '[%s] ' % who.notes[count] + order + end + '\n'
 			page.write(text + '</td></tr></table>')
-		if shown and game.phaseType == 'M':
-			page.write(
-			"""
-			<tr><td class=bodycopy align=center><font size=2>
-			<p><b>%s Order List</b></font></p>
-			""" % nextPhase)
-	if game.skip: which = 'LATER'
+		nextPhase = game.map.findNextPhase('M', nextPhase)
+	if shown and game.phaseType == 'M':
+		page.write(
+		"""
+		<tr><td class=bodycopy align=center><font size=2>
+		<p><b>%s Order List</b></font></p>
+		""" % game.phaseName(form = 2, phase = nextPhase))
 	if shown:
 		if game.phaseType == 'M':
-			if active: unorders = ['(NMR)']
+			if alive: unorders = ['(NMR)']
 			else: unorders = []
 			for who in vassals:
 				unorders += ['[' + who.name + ']', '(NMR)']
@@ -96,7 +91,7 @@ def showOrders():
 			try: orders = page.errorOrders
 			except: orders = []
 			if not orders:
-				if active:
+				if alive:
 					orders = power.list[which]
 					if not orders: orders = ['(NMR)']
 				for who in vassals:
@@ -105,22 +100,24 @@ def showOrders():
 					else: orders += ['(NMR)']
 			rows = max(len(orders), 19) + 1
 			orders = '\n'.join(orders)
-			page.write("""
-				<p><input onClick='document.UpdateForm.%s.value = %s'
-				type=button value="Clear" class="inputSubmit">
-				""" % (which, json.dumps(unorders)))
-			if unorders != orders:
+			if not power.omniscient:
 				page.write("""
-					&nbsp;&nbsp;
-					<input onClick='document.UpdateForm.%s.value = %s'
-					type=button value="Revert" class="inputSubmit">
-					""" % (which, json.dumps(orders)))
+					<p><input onClick='document.UpdateForm.%s.value = %s'
+					type=button value="Clear" class="inputSubmit">
+					""" % (which, cgi.escape(json.dumps(unorders))))
+				if unorders != orders:
+					page.write("""
+						&nbsp;&nbsp;
+						<input onClick='document.UpdateForm.%s.value = %s'
+						type=button value="Revert" class="inputSubmit">
+						""" % (which, cgi.escape(json.dumps(orders))))
 			page.write('</p><p><textarea rows=%s cols=40 name=%s wrap=off '
 				'class=inputBox>' % (rows, which))
 			page.write(cgi.escape(orders))
 			page.write('</textarea></p>')
-		showWaitFlag()
-		changeButton()
+		if not power.omniscient:
+			showWaitFlag()
+			changeButton()
 		page.write('<tr><td height=5></td></tr>')
 	page.write('</table></td>')
 #	----------------------------------------------------------------------

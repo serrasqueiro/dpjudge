@@ -17,25 +17,21 @@ class XtalballPower(Power):
 		#	Initialize the transient parameters
 		#	-----------------------------------
 		if includeFlags & 5:
-			self.list, self.notes = {'SOONER': [], 'LATER': []}, {}
+			self.list, self.notes = {}, {}
+			for lock in self.game.locks: self.list[lock] = []
 	#	----------------------------------------------------------------------
 	def isEliminated(self, public = False, personal = False):
 		if not Power.isEliminated(self, public, personal): return False
-		if not (self.homes and self.game.phase == 'M' and
+		elif self.type: return True
+		elif self.game.skip: return False
+		elif not (self.homes and self.game.phase == 'M' and
 			'GARRISON' in self.game.rules): return True
-		save = next = self.game.phase
-		while next not in 'AM':
-			self.game.phase = self.game.findNextPhase()
-			next = self.game.phase.split()[-1][0]
-		self.game.phase = save
-		return next != 'A'
+		return self.game.findNextPhase('A') == self.game.map.findNextPhase(
+			self.game.findNextPhase('M', len(self.game.locks) - 2), 'A')
 	#	----------------------------------------------------------------------
 	def movesSubmitted(self):
 		if self.name not in self.game.map.powers: return 1
-		if (not self.game.skip
-		and [x for x in self.game.powers if x.units and not x.list['SOONER']]):
-			return self.list['SOONER'] or not self.units
-		if self.game.skip: return self.list['LATER']
-		return self.list['LATER'] or not self.units
+		return self.list[self.game.locks[-1]] or not (
+			self.units or self.game.skip)
 	#	----------------------------------------------------------------------
 

@@ -57,13 +57,13 @@ def showOrderList():
 	page.write("""
 		<p><input onClick='document.UpdateForm.orders.value = %s'
 		type=button value="Clear" class="inputSubmit">
-		""" % json.dumps(unorders))
+		""" % cgi.escape(json.dumps(unorders)))
 	if unorders != orders:
 		page.write("""
 			&nbsp;&nbsp;
 			<input onClick='document.UpdateForm.orders.value = %s'
 			type=button value="Revert" class="inputSubmit">
-			""" % json.dumps(orders))
+			""" % cgi.escape(json.dumps(orders)))
 	page.write('</p><p><textarea rows=%s cols=40 name=orders wrap=off '
 		'class=inputBox>' % rows)
 	page.write(cgi.escape(orders))
