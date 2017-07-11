@@ -33,8 +33,9 @@ class Game:
 			text += '\nEND MORPH'
 		else:
 			for morph in self.morphs: text += '\nMORPH ' + morph
-		if self.master: text += '\nMASTER ' + '|'.join(self.master)
-		text += '\nPASSWORD ' + self.password
+		if self.gm.player: text += '\nMASTER ' + ' '.join(self.gm.player)
+		if self.gm.address: text += '\nADDRESS ' + ' '.join(self.gm.address)
+		if self.gm.password: text += '\nPASSWORD ' + self.gm.password
 		tester = self.tester.rstrip('@')
 		if tester and tester[-1] == '!':
 			text += '\nTESTER ' + tester[:-1]
@@ -91,7 +92,14 @@ class Game:
 		#	Initialize the persistent parameters
 		#	------------------------------------
 		if includeFlags & 2:
-			if includeFlags & 4: powers = []
+			if includeFlags & 4:
+				powers = []
+				gm = Power(self, 'MASTER')
+				gm.omniscient = 3
+				jk = Power(self, 'JUDGEKEEPER')
+				jk.omniscient = 4
+				jk.password = host.judgePassword
+				jk.address = host.judgekeepers
 			playerTypes, desc, master, norules = [], [], [], []
 			rotate, directives, origin = [], [], []
 			avail, morphs = [], []
@@ -117,7 +125,9 @@ class Game:
 			modeRequiresEnd, includeOwnership = None, -1
 
 		vars(self).update(locals())
-		for power in self.powers: power.reinit(includeFlags)
+		for power in [self.gm] + self.powers:
+			power.reinit(includeFlags)
+		self.gm.omniscient = 3
 	#	----------------------------------------------------------------------
 	def unitOwner(self, unit, coastRequired = 1):
 		for owner in self.powers:
@@ -826,15 +836,27 @@ class Game:
 		if not found and includeFlags & 2:
 			found = 1
 			if upword == 'MASTER':
-				if self.master: error += ['TWO MASTER STATEMENTS']
+				if self.gm.player: error += ['TWO MASTER STATEMENTS']
 				elif len(word) == 1: error += ['NO MASTER SPECIFIED']
-				else: self.master = word[1].split('|')
+				else:
+					self.gm.player = word[1:]
+					self.master = word[1].split('|')
 			elif upword == 'PASSWORD':
 				if len(word) != 2 or '<' in word[1] or '>' in word[1]:
 					error += ['BAD PASSWORD: ' + ' '.join(word[1:]).
 					replace('<', '&lt;').replace('>', '&gt;')]
-				elif self.password: error += ['TWO MASTER PASSWORDS']
-				else: self.password = word[1]
+				elif self.gm.password: error += ['TWO MASTER PASSWORDS']
+				else: self.password = self.gm.password = word[1]
+			elif upword == 'ADDRESS':
+				if self.gm.address: error += ['TWO MASTER ADDRESSES']
+				elif len(word) == 1: error += ['NO MASTER ADDRESS SPECIFIED']
+				elif [1 for x in word[1].split(',')
+					if x.count('@') != 1 or '@' not in x[1:-3]
+					or not x.split('.')[-1].isalpha()
+					or '.' not in x.split('@')[1]
+					or '.' in (x.split('@')[1][0], x[-1])]:
+						error += ['BAD MASTER ADDRESS']
+				else: self.gm.address = word[1:]
 			elif upword == 'TESTER':
 				if self.tester and self.tester[-1] == '!':
 					error += ['TWO TESTER STATEMENTS']
@@ -932,6 +954,12 @@ class Game:
 			self.map.validate(force = 1)
 			self.error += self.map.error
 			self.map.error = error + self.map.error
+		#	-----------------
+		#	Update the Master
+		#	-----------------
+		if self.gm.player and not self.gm.address:
+			try: self.gm.address = [self.gm.player[0].split('|')[1]]
+			except: pass
 		#	-------------------------
 		#	Validate RULE consistency
 		#	-------------------------
@@ -1136,7 +1164,7 @@ class Game:
 		#	-----------------------------------------
 		#	Make sure the game has a map and a master
 		#	-----------------------------------------
-		if not self.master: raise GameHasNoMaster
+		if not self.gm.player: raise GameHasNoMaster
 		if not self.map: self.loadMap()
 		self.victory = self.map.victory
 		if not self.victory:
@@ -1265,12 +1293,23 @@ class Game:
 			#	----------------------------------
 			id = power.player and power.player[0].split('|')[0] or ''
 			if id.startswith('#'):
-				if self.master and id == self.master[0]:
+				if self.gm.player and id == self.gm.player[0].split('|')[0]:
 					error += ['THE MASTER HAS THE SAME ID AS ' + power.name]
 				error += ['%s AND %s HAVE THE SAME ID' % (power.name, x.name)
 					for x in self.powers if x is not power and
 					x.name > power.name and x.player and
 					x.player[0].split('|')[0] == id]
+			#	------------------
+			#	Validate passwords
+			#	------------------
+			if power.password:
+				if self.gm.password and (
+					power.password.lower() == self.gm.password.lower()):
+					error += ['THE MASTER HAS THE SAME PASSWORD AS ' + power.name]
+				error += ['%s AND %s HAVE THE SAME PASSWORD' % (power.name, x.name)
+					for x in self.powers if x is not power and
+					x.name > power.name and x.password and
+					x.password.lower() == power.password.lower()]
 			#	--------------------
 			#	Validate controllers
 			#	--------------------

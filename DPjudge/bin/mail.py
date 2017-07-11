@@ -426,8 +426,9 @@ class Procmail:
 			command != 'RESIGN'):
 			self.respond("The game is already full. " +
 				"Try to join another game or take over an abandoned position")
-		if (self.dppd and game.master[0] == self.dppd.split('|')[0]
-		or self.email.lower() in game.master[1].lower().split(',')):
+		if (self.dppd and game.gm.player and game.gm.player[0].split('|')[0]
+			== self.dppd.split('|')[0] or [1 for x in game.gm.address
+			if self.email.lower() in x.lower().split(',')]):
 			if command != 'RESIGN': self.respond(
 				"You are already Mastering game '%s'" % game.name)
 			if self.isMaster(power): self.respond('The Master may not resign')
@@ -454,23 +455,8 @@ class Procmail:
 		#	Player TAKEOVER
 		#	---------------
 		if command == 'TAKEOVER':
-			if self.isMaster(power):
-				oldGM, game.master = game.master[1], self.dppd.split('|')
-				game.save()
-				game.openMail('Diplomacy Master TAKEOVER notice',
-					mailTo = oldGM, mailAs = host.dpjudge)
-				game.mail.write(
-					"You are no longer the Master of game '%s'.\n\n"
-					'The new Master is %s (%s).\n\n'
-					'Thank you for your service.' % (game.name,
-					game.master[2].replace('_', ' '), game.master[1]))
-				game.mail.close()
-				self.response += [
-					"You are now the Master of game '%s'.\n\n"
-					'Welcome to the %s' % (game.name, host.dpjudgeNick)]
-			else:
-				response = self.power.takeover(self.dppd, self.email, password)
-				if response: self.respond(response)
+			response = self.power.takeover(self.dppd, self.email, password)
+			if response: self.respond(response)
 		#	-------------------------------------------------------
 		#	Add the new power, then process the rest of the message
 		#	-------------------------------------------------------
@@ -549,8 +535,6 @@ class Procmail:
 	def respond(self, error = 0, copyTo = []):
 		self.game = self.game or Game()
 		if not self.power: rightEmail = self.email
-		elif self.power.name == 'MASTER': rightEmail = self.game.master[1]
-		elif self.power.name == 'JUDGEKEEPER': rightEmail = host.judgekeeper
 		elif self.power.address: rightEmail = self.power.address[0]
 		else: rightEmail = self.email
 		wrongMail = 0
@@ -596,13 +580,13 @@ class Procmail:
 		if ' ' in password: self.respond('Multiple passwords given')
 		powerName = self.powerID(powerName)
 		if powerName == 'MASTER':
-			power = Power(self.game, 'MASTER')
-			if password.upper() not in (self.game.password.upper(),
-				host.judgePassword.upper()):
+			power = self.game.gm
+			if password.upper() not in (power.password.upper(),
+				self.game.jk.password.upper()):
 				self.respond('Invalid Master password specified')
 		elif powerName == 'JUDGEKEEPER':
-			power = Power(self.game, 'JUDGEKEEPER')
-			if password.upper() != host.judgePassword.upper():
+			power = self.game.jk
+			if password.upper() != power.password.upper():
 				self.respond('Invalid Judgekeeper password specified')
 		else:
 			try: power = [x for x in self.game.powers
@@ -1013,15 +997,14 @@ class Procmail:
 								or not where.split('.')[-1].isalpha()
 								or '.' in (where[0], where[-1])): raise
 						except: self.respond('Bad ADDRESS: ' + addr)
-					if self.isMaster(power):
-						if word[1][0] == 'A': game.master[1] = word[2]
-						else: game.password = self.sanitize(word[2])
-					elif word[1][0] == 'A':
+					if word[1][0] == 'A':
 						power.address = power.address or ['']
 						power.address[0] = word[2]
+					elif self.isMaster(power):
+						power.password = self.sanitize(word[2])
 					else:
 						if 'BLIND' in game.rules: power.removeBlindMaps()
-						power.password = word[2]
+						power.password = self.sanitize(word[2])
 						if 'BLIND' in game.rules: game.makeMaps()
 				game.save()
 				if word[1][:2] == 'AB':
@@ -1119,6 +1102,6 @@ class Procmail:
 		else: game.reportOrders(self.power, self.email)
 	#	----------------------------------------------------------------------
 	def isMaster(self, power):
-		try: return power.name in ('MASTER', 'JUDGEKEEPER')
+		try: return power.omniscient > 2
 		except: return power in ('MASTER', 'JUDGEKEEPER')
 	#	----------------------------------------------------------------------

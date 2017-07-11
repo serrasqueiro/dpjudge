@@ -24,6 +24,8 @@ for (var, value) in [
 	('dppd', ''), ('dppdSubURL', '?variant=dppd'),
 	('dpjudgeNick', 'DPjudge'),
 	('judgePassword', ''),
+	('judgekeeper', vars(host).get('judgekeepers', [''])[0]),
+	('judgekeepers', [vars(host).get('judgekeeper', '')]),
 	('publicDomains', []),
 	('createLimit', 20),
 	('imageResolution', 72), ('usePDFMark', True),
