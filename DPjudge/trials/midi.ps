@@ -1,5 +1,5 @@
 %!PS-Adobe-3.0
-%%Title: Diplomacy Map (azov map)
+%%Title: Diplomacy Map (midi map)
 %%Creator: dpmap, using a map created with DPeye by Mario Huys (woelpad@gmail.com)
 %%DocumentPaperSizes: Letter
 %%LanguageLevel: 2
@@ -230,6 +230,7 @@
 		IncludeInternalBorders
 		IncludeBorders
 		IncludeCanals
+		IncludeCanalDuMidi
 		r
 		end
 	} bind
@@ -239,7 +240,6 @@
 	SwitchToMapMode
 	MapForm execform
 	/Centers << Centers { pop true } forall >> def
-	DrawSupplies
 	UNOWNED
 } bd
 /VisitSupplies {
@@ -472,18 +472,6 @@
 	UNOWNEDCENTER
 	{ SupplyCenters 3 1 roll 4 3 roll supply } bind
 	VisitSupplies
-} bd
-/PopulateTerritories {
-	SwitchToMapMode
-	s
-	UNOWNED
-	{ 2 copy DrawFleet DrawArmy pop } bind
-	{ DrawArmy pop } bind
-	{ DrawFleet pop } bind
-	{ DrawArmy pop } bind
-	{ DrawFleet pop } bind
-	VisitTerritories
-	r
 } bd
 /DrawAlias {
 	SwitchToMapMode
@@ -1163,7 +1151,7 @@
 /SplitString {
 	7 dict begin
 	/nrChars xd
-	/indentString xd
+	/indentLength xd
 	/objectString xd
 	/objectLast objectString length 1 sub def
 	% Short string?
@@ -1192,10 +1180,10 @@
 			% The second part.
 			objectString splitIndex 1 add objectLast splitIndex sub getinterval
 			% Add indentation if needed.
-			indentString length 0 gt {
-				dup length indentString length add string
-				dup 0 indentString putinterval
-				dup indentString length 4 3 roll putinterval
+			indentLength 0 gt {
+				dup length indentLength add string
+				0 1 indentLength 1 sub { 1 index exch 32 put } for
+				dup indentLength 4 3 roll putinterval
 			} if
 			% Add white space of the first part.
 			/nonSpaceIndex objectLast 1 add def
@@ -1221,7 +1209,7 @@
 } bd
 /Adjustment <<
 	/Steps [
-		{ /Count 0 def /Y 192.46 def false true } bind
+		{ /Count 0 def /Y 178.46 def false true } bind
 		{
 			Count 9 ge { false true } {
 				66 SplitString
@@ -1232,13 +1220,13 @@
 		} bind
 		{
 			66 SplitString [ exch {
-				494.7 122.46 m h
+				494.7 108.46 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				494.7 122.46 m (... \() h
+				494.7 108.46 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
@@ -1247,7 +1235,7 @@
 	]
 	/Start {
 		TextHeadingFont 7 y z
-		494.7 192.46 moveto
+		494.7 178.46 moveto
 		(Adjustments) h
 		TextFixedFont 7 y z
 		/StepIndex 0 def
@@ -1255,7 +1243,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		19 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
@@ -1276,7 +1264,7 @@
 } bd
 /Retreat <<
 	/Steps [
-		{ /Count 0 def /Y 276.46 def false true } bind
+		{ /Count 0 def /Y 262.46 def false true } bind
 		{
 			Count 9 ge { false true } {
 				66 SplitString
@@ -1287,13 +1275,13 @@
 		} bind
 		{
 			66 SplitString [ exch {
-				494.7 206.46 m h
+				494.7 192.46 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				494.7 206.46 m (... \() h
+				494.7 192.46 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
@@ -1302,7 +1290,7 @@
 	]
 	/Start {
 		TextHeadingFont 7 y z
-		494.7 276.46 moveto
+		494.7 262.46 moveto
 		(Retreats) h
 		TextFixedFont 7 y z
 		/StepIndex 0 def
@@ -1310,7 +1298,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		17 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
@@ -1333,7 +1321,7 @@
 	/Steps [
 		{ /Count 0 def /Y 549.46 def false true } bind
 		{
-			Count 37 ge { false true } {
+			Count 39 ge { false true } {
 				32 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
 				494.7 Y m h
@@ -1342,7 +1330,7 @@
 		} bind
 		{ /Count 0 def /Y 549.46 def false true } bind
 		{
-			Count 36 ge { false true } {
+			Count 38 ge { false true } {
 				32 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
 				637.5 Y m h
@@ -1351,13 +1339,13 @@
 		} bind
 		{
 			32 SplitString [ exch {
-				637.5 290.46 m h
+				637.5 276.46 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				637.5 290.46 m (... \() h
+				637.5 276.46 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
@@ -1371,7 +1359,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		6 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
@@ -1407,9 +1395,9 @@
 } bd
 /Owner <<
 	/Steps [
-		{ /Count 0 def /Y 115.46 def false true } bind
+		{ /Count 0 def /Y 101.46 def false true } bind
 		{
-			Count 12 ge { false true } {
+			Count 10 ge { false true } {
 				179 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
 				20.1 Y m h
@@ -1438,7 +1426,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		19 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
@@ -1469,7 +1457,7 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		25.1 135.14 456.2 439.71 rectclip .5496 .5496 x 75.67 345.88 t
+		25.1 128.14 456.2 439.71 rectclip .5496 .5496 x 75.67 333.14 t
 		ArrowColor
 		OkOrder
 	} if
@@ -1477,7 +1465,7 @@
 /FrameMap {
 	s
 	2 w LandBrown
-	22.1 132.14 m 484.3 132.14 l 484.3 577.86 l 22.1 577.86 l
+	22.1 125.14 m 484.3 125.14 l 484.3 570.86 l 22.1 570.86 l
 	p
 	s 8 w Black k r
 	clipsave clip k cliprestore
@@ -1524,6 +1512,12 @@
 	/fk { k } bd
 	2.5 w [ 2 3 ] 1.5 d SeaBlue
 	OutlineChartCanalLine
+	r
+} bd
+/IncludeCanalDuMidi {
+	s
+	/fk { k } bd
+	2.5 w [ 2 3 ] 1.5 d SeaBlue
 	OutlineChartCanalDuMidiLine
 	r
 } bd
@@ -3664,8 +3658,6 @@
 } bd
 /OutlineChartCanalDuMidiLine {
 	183 175 m
-	177 176 l
-	165 192 l
 	152 223 l
 	fk
 } bd

@@ -255,8 +255,7 @@ class Status:
 		if not host.observers: pass
 		elif type(host.observers) is list: groups += [host.observers]
 		else: groups += [[host.observers]]
-		groups += [[game.master[1]]]
-		groups += [x.address for x in game.powers if x.address]
+		groups += [x.address for x in [game.gm] + game.powers if x.address]
 		for addresses in groups:
 			if not addresses: continue
 			mail = Mail.Mail(', '.join(addresses), subject,

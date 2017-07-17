@@ -14,10 +14,10 @@
 
 % INFO
 %  421  465 ABO    Abo
+%  119   86 ADL    Andalusia
 %  382  114 ADR    Adriatic Sea
 %  477   27 AEG    Aegean Sea
 %  226   37 ALG    Algiers
-%  119   86 ADL    Andalusia
 %  260  260 ANE    Austrian Netherlands
 %  543   85 ANK    Ankara
 %  651  127 ARM    Armenia
@@ -967,7 +967,7 @@
 /SplitString {
 	7 dict begin
 	/nrChars xd
-	/indentString xd
+	/indentLength xd
 	/objectString xd
 	/objectLast objectString length 1 sub def
 	% Short string?
@@ -996,10 +996,10 @@
 			% The second part.
 			objectString splitIndex 1 add objectLast splitIndex sub getinterval
 			% Add indentation if needed.
-			indentString length 0 gt {
-				dup length indentString length add string
-				dup 0 indentString putinterval
-				dup indentString length 4 3 roll putinterval
+			indentLength 0 gt {
+				dup length indentLength add string
+				0 1 indentLength 1 sub { 1 index exch 32 put } for
+				dup indentLength 4 3 roll putinterval
 			} if
 			% Add white space of the first part.
 			/nonSpaceIndex objectLast 1 add def
@@ -1064,14 +1064,14 @@
 		{ /Count 0 def /Y 129.46 def false true } bind
 		{
 			Count 14 ge { false true } {
-				81 SplitString
+				79 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
 				30.6 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			81 SplitString [ exch {
+			79 SplitString [ exch {
 				30.6 24.46 m h
 			} /exec load ] cvx /Finish xd
 			true true
@@ -1083,7 +1083,7 @@
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 81 SplitString pop true false } bind
+		{ /Count Count 1 add def 79 SplitString pop true false } bind
 	]
 	/Start {
 		TextFixedFont 7 y z
@@ -1092,7 +1092,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		19 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
@@ -1116,26 +1116,26 @@
 		{ /Count 0 def /Y 129.46 def false true } bind
 		{
 			Count 14 ge { false true } {
-				38 SplitString
+				40 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
-				379.2 Y m h
+				370.8 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			38 SplitString [ exch {
-				379.2 24.46 m h
+			40 SplitString [ exch {
+				370.8 24.46 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				379.2 24.46 m (... \() h
+				370.8 24.46 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 38 SplitString pop true false } bind
+		{ /Count Count 1 add def 40 SplitString pop true false } bind
 	]
 	/Start {
 		TextFixedFont 7 y z
@@ -1144,7 +1144,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		19 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
@@ -1199,7 +1199,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		17 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
@@ -1252,7 +1252,7 @@
 	} bind
 	/Write {
 		ReplaceOrderName
-		(  ) {
+		6 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def

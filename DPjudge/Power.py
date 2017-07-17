@@ -17,7 +17,8 @@ class Power:
 			text += '\nADDRESS ' + ' '.join(self.address)
 		if self.ceo: text += '\nCONTROL ' + ' '.join(self.ceo)
 		elif self.password: text += '\nPASSWORD ' + self.password
-		if self.omniscient: text += '\nOMNISCIENT!'[:10 + self.omniscient]
+		if self.omniscient: text += ('\nOMNI%sENT!' % (('SCI',
+			'POT')[self.omniscient > 2]))[:12 - self.omniscient % 2]
 		if self.wait: text += '\nWAIT'
 		if self.cd: text += '\nCD'
 		if self.vote: text += ('\nVOTE ' +
@@ -102,7 +103,7 @@ class Power:
 			and self.type != 'MONITOR'):  # maybe should be "if self.centers"?
 				#	Tell at least the GM about the resignation
 				self.game.openMail('Diplomacy resignation notice',
-					mailTo = self.game.master[1], mailAs = host.dpjudge)
+					mailTo = self.game.gm.address[0], mailAs = host.dpjudge)
 				self.game.mail.write(
 					(("You have resigned %s from game '%s'.\n",
 					"%s has resigned from game '%s'.\n")[not byMaster])
@@ -155,7 +156,7 @@ class Power:
 			else:
 				#	Tell at least the GM about the resignation
 				self.game.openMail('Diplomacy resignation notice',
-					mailTo = self.game.master[1], mailAs = host.dpjudge)
+					mailTo = self.game.gm.address[0], mailAs = host.dpjudge)
 				self.game.mail.write(
 					(("You have resigned %s from game '%s'.\n",
 					"%s has resigned from game '%s'.\n")[not byMaster])
@@ -168,15 +169,32 @@ class Power:
 	#	----------------------------------------------------------------------
 	def takeover(self, dppd = None, email = None, password = None,
 		byMaster = 0):
+		if self.omniscient == 4: return ("It's not possible to take over "
+			'as Judgekeeper in a game.')
 		resigned, dummy = self.isResigned(), self.isDummy()
 		revived, generated = not dppd, not password
+		isMaster = self.omniscient > 2
+		type = self.type and self.type.lower() or (
+			isMaster and self.game.anglify(self.name)) or 'player'
+		subject = 'Diplomacy%s takeover notice' % ((' ' + type) * (
+			type != 'player'))
 		phase = self.game.phaseAbbr()
 		if phase[0] == '?':
 			phase = self.game.outcome and self.game.outcome[0] or ''
 		if not resigned and not dummy:
 			if not password or self.isValidPassword(password) < 3:
 				return ('You need to specify the password of the current ' +
-					'player in order to take over.')
+					type + ' in order to take over.')
+			self.game.openMail(subject,
+				mailTo = self.address[0], mailAs = host.dpjudge)
+			self.game.mail.write(
+				"You are no longer %s game '%s'." % (
+				('%s in', 'the %s of')[isMaster] %
+				self.game.anglify(self.name), self.game.name) +
+				'\n\nThe new %s is %s (%s).' % (type,
+				dppd.split('|')[2].replace('_', ' '), dppd.split('|')[1]) +
+				'\n\nThank you for your service.' * isMaster)
+			self.game.mail.close()
 		elif not password:
 			password = self.generatePassword()
 		if resigned or dummy:
@@ -194,15 +212,17 @@ class Power:
 			if email and email != self.address[0]:
 				self.address[:0] = [email]
 			self.password = password
-			self.game.openMail('Diplomacy takeover notice',
-				mailTo = self.name, mailAs = host.dpjudge)
+			self.game.openMail(subject,
+				mailTo = self.address[0], mailAs = host.dpjudge)
 			self.game.mail.write(
-				"You are %s %s in game '%s'.\n" %
+				"You are %s %s game '%s'." %
 				(('now', 'again')[revived],
-				self.game.anglify(self.name), self.game.name) +
-				("Your password is '%s'.\n" % password) *
-				(generated or byMaster) + "Welcome %sto the %s.\n" %
-				('back ' * revived, host.dpjudgeNick))
+				('%s in', 'the %s of')[isMaster] % self.game.anglify(self.name),
+				self.game.name) +
+				("\n\nYour password is '%s'." % password) *
+				(generated or byMaster) +
+				"\n\nWelcome%s to the %s." %
+				(' back' * revived, host.dpjudgeNick))
 			self.game.mail.close()
 		if resigned: self.game.avail = [x for x in self.game.avail
 			if not x.startswith(self.name + '-')]
@@ -211,12 +231,13 @@ class Power:
 			self.game.setDeadline()
 		self.game.save()
 		if 'BLIND' in self.game.rules: self.game.makeMaps()
-		self.game.mailPress(None, ['All!'],
-			"The abandoned %s has been taken over in game '%s'.\n" %
-			(self.game.anglify(self.name), self.game.name) +
-			('', 'The deadline for orders is now %s.\n' %
-			self.game.timeFormat())[not self.game.avail],
-			subject = 'Diplomacy position taken over')
+		if resigned:
+			self.game.mailPress(None, ['All!'],
+				"The abandoned %s has been taken over in game '%s'.\n" %
+				(self.game.anglify(self.name), self.game.name) +
+				('', 'The deadline for orders is now %s.\n' %
+				self.game.timeFormat())[not self.game.avail],
+				subject = 'Diplomacy position taken over')
 	#	----------------------------------------------------------------------
 	def dummy(self):
 		if self.isResigned(): self.player[0] = 'DUMMY'
@@ -346,12 +367,13 @@ class Power:
 		#	---------------------------
 		if userId < 0: return 0
 		id = '#' + str(userId)
-		if self.game.master and id == self.game.master[0]: return 4
+		if self.game.gm.player and id == self.game.gm.player[0].split('|')[0]:
+			return 4
 		if self.player and id == self.player[0].split('|')[0]: return 3
 		#	----------------------------------------
 		#	Check against omniscient power passwords
 		#	----------------------------------------
-		if self.name == 'MASTER': return 0
+		if self.omniscient > 2: return 0
 		if [1 for x in self.game.powers if x.omniscient
 			and x.player and id == x.player[0].split('|')[0]]: return 2
 		return 0

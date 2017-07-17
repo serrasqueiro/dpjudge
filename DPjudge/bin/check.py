@@ -82,7 +82,7 @@ class Check(Status):
 			except:
 				print gameName, 'DOES NOT EXIST!'
 				continue
-			if not game.master or len(game.master) != 3:
+			if not game.gm.player:
 				print game.name, 'HAS NO MASTER!'
 				continue
 			#	-----------------------------------------------------------
@@ -98,8 +98,8 @@ class Check(Status):
 				'-a' in flags or now[-4:] >= '0020'): pass
 			elif game.error:
 				print game.name, 'has ERRORS ... notifying the Master'
-				for addr in game.master[1].split(',') + [
-					host.judgekeeper] * (not game.tester):
+				for addr in game.gm.address[0].split(',') + (
+					host.judgekeepers * (not game.tester)):
 					mail = Mail(addr,
 						'Diplomacy ERRORS (%s)' % game.name)
 					mail.write("The game '%s' on %s has the following "
@@ -112,8 +112,8 @@ class Check(Status):
 			elif 'active' in data:
 				if line and game.deadlineExpired('1W'):
 					critical = game.deadlineExpired('4W')
-					for addr in game.master[1].split(',') + [
-						host.judgekeeper] * (not game.tester and critical):
+					for addr in game.gm.address[0].split(',') + (
+						host.judgekeepers * (not game.tester and critical)):
 						mail = Mail(host.judgekeeper,
 							'Diplomacy game alert (%s)' % game.name)
 						mail.write("%s:\n\nThe %s game '%s' on %s is "
@@ -155,7 +155,7 @@ class Check(Status):
 				else: state = data[1]
 				print game.name, 'is in the %s state' % state,
 				print '... reminding the Master'
-				for addr in game.master[1].split(','):
+				for addr in game.gm.address[0].split(','):
 					mail = Mail(addr,
 						'Diplomacy game reminder (%s)' % game.name)
 					mail.write("GameMaster:\n\nThe game '%s' on %s is "

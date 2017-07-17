@@ -219,7 +219,7 @@ def outStatusFile():
 		'WAIT', 'SKIP', 'NEED')
 	implemented = ('DESC', 'DESCRIPTION', 'GAME', 'DEADLINE', 'ZONE', 'NAME',
 		'MORPH', 'MASTER', 'RULE', 'RULES', 'PRIVATE', 'MAP', 'TRIAL',
-		'PASSWORD', 'PROCESSED')
+		'ADDRESS', 'PASSWORD', 'PROCESSED')
 	modal = ('DESC', 'DESCRIPTION', 'NAME', 'MORPH')
 	noshow, mode = hidden + implemented, None
 	file, outfile = open(page.game.file('status'), encoding='latin-1'), ''

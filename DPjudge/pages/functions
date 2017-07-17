@@ -1537,7 +1537,7 @@ def showPressArchive(selected = 0, filter = 0):
 	thePower = power.encode('latin-1')
 	file, items, validCodes, involved = open(file), [], [], []
 	omniscient = (page.pwdFlag == 2 or page.pwdFlag > 3) and (
-		power == 'MASTER' or page.power.omniscient)
+		power == 'MASTER' or power and page.power.omniscient)
 	for lineNum, line in enumerate(file):
 		if not line.startswith('::'): continue
 		data, receivers = line.strip().upper().split(), []

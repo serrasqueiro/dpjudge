@@ -5,12 +5,12 @@
 # Use the '=' placeholder to copy all remaining values of the preceding variant.
 
 # Standard
-standard_dutch 21,22,579,518
-standard_french 21,22,560,502
-standard_german 21,22,579,518
-standard_glhetg 21,22,545,486
+standard_dutch 21,22,560,502
+standard_french 21,22,555,494
+standard_german 21,22,564,502
+standard_glhetg 21,22,526,470
 
 # Modern
-azov 20,22,487,492
-midi 20,22,487,492
+azov 20,22,487,506
+midi 20,22,487,506
 

@@ -1276,7 +1276,7 @@
 /SplitString {
 	7 dict begin
 	/nrChars xd
-	/indentString xd
+	/indentLength xd
 	/objectString xd
 	/objectLast objectString length 1 sub def
 	% Short string?
@@ -1305,10 +1305,10 @@
 			% The second part.
 			objectString splitIndex 1 add objectLast splitIndex sub getinterval
 			% Add indentation if needed.
-			indentString length 0 gt {
-				dup length indentString length add string
-				dup 0 indentString putinterval
-				dup indentString length 4 3 roll putinterval
+			indentLength 0 gt {
+				dup length indentLength add string
+				0 1 indentLength 1 sub { 1 index exch 32 put } for
+				dup indentLength 4 3 roll putinterval
 			} if
 			% Add white space of the first part.
 			/nonSpaceIndex objectLast 1 add def
@@ -1334,42 +1334,42 @@
 } bd
 /Adjustment <<
 	/Steps [
-		{ /Count 0 def /Y 159.46 def false true } bind
-		{
-			Count 6 ge { false true } {
-				35 SplitString
-				/Count Count 1 add def /Y Y 7 sub def
-				523.9 Y m h
-				true false
-			} ifelse
-		} bind
-		{ /Count 0 def /Y 159.46 def false true } bind
+		{ /Count 0 def /Y 180.46 def false true } bind
 		{
 			Count 5 ge { false true } {
-				35 SplitString
+				39 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
-				679.3 Y m h
+				490.3 Y m h
+				true false
+			} ifelse
+		} bind
+		{ /Count 0 def /Y 180.46 def false true } bind
+		{
+			Count 4 ge { false true } {
+				39 SplitString
+				/Count Count 1 add def /Y Y 7 sub def
+				662.5 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			35 SplitString [ exch {
-				679.3 117.46 m h
+			39 SplitString [ exch {
+				662.5 145.46 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				679.3 117.46 m (... \() h
+				662.5 145.46 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 35 SplitString pop true false } bind
+		{ /Count Count 1 add def 39 SplitString pop true false } bind
 	]
 	/Start {
 		TextHeadingFont 7 y z
-		523.9 159.46 moveto
+		490.3 180.46 moveto
 		(Adjustments) h
 		TextFixedFont 7 y z
 		/StepIndex 0 def
@@ -1377,7 +1377,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		19 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
@@ -1398,42 +1398,42 @@
 } bd
 /Retreat <<
 	/Steps [
-		{ /Count 0 def /Y 222.46 def false true } bind
+		{ /Count 0 def /Y 229.46 def false true } bind
 		{
-			Count 7 ge { false true } {
-				35 SplitString
+			Count 5 ge { false true } {
+				39 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
-				523.9 Y m h
+				490.3 Y m h
 				true false
 			} ifelse
 		} bind
-		{ /Count 0 def /Y 222.46 def false true } bind
+		{ /Count 0 def /Y 229.46 def false true } bind
 		{
-			Count 6 ge { false true } {
-				35 SplitString
+			Count 4 ge { false true } {
+				39 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
-				679.3 Y m h
+				662.5 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			35 SplitString [ exch {
-				679.3 173.46 m h
+			39 SplitString [ exch {
+				662.5 194.46 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				679.3 173.46 m (... \() h
+				662.5 194.46 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 35 SplitString pop true false } bind
+		{ /Count Count 1 add def 39 SplitString pop true false } bind
 	]
 	/Start {
 		TextHeadingFont 7 y z
-		523.9 222.46 moveto
+		490.3 229.46 moveto
 		(Retreats) h
 		TextFixedFont 7 y z
 		/StepIndex 0 def
@@ -1441,7 +1441,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		17 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
@@ -1464,36 +1464,36 @@
 	/Steps [
 		{ /Count 0 def /Y 530.46 def false true } bind
 		{
-			Count 42 ge { false true } {
-				35 SplitString
+			Count 41 ge { false true } {
+				39 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
-				523.9 Y m h
+				490.3 Y m h
 				true false
 			} ifelse
 		} bind
 		{ /Count 0 def /Y 530.46 def false true } bind
 		{
-			Count 41 ge { false true } {
-				35 SplitString
+			Count 40 ge { false true } {
+				39 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
-				679.3 Y m h
+				662.5 Y m h
 				true false
 			} ifelse
 		} bind
 		{
-			35 SplitString [ exch {
-				679.3 236.46 m h
+			39 SplitString [ exch {
+				662.5 243.46 m h
 			} /exec load ] cvx /Finish xd
 			true true
 		} bind
 		{
 			/Count 1 def /Finish {
-				679.3 236.46 m (... \() h
+				662.5 243.46 m (... \() h
 				Count dup 1 add log iceiling string cvs h
 				( more\)) h
 			} bd false true
 		} bind
-		{ /Count Count 1 add def 35 SplitString pop true false } bind
+		{ /Count Count 1 add def 39 SplitString pop true false } bind
 	]
 	/Start {
 		TextFixedFont 7 y z
@@ -1502,7 +1502,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		6 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
@@ -1525,22 +1525,22 @@
 	SwitchToTextMode
 	TextTitleFont 14 y z
 	(Diplomacy)
-	523.9 553.42 m h
+	490.3 553.42 m h
 	TextTitleFont 14 y z
-	dup stringwidth pop dup 302.4 gt {
-		523.9 535.5 m
-		302.4 exch div dup 1 x exch
+	dup stringwidth pop dup 336 gt {
+		490.3 535.5 m
+		336 exch div dup 1 x exch
 		0 3.92 rmoveto h
 		1 exch div 1 x
 	} {
-		pop 523.9 539.42 m h
+		pop 490.3 539.42 m h
 	} ifelse
 } bd
 /Owner <<
 	/Steps [
-		{ /Count 0 def /Y 110.46 def false true } bind
+		{ /Count 0 def /Y 138.46 def false true } bind
 		{
-			Count 10 ge { false true } {
+			Count 14 ge { false true } {
 				193 SplitString
 				/Count Count 1 add def /Y Y 7 sub def
 				15.7 Y m h
@@ -1569,7 +1569,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		19 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
@@ -1600,7 +1600,7 @@
 		FinishReport /FinishReport { } def
 		/InTextMode false def
 		s
-		20.7 123.05 489.8 432.9 rectclip .4742 .4742 x 43.66 259.51 t
+		20.7 151.9 456.2 403.2 rectclip .4416 .4416 x 46.87 343.95 t
 		ArrowColor
 		OkOrder
 	} if
@@ -1608,7 +1608,7 @@
 /FrameMap {
 	s
 	2 w LandBrown
-	17.7 120.05 m 513.5 120.05 l 513.5 558.95 l 17.7 558.95 l
+	17.7 148.9 m 479.9 148.9 l 479.9 558.1 l 17.7 558.1 l
 	p
 	s 8 w Black k r
 	clipsave clip k cliprestore

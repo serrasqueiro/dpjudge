@@ -460,8 +460,8 @@
 	(CHB) 410 250 w
 	(COB) 378 52 w
 	(COM) 240 69 w
-	(ECO) 402 213 w
 	(ECS) 454 137 w
+	(ESB) 402 213 w
 	(GAL) 341 14 w
 	(GCA) 190 115 w
 	(GOA) 45 393 w
@@ -497,8 +497,8 @@
 	(SOY) 348 146 w
 	(SPO) 177 27 w
 	(SWP) 24 71 w
-	(WCO) 96 271 w
 	(WCS) 393 113 w
+	(WSB) 96 271 w
 	(CAL) 456 63 g
 	(COS) 384 76 g
 	(GUT) 333 106 g
@@ -1116,7 +1116,7 @@
 /SplitString {
 	7 dict begin
 	/nrChars xd
-	/indentString xd
+	/indentLength xd
 	/objectString xd
 	/objectLast objectString length 1 sub def
 	% Short string?
@@ -1145,10 +1145,10 @@
 			% The second part.
 			objectString splitIndex 1 add objectLast splitIndex sub getinterval
 			% Add indentation if needed.
-			indentString length 0 gt {
-				dup length indentString length add string
-				dup 0 indentString putinterval
-				dup indentString length 4 3 roll putinterval
+			indentLength 0 gt {
+				dup length indentLength add string
+				0 1 indentLength 1 sub { 1 index exch 32 put } for
+				dup indentLength 4 3 roll putinterval
 			} if
 			% Add white space of the first part.
 			/nonSpaceIndex objectLast 1 add def
@@ -1208,7 +1208,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		19 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
@@ -1263,7 +1263,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		17 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
@@ -1324,7 +1324,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		6 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def
@@ -1391,7 +1391,7 @@
 		/Finish { } def
 	} bind
 	/Write {
-		(  ) {
+		19 {
 			Step {
 				/StepIndex StepIndex 1 add def
 				/Step Steps StepIndex get def

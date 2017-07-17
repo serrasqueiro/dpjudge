@@ -5,37 +5,37 @@
 # Use the '=' placeholder to copy all remaining values of the preceding variant.
 
 # Standard
-standard 21,22,584,518
+standard 21,22,574,510
 
 # Standard map variants
-brazilian 21,22,584,518
-britain 21,22,584,518
-chaos 21,20,584,508
-milan 21,22,584,518
-minorpower 20,22,571,506
-renaissance 21,22,584,518
+brazilian 21,22,574,510
+britain 21,22,574,510
+chaos 21,20,599,508
+milan 21,22,574,510
+minorpower 20,22,583,506
+renaissance 21,22,574,510
 crowded 21,22,550,486
-fiveman 21,22,584,518
-v8 21,22,579,510
-void 21,20,584,508
+fiveman 21,22,574,510
+v8 21,22,569,510
+void 21,20,599,508
 
 # Expansions to the standard map
 loeb9 20,21,579,509
-youngstown 15,31,516,480 A4
+youngstown 15,31,482,452 A4
 
 # Europe
 1900 21,22,555,518
 aberration 20,22,609,485
-ancmed 21,50,584,474
+ancmed 21,50,574,474
 ambition 30,22,539,478
 classical 17,75,583,461
 hundred 21,24,396,528
-modern 20,22,487,492
-modern-up 20,22,487,492
-slovenia 20,22,487,492
+modern 20,22,487,506
+modern-up 20,22,487,506
+slovenia 20,22,487,506
 
 # Asia
-canton 21,22,584,454
+canton 21,22,574,446
 sengoku 21,22,574,502
 
 # America
@@ -48,5 +48,5 @@ zeus 20,22,537,520
 # Uncategorized
 # Imaginary
 chromatic 42,28,545,530
-pure 21,24,490,468
-sailho 21,24,490,480
+pure 21,24,476,444
+sailho 21,24,476,468
