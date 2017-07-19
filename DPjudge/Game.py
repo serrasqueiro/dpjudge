@@ -667,7 +667,10 @@ class Game:
 		if self.deadline: self.deadline.zone = zone
 		if self.processed: self.processed = self.processed.changeZone(zone)
 	#	----------------------------------------------------------------------
-	def getTime(self, when = None, npar = 5):
+	def getTime(self, when = None, npar = 0):
+		if not npar:
+			try: npar = len(when)/2-1
+			except: return Time(self.zone, when)
 		return Time(self.zone, when, npar)
 	#	----------------------------------------------------------------------
 	def loadStatus(self, fileName = 'status', includeFlags = 7):
