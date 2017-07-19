@@ -117,7 +117,8 @@ class Time(str):
 					time.strptime(when)[:npar])
 				break
 			except: pass
-			for fmt in ['%A %d %B %Y %H:%M', '%a %d %b %Y %H:%M', '%a, %d %b %Y %H:%M:%S', '%d %B %Y', '%A %d %B %Y']:
+			for fmt in ['%A %d %B %Y %H:%M', '%a %d %b %Y %H:%M',
+				'%a, %d %b %Y %H:%M:%S', '%d %B %Y', '%A %d %B %Y']:
 				try:
 					this = str.__new__(self, '%02d' * npar %
 						time.strptime(when, fmt)[:npar])
@@ -148,14 +149,12 @@ class Time(str):
 		zone, self.zone = self.zone, TimeZone('GMT')
 		secs = self.seconds()
 		zone, self.zone = self.zone, zone
-		try: secs = secs / mod * mod
+		try: tsecs = secs / mod * mod
 		except:
 			dict = { 'M': 60, 'H': 3600, 'D': 86400, 'W': 604800 }
 			mod = int(mod[:-1]) * dict.get(mod[-1], 1)
-			secs = secs / mod * mod
-		when = Time(zone, secs, self.npar())
-		when.zone = self.zone
-		return when
+			tsecs = secs / mod * mod
+		return self.offset(tsecs - secs)
 	#	----------------------------------------------------------------------
 	def adjust(self, npar):
 		if npar == self.npar(): return self

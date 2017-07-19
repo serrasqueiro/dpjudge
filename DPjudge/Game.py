@@ -664,7 +664,7 @@ class Game:
 		#	what the user expects. Also the TIMING line may influence the
 		#	deadline, and we're not going to update that.
 		#	-------------------------------------------------------------
-		if self.deadline: self.deadline.zone = zone
+		if self.deadline: self.deadline = self.getTime(self.deadline)
 		if self.processed: self.processed = self.processed.changeZone(zone)
 	#	----------------------------------------------------------------------
 	def getTime(self, when = None, npar = 0):
