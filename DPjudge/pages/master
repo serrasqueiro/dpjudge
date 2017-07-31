@@ -253,7 +253,7 @@ def showMasterCommands():
 			'</td><td align=right><select class=inputBox name=gameMode>')
 		for mode in (['forming'] * (game.phase == 'FORMING') +
 			['active', 'waiting'] * (game.phase != 'COMPLETED'
-			and ('forming' not in game.status or game.available())) +
+			and ('forming' not in game.status or game.available() and 1)) +
 			['completed'] * (game.phase == 'COMPLETED') +
 			['terminated']):
 			page.write('<option value=%s%s>%s' %

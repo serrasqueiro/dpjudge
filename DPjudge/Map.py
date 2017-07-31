@@ -811,6 +811,7 @@ class Map:
 						error += ['SPACE OR MISSING CLOSING BRACKET IN ' +
 							'POWER NICKNAMES: ' + word[1]]
 					else: nicks = nicks[:-1]
+					del word[1]
 				else: nicks = ':' * (power and upword not in self.abbrev)
 				if nicks:
 					nicks = nicks.split(':')
@@ -836,7 +837,6 @@ class Map:
 							kind = 'ABBREVIATION'
 							short = nick
 						self.lang.addNick(nick, power)
-					del word[1]
 				else: self.ownWord.setdefault(upword, upword)
 				reinit = upword in self.inhabits
 				if reinit: self.inhabits.remove(upword)

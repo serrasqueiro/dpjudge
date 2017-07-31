@@ -4519,7 +4519,7 @@ class Game:
 					else: letter = self.map.abbrev.get(power, power[0])
 					centers = ' '.join(line[:-1].split()[1:]).split(', ')
 					if not centers: continue
-					for spot in centers: owner[year][self.map.aliases.
+					for spot in centers: owner[year][self.lang.aliases.
 						get(spot.strip())] = letter
 					count[year][power] = len(centers)
 				else: save = line
