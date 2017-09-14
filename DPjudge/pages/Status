@@ -178,6 +178,19 @@ page.include('functions')
 		deadline.  The <tt><i>delay</i></tt> must be some positive whole
 		number followed by either <tt>M</tt> (for minutes), <tt>H</tt>
 		(for hours), <tt>D</tt> (for days), or <tt>W</tt> (for weeks).
+		There's a catch though. In combination with the <tt>AT</tt>
+		control, delays specified in days or weeks have an 8 hour fudge
+		period. Late orders entered in this period will not cause the
+		deadline to be pushed back for the full delay period and then
+		some, but will be set to the <tt>AT</tt> time-of-day of the
+		previous day <i>as if the orders had been entered on time</i>
+		(or on the most recent <tt>AT</tt> time-of-day if the
+		player is a couple of days late).  This means that e.g. a
+		<tt><i>1D</i></tt> delay actually acts the same add a
+		<tt><i>16H</i></tt> delay. You must specify the delay in hours
+		(or minutes) instead (e.g. <tt><i>24H</i></tt>) if you want to
+		guarantee at least a full day until the next deadline.
+
 		<i>See below for the default value if no </i><tt>NEXT</tt><i>
 		control is given.</i>
 	<dt><b><tt><i>phaseType delay</i></tt></b>

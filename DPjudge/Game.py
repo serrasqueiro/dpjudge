@@ -4302,7 +4302,7 @@ class Game:
 		try: delay = [y for x,y in self.timing.items()
 			if not self.phase.split()[-1].find(x)][0]
 		except: delay = self.timing.get('NEXT',
-			('3D', '1D')[self.phaseType in 'RA'])
+			('1D', '3D')[self.phaseType == 'M'])
 		#	-------------------------------------------------------
 		#	Determine earliest deadline.  If the game allows press,
 		#	double the usual length of time for the first deadline.
@@ -4323,7 +4323,13 @@ class Game:
 			#	provide fudge-time so that three days
 			#	from 11:41, pushed to the next 11:40
 			#	won't be four days away (for example)
+			#	Increase this to 8 hours if the delay
+			#	is expressed in whole days
 			#	-------------------------------------
+			if delay[-1:] in 'WD':
+				whack = when.offset('-' + self.timing.get('FUDGE', '8H'))
+				if whack < when.offset('-12H'): when = when.offset('-12H')
+				else: when = whack
 			when = when.offset(-1200).next(at)
 		moved = 1
 		while moved:
