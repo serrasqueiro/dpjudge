@@ -162,13 +162,14 @@ def showMapButtons():
 		#	--------------------------------------------------------------
 		#	Add a timestamp to force a refresh even when the browser cache
 		#	is set to never check for updates.
+		#	Add an excessively large page number to open at the last page.
 		#	--------------------------------------------------------------
 		page.write(
 			"""
 			<form>
 			<td class="bodycopy" align=right nowrap>By Season (PDF)</td>
-			<td><a href="%s/%s.pdf?t=%d" target="_blank"><input type=button
-			class="inputSubmit" value='View'></a></td>
+			<td><a href="%s/%s.pdf?t=%d#page=999" target="_blank"><input
+			type=button class="inputSubmit" value='View'></a></td>
 			</form>
 			""" % (host.gameMapURL, file, int(os.path.getmtime(map + '.pdf'))))
 		if ps: page.write('</tr><tr><td></td>')
