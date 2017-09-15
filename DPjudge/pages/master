@@ -832,8 +832,9 @@ def updateMaster():
 	or game.phase in ('FORMING', 'COMPLETED')): game.deadline = None
 	elif 'date' in vars(page):
 		dead = map(int, page.date.split('-'))
-		deadline = ('%d%02d%02d' % (dead[2], dead[0], dead[1]) +
-			page.hour + page.minute)
+		try: deadline = ('%d%02d%02d' % (dead[2], dead[0], dead[1]) +
+			'%02d%02d' % (int(page.hour), int(page.minute)))
+		except: return reportUpdateError('Invalid deadline time')
 		if deadline != game.deadline:
 			game.deadline = game.getTime(deadline)
 			if not deathnote:
