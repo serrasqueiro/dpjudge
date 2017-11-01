@@ -13,10 +13,7 @@ class Procmail:
 	"""
 	#	-------------------------------------------------------------
 	def __init__(self):
-		self.game = power = password = joiner = None
-		self.message = self.email = self.power = self.pressSent = None
-		self.response, msg = [], []
-		lineNo = joining = 0
+		self.message = self.msgLines = self.email = self.signOff = None
 		part = input = email.message_from_file(os.sys.stdin)
 		addy = part.get('reply-to', part['from']) or ''
 		if '@' in addy:
@@ -45,7 +42,7 @@ class Procmail:
 				if part.get_content_type() == 'text/plain': break
 			else: self.respond('DPjudge requires a text/plain MIME part')
 		lines = unicode(part.get_payload(decode=1), 'latin-1').split('\n')
-		lines = [x for x in lines if x.strip()[:2] != '//']
+		lines, msg = [x for x in lines if x.strip()[:2] != '//'], []
 		#	----------------------------------------
 		#	Alternate line ending character (mostly
 		#	for pager/cell-phone e-mailers who don't
@@ -65,11 +62,23 @@ class Procmail:
 			if line.rstrip() and line.rstrip()[-4:].lower() != '<br>': break
 		else:
 			msg = [x.rstrip()[:-4] for x in msg]
-		self.message = msg[:]
+		self.message = msg
 		#file = open(host.gameDir + '/message', 'w')
 		#file.write('\n'.join(self.message).encode('latin-1'))
 		#file.close()
-		for line in msg:
+		#	---------------------------------------
+		#	Process each SIGNON, CREATE, JOIN, etc.
+		#	command separately.
+		#	---------------------------------------
+		while self.message and not self.signOff:
+			self.parseMessage()
+	#	----------------------------------------------------------------------
+	def parseMessage(self):
+		self.game = self.power = self.pressSent = None
+		self.response = []
+		game = power = password = joiner = None
+		lineNo = 0
+		for line in self.message[:]:
 			word = line.split()
 			lineNo += 1
 			#	------------------
@@ -106,86 +115,22 @@ class Procmail:
 					self.respond("Password cannot contain '<' or '>'")
 				if upword[0] == 'P':
 					response = Status().purgeGame(game, 0, password)
+					del self.message[:lineNo]
 					if not response: 
-						del self.message[:lineNo - 1]
 						response = ['Game %s purged from this DPjudge' % game]
 					self.response += response
-					self.respond()
+					return self.respond()
 				elif upword[0] == 'R':
 					response = Status().renameGame(game, toGame, 0, password)
+					del self.message[:lineNo]
 					if not response: 
-						del self.message[:lineNo - 1]
 						response = ['Game %s renamed to %s' % (game, toGame)]
 					self.response += response
-					self.respond()
+					return self.respond()
 				else:
-					games, mode, unlisted = Status(), 'preparation', 0
-					#if len([1 for x in games.dict.values()
-					#	if 'forming' in x or 'preparation' in x]) > 20:
-					#	self.respond('CREATE is disabled -- '
-					#		'too many games currently need players')
-					if game in games.dict:
-						self.respond("Game name '%s' already used" % game)
-					try: desc = __import__('DPjudge.variants.' + variant,
-						globals(), locals(), `variant`).VARIANT
-					except: self.respond('Unrecognized rule variant: ' +
-						variant)
-					self.dppdMandate(upword)
-					dir, onmap = host.gameDir + '/' + game, ''
-					os.mkdir(dir)
-					os.chmod(dir, 0777)
-					file = open(dir + '/status', 'w')
-					temp = ('GAME %s\nPHASE FORMING\nMASTER %s\n' +
-						'PASSWORD %s\n') % (game, self.dppd, password)
-					file.write(temp.encode('latin-1'))
-					for info in self.message[1:]:
-						word = ''.join(info.upper().split()[:1])
-						if word in ('DESC', 'DESCRIPTION', 'SIGNOFF'): break
-						if word in ('MAP', 'TRIAL'):
-							onmap = ' on the %s%s map' % (
-								''.join(info.split()[1:2]).title(),
-								('', ' trial')[word == 'TRIAL'])
-					else:
-						temp = 'DESC A %s game%s.\n' % (desc, onmap)
-						file.write(temp.encode('latin-1'))
-					for info in self.message[1:]:
-						word = info.upper().split()
-						if not len(word): file.write('\n')
-						elif word[0] == 'SIGNOFF': break
-						elif word[0] in ('GAME', 'PHASE', 'MASTER'): pass
-						elif (len(word) == 1
-						and word[0] in ('FORM', 'ACTIVATE')): mode = 'forming'
-						elif (len(word) == 2 and word[0] == 'SET'
-						and word[1] in ('LISTED', 'UNLISTED')):
-							unlisted = word[0][1] == 'U'
-						else: file.write((info + '\n').encode('latin-1'))
-					file.close()
-					os.chmod(file.name, 0666)
-					games.dict[game] = [variant, mode]
-					if unlisted: games.dict[game] += ['unlisted']
-					games.save()
-					self.game, self.message = Game(game), []
-					if 'SOLITAIRE' in self.game.rules:
-						if not self.game.private:
-							self.game.private = 'SOLITAIRE'
-							self.game.save()
-					if self.game.private:
-						games.dict[game] += ['private']
-						games.save()
-					if (mode == 'forming' and not self.game.available()
-					and 'START_MASTER' not in self.game.rules):
-						self.game.begin()
-						mode = 'active'
-					observers = host.observers or []
-					if type(observers) is not list: observers = [observers]
-					self.respond("Game '%s' has been created.  %s at:\n"
-						'   %s%s?game=%s\n\nWelcome to the %s' %
-						(game, mode[0] == 'p' and 'Finish preparation'
-						or mode[0] == 'f' and 'Game is now forming'
-						or 'Game has started', host.dpjudgeURL,
-						'/index.cgi' * (os.name == 'nt'), game,
-						host.dpjudgeNick),
-						copyTo = observers + self.game.map.notify)
+					del self.message[:lineNo]
+					self.handleGameCreation(upword, game, password, variant)
+					return
 			#	---------------------------------------------------
 			#	Detect player message (SIGNON, RESIGN, or TAKEOVER)
 			#	---------------------------------------------------
@@ -202,7 +147,7 @@ class Procmail:
 					if '<' in password or '>' in password:
 						self.respond("Password cannot contain '<' or '>'")
 				if upword[0] != 'S': joiner = word[0].upper()
-				del self.message[:lineNo - 1]
+				del self.message[:lineNo]
 				break
 			#	---------------------------------------------
 			#	Detect LIST, SUMMARY, HISTORY, or MAP request
@@ -248,13 +193,16 @@ class Procmail:
 					password = self.sanitize(word[2])
 					if '<' in password or '>' in password:
 						self.respond("Password cannot contain '<' or '>'")
-					del self.message[:lineNo - 1]
+					del self.message[:lineNo]
+				else: del self.message[:lineNo - 1]
 				break
 			#	------------------------------
 			#	Detect SIGNOFF (usable without
 			#	SIGNON; stops reading message)
 			#	------------------------------
-			elif upword == 'SIGNOFF': return
+			elif upword == 'SIGNOFF':
+				self.signOff = 1
+				return
 			#	-----------------
 			#	Unrecognized line
 			#	-----------------
@@ -302,300 +250,97 @@ class Procmail:
 		#	---------------------
 		elif self.email:
 			self.handleEmail(power, password)
-			self.respond()
+			return self.respond()
 	#	----------------------------------------------------------------------
-	def dppdMandate(self, command):
-		if self.dppd: return
-		if not host.dppdURL:
-			#	-------------------------------------------------------
-			#	Running without a DPPD.  Shame on the judgekeeper.  :-)
-			#	-------------------------------------------------------
-			self.dppd = '|%s|' % self.email + self.email
-			return
-		#	---------------------------------------------------------
-		#	We're here for a JOIN (or similar) or CREATE command that
-		#	requires registration -- need to ask the DPPD for an ID.
-		#	---------------------------------------------------------
-		#	Need to use query string rather than POST it.  Don't know why.
-		dppdURL = host.dppdURL.split(',')[0]
-		query = '?&'['?' in dppdURL]
-		page = urllib.urlopen(dppdURL + query +
-			'page=whois&email=' + urllib.quote(self.email, '@'))
-		response = unicode(page.read(), 'latin-1')
-		page.close()
-		self.ip, self.dppd = self.email, '|'.join(response.split())
-		if self.dppd[:1] != '#': self.respond(
-			'Your e-mail address (%s) is\nnot registered with the DPPD, '
-			'or your DPPD status does\nnot allow you to use the %s command.'
-			'\n\nVisit the DPPD at %s\nfor assistance' %
-			(self.email, command, dppdURL))
-	#	----------------------------------------------------------------------
-	def updatePlayer(self, power, password, command, word):
-		game, self.power, playerType = self.game, None, None
-		if command != 'JOIN':
-			self.locatePower(power, password,
-				command in ('RESIGN', 'TAKEOVER'), command == 'TAKEOVER')
-			if self.power: power, playerType = self.power.name, self.power.type
-		#	---------------------------------------------
-		#	The line below looks like a candidate to be
-		#	an "else" but it's not, due to a coming elif!
-		#	---------------------------------------------
-		if command == 'JOIN':
-			#	-------------------------------------------
-			#	Make sure it's okay for a new power to join
-			#	-------------------------------------------
-			if game.phase != 'FORMING':
-				self.respond("Game '%s' already full" % game.name)
-			if power == 'POWER':
-				taken = [x.name for x in game.powers]
-				for count in range(1, len(game.map.powers) + 1):
-					if 'POWER#' + `count` not in taken: break
-				power += '#' + `count`
-			elif 'POWER_CHOICE' not in game.rules:
-				self.respond('Power selection is not allowed')
-			elif power not in [x[x[0] == '_':] for x in game.map.powers]:
-				self.respond("No power '%s' in game '%s'" % (power, game.name))
-			elif power in [x[x[0] == '_':] for x in game.map.dummies]:
-				self.respond("Power '%s' cannot be played" % power)
-			elif power in [x.name for x in game.powers]: self.respond(
-				'Power %s is already being played' % game.anglify(power))
-			if game.groups:
-				exclude = 1
-				groupList = [x.group.name.upper()
-					for x in Groups.userClass(self.email).groups()]
-				for group in game.groups:
-					if group in groupList:
-						exclude = 0
-						break
-				if exclude:
-					self.respond('You are not in a group allowed in this game.')
-			playerType = 'POWER'
-		elif command == 'RESIGN':
-			if not self.power:
-				self.respond("Player ID '%s' does not exist" % power)
-			if self.power.player[0] in ('RESIGNED', 'DUMMY'):
-				self.respond("Cannot RESIGN '%s' -- no current PLAYER" % power)
-		elif command == 'TAKEOVER':
-			try:
-				if not self.isMaster(power) and self.power.player[0] != 'RESIGNED': 1/0
-			except: self.respond("Cannot TAKEOVER the ID '%s'" % power)
-		else:
-			#	------------------------------------------------------
-			#	Make sure it's okay for a new "something else" to join
-			#	and that this "something else" chooses a unique name.
-			#	------------------------------------------------------
-			for playerType in ['OBSERVER', 'MONITOR'] + game.playerTypes:
-				if playerType.startswith(command): break
-			else: self.respond("Player type '%s' not allowed" % command)
-			if self.power and self.email != self.power.address[0]:
-				self.respond("Player ID '%s' already exists" % power)
-			elif self.isMaster(power):
-				self.respond("A Master already exists in '%s'" % game.name)
-			#	-------------------------------
-			#	Invalidate any name that could
-			#	be a sequence of power abbrev's
-			#	-------------------------------
-			letters = ['M'] + [game.map.abbrev.get(x, x[0])
-				for x in game.map.powers]
-			if (not [1 for x in power if x not in letters or power.count(x) > 1]
-			or power.startswith('POWER#')):
-				self.respond("Invalid player ID: '%s'" % power)
-		if command not in ('RESIGN', 'MONITOR'): self.dppdMandate(command)
-		#	-----------------------------------
-		#	If this e-mail address is already
-		#	(just) observing the game or is an
-		#	awaiting POWER, silently delete him
-		#	-----------------------------------
-		for num, existing in enumerate(game.powers):
-			existing = game.powers[num]
-			if ((command, power) == ('RESIGN',
-			existing.name[existing.name[0] == '_':])
-			or existing.address and self.email == existing.address[0]
-			or self.dppd and self.dppd[0] != '|' and existing.player
-			and self.dppd.split('|')[0] == existing.player[0].split('|')[0]):
-				if (existing.type not in ('OBSERVER', 'MONITOR', 'POWER')
-				and command != 'RESIGN'): self.respond(
-					"You are already playing game '%s'" % game.name)
-			else: continue
-			if existing.isValidPassword(password) < 3:
-				self.respond("Incorrect password to modify player ID '%s'" %
-					existing.name)
-			if command != 'RESIGN': del game.powers[num]
-			break
-		if (playerType == 'POWER' and game.available() <= 0 and
-			command != 'RESIGN'):
-			self.respond("The game is already full. " +
-				"Try to join another game or take over an abandoned position")
-		if (self.dppd and game.gm.player and game.gm.player[0].split('|')[0]
-			== self.dppd.split('|')[0] or [1 for x in game.gm.address
-			if self.email.lower() in x.lower().split(',')]):
-			if command != 'RESIGN': self.respond(
-				"You are already Mastering game '%s'" % game.name)
-			if self.isMaster(power): self.respond('The Master may not resign')
-		#	----------------------
-		#	Check for private game
-		#	----------------------
-		if command != 'RESIGN':
-			if not game.private or command == 'MONITOR':
-				if len(word) != 3: self.respond('Invalid %s command' % command)
-			elif (len(word) != 4
-			or self.sanitize(word[3]).upper() != game.private):
-				self.respond(
-					"Game '%s' is a private game for invited players only.\n"
-					'You may %s only by specifying (after your password)\n'
-					'the privacy keyword that was given to you by the '
-					'GameMaster.\n'
-					'A privacy password usually indicates that a game is\n'
-					'exclusively for a group of players in a specific club\n'
-					'or organization or who know each other personally and\n'
-					'can communicate outside the confines of the judge (for\n'
-					'example, face-to-face or by telephone).' %
-					(game.name, command))
-		#	---------------
-		#	Player TAKEOVER
-		#	---------------
-		if command == 'TAKEOVER':
-			response = self.power.takeover(self.dppd, self.email, password)
-			if response: self.respond(response)
-		#	-------------------------------------------------------
-		#	Add the new power, then process the rest of the message
-		#	-------------------------------------------------------
-		elif command != 'RESIGN':
-			self.power = game.powerType(game, power, playerType)
-			self.power.address, self.power.password = [self.email], password
-			#	--------------------
-			#	Add DPPD player info
-			#	--------------------
-			if playerType != 'MONITOR': self.power.player[:0] = [self.dppd]
-			if command != 'JOIN': self.power.initialize(game)
-			game.powers += [self.power]
-			game.sortPowers()
-			game.save()
-			responding = ''
-			if command == 'JOIN':
-				avail = game.available()
-				if not avail:
-					if 'START_MASTER' not in game.rules:
-						responding = game.begin()
-						if responding: game.mailPress(None, ['MASTER'],
-							'The game cannot start yet because ' + (self.error
-							and 'the following error%s exist%s:\n\t' %
-							[('s', ''), ('', 's')][len(self.error) == 1] +
-							'\n\t'.join(self.error) +
-							'\n\nResolve this first, then ' or
-							'the status is not forming. To begin ') +
-							'change the game status to active.',
-							subject = 'Diplomacy game %s full' % game.name)
-					if responding is not None:
-						game.mailPress(None, ['All!'],
-							'All positions are filled, but you need to wait ' +
-							'for the Master to activate the game.',
-							subject = 'Diplomacy game %s full' % game.name)
-				elif playerType == 'POWER' and not 'SILENT_JOIN' in game.rules:
-					game.mailPress(None, ['All!'],
-						'%s has joined the game. %s %d position%s left.' %
-						(game.anglify(power), ('Only', 'Still')[2 * avail >
-						len(game.map.powers) - len(game.map.dummies)], avail,
-						's'[:avail != 1]))
-			if responding is not None: self.response += [
-				"You are now %s'%s' in game '%s'.\n\n"
-				'Welcome to the %s' % (command not in ('JOIN', 'TAKEOVER')
-				and ('a%s %s with ID ' % ('n'[:playerType[0] in 'AEIOU'],
-				playerType.title())) or '', game.anglify(power), game.name,
-				host.dpjudgeNick)]
-		#	----------------------------------------------------
-		#	Process the rest of the message for press to be sent
-		#	----------------------------------------------------
-		self.handleEmail(power, password)
-		#	---------------
-		#	Resign a player
-		#	---------------
-		if command == 'RESIGN':
-			game.powers[num].resign()
-		else: self.message, self.pressSent = [], 1
-		self.respond()
-	#	----------------------------------------------------------------------
-	def powerID(self, abbrev, asName = True):
-		"""
-		Procmail.powerID(abbrev, asName = True):
-			Given a power name or abbreviation, returns either the full power
-			name (the default) or the Power object (if the "asName" parameter
-			passed in is False).  If the "abbrev" does not identify a power,
-			None is returned.
-		"""
-		if abbrev in ('M', 'MASTER'): return 'MASTER'
-		if abbrev in ('JK', 'JUDGEKEEPER'): return 'JUDGEKEEPER'
-		for who in self.game.powers:
-			if (abbrev in
-				(who.name, who.name[who.name[0] == '-':],
-				self.game.map.abbrev.get(who.name, who.name[0]))
-			or who.type == 'POWER' and abbrev == who.name.split('#')[-1]):
-				return asName and who.name or who
-	#	----------------------------------------------------------------------
-	def respond(self, error = 0, copyTo = []):
-		self.game = self.game or Game()
-		if not self.power: rightEmail = self.email
-		elif self.power.address: rightEmail = self.power.address[0]
-		else: rightEmail = self.email
-		wrongMail = 0
-		if rightEmail.upper() not in (self.email.upper(), 'RESIGNED', 'DUMMY'):
-			user, domain = self.email.upper().split('@')
-			for u, d in [x.split('@') for x in rightEmail.upper().split(',')]:
-				if u == user and d.endswith(domain): break
-			else: wrongEmail = 1
-		if error: self.response += [error]
-		elif not self.response:
-			if not wrongMail or not self.pressSent: return
-			self.response = ['Message processed; press echoed to %s\n'
-				 '(you sent from %s)' % (rightEmail, self.email)]
-			self.message = None
-		if type(copyTo) != list: copyTo = [copyTo]
-		emails = []
-		for email in [self.email] + copyTo:
-			#	--------------------
-			#	Prevent e-mail loops
-			#	--------------------
-			if email in emails: continue
-			elif email == host.dpjudge:
-				self.game.openMail('DPjudge e-mail reply' +
-					' (redirected from %s)' % email,
-					mailTo = host.judgekeeper, mailAs = host.dpjudge)
+	def handleGameCreation(self, upword, game, password, variant):
+		games, mode, unlisted = Status(), 'preparation', 0
+		#if len([1 for x in games.dict.values()
+		#	if 'forming' in x or 'preparation' in x]) > 20:
+		#	self.respond('CREATE is disabled -- '
+		#		'too many games currently need players')
+		if game in games.dict:
+			self.respond("Game name '%s' already used" % game)
+		try: desc = __import__('DPjudge.variants.' + variant,
+			globals(), locals(), `variant`).VARIANT
+		except: self.respond('Unrecognized rule variant: ' +
+			variant)
+		self.dppdMandate(upword)
+		dir, onmap = host.gameDir + '/' + game, ''
+		os.mkdir(dir)
+		os.chmod(dir, 0777)
+		file = open(dir + '/status', 'w')
+		temp = ('GAME %s\nPHASE FORMING\nMASTER %s\n' +
+			'PASSWORD %s\n') % (game, self.dppd, password)
+		file.write(temp.encode('latin-1'))
+		lineNo, block = 0, None
+		for line in self.message[:]:
+			lineNo += 1
+			word = line.split()
+			if self.checkEnd(line, block):
+				if block:
+					file.write((line + '\n').encode('latin-1'))
+					block = None
+				else:
+					del self.message[:lineNo - 1]
+					break
+			elif block: file.write(line.encode('latin-1'))
+			elif not len(word):
+				if desc:
+					temp = 'DESC A %s game%s.\n' % (desc, onmap)
+					file.write(temp.encode('latin-1'))
+					desc = None
+				file.write('\n')
 			else:
-				self.game.openMail('DPjudge e-mail reply', mailTo = email,
-					mailAs = host.dpjudge)
-			mail = self.game.mail
-			for line in self.response: mail.write(line + '.\n\n')
-			if error and self.message:
-				if self.pressSent and wrongMail: mail.write(
-					'Message partially processed; press echoed to %s.\n\n' %
-					rightEmail)
-				mail.write('Unprocessed portion of message follows:\n\n' +
-					'\n'.join(self.message))
-			mail.close()
-			emails += [email]
-		os._exit(os.EX_OK)
-	#	----------------------------------------------------------------------
-	def locatePower(self, powerName, password, mustBe = 1, newPass = 0):
-		if not password: self.respond('No password specified')
-		if ' ' in password: self.respond('Multiple passwords given')
-		powerName = self.powerID(powerName)
-		if powerName == 'MASTER':
-			power = self.game.gm
-			if password.upper() not in (power.password.upper(),
-				self.game.jk.password.upper()):
-				self.respond('Invalid Master password specified')
-		elif powerName == 'JUDGEKEEPER':
-			power = self.game.jk
-			if password.upper() != power.password.upper():
-				self.respond('Invalid Judgekeeper password specified')
-		else:
-			try: power = [x for x in self.game.powers
-				if x.name[x.name[0] == '_':].replace('+', '') == powerName
-				and (newPass or x.isValidPassword(password) > 2)][0]
-			except:
-				if mustBe: self.respond('Invalid power "%s" or password "%s" specified' % (powerName, password))
-				power = None
-		self.power = power
+				upword = word[0].upper()
+				if upword in ('DESC', 'DESCRIPTION'):
+					desc = None
+					if len(word) == 1: block = ['DESC', 'DESCRIPTION']
+				elif upword in ('MAP', 'TRIAL'):
+					onmap = ' on the %s%s map' % (
+						''.join(info.split()[1:2]).title(),
+						('', ' trial')[word == 'TRIAL'])
+				elif len(word) == 1 and upword in ('NAME', 'MORPH'):
+					block = [upword]
+				if upword in ('GAME', 'PHASE', 'MASTER'): pass
+				elif (len(word) == 1
+				and upword in ('FORM', 'ACTIVATE')): mode = 'forming'
+				elif (len(word) == 2 and upword == 'SET'
+				and word[1].upper() in ('LISTED', 'UNLISTED')):
+					unlisted = upword[1] == 'U'
+				else: file.write((line + '\n').encode('latin-1'))
+		else: self.message = []
+		#	---------------------------------------------
+		#	All lines have been written to file. Close it.
+		#	---------------------------------------------
+		if desc:
+			temp = 'DESC A %s game%s.\n' % (desc, onmap)
+			file.write(temp.encode('latin-1'))
+		file.close()
+		os.chmod(file.name, 0666)
+		games.dict[game] = [variant, mode]
+		if unlisted: games.dict[game] += ['unlisted']
+		games.save()
+		self.game = Game(game)
+		if 'SOLITAIRE' in self.game.rules:
+			if not self.game.private: self.game.private = 'SOLITAIRE'
+			self.game.save()
+		if self.game.private:
+			games.dict[game] += ['private']
+			games.save()
+		if (mode == 'forming' and not self.game.available()
+		and 'START_MASTER' not in self.game.rules):
+			self.game.begin()
+			mode = 'active'
+		observers = host.observers or []
+		if type(observers) is not list: observers = [observers]
+		self.response += ["Game '%s' has been created.  %s at:" %
+			(game, mode[0] == 'p' and 'Finish preparation'
+			or mode[0] == 'f' and 'Game is now forming'
+			or 'Game has started'), 
+			'   %s%s?game=%s' % (host.dpjudgeURL,
+			'/index.cgi' * (os.name == 'nt'), game),
+			'', 'Welcome to the %s' % host.dpjudgeNick]
+		self.respond(copyTo = observers + self.game.map.notify)
 	#	----------------------------------------------------------------------
 	def handleEmail(self, powerName, password):
 		game, orders = self.game, []
@@ -603,7 +348,7 @@ class Procmail:
 		else: rules = game.rules
 		official = press = deathnote = None
 		if not self.power: self.locatePower(powerName, password)
-		power, self.message = self.power, self.message[1:] + ['SIGNOFF']
+		power = self.power
 		try: self.ip = socket.gethostbyaddr(self.ip)[0]
 		except: pass
 		game.logAccess(power.name, password, self.ip or self.email)
@@ -619,7 +364,7 @@ class Procmail:
 				#	Yes; if we're not at the end
 				#	of the message, add to it.
 				#	----------------------------
-				if command not in ('SIGNOFF', 'ENDPRESS', 'ENDBROADCAST'):
+				if not self.checkEnd(line, ['PRESS', 'BROADCAST'], 1):
 					press += line + '\n'
 					continue
 				#	------------------------------------------------
@@ -689,7 +434,7 @@ class Procmail:
 					claimFrom, claimTo, receipt = receipt, subject = official)
 				del self.message[:msgLines]
 				self.pressSent = self.pressSent or receipt
-			if command == 'SIGNOFF': break
+			if self.checkEnd(line): break
 			if press is not None: press = None
 			#	-------------------------------------
 			#	See if we're starting a press message
@@ -1073,8 +818,336 @@ class Procmail:
 		#	was changed, broadcast it.
 		#	--------------------------------
 		if deathnote: game.mailPress(None, ['All!'], deathnote +
-			'The new deadline is %s.\n' % game.timeFormat(), subject = 'Diplomacy deadline changed')
+			'The new deadline is %s.\n' % game.timeFormat(),
+			subject = 'Diplomacy deadline changed')
 		if orders: self.setOrders(orders)
+	#	----------------------------------------------------------------------
+	def checkEnd(self, line, commands = None, concat = 0):
+		word = line.upper().split()
+		if not word: return
+		#	------------------------------------------
+		#	A SIGNOFF ends everything. If you want
+		#	to do more than one action, like signing
+		#	on to multiple games in the same e-mail,
+		#	make sure there's no SIGNOFF before the
+		#	next SIGNON, but only one at the very end.
+		#	------------------------------------------
+		if word == ['SIGNOFF']: 
+			self.signOff = 1
+			return 1
+		for command in commands or []:
+			if (concat and word[0] == 'END' + command
+			or word == ['END', command]): return 1
+		if word[0] in ['CREATE', 'RENAME', 'PURGE', 'SIGNON', 'RESIGN',
+			'TAKEOVER', 'JOIN', 'MONITOR', 'OBSERVE']:
+			if not commands: return 1
+			#	-----------------------------------------------
+			#	Since most of these commands contain passwords,
+			#	be very careful about including them in press
+			#	messages or other block commands.
+			#	-----------------------------------------------
+			if len(word) in (3, 4, 5):
+				self.respond('%s command inside a %s block. Did you forget an '
+					'"END %s" statement? If not, put something in front like '
+					'a quote or another word.' % (word[0], commands, commands))
+	#	----------------------------------------------------------------------
+	def dppdMandate(self, command):
+		if self.dppd: return
+		if not host.dppdURL:
+			#	-------------------------------------------------------
+			#	Running without a DPPD.  Shame on the judgekeeper.  :-)
+			#	-------------------------------------------------------
+			self.dppd = '|%s|' % self.email + self.email
+			return
+		#	---------------------------------------------------------
+		#	We're here for a JOIN (or similar) or CREATE command that
+		#	requires registration -- need to ask the DPPD for an ID.
+		#	---------------------------------------------------------
+		#	Need to use query string rather than POST it.  Don't know why.
+		dppdURL = host.dppdURL.split(',')[0]
+		query = '?&'['?' in dppdURL]
+		page = urllib.urlopen(dppdURL + query +
+			'page=whois&email=' + urllib.quote(self.email, '@'))
+		response = unicode(page.read(), 'latin-1')
+		page.close()
+		self.ip, self.dppd = self.email, '|'.join(response.split())
+		if self.dppd[:1] != '#': self.respond(
+			'Your e-mail address (%s) is\nnot registered with the DPPD, '
+			'or your DPPD status does\nnot allow you to use the %s command.'
+			'\n\nVisit the DPPD at %s\nfor assistance' %
+			(self.email, command, dppdURL))
+	#	----------------------------------------------------------------------
+	def updatePlayer(self, power, password, command, word):
+		game, self.power, playerType = self.game, None, None
+		if command != 'JOIN':
+			self.locatePower(power, password,
+				command in ('RESIGN', 'TAKEOVER'), command == 'TAKEOVER')
+			if self.power: power, playerType = self.power.name, self.power.type
+		#	---------------------------------------------
+		#	The line below looks like a candidate to be
+		#	an "else" but it's not, due to a coming elif!
+		#	---------------------------------------------
+		if command == 'JOIN':
+			#	-------------------------------------------
+			#	Make sure it's okay for a new power to join
+			#	-------------------------------------------
+			if game.phase != 'FORMING':
+				self.respond("Game '%s' already full" % game.name)
+			if power == 'POWER':
+				taken = [x.name for x in game.powers]
+				for count in range(1, len(game.map.powers) + 1):
+					if 'POWER#' + `count` not in taken: break
+				power += '#' + `count`
+			elif 'POWER_CHOICE' not in game.rules:
+				self.respond('Power selection is not allowed')
+			elif power not in [x[x[0] == '_':] for x in game.map.powers]:
+				self.respond("No power '%s' in game '%s'" % (power, game.name))
+			elif power in [x[x[0] == '_':] for x in game.map.dummies]:
+				self.respond("Power '%s' cannot be played" % power)
+			elif power in [x.name for x in game.powers]: self.respond(
+				'Power %s is already being played' % game.anglify(power))
+			if game.groups:
+				exclude = 1
+				groupList = [x.group.name.upper()
+					for x in Groups.userClass(self.email).groups()]
+				for group in game.groups:
+					if group in groupList:
+						exclude = 0
+						break
+				if exclude:
+					self.respond('You are not in a group allowed in this game.')
+			playerType = 'POWER'
+		elif command == 'RESIGN':
+			if not self.power:
+				self.respond("Player ID '%s' does not exist" % power)
+			if self.power.player[0] in ('RESIGNED', 'DUMMY'):
+				self.respond("Cannot RESIGN '%s' -- no current PLAYER" % power)
+		elif command == 'TAKEOVER':
+			try:
+				if not self.isMaster(power) and self.power.player[0] != 'RESIGNED': 1/0
+			except: self.respond("Cannot TAKEOVER the ID '%s'" % power)
+		else:
+			#	------------------------------------------------------
+			#	Make sure it's okay for a new "something else" to join
+			#	and that this "something else" chooses a unique name.
+			#	------------------------------------------------------
+			for playerType in ['OBSERVER', 'MONITOR'] + game.playerTypes:
+				if playerType.startswith(command): break
+			else: self.respond("Player type '%s' not allowed" % command)
+			if self.power and self.email != self.power.address[0]:
+				self.respond("Player ID '%s' already exists" % power)
+			elif self.isMaster(power):
+				self.respond("A Master already exists in '%s'" % game.name)
+			#	-------------------------------
+			#	Invalidate any name that could
+			#	be a sequence of power abbrev's
+			#	-------------------------------
+			letters = ['M'] + [game.map.abbrev.get(x, x[0])
+				for x in game.map.powers]
+			if (not [1 for x in power if x not in letters or power.count(x) > 1]
+			or power.startswith('POWER#')):
+				self.respond("Invalid player ID: '%s'" % power)
+		if command not in ('RESIGN', 'MONITOR'): self.dppdMandate(command)
+		#	-----------------------------------
+		#	If this e-mail address is already
+		#	(just) observing the game or is an
+		#	awaiting POWER, silently delete him
+		#	-----------------------------------
+		for num, existing in enumerate(game.powers):
+			existing = game.powers[num]
+			if ((command, power) == ('RESIGN',
+			existing.name[existing.name[0] == '_':])
+			or existing.address and self.email == existing.address[0]
+			or self.dppd and self.dppd[0] != '|' and existing.player
+			and self.dppd.split('|')[0] == existing.player[0].split('|')[0]):
+				if (existing.type not in ('OBSERVER', 'MONITOR', 'POWER')
+				and command != 'RESIGN'): self.respond(
+					"You are already playing game '%s'" % game.name)
+			else: continue
+			if existing.isValidPassword(password) < 3:
+				self.respond("Incorrect password to modify player ID '%s'" %
+					existing.name)
+			if command != 'RESIGN': del game.powers[num]
+			break
+		if (playerType == 'POWER' and game.available() <= 0 and
+			command != 'RESIGN'):
+			self.respond("The game is already full. " +
+				"Try to join another game or take over an abandoned position")
+		if (self.dppd and game.gm.player and game.gm.player[0].split('|')[0]
+			== self.dppd.split('|')[0] or [1 for x in game.gm.address
+			if self.email.lower() in x.lower().split(',')]):
+			if command != 'RESIGN': self.respond(
+				"You are already Mastering game '%s'" % game.name)
+			if self.isMaster(power): self.respond('The Master may not resign')
+		#	----------------------
+		#	Check for private game
+		#	----------------------
+		if command != 'RESIGN':
+			if not game.private or command == 'MONITOR':
+				if len(word) != 3: self.respond('Invalid %s command' % command)
+			elif (len(word) != 4
+			or self.sanitize(word[3]).upper() != game.private):
+				self.respond(
+					"Game '%s' is a private game for invited players only.\n"
+					'You may %s only by specifying (after your password)\n'
+					'the privacy keyword that was given to you by the '
+					'GameMaster.\n'
+					'A privacy password usually indicates that a game is\n'
+					'exclusively for a group of players in a specific club\n'
+					'or organization or who know each other personally and\n'
+					'can communicate outside the confines of the judge (for\n'
+					'example, face-to-face or by telephone).' %
+					(game.name, command))
+		#	---------------
+		#	Player TAKEOVER
+		#	---------------
+		if command == 'TAKEOVER':
+			response = self.power.takeover(self.dppd, self.email, password)
+			if response: self.respond(response)
+		#	-------------------------------------------------------
+		#	Add the new power, then process the rest of the message
+		#	-------------------------------------------------------
+		elif command != 'RESIGN':
+			self.power = game.powerType(game, power, playerType)
+			self.power.address, self.power.password = [self.email], password
+			#	--------------------
+			#	Add DPPD player info
+			#	--------------------
+			if playerType != 'MONITOR': self.power.player[:0] = [self.dppd]
+			if command != 'JOIN': self.power.initialize(game)
+			game.powers += [self.power]
+			game.sortPowers()
+			game.save()
+			responding = ''
+			if command == 'JOIN':
+				avail = game.available()
+				if not avail:
+					if 'START_MASTER' not in game.rules:
+						responding = game.begin()
+						if responding: game.mailPress(None, ['MASTER'],
+							'The game cannot start yet because ' + (self.error
+							and 'the following error%s exist%s:\n\t' %
+							[('s', ''), ('', 's')][len(self.error) == 1] +
+							'\n\t'.join(self.error) +
+							'\n\nResolve this first, then ' or
+							'the status is not forming. To begin ') +
+							'change the game status to active.',
+							subject = 'Diplomacy game %s full' % game.name)
+					if responding is not None:
+						game.mailPress(None, ['All!'],
+							'All positions are filled, but you need to wait ' +
+							'for the Master to activate the game.',
+							subject = 'Diplomacy game %s full' % game.name)
+				elif playerType == 'POWER' and not 'SILENT_JOIN' in game.rules:
+					game.mailPress(None, ['All!'],
+						'%s has joined the game. %s %d position%s left.' %
+						(game.anglify(power), ('Only', 'Still')[2 * avail >
+						len(game.map.powers) - len(game.map.dummies)], avail,
+						's'[:avail != 1]))
+			if responding is not None: self.response += [
+				"You are now %s'%s' in game '%s'.\n\n"
+				'Welcome to the %s' % (command not in ('JOIN', 'TAKEOVER')
+				and ('a%s %s with ID ' % ('n'[:playerType[0] in 'AEIOU'],
+				playerType.title())) or '', game.anglify(power), game.name,
+				host.dpjudgeNick)]
+		#	----------------------------------------------------
+		#	Process the rest of the message for press to be sent
+		#	----------------------------------------------------
+		self.handleEmail(power, password)
+		#	---------------
+		#	Resign a player
+		#	---------------
+		if command == 'RESIGN':
+			game.powers[num].resign()
+		else: self.pressSent = 1
+		return self.respond()
+	#	----------------------------------------------------------------------
+	def powerID(self, abbrev, asName = True):
+		"""
+		Procmail.powerID(abbrev, asName = True):
+			Given a power name or abbreviation, returns either the full power
+			name (the default) or the Power object (if the "asName" parameter
+			passed in is False).  If the "abbrev" does not identify a power,
+			None is returned.
+		"""
+		if abbrev in ('M', 'MASTER'): return 'MASTER'
+		if abbrev in ('JK', 'JUDGEKEEPER'): return 'JUDGEKEEPER'
+		for who in self.game.powers:
+			if (abbrev in
+				(who.name, who.name[who.name[0] == '-':],
+				self.game.map.abbrev.get(who.name, who.name[0]))
+			or who.type == 'POWER' and abbrev == who.name.split('#')[-1]):
+				return asName and who.name or who
+	#	----------------------------------------------------------------------
+	def respond(self, error = 0, copyTo = []):
+		self.game = self.game or Game()
+		if not self.power: rightEmail = self.email
+		elif self.power.address: rightEmail = self.power.address[0]
+		else: rightEmail = self.email
+		wrongMail = 0
+		if rightEmail.upper() not in (self.email.upper(), 'RESIGNED', 'DUMMY'):
+			user, domain = self.email.upper().split('@')
+			for u, d in [x.split('@') for x in rightEmail.upper().split(',')]:
+				if u == user and d.endswith(domain): break
+			else: wrongEmail = 1
+		if not error:
+			if self.msgLines == len(self.message):
+				error = ('Repeating the same response. Please contact '
+					'the JudgeKeeper %s with a copy of this message.' %
+					host.judgekeeper)
+			else: self.msgLines = len(self.message)
+		if error: self.response += [error]
+		elif not self.response:
+			if not wrongMail or not self.pressSent: return
+			self.response = ['Message processed; press echoed to %s\n'
+					 '(you sent from %s)' % (rightEmail, self.email)]
+		if type(copyTo) != list: copyTo = [copyTo]
+		emails = []
+		for email in [self.email] + copyTo:
+			#	--------------------
+			#	Prevent e-mail loops
+			#	--------------------
+			if email in emails: continue
+			elif email == host.dpjudge:
+				self.game.openMail('DPjudge e-mail reply' +
+					' (redirected from %s)' % email,
+					mailTo = host.judgekeeper, mailAs = host.dpjudge)
+			else:
+				self.game.openMail('DPjudge e-mail reply', mailTo = email,
+					mailAs = host.dpjudge)
+			mail = self.game.mail
+			for line in self.response: mail.write(line + '.\n\n')
+			if error and self.message:
+				if self.pressSent and wrongMail: mail.write(
+					'Message partially processed; press echoed to %s.\n\n' %
+					rightEmail)
+				mail.write('Unprocessed portion of message follows:\n\n' +
+					'\n'.join(self.message))
+			mail.close()
+			emails += [email]
+		if error: os._exit(os.EX_OK)
+	#	----------------------------------------------------------------------
+	def locatePower(self, powerName, password, mustBe = 1, newPass = 0):
+		if not password: self.respond('No password specified')
+		if ' ' in password: self.respond('Multiple passwords given')
+		powerName = self.powerID(powerName)
+		if powerName == 'MASTER':
+			power = self.game.gm
+			if password.upper() not in (power.password.upper(),
+				self.game.jk.password.upper()):
+				self.respond('Invalid Master password specified')
+		elif powerName == 'JUDGEKEEPER':
+			power = self.game.jk
+			if password.upper() != power.password.upper():
+				self.respond('Invalid Judgekeeper password specified')
+		else:
+			try: power = [x for x in self.game.powers
+				if x.name[x.name[0] == '_':].replace('+', '') == powerName
+				and (newPass or x.isValidPassword(password) > 2)][0]
+			except:
+				if mustBe: self.respond('Invalid power "%s" or password "%s" specified' % (powerName, password))
+				power = None
+		self.power = power
 	#	----------------------------------------------------------------------
 	def sanitize(self, password):
 		if password.upper().endswith('SIGNOFF') and len(password) > 7:

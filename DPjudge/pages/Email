@@ -63,12 +63,13 @@ page.include('functions')
 		<b>&middot;</b>&nbsp;<a href="#7">How to send press</a><br>
 		<b>&middot;</b>&nbsp;<a href="#8">Sending illegal types of press</a><br>
 		<b>&middot;</b>&nbsp;<a href="#9">Ending a press message</a><br>
-		<b>&middot;</b>&nbsp;<a href="#10">Updating player information</a><br>
-		<b>&middot;</b>&nbsp;<a href="#11">Getting around wireless device</a><br>
+		<b>&middot;</b>&nbsp;<a href="#10">Commanding multiple games</a><br>
+		<b>&middot;</b>&nbsp;<a href="#11">Updating player information</a><br>
+		<b>&middot;</b>&nbsp;<a href="#12">Getting around wireless device</a><br>
 		&nbsp;&nbsp;<a href="#11">restrictions</a><br>
-		<b>&middot;</b>&nbsp;<a href="#12">How to resign</a><br>
-		<b>&middot;</b>&nbsp;<a href="#13">How to take over a vacant position</a><br>
-		<b>&middot;</b>&nbsp;<a href="#14">The Master's commands</a>
+		<b>&middot;</b>&nbsp;<a href="#13">How to resign</a><br>
+		<b>&middot;</b>&nbsp;<a href="#14">How to take over a vacant position</a><br>
+		<b>&middot;</b>&nbsp;<a href="#15">The Master's commands</a>
 		<!--QUESTIONS LIST TABLE ENDS HERE-->
 	</td>
 	</tr>
@@ -80,7 +81,7 @@ page.include('functions')
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
-		<!--ANSWERS BEGINS HERE-->
+		<!--ANSWER BEGINS HERE-->
 		<b>What is the e-mail address of the DPjudge?</b><br>
 		This DPjudge (<ID>) responds to e-mail sent to
 		<a href=mailto:<MAIL>><tt><MAIL></tt></a>
@@ -202,7 +203,7 @@ page.include('functions')
 	-->
 		<P><b>Does upper- and lower-case ever matter in any command?</b><br>
 		No.  Never.
-		<!--ANSWERS ENDS HERE-->
+		<!--ANSWER ENDS HERE-->
 	</td>
 	</tr>
 	</table>
@@ -215,7 +216,7 @@ page.include('functions')
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
-		<!--ANSWERS BEGINS HERE-->
+		<!--ANSWER BEGINS HERE-->
 		<a name=list></a>
 		<b>How can I get a list of games I can play?</b><br>
 		It's as easy as sending a one-word e-mail to the DPjudge.  That word is <tt>LIST</tt>.  This request must be made when <i><u>not</u></i> signed on to a particular game, and in response you will get a list of all
@@ -250,7 +251,7 @@ you) or, to get the information by e-mail, ask the next question....
 		<tt>ps</tt> or <tt>pdf</tt> to the end of your <tt>MAP</tt> command,
 		you will be sent the PostScript or Adobe PDF file (respectively)
 		instead of the <tt>gif</tt> file.
-		<!--ANSWERS ENDS HERE-->
+		<!--ANSWER ENDS HERE-->
 	</td>
 	</tr>
 	</table>
@@ -263,7 +264,7 @@ you) or, to get the information by e-mail, ask the next question....
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
-		<!--ANSWERS BEGINS HERE-->
+		<!--ANSWER BEGINS HERE-->
 		<b>Okay, let's talk about the different commands. Mind if we take that weird one first?  What do you mean by the "<i>(etc.)</i>" on the <tt>OBSERVE</tt> command?  What kind of command is that?</b><br>
 		<tt>OBSERVE</tt> is just one form of a command you use to join a game as something other than a "map-power." <i>(A "map-power" is a player that will own supply centers and units. You join as a "map-power" using the <tt>JOIN</tt> command, which we'll get to in a minute.)</i>  Joining as an Observer will allow you to send press, but take no other part in the game. Now I hear you asking, "Other than a map power or an observer, what else can I be?"  Well, other than <tt>OBSERVER</tt>, there is <tt>MONITOR</tt>, but after that, there's no single answer, because some games also support various <i>different</i> types of non-map powers (such as the Exchange variant's <tt>INVESTOR</tt> players.)
 
@@ -307,7 +308,7 @@ own units and supply centers) in a game, and <tt>OBSERVE</tt> and similar comman
 		<p><b>Cool!!!  So I can name myself as an observer!  What happens if I sign on using the syntax that an observer would send to the Ken Lowe judge?  That is, by saying
 "<tt>SIGNON&nbsp;O<i>gameName&nbsp;password</i></tt>"?</b><br>
 		It won't work, since this is syntax that is not recognized by the DPjudge. The only way you can signon as a non-map-power is to use the <tt>SIGNON&nbsp;<i>yourCreatedName</i>@gameName&nbsp;<i>password</i></tt> version (the <tt>SIGNON</tt> command is discussed more completely below). The closest you can come to the Ken Lowe syntax is to use the single letter <tt>O</tt> as the name you create for yourself in the <tt>OBSERVE</tt> command.  You would still need to <tt>SIGNON</tt> with an at-sign (the command would be <tt>SIGNON&nbsp;O@<i>gameName&nbsp;password</i></tt>) and you will be the only person that will be allowed to have the name "<tt>O</tt>".  If someone else  tries to <tt>SIGNON</tt> as "<tt>O</tt>" they'll probably fail because they won't get your password right.
-		<!--ANSWERS ENDS HERE-->
+		<!--ANSWER ENDS HERE-->
 	</td>
 	</tr>
 	</table>
@@ -320,7 +321,7 @@ own units and supply centers) in a game, and <tt>OBSERVE</tt> and similar comman
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
-		<!--ANSWERS BEGINS HERE-->
+		<!--ANSWER BEGINS HERE-->
 	<a name=join></a>
 		<b>Fine.  Now I know how to join the game if I don't want to be a map-power.  But I want to play!  How do I join a game as a map-power?</b><br>
 		You'll use the <tt>JOIN</tt> command, which has the following syntax:<br>
@@ -355,7 +356,7 @@ own units and supply centers) in a game, and <tt>OBSERVE</tt> and similar comman
 		Nope; if your e-mail address is already listed as being associated with some role in the game, you can't do something else.  If you have two e-mail addresses to use, though, you could indeed do this, but the game's Master, if he finds out what you've done, won't necessarily like you very much.  Also, the only way to pull this off is to create two separate registrations in the DPjudge Player Database, which is cheating and grounds for immediate blacklisting, so don't even try it.
 
 		<P>Once you are a map-power, you cannot assume any other role.  The only way out is to <tt>RESIGN</tt> (and again, the game's Master might not like you too much).  On the other hand, non-map-powers can change their <i>playerType</i> whenever they wish (for example, an observer could send an <tt>INVEST</tt> command to become an investor or a <tt>JOIN</tt> or <tt>TAKEOVER</tt> command to become a map-power).
-		<!--ANSWERS ENDS HERE-->
+		<!--ANSWER ENDS HERE-->
 	</td>
 	</tr>
 	</table>
@@ -368,7 +369,7 @@ own units and supply centers) in a game, and <tt>OBSERVE</tt> and similar comman
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
-		<!--ANSWERS BEGINS HERE-->
+		<!--ANSWER BEGINS HERE-->
 		<a name=signon></a>
 		<b>What is the syntax of the <tt>SIGNON</tt> command?</b><br>
 		The <tt>SIGNON</tt> command must contain exactly three space-separated words.
@@ -391,7 +392,7 @@ own units and supply centers) in a game, and <tt>OBSERVE</tt> and similar comman
 		</ol>
 	
 		<P>The third word must be either the player's password or the Master's password.
-		<!--ANSWERS ENDS HERE-->
+		<!--ANSWER ENDS HERE-->
 	</td>
 	</tr>
 	</table>
@@ -404,7 +405,7 @@ own units and supply centers) in a game, and <tt>OBSERVE</tt> and similar comman
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
-		<!--ANSWERS BEGINS HERE-->
+		<!--ANSWER BEGINS HERE-->
 		<b>Can I submit orders via e-mail?</b><br>
 		Yes.  You can submit movement, retreat, and adjustment phase orders by e-mail.  Simply list the orders somewhere in your e-mail (after a <tt>SIGNON</tt> and not within a press message).  Orders must be <tt>completely</tt> submitted.  Everything you had on-file before will be thrown out and the orders in your e-mail used to replace them.
 
@@ -415,7 +416,7 @@ own units and supply centers) in a game, and <tt>OBSERVE</tt> and similar comman
 		<a name=status></a>
 		<P><b>Can I check what my current orders are by e-mail?</b><br>
 		You sure can.  Just send a <tt>STATUS</tt> command (after a <tt>SIGNON</tt>).
-		<!--ANSWERS ENDS HERE-->
+		<!--ANSWER ENDS HERE-->
 	</td>
 	</tr>
 	</table>
@@ -428,7 +429,7 @@ own units and supply centers) in a game, and <tt>OBSERVE</tt> and similar comman
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
-		<!--ANSWERS BEGINS HERE-->
+		<!--ANSWER BEGINS HERE-->
 		<a name=press></a>
 		<a name=broadcast></a>
 		<b>Okay, I've joined a game and I know how to <tt>SIGNON</tt>.  It looks like the most useful thing I can do using the e-mail interface is send press.  So teach me how. What is the syntax for the <tt>PRESS</tt> and <tt>BROADCAST</tt> commands?</b><br>
@@ -601,7 +602,7 @@ also went to Russia, and that it came from Turkey.
 Sends press to Austria, and identifies who you are.  Austria will be told
 (falsely) that the message also went to Italy.
 </ol>
-		<!--ANSWERS ENDS HERE-->
+		<!--ANSWER ENDS HERE-->
 	</td>
 	</tr>
 	</table>
@@ -614,7 +615,7 @@ Sends press to Austria, and identifies who you are.  Austria will be told
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
-		<!--ANSWERS BEGINS HERE-->
+		<!--ANSWER BEGINS HERE-->
 		<b>If my game allows only grey press, do I need
 to say <tt>GREY</tt>?</b><br>
 	No.  It gets said for you automatically.
@@ -636,7 +637,7 @@ and let the other powers know who really sent it?</b><br>
 	It will send mail back to you saying, "you can't do that" but will tell
 	no one that you tried.  It will <b>not</b> send the press anywhere, but will
 	return it to you with its politely stated objection to your request.
-		<!--ANSWERS ENDS HERE-->
+		<!--ANSWER ENDS HERE-->
 	</td>
 	</tr>
 	</table>
@@ -649,7 +650,7 @@ and let the other powers know who really sent it?</b><br>
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
-		<!--ANSWERS BEGINS HERE-->
+		<!--ANSWER BEGINS HERE-->
 		<a name=endpress></a>
 		<a name=signoff></a>
 		<a name=endbroadcast></a>
@@ -702,20 +703,48 @@ commands once.  For example:<tt>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;// PRESS TO A
 <br>&nbsp;&nbsp;&nbsp;&nbsp;PRESS TO E
 </tt>
-		<!--ANSWERS ENDS HERE-->
+		<!--ANSWER ENDS HERE-->
 	</td>
 	</tr>
 	</table>
 
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
-		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="10"></a><b>Updating player information</b></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="10"></a><b>Commanding multiple games</b></td></tr>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
 		</table>	
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
-		<!--ANSWERS BEGINS HERE-->
+		<!--ANSWER BEGINS HERE-->
+		<b>Can I sign on to more than one game in the same message?</b><br>
+		Yes, you can. You can put as many SIGNON commands in your message as
+		you like. But there can still be only one SIGNOFF, as anything after it
+		will still be ignored. Be careful though to end every press with
+		<tt>ENDPRESS</tt> or <tt>ENDBROADCAST</tt> to avoid revealing your games
+		and passwords to other players. In fact, this is such a grave risk that
+		the DPjudge will refuse to send such press and ask you to either
+		rephrase or end your press properly.
+		<p><b>Does this only work for SIGNON?</b><br>
+		No, you can also JOIN, TAKEOVER, RESIGN or any of the other game
+		commands available. Or combine them in any way imaginable, e.g. joining
+		one game, replying to players in another and entering orders for a third,
+		be my guest. And if you're a (would-be) Master, you can also CREATE or
+		RENAME multiple games at once.
+		<!--ANSWER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="11"></a><b>Updating player information</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWER BEGINS HERE-->
 		<a name=address></a>
 		<b>How do I change my e-mail address so that the
 game knows where I now am?</b><br>
@@ -792,20 +821,20 @@ game knows where I now am?</b><br>
 	use this command if he or she will be away and does not wish the game
 	to process during the absence.
 
-		<!--ANSWERS ENDS HERE-->
+		<!--ANSWER ENDS HERE-->
 	</td>
 	</tr>
 	</table>
 
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
-		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="11"></a><b>Getting around wireless device restrictions</b></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="12"></a><b>Getting around wireless device restrictions</b></td></tr>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
 		</table>	
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
-		<!--ANSWERS BEGINS HERE-->
+		<!--ANSWER BEGINS HERE-->
 		<b>I use a wireless device to send my e-mail, and it
 does not support my sending a newline character.  Is there anything I can
 do to be able to send multi-line messages to the DPjudge?</b><br>
@@ -817,20 +846,20 @@ examples:<tt>
 <br>&nbsp;&nbsp;&nbsp;&nbsp;\\\   summary mygame\history mygame
 <br>&nbsp;&nbsp;&nbsp;&nbsp;\\;&nbsp;signon&nbsp;Egame&nbsp;passwd;f&nbsp;lon&nbsp;-&nbsp;eng;press&nbsp;to&nbsp;f;This&nbsp;means&nbsp;war!!
 </tt>
-		<!--ANSWERS ENDS HERE-->
+		<!--ANSWER ENDS HERE-->
 	</td>
 	</tr>
 	</table>
 
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
-		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="12"></a><b>How to resign</b></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="13"></a><b>How to resign</b></td></tr>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
 		</table>	
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
-		<!--ANSWERS BEGINS HERE-->
+		<!--ANSWER BEGINS HERE-->
 		<a name=resign></a>
 		<b>Tell me about the <tt>RESIGN</tt> command.</b><br>
 	Well, I'd rather not; but okay, if I must.  The thing to remember about it
@@ -875,21 +904,21 @@ examples:<tt>
 	One final thing.  The Master may never <tt>RESIGN</tt>.  If he needs
 	to leave the game for any reason, he must find a replacement for himself
 	and serve until that replacement issues a <tt>TAKEOVER</tt> command.
-		<!--ANSWERS ENDS HERE-->
+		<!--ANSWER ENDS HERE-->
 	</td>
 	</tr>
 	</table>
 
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
-		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="13"></a><b>How to take over a vacant position</b></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="14"></a><b>How to take over a vacant position</b></td></tr>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
 		</table>	
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
 		<a name=takeover></a>
-		<!--ANSWERS BEGINS HERE-->
+		<!--ANSWER BEGINS HERE-->
 		<b>I think I can guess what the <tt>TAKEOVER</tt> command
 does, but tell me anyway.</b><br>
 	Okay.  It allows a kind, much-appreciated soul to become a map-power in
@@ -932,20 +961,20 @@ does, but tell me anyway.</b><br>
 	replacement Master, give him the game's Master password, and have him
 	e-mail a "<tt>TAKEOVER&nbsp;master@<i>gamename&nbsp;password</i></tt>"
 	command.
-		<!--ANSWERS ENDS HERE-->
+		<!--ANSWER ENDS HERE-->
 	</td>
 	</tr>
 	</table>
 <a name=mastery></a>
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
-		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="14"></a><b>The Master's commands</b></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="15"></a><b>The Master's commands</b></td></tr>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
 		</table>	
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
-		<!--ANSWERS BEGINS HERE-->
+		<!--ANSWER BEGINS HERE-->
 	<a name=create></a>
 		<b>What is the <tt>CREATE</tt> command?</b><br>
 	The <tt>CREATE</tt> command is used to create a new game and become
@@ -1309,7 +1338,7 @@ crucial parameter that influences the game start?</b><br>
 	time is ripe for player identities to be revealed.  Only when this
 	command is sent in will the game be automatically reported for ranking
 	purposes, the final game summary be completed, etc., etc.
-		<!--ANSWERS ENDS HERE-->
+		<!--ANSWER ENDS HERE-->
 
 <P><b>What if I am Mastering a game and if, for whatever reason, I need to
 		give up my position?</b><br>

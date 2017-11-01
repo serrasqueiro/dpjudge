@@ -121,7 +121,7 @@ class Status:
 	def renameGame(self, gameName, toGameName, forced = 1, gamePass = None):
 		error = []
 		if gameName not in self.dict:
-			return ['No such game exists on this judge']
+			return ["No such game '%s' exists on this judge" % gameName]
 		game = Game.Game(gameName)
 		if not forced and (
 			not host.judgePassword or gamePass != host.judgePassword):
@@ -185,7 +185,7 @@ class Status:
 	def purgeGame(self, gameName, forced = 1, gamePass = None):
 		error = []
 		if gameName not in self.dict:
-			return ['No such game exists on this judge']
+			return ["No such game '%s' exists on this judge" % gameName]
 		game = Game.Game(gameName)
 		if not forced and (
 			not host.judgePassword or gamePass != host.judgePassword):
