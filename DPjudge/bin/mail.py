@@ -147,7 +147,7 @@ class Procmail:
 					if '<' in password or '>' in password:
 						self.respond("Password cannot contain '<' or '>'")
 				if upword[0] != 'S': joiner = word[0].upper()
-				del self.message[:lineNo]
+				del self.message[:lineNo - 1]
 				break
 			#	---------------------------------------------
 			#	Detect LIST, SUMMARY, HISTORY, or MAP request
@@ -193,8 +193,7 @@ class Procmail:
 					password = self.sanitize(word[2])
 					if '<' in password or '>' in password:
 						self.respond("Password cannot contain '<' or '>'")
-					del self.message[:lineNo]
-				else: del self.message[:lineNo - 1]
+				del self.message[:lineNo - 1]
 				break
 			#	------------------------------
 			#	Detect SIGNOFF (usable without
@@ -352,6 +351,7 @@ class Procmail:
 		try: self.ip = socket.gethostbyaddr(self.ip)[0]
 		except: pass
 		game.logAccess(power.name, password, self.ip or self.email)
+		del self.message[0]
 		for line in self.message[:]:
 			word = line.upper().split()
 			command = word and word[0] or None
@@ -848,8 +848,10 @@ class Procmail:
 			#	-----------------------------------------------
 			if len(word) in (3, 4, 5):
 				self.respond('%s command inside a %s block. Did you forget an '
-					'"END %s" statement? If not, put something in front like '
-					'a quote or another word.' % (word[0], commands, commands))
+					'%s statement? If not, put something in front like '
+					'a quote or another word' % (word[0],
+					' or '.join(commands), ' or '.join(['END' +
+					' ' * (not concat) + x for x in commands])))
 	#	----------------------------------------------------------------------
 	def dppdMandate(self, command):
 		if self.dppd: return
@@ -985,8 +987,8 @@ class Procmail:
 		if command != 'RESIGN':
 			if not game.private or command == 'MONITOR':
 				if len(word) != 3: self.respond('Invalid %s command' % command)
-			elif (len(word) != 4
-			or self.sanitize(word[3]).upper() != game.private):
+			elif (len(word) == 3 or len(word) == 4
+			and self.sanitize(word[3]).upper() != game.private):
 				self.respond(
 					"Game '%s' is a private game for invited players only.\n"
 					'You may %s only by specifying (after your password)\n'
@@ -996,8 +998,9 @@ class Procmail:
 					'exclusively for a group of players in a specific club\n'
 					'or organization or who know each other personally and\n'
 					'can communicate outside the confines of the judge (for\n'
-					'example, face-to-face or by telephone).' %
+					'example, face-to-face or by telephone)' %
 					(game.name, command))
+			elif len(word) != 4: self.respond('Invalid %s command' % command)
 		#	---------------
 		#	Player TAKEOVER
 		#	---------------

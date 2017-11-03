@@ -63,7 +63,7 @@ page.include('functions')
 		<b>&middot;</b>&nbsp;<a href="#7">How to send press</a><br>
 		<b>&middot;</b>&nbsp;<a href="#8">Sending illegal types of press</a><br>
 		<b>&middot;</b>&nbsp;<a href="#9">Ending a press message</a><br>
-		<b>&middot;</b>&nbsp;<a href="#10">Commanding multiple games</a><br>
+		<b>&middot;</b>&nbsp;<a href="#10">Messaging multiple games</a><br>
 		<b>&middot;</b>&nbsp;<a href="#11">Updating player information</a><br>
 		<b>&middot;</b>&nbsp;<a href="#12">Getting around wireless device</a><br>
 		&nbsp;&nbsp;<a href="#11">restrictions</a><br>
@@ -710,7 +710,7 @@ commands once.  For example:<tt>
 
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
-		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="10"></a><b>Commanding multiple games</b></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="10"></a><b>Messaging multiple games</b></td></tr>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
 		</table>	
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
