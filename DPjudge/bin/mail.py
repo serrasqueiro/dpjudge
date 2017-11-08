@@ -264,31 +264,25 @@ class Procmail:
 		except: self.respond('Unrecognized rule variant: ' +
 			variant)
 		self.dppdMandate(upword)
-		dir, onmap = host.gameDir + '/' + game, ''
-		os.mkdir(dir)
-		os.chmod(dir, 0777)
-		file = open(dir + '/status', 'w')
-		temp = ('GAME %s\nPHASE FORMING\nMASTER %s\n' +
-			'PASSWORD %s\n') % (game, self.dppd, password)
-		file.write(temp.encode('latin-1'))
+		temp, onmap = ('GAME %s\nPHASE FORMING\nMASTER %s\n' +
+			'PASSWORD %s\n') % (game, self.dppd, password), ''
 		lineNo, block = 0, None
 		for line in self.message[:]:
 			lineNo += 1
 			word = line.split()
 			if self.checkEnd(line, block):
 				if block:
-					file.write((line + '\n').encode('latin-1'))
+					temp += line + '\n'
 					block = None
 				else:
 					del self.message[:lineNo - 1]
 					break
-			elif block: file.write(line.encode('latin-1'))
+			elif block: temp += line + '\n'
 			elif not len(word):
 				if desc:
-					temp = 'DESC A %s game%s.\n' % (desc, onmap)
-					file.write(temp.encode('latin-1'))
+					temp += 'DESC A %s game%s.\n' % (desc, onmap)
 					desc = None
-				file.write('\n')
+				temp += '\n'
 			else:
 				upword = word[0].upper()
 				if upword in ('DESC', 'DESCRIPTION'):
@@ -306,19 +300,24 @@ class Procmail:
 				elif (len(word) == 2 and upword == 'SET'
 				and word[1].upper() in ('LISTED', 'UNLISTED')):
 					unlisted = upword[1] == 'U'
-				else: file.write((line + '\n').encode('latin-1'))
+				else: temp += line + '\n'
 		else: self.message = []
-		#	---------------------------------------------
-		#	All lines have been written to file. Close it.
-		#	---------------------------------------------
 		if desc:
-			temp = 'DESC A %s game%s.\n' % (desc, onmap)
-			file.write(temp.encode('latin-1'))
-		file.close()
-		os.chmod(file.name, 0666)
+			temp += 'DESC A %s game%s.\n' % (desc, onmap)
 		games.dict[game] = [variant, mode]
 		if unlisted: games.dict[game] += ['unlisted']
 		games.save()
+		dir = host.gameDir + '/' + game
+		try:
+			os.mkdir(dir)
+			os.chmod(dir, 0777)
+		except: pass
+		try:
+			file = open(dir + '/status', 'w')
+			file.write(temp.encode('latin-1'))
+			file.close()
+			os.chmod(file.name, 0666)
+		except: self.respond('Unable to create status file')
 		self.game = Game(game)
 		if 'SOLITAIRE' in self.game.rules:
 			if not self.game.private: self.game.private = 'SOLITAIRE'
