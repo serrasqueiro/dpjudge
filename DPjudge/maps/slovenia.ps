@@ -14,6 +14,7 @@
 
 % INFO
 %  573   83 ADA    Adana
+%  103  120 ADL    Andalusia
 %  315  149 ADR    Adriatic Sea
 %  425   62 AEG    Aegean Sea
 %  360  122 ALB    Albania
@@ -21,7 +22,6 @@
 %  159   67 ALG    Algeria
 %  232  242 ALS    Alsace
 %  519   80 ANA    Anatolia
-%  103  120 AND    Andalusia
 %  552  125 ANK    Ankara
 %  332  117 APU    Apulia
 %  770  -52 ARA    Arabian Sea
@@ -29,7 +29,7 @@
 %  639  135 ARM    Armenia
 %  527  -89 ASW    Aswan
 %  308  218 AUS    Austria
-%  179  197 AUV    Auvergne
+%  180  202 AUV    Auvergne
 %  671  129 AZE    Azerbaijan
 %  355  341 BAL    Baltic Sea
 %  134  154 BAR    Barcelona
@@ -38,7 +38,7 @@
 %  322  330 BHM    Bornholm Sea
 %  420  287 BIE    Bielorussia
 %  125  232 BIS    Bay of Biscay
-%  151  199 BOR    Bordeaux
+%  151  198 BOR    Bordeaux
 %  337  169 BOS    Bosnia
 %  161  256 BRI    Brittany
 %  488  640 BRN    Barents Sea
@@ -100,7 +100,7 @@
 %  380  135 MAC    Macedonia
 %   83  170 MAD    Madrid
 %  293   34 MAL    Maltese Sea
-%  206  197 MAR    Marseilles
+%  206  195 MAR    Marseilles
 %   53  257 MID    Mid Atlantic Ocean
 %  266  198 MIL    Milan
 %  452  220 MOL    Moldavia
@@ -139,6 +139,7 @@
 %  280  378 SKA    Skagerrak
 %  356  222 SLK    Slovakia
 %  310  199 SLN    Slovenia
+%  527  209 SOA    Sea of Azov
 %   83   98 SOG    Straits of Gibraltar
 %  445  385 STP    St-Petersburg
 %   68  142 SVE    Seville
@@ -151,7 +152,7 @@
 %  151  369 ULS    Ulster
 %  571  484 URA    Urals
 %  288  169 VEN    Venice
-%  625  240 VOL    Volga
+%  616  257 VOL    Volga
 %  162  313 WAL    Wales
 %  353  291 WAR    Warsaw
 %  482  162 WBS    Western Black Sea
@@ -229,6 +230,7 @@
 		IncludeInternalBorders
 		IncludeBorders
 		IncludeCanals
+		IncludeCanalDuMidi
 		r
 		end
 	} bind
@@ -321,16 +323,16 @@
 	(ALE) 478 -39 c
 	(ALG) 159 67 c
 	(ANA) 519 80 c
-	(AND) 103 120 c
+	(ADL) 103 120 c
 	(ANK) 552 125 c
 	(APU) 332 117 c
 	(ASW) 527 -89 c
-	(AUV) 179 197 c
+	(AUV) 180 202 c
 	(AZE) 671 129 c
 	(BAR) 134 154 c
 	(BEL) 232 284 c
 	(BER) 303 295 c
-	(BOR) 151 199 c
+	(BOR) 151 198 c
 	(BRI) 161 256 c
 	(BUL) 421 148 c
 	(CAI) 509 -48 c
@@ -364,7 +366,7 @@
 	(LIT) 391 334 c
 	(LIV) 175 346 c
 	(LON) 195 315 c
-	(MAR) 206 197 c
+	(MAR) 206 195 c
 	(MON) 225 182 c
 	(MOR) 51 86 c
 	(MUR) 463 523 c
@@ -392,7 +394,7 @@
 	(ULS) 151 369 c
 	(URA) 571 484 c
 	(VEN) 288 169 c
-	(VOL) 625 240 c
+	(VOL) 616 257 c
 	(WAL) 162 313 c
 	(YOR) 196 343 c
 	(ALS) 232 242 l
@@ -454,6 +456,7 @@
 	(RED) 553 -79 w
 	(SKA) 280 378 w
 	(SAO) 0 117 w
+	(SOA) 527 209 w
 	(SOG) 83 98 w
 	(TYR) 269 100 w
 	(WBS) 482 162 w
@@ -1509,6 +1512,13 @@
 	/fk { k } bd
 	2.5 w [ 2 3 ] 1.5 d SeaBlue
 	OutlineChartCanalLine
+	r
+} bd
+/IncludeCanalDuMidi {
+	s
+	/fk { k } bd
+	2.5 w [ 2 3 ] 1.5 d SeaBlue
+	OutlineChartCanalDuMidiLine
 	r
 } bd
 /VisitColors {
@@ -3495,9 +3505,6 @@
 	568 249 m
 	567 241 l
 	fk
-	567 241 m
-	552 236 l
-	fk
 	463 297 m
 	449 329 l
 	437 338 l
@@ -3632,10 +3639,10 @@
 	481 432 m
 	491 382 l
 	600 367 l
-	603 222 l
+	603 253 l
 	fk
-	536 191 m
-	573 224 l
+	552 236 m
+	603 253 l
 	657 217 l
 	fk
 	272 326 m
@@ -3647,6 +3654,11 @@
 	fk
 	517 -31 m
 	514 -14 l
+	fk
+} bd
+/OutlineChartCanalDuMidiLine {
+	183 175 m
+	152 223 l
 	fk
 } bd
 {

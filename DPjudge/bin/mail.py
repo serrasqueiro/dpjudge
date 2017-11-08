@@ -296,7 +296,7 @@ class Procmail:
 					if len(word) == 1: block = ['DESC', 'DESCRIPTION']
 				elif upword in ('MAP', 'TRIAL'):
 					onmap = ' on the %s%s map' % (
-						''.join(info.split()[1:2]).title(),
+						''.join(word[1:2]).title(),
 						('', ' trial')[word == 'TRIAL'])
 				elif len(word) == 1 and upword in ('NAME', 'MORPH'):
 					block = [upword]
@@ -332,13 +332,13 @@ class Procmail:
 			mode = 'active'
 		observers = host.observers or []
 		if type(observers) is not list: observers = [observers]
-		self.response += ["Game '%s' has been created.  %s at:" %
+		self.response += ["Game '%s' has been created.  %s at:\n" %
 			(game, mode[0] == 'p' and 'Finish preparation'
 			or mode[0] == 'f' and 'Game is now forming'
-			or 'Game has started'), 
-			'   %s%s?game=%s' % (host.dpjudgeURL,
-			'/index.cgi' * (os.name == 'nt'), game),
-			'', 'Welcome to the %s' % host.dpjudgeNick]
+			or 'Game has started') +
+			'   %s%s?game=%s\n\n' % (host.dpjudgeURL,
+			'/index.cgi' * (os.name == 'nt'), game) +
+			'Welcome to the %s' % host.dpjudgeNick]
 		self.respond(copyTo = observers + self.game.map.notify)
 	#	----------------------------------------------------------------------
 	def handleEmail(self, powerName, password):
