@@ -905,8 +905,7 @@ class Map:
 		old = old.upper()
 		if old not in self.locName.values():
 			return self.error.append('INVALID RENAME LOCATION: ' + `old`)
-		[x.pop(y) for x in self.locName
-			for y,z in x.items() if z == old]
+		[self.locName.pop(x) for x, y in self.locName.items() if y == old]
 		self.lang.removeAliases(old)
 		if old == new: return
 		for site in [x for x in self.locs if x.upper() == old]:
@@ -967,9 +966,10 @@ class Map:
 			except: pass
 	#	----------------------------------------------------------------------
 	def drop(self, place, deCoast = 0):
-		[self.locs.remove(x) for x in self.locs if x.upper().startswith(place)]
-		[x.pop(y) for x in self.locName
-			for y,z in x.items() if z.startswith(place)]
+		[self.locs.remove(x) for x in self.locs
+			if x.upper().startswith(place)]
+		[self.locName.pop(x) for x, y in self.locName.items()
+			if y.startswith(place)]
 		self.lang.removeAliases(place)
 		[x.remove(place) for x in self.homes.values() if place in x]
 		[y.remove(x) for y in self.units.values()

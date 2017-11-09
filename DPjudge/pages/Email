@@ -731,6 +731,8 @@ commands once.  For example:<tt>
 		one game, replying to players in another and entering orders for a third,
 		be my guest. And if you're a (would-be) Master, you can also CREATE or
 		RENAME multiple games at once.
+		<p><b>My commands get jumbled together (concatenated) on one line. What can I do?</b><br>
+		Try to send the message as text-only instead of HTML (for Yahoo users there should be a Tx icon in the formatting bar) or insert empty lines between each command line. You can also declare your own end-of-line character, as explained in the <a href="#12">restrictions</a> section below.
 		<!--ANSWER ENDS HERE-->
 	</td>
 	</tr>
