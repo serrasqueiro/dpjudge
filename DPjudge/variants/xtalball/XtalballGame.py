@@ -63,7 +63,8 @@ class XtalballGame(Game):
 			unit, order = ' '.join(word[:2]), ' '.join(word[2:])
 			valid = self.validOrder(power, unit, order)
 			if valid != None:
-				power.list[self.mode] += [upline + ' ?' * (valid == -1)]
+				power.list[self.mode] += [upline + ' ?' *
+					(valid == -1 and not upline.endswith(' ?'))]
 			if self.mode == 'LATER': power.held = 1
 		else: return 0
 		return 1

@@ -87,7 +87,7 @@ class TimeZone(tzinfo):
 #	------------------------------------------------------------------
 class Time(str):
 	#	----------------------------------------------------------------------
-	def __new__(self, zone = None, when = None, npar = 5):
+	def __new__(self, zone = None, when = None, npar = 5, days = None):
 		zone = TimeZone(zone)
 		zone.putZone()
 		while 1:
@@ -117,7 +117,8 @@ class Time(str):
 					time.strptime(when)[:npar])
 				break
 			except: pass
-			for fmt in ['%A %d %B %Y %H:%M', '%a %d %b %Y %H:%M', '%a, %d %b %Y %H:%M:%S', '%d %B %Y', '%A %d %B %Y']:
+			for fmt in ['%A %d %B %Y %H:%M', '%a %d %b %Y %H:%M',
+				'%a, %d %b %Y %H:%M:%S', '%d %B %Y', '%A %d %B %Y']:
 				try:
 					this = str.__new__(self, '%02d' * npar %
 						time.strptime(when, fmt)[:npar])
@@ -126,6 +127,7 @@ class Time(str):
 			else: this = str.__new__(self)
 			break
 		this.zone = zone
+		this.days = days
 		this.tail = [0, 0, -1]
 		if this:
 			this.tail = list(time.localtime(this.seconds())[6:])
@@ -134,12 +136,21 @@ class Time(str):
 	def npar(self):
 		return len(self) / 2 - 1
 	#	----------------------------------------------------------------------
-	def offset(self, off = 0):
+	def offset(self, off = 0, skip = 0):
+		#	----------------------------------------------------
+		#	Values for skip:
+		#	 0: Don't skip any days
+		#	 1: Skip to the first day available for minor phases
+		#	 2: Skip to the first day available for all phases
+		#	 3: Jump days not available for minor phases
+		#	 4: Jump days not available for all phases
+		#	----------------------------------------------------
 		try: secs = self.seconds() + off
 		except:
 			dict = { 'M': 60, 'H': 3600, 'D': 86400, 'W': 604800 }
 			secs = self.seconds() + int(off[:-1]) * dict.get(off[-1], 1)
-		return Time(self.zone, secs, self.npar())
+		when = Time(self.zone, secs, self.npar(), self.days)
+		if not skip or not self.days: return when
 	#	----------------------------------------------------------------------
 	def trunc(self, mod = 1):
 		#	----------------------------------------
@@ -148,14 +159,12 @@ class Time(str):
 		zone, self.zone = self.zone, TimeZone('GMT')
 		secs = self.seconds()
 		zone, self.zone = self.zone, zone
-		try: secs = secs / mod * mod
+		try: tsecs = secs / mod * mod
 		except:
 			dict = { 'M': 60, 'H': 3600, 'D': 86400, 'W': 604800 }
 			mod = int(mod[:-1]) * dict.get(mod[-1], 1)
-			secs = secs / mod * mod
-		when = Time(zone, secs, self.npar())
-		when.zone = self.zone
-		return when
+			tsecs = secs / mod * mod
+		return self.offset(tsecs - secs)
 	#	----------------------------------------------------------------------
 	def adjust(self, npar):
 		if npar == self.npar(): return self

@@ -1397,6 +1397,11 @@ the course of the game.
 	In certain cases, e.g. for testing and solving Diplomacy puzzles (solitaire games), there's no need for a deadline, and thus also not for a Timing line. It's up to the GM to process each turn after all (relevant) orders are submitted, or for all players to submit their orders without setting their <tt>WAIT</tt> flag. This behavior can be influenced with the <tt>NO_WAIT</tt> and <tt>ALWAYS_WAIT</tt> options.
 <!-- RULE END -->
 
+<a name=JUMP_OFF_DAYS></a><p><dt><b><tt>JUMP_OFF_DAYS</tt></b><dd>
+<!-- RULE JUMP_OFF_DAYS -->
+	Instead of skipping off days (determined by the <tt>DAYS</tt> setting in the <tt>TIMING</tt> line, as well as any absences) to land on the first available playing day for the phase, they are completely ignored when counting the number of days to the next deadline. E.g. When not paying in the weekend and a 3 day interval, the next deadline after Friday will be Wednesday, not Monday, to give the players a full 3 playing days.
+<!-- RULE END -->
+
 <a name=NO_QUARTER></a><p><dt><b><tt>NO_QUARTER</tt></b><dd>
 <!-- RULE NO_QUARTER +NO_RETREAT +NO_DRAW -->
 	This rule enforces both of the rules <tt>NO_RETREAT</tt>

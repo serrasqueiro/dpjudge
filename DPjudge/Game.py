@@ -655,10 +655,13 @@ class Game:
 		#	what the user expects. Also the TIMING line may influence the
 		#	deadline, and we're not going to update that.
 		#	-------------------------------------------------------------
-		if self.deadline: self.deadline.zone = zone
+		if self.deadline: self.deadline = self.getTime(self.deadline)
 		if self.processed: self.processed = self.processed.changeZone(zone)
 	#	----------------------------------------------------------------------
-	def getTime(self, when = None, npar = 5):
+	def getTime(self, when = None, npar = 0):
+		if not npar:
+			try: npar = len(when)/2-1
+			except: return Time(self.zone, when)
 		return Time(self.zone, when, npar)
 	#	----------------------------------------------------------------------
 	def loadStatus(self, fileName = 'status', includeFlags = 7):
@@ -1266,7 +1269,7 @@ class Game:
 				elif key != 'NOT':
 					for val in ([val], val.split(','))[key == 'WARN']:
 						if (int(val[:-1]) < (key not in ('WARN', 'GRACE'))
-						or	val[-1] not in 'MHDW'): raise
+						or	val[-1] not in 'MHDPW'): raise
 			except: error += ['BAD %s IN TIMING: ' % key + val]
 		#	---------------------
 		#	Initialize power data
@@ -1464,12 +1467,13 @@ class Game:
 			mailTo = mailTo * (len(mailTo) > 2 and
 				mailTo[-1] != '@' and '@' in mailTo)
 		else: mailTo = mailTo or host.dpjudge
+		asMaster = self.gm.address and self.gm.address[0] or self.jk.address[0]
 		self.mail = Mail(mailTo, subject,
 			copy = copyFile and self.file(copyFile),
-			mailAs = mailAs or self.master[1], header = 'Errors-To: ' +
-				(self.master and self.master[1] or host.judgekeeper))
+			mailAs = mailAs or asMaster,
+			header = 'Errors-To: ' + asMaster)
 		if not mailAs:
-			self.mail.write('SIGNON M%s %s\n' % (self.name, self.password), 0)
+			self.mail.write('SIGNON M%s %s\n' % (self.name, self.gm.password), 0)
 	#	----------------------------------------------------------------------
 	def save(self, asBackup = 0):
 		fileName = 'status'
@@ -1788,7 +1792,7 @@ class Game:
 			try: del self.timing['NOT']
 			except: pass
 		for key, val in self.timing.items():
-			timing += ' ' + key.title() + ' ' + val
+			timing += ' ' + key.title() + (val and (' ' + val) or '')
 		timing = timing or ' Next 1D Move 3D'
 		if 'DAYS' not in self.timing: timing += ' Days -MTWTF-'
 		if self.map.name != self.variant: variant += [self.map.name.title()]
@@ -2193,7 +2197,7 @@ class Game:
 				if reader == 'MASTER':
 					if (sender and sender.name != reader and readers == ['All']
 					and 'PRESS_MASTER' in self.rules): continue
-					power, email = reader, self.master[1]
+					power, email = reader, self.gm.address[0]
 				elif reader == 'JUDGEKEEPER':
 					fromSender = sender and sender.name != reader
 					if (not sender or fromSender) and readers in (['All'], ['All!']): continue
@@ -2271,7 +2275,7 @@ class Game:
 		#	explicitly set.
 		#	------------------------------------------------------
 		if email and not fromSender: mailAs = host.dpjudge
-		elif sender.name == 'MASTER': mailAs = self.master[1]
+		elif sender.name == 'MASTER': mailAs = self.gm.address[0]
 		else: mailAs = sender.address[0].split(',')[0]
 		#	--------------
 		#	Begin the mail
@@ -4179,7 +4183,7 @@ class Game:
 			for power in self.powers: power.removeBlindMaps()
 			file = host.gameMapDir + '/' + self.name
 			for suffix in ('.ps', '.pdf', '.gif', '_.gif'):
-				try: os.rename(file + `hash(self.password)` + suffix,
+				try: os.rename(file + `hash(self.gm.password)` + suffix,
 					file + suffix)
 				except: pass
 	#	----------------------------------------------------------------------
@@ -4259,7 +4263,7 @@ class Game:
 		try: delay = [y for x,y in self.timing.items()
 			if not self.phase.split()[-1].find(x)][0]
 		except: delay = self.timing.get('NEXT',
-			('3D', '1D')[self.phaseType in 'RA'])
+			('1D', '3D')[self.phaseType == 'M'])
 		#	-------------------------------------------------------
 		#	Determine earliest deadline.  If the game allows press,
 		#	double the usual length of time for the first deadline.
@@ -4268,7 +4272,7 @@ class Game:
 		realtime = 'REAL_TIME' in self.rules or when < now.offset('20M')
 		#	------------------------------------------
 		#	Advance the deadline to the specified time
-		#	unless the delay is less than half a day.
+		#	unless the delay is less than half a day
 		#	------------------------------------------
 		if when < now.offset('12H'): at = 0
 		if (firstPhase and 'NO_PRESS' not in self.rules
@@ -4280,20 +4284,32 @@ class Game:
 			#	provide fudge-time so that three days
 			#	from 11:41, pushed to the next 11:40
 			#	won't be four days away (for example)
+			#	Increase this to 8 hours if the delay
+			#	is expressed in whole days
 			#	-------------------------------------
+			if delay[-1:] in 'WD':
+				whack = when.offset('-' + self.timing.get('FUDGE', '8H'))
+				if whack < when.offset('-12H'): when = when.offset('-12H')
+				else: when = whack
 			when = when.offset(-1200).next(at)
-		moved = 1
+		moved, skip = 1, 'JUMP_OFF_DAYS' in self.rules
 		while moved:
 			#	---------------------------------
 			#	Specific day-of-week setting (the
 			#	DAYS option to the TIMING line)
 			#	---------------------------------
-			day = when.tuple()[6]
+			whack = skip and now.next(when) or when
+			day = whack.tuple()[6]
 			while 1:
 				day = (day + 1) % 7
 				if (days[day].isalpha(),
-					days[day].isupper())[self.phaseType == 'M']: break
-				when = when.offset('1D')
+					days[day].isupper())[self.phaseType == 'M']:
+					if not skip or when == whack: break
+					whack = whack.offset(86400)
+				else:
+					if skip: whack = whack.offset(86400)
+					when = when.offset(86400)
+			skip = 0
 			#	--------------------------
 			#	Vacation handling (the NOT
 			#	option to the TIMING line)
@@ -4572,8 +4588,8 @@ class Game:
 	#	----------------------------------------------------------------------
 	def playerRoster(self, request = None, forPower = None, reveal = 0):
 		results = '  Master:%9s%-*s %s\n' % ('', (22, 17)[request == 'LIST'],
-			self.master[-1].replace('_', ' ') * (request != 'LIST'),
-			self.master[1])
+			self.gm.player[0].split('|')[-1].replace('_', ' ') *
+			(request != 'LIST'), self.gm.address[0])
 		for powerName in self.map.powers:
 			try: power = [x for x in self.powers if x.name == powerName][0]
 			except: continue
@@ -4590,13 +4606,14 @@ class Game:
 			for data in reversed(player):
 				person = data.split('|')
 				if len(person) > 2:
-					late = 'late' * (self.deadline and data == player[-1]
+					late = 'late' * (not not (self.deadline
+						and data == player[-1]
 						and self.phase not in ('COMPLETED', 'FORMING')
 						and powerName in self.latePowers()
 						and self.deadlineExpired()
 						and ('HIDE_LATE_POWERS' not in self.rules
 						or forPower is not None
-						and forPower.name in (powerName, 'MASTER')))
+						and forPower.name in (powerName, 'MASTER'))))
 					if (self.phase != 'COMPLETED' or ('NO_REVEAL' in self.rules
 					and not reveal)) and (forPower is None
 					or forPower.name not in ('MASTER', powerName)
@@ -4866,7 +4883,7 @@ class Game:
 			count = int(self.timing['GRACE'][:-1])
 			penalty = ('\n\n%s who are still late %d %s%s after the\n'
 				'deadline above will be %s.' % (all, count,
-				{'H': 'hour', 'D': 'day', 'M': 'minute', 'W': 'week'}.
+				{'W': 'week', 'D': 'day', 'H': 'hour', 'M': 'minute'}.
 				get(self.timing['GRACE'][-1], 'second'), 's'[count == 1:],
 				'either ' * resign * cd + 'summarily dismissed' * resign +
 				'\nor ' * resign * cd + 'declared in civil disorder' * cd))
@@ -4929,7 +4946,7 @@ class Game:
 		result = ('%-9s %-9s%s, Gunboat, Moderated (%s), Press:%s.\n' %
 			(self.name,
 			self.phaseAbbr((None, self.map.phase)[self.phase == 'FORMING']),
-			variant, self.master[1].split('@')[0], ''.join(press)))
+			variant, self.gm.address[0].split('@')[0], ''.join(press)))
 		indent = 20 + (len(need) == 1)
 		if need: result += (' ' * indent + 'URL: %s%s?game=%s\n' %
 			(host.dpjudgeURL, '/index.cgi' * (os.name == 'nt'), self.name))
@@ -5021,12 +5038,12 @@ class Game:
 		#	Cheater-catcher code
 		#	--------------------
 		jk, gm = [x.upper().split('@')
-			for x in (host.judgekeeper, self.master[1])]
+			for x in (host.judgekeeper, self.gm.address[0])]
 		outsider = (jk[0] != gm[0]
 			or jk[1].split('.')[-2:] != gm[1].split('.')[-2:])
 		powers = [[x.name, x.password.upper()]
 			for x in self.powers if x.password]
-		if ([power, pwd.upper()] in ['MASTER', self.password.upper()] + powers
+		if ([power, pwd.upper()] in ['MASTER', self.gm.password.upper()] + powers
 		and not self.private
 		and origin != 'unknown'
 		and not [1 for x in host.publicDomains if x in origin]):
@@ -5037,9 +5054,9 @@ class Game:
 				if len(word) < 8: continue
 				if (word[5] == origin.upper() # and '@' not in word[5]
 				and word[6] != power and word[6:] in powers
-				and not [1 for x in (self.password.upper(),
+				and not [1 for x in (self.gm.password.upper(),
 				host.judgePassword.upper()) if x in (word[7], pwd.upper())]):
-					for addr in [self.master[1]] + host.detectives * outsider:
+					for addr in [self.gm.address[0]] + host.detectives * outsider:
 						self.openMail('Diplomacy suspicious activity',
 							mailTo = addr, mailAs = host.dpjudge)
 						self.mail.write('GameMaster:\n\n'
@@ -5049,14 +5066,14 @@ class Game:
 							'%s?game=%s&power=MASTER&password=%s\n' %
 							(self.anglify(power), self.name,
 							self.anglify(word[6]),
-							host.dpjudgeURL, self.name, self.password))
+							host.dpjudgeURL, self.name, self.gm.password))
 						self.mail.close()
 					break
 		#	---------------------------
 		#	End of cheater-catcher code
 		#	---------------------------
 		file = open(access, 'a')
-		if pwd == self.password: pwd = '!-MASTER-!'
+		if pwd == self.gm.password: pwd = '!-MASTER-!'
 		elif pwd == host.judgePassword: pwd = '!-JUDGEKEEPER-!'
 		temp = '%s %-16s %-10s %s\n' % (self.getTime().cformat(), origin, power, pwd)
 		file.write(temp.encode('latin-1'))
@@ -5067,8 +5084,7 @@ class Game:
 	#	----------------------------------------------------------------------
 	def mailMap(self, email, mapType, power = None):
 		fileName = (host.gameMapDir + '/' + self.name +
-			(power and 'BLIND' in self.rules
-			and (power, self)[power.name == 'MASTER'].password or '')
+			(power and 'BLIND' in self.rules and power.password or '')
 			+ '.' + mapType)
 		if not os.path.isfile(fileName): return
 		import base64
@@ -5105,7 +5121,8 @@ class Game:
 		if self.error and status[1] not in ('completed', 'terminated'):
 			status[1] = 'error'
 		self.state = {
-						'MASTER':	self.password + ':' + self.master[0],
+						'MASTER':	self.gm.password + ':' +
+							self.gm.player[0].split('|')[0],
 						'STATUS':	':'.join(status).upper(),
 						'PHASE':	self.phaseAbbr(),
 						'DEADLINE':	self.deadline,

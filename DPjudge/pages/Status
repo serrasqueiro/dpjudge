@@ -171,13 +171,27 @@ page.include('functions')
 		is in <i>UPPER-CASE</i>, this indicates that deadlines for <i>any</i>
 		phase may be set on that day.  If it is in <i>lower-case</i>, this
 		indicates that movement phase deadlines may <i><u>not</u></i> be
-		set on that day.  <i>(Therefore, at least one of the days must be
-		specified in upper-case.)</i>
+		set on that day.  <i>Therefore, at least one of the days must be
+		specified in upper-case.</i>  As a matter of convenience, if all
+		days are in lower-case, this is treated the same as if they were all
+		in upper-case, allowing movement on any of these days.
 	<dt><b><tt>NEXT <i>delay</i></tt></b>
 	<dd>Specifies the default time period to be used to set the next
 		deadline.  The <tt><i>delay</i></tt> must be some positive whole
 		number followed by either <tt>M</tt> (for minutes), <tt>H</tt>
 		(for hours), <tt>D</tt> (for days), or <tt>W</tt> (for weeks).
+		There's a catch though. In combination with the <tt>AT</tt>
+		control, delays specified in days or weeks have an 8 hour fudge
+		period. Late orders entered in this period will not cause the
+		deadline to be pushed back for the full delay period and then
+		some, but will be set to the <tt>AT</tt> time-of-day of the
+		previous day <i>as if the orders had been entered on time</i>
+		(or on the most recent <tt><i>AT</i></tt> time-of-day if the
+		player is a couple of days late).  This means that e.g. a
+		<tt><i>1D</i></tt> delay actually acts the same as a
+		<tt><i>16H</i></tt> delay. You must specify the delay in hours
+		(or minutes) instead (e.g. <tt><i>24H</i></tt>) if you want to 
+		guarantee at least a full day until the next deadline.
 		<i>See below for the default value if no </i><tt>NEXT</tt><i>
 		control is given.</i>
 	<dt><b><tt><i>phaseType delay</i></tt></b>
@@ -190,6 +204,18 @@ page.include('functions')
 		or appropriate <tt><i>phaseType</i></tt> control), use:<br>
 		&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		<tt>TIMING NEXT 1D MOVE 3D</tt><br>
+	<dt><b><tt>SKIP</tt></b>
+	<dd>Instead of looking for the first available day after the delay, this
+		directive completely ignores unavailable days when calculating the
+		delay itself.  Take for example the default <tt>DAYS</tt> setting
+		where weekend days are avoided, and let's say that <tt>MOVE</tt>
+		phases are 3 days apart. A turn processing on Friday would normally
+		push the next deadline to Monday. With this setting the deadline will
+		fall on Wednesday, as Saturday and Sunday are simply skipped. Note
+		that if the turn processes during the weekend, the new deadline
+		would be on Thursday, the same as if the turn would have processed
+		on Monday. This ensures that there are a full 3 playing days (72 hours)
+		for negotiations.
 	<dt><b><tt>WARN <i>delay</i>[,<i>delay...</i>]</tt></b>
 	<dd>Specifies a time span <i>before</i> the deadline at which time
 		any players who have not yet submitted orders will be sent a "friendly
