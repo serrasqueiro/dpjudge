@@ -64,7 +64,7 @@ if 'newGame' in vars(page):
 		SELECT address
 		  FROM Email
 		 WHERE status = 'PRIMARY'
-		   AND userId = %s""" % id)
+		   AND userId = %s""", [id])
 		email = page.dppd.db.fetchone()['address']
 	else: email = page.email
 	back = 'window.history.back();'
@@ -113,10 +113,10 @@ page.dppd.db.execute("""
 			Role.type, Role.password, Role.name
 			from Judge, Game, Role
 			where Game.id = Role.gameId and Game.judgeId = Judge.id
-			and Judge.id = '%s' and Role.userId = %d
+			and Judge.id = %s and Role.userId = %s
 			and Game.status not in ('COMPLETED', 'TERMINATED')
 			order by Game.name
-			""" % (page.dpjudge, page.id))
+			""", (page.dpjudge, page.id))
 for info in page.dppd.db.fetchall():
 	game.phase = info['phase']
 	game.setTimeZone(info['zone'])

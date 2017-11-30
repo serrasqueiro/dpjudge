@@ -33,8 +33,8 @@ leftside()
 def showEmail(id):
 	page.dppd.db.execute(
 		"""
-		select * from Email where userID = %d order by status
-		""" % id)
+		select * from Email where userID = %s order by status
+		""", [id])
 	page.dppd[id]['email'] = [x['address'] for x in page.dppd.db.fetchall()]
 	page.write(
 		"""
@@ -130,13 +130,13 @@ if 'primary' in vars(page) or 'newEmail' in vars(page):
 		page.dppd.db.execute(
 			"""
 			insert into Email (userID, address, status)
-			values(%d, "%s", "ACTIVE")
-			""" % (id, page.newEmail))
+			values(%s, %s, "ACTIVE")
+			""", (id, page.newEmail))
 	nothing = 0
 	page.dppd.db.execute(
 		"""
-		select address from Email where userID = %d and status = "PRIMARY"
-		""" % id)
+		select address from Email where userID = %s and status = "PRIMARY"
+		""", [id])
 	primary = page.dppd.db.fetchone()['address']
 	if page.primary == 'new':
 		if 'newEmail' in vars(page): page.primary = page.newEmail
@@ -155,13 +155,13 @@ if 'primary' in vars(page) or 'newEmail' in vars(page):
 		page.dppd.db.execute(
 			"""
 			update Email set status = "ACTIVE"
-			where userID = %d and status = "PRIMARY"
-			""" % id)
+			where userID = %s and status = "PRIMARY"
+			""", [id])
 		page.dppd.db.execute(
 			"""
 			update Email set status = "PRIMARY"
-			where userID = %d and address = "%s"
-			""" % (id, page.primary.lower()))
+			where userID = %s and address = %s
+			""", (id, page.primary.lower()))
 	page.write(
 		"""
 		<form name=form method=post>

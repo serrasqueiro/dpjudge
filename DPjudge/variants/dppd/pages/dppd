@@ -24,9 +24,9 @@ def login():
 		page.id = data['id']
 		page.dppd.db.execute("""
 			update User
-			set status = 'ACTIVE', password = '%s'
-			where id = %d
-			""" % (data['password'][len(page.password) + 1:], data['id']))
+			set status = 'ACTIVE', password = %s
+			where id = %s
+			""", (data['password'][len(page.password) + 1:], data['id']))
 	else: item = ('wrong confirmation number.\\n\\n'
 			'Remember, the password that you must use for your first\\n'
 			'login must be the confirmation number that was e-mailed\\n'
@@ -44,8 +44,8 @@ def login():
 def getDPjudgeURL():
 	if 'dpjudge' in vars(page):
 		if page.dppd.db.execute(
-			'select url from Judge where url is not null and id="%s"' %
-			page.dpjudge.upper()): return page.dppd.db.fetchone()['url']
+			'select url from Judge where url is not null and id=%s',
+			[page.dpjudge.upper()]): return page.dppd.db.fetchone()['url']
 	return host.dpjudgeURL
 #	--------------------------------------------------------------------------
 def header():
@@ -123,8 +123,8 @@ def leftside():
 				   INNER JOIN MemberStatus t4 ON t2.curr_status = t4.id
 			 WHERE t3.status_id <> 2
 			   AND t4.status_id <> 2
-			   AND t2.user_id = %d
-			""" % id)
+			   AND t2.user_id = %s
+			""", [id])
 			groups = page.dppd.db.fetchone()['group_count']
 			if groups:
 				myGroupButton = """

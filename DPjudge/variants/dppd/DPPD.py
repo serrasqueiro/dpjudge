@@ -90,7 +90,7 @@ class DPPD(dict):
 				"""
 				select * from User
 				where name = %s
-				""", name.encode('latin-1'))
+				""", [name.encode('latin-1')])
 			else: self.db.execute(
 				"""
 				select * from User
@@ -104,7 +104,7 @@ class DPPD(dict):
 					select * from User, Email
 					where address = %s
 					and id = userID
-					""", email.lower().split())
+					""", [email.lower().split()])
 			else:
 				if email.count('@') == 1:
 					user, domain, at = email.lower().split('@') + ['@%']
@@ -148,7 +148,7 @@ class DPPD(dict):
 				"""
 				select address, Email.status from User, Email
 				where name = %s and id = userId
-				""" + cond, name.encode('latin-1'))
+				""" + cond, [name.encode('latin-1')])
 		elif id is not None: self.db.execute(
 			"""
 			select address, status from Email
@@ -166,20 +166,20 @@ class DPPD(dict):
 			nr = self.db.execute("""
 				select password from User
 				where id = %s
-				""", id)
+				""", [id])
 		elif name:
 			key = 'Name: ' + name
 			nr = self.db.execute("""
 				select password from User
 				where name = %s
-				""", name)
+				""", [name])
 		elif email:
 			key = 'Email: ' + email
 			nr = self.db.execute("""
 				select password from User, Email
 				where address = %s
 				and id = userId
-				""", email)
+				""", [email])
 		else: return 'Empty key'
 		if not nr: return 'Not registered' + ' with ' + key
 		elif nr > 1: return 'Multiple registrations'
@@ -205,7 +205,7 @@ class DPPD(dict):
 			if not key: pass
 			elif key == 'JUDGE':
 				self.db.execute("select id from Judge where id = %s",
-					value[0])
+					[value[0]])
 				try: judgeId = self.db.fetchone()['id']
 				except: raise UnknownJudge
 			elif key == 'GAME':
@@ -234,7 +234,7 @@ class DPPD(dict):
 		#	-------------------
 		#	Update Rule records
 		#	-------------------
-		self.db.execute("select name from Rule where gameId = %s", game['id'])
+		self.db.execute("select name from Rule where gameId = %s", [game['id']])
 		oldrules = set([x['name'] for x in self.db.fetchall()])
 		if gameType: newrules.add(gameType)
 		[self.db.execute("delete from Rule where gameId = %s and name = %s",
@@ -244,7 +244,7 @@ class DPPD(dict):
 		#	-------------------
 		#	Update Role records
 		#	-------------------
-		self.db.execute("select * from Role where gameId = %s", game['id'])
+		self.db.execute("select * from Role where gameId = %s", [game['id']])
 		oldroles = self.db.fetchall()
 		[self.db.execute(
 			"delete from Role "
@@ -277,11 +277,11 @@ class DPPD(dict):
 		if host.judgePassword and host.judgePassword != gamePass:
 			if not self.db.execute(
 				"select password from Role where gameId = %s and "
-				"name = 'MASTER'", (gameId,)): raise NoGamePassword
+				"name = 'MASTER'", [gameId]): raise NoGamePassword
 			if gamePass != self.db.fetchone()['password']:
 				raise WrongGamePassword
-		self.db.execute("delete from Role where gameId = %s", (gameId,))
-		self.db.execute("delete from Rule where gameId = %s", (gameId,))
-		self.db.execute("delete from Game where id = %s", (gameId,))
+		self.db.execute("delete from Role where gameId = %s", [gameId])
+		self.db.execute("delete from Rule where gameId = %s", [gameId])
+		self.db.execute("delete from Game where id = %s", [gameId])
 	#	----------------------------------------------------------------------
 

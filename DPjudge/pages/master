@@ -332,7 +332,7 @@ def showStatusFile():
 	page.write("""
 		<tr><td class=bodycopy><b>Password:</b>
 		<td><input class=bodycopy name=newPassword value="%s"></td></tr>
-		""" % game.password)
+		""" % game.gm.password)
 	page.write("""
 		<script>
 		function policy()
@@ -740,7 +740,7 @@ def updateMaster():
 	action = page.setdefault('action')
 	if action in ('rollback', 'rollforward'):
 		flags = page.has('restore') * 1 + page.has('full') * 2 + (
-			host.judgePassword and page.password == host.judgePassword) * 16
+			game.jk.password and page.password == game.jk.password) * 16
 		if page.action == 'rollforward':
 			error = game.rollforward(page.phase, flags | 4)
 		else: error = game.rollback(page.phase, flags)
@@ -788,8 +788,8 @@ def updateMaster():
 	if 'map' in vars(page):
 		trial = page.map[:1] == '*'
 		game.map = Map(page.map[trial:], trial)
-	if page.password == game.password: page.password = page.newPassword
-	game.password = page.newPassword
+	if page.password == game.gm.password: page.password = page.newPassword
+	game.gm.password = page.newPassword
 	if page.privacy == 'public': game.private = None
 	elif page.private: game.private = page.private
 	else: return reportUpdateError('Empty privacy password')

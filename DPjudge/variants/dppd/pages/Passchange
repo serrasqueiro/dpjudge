@@ -35,9 +35,9 @@ if 'new_pass' in vars(page):
 	page.dppd.db.execute(
 	"""
 	 UPDATE User
-	    SET password = '%s'
-	  WHERE id = %d
-	""" % (ls_new, id))
+	    SET password = %s
+	  WHERE id = %s
+	""", (ls_new, id))
 	page.write(
 	"""
 	<form name=goto method=post>
