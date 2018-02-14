@@ -120,9 +120,6 @@ class XtalballGame(Game):
 			return -1
 		elif self.mode and word[0] in ('A', 'F'):
 			word = self.expandOrder(upline)
-			if len(word[-1]) == 1 and not word[-1].isalpha():
-				word = word[:-1]
-				upline = upline[:-2]
 			if len(word) < 3: return self.error.append('BAD ORDER: ' + upline)
 			unit, order = ' '.join(word[:2]), ' '.join(word[2:])
 			valid = self.validOrder(power, unit, order)
@@ -323,8 +320,6 @@ class XtalballGame(Game):
 	#	----------------------------------------------------------------------
 	def addOrder(self, power, order, which):
 		word = self.expandOrder(order)
-		if word and len(word[-1]) == 1 and not word[-1].isalpha():
-			word = word[:-1]
 		if len(word) < 3:
 			return self.error.append('BAD ORDER: ' + line)
 		unit, order = ' '.join(word[:2]), ' '.join(word[2:])

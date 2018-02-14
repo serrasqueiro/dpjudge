@@ -36,7 +36,7 @@ class StandardGame(Game):
 				#	Even NO_CHECK games check that the order contains only
 				#	recognized tokens, and announce this error immediately
 				#	------------------------------------------------------
-				word = self.expandOrder(upline)
+				word = self.expandOrder(upline, not 'NO_CHECK' in self.rules)
 				if len(word) < 3 and (len(word) == 1 or word[1] != 'H'):
 					return self.error.append('BAD ORDER: ' + upline)
 				#	--------------------------------
@@ -81,7 +81,7 @@ class StandardGame(Game):
 				#	Convert NO_CHECK "ORDER"s to "INVALID" as appropriate
 				#	-----------------------------------------------------
 				if unit[:5] == 'ORDER':
-					word = self.expandOrder(order)
+					word = self.expandOrder(order, 0)
 					word = self.addUnitTypes(word)
 					word = self.map.defaultCoast(word)
 					valid = self.validOrder(power,
@@ -179,9 +179,12 @@ class StandardGame(Game):
 						#	In games using FICTIONAL_OK, units may
 						#	have orders that have not been expanded
 						#	completely at this point.  Do this now.
+						#	Do not strip the question mark result
+						#	in SIGNAL_SUPPORT orders.
 						#	---------------------------------------
 						word = self.map.defaultCoast(self.addUnitTypes(
-							self.expandOrder(unit + ' ' + order), 1))
+							self.expandOrder(unit + ' ' + order,
+							not 'NO_CHECK' in self.rules, 'P'), 1))
 						self.orders[' '.join(word[:2])] = ' '.join(word[2:])
 		#	------------------------------------------------
 		#	Add default HOLD orders for all unordered units.
@@ -230,8 +233,6 @@ class StandardGame(Game):
 		#	If not, self.error will say why
 		#	-------------------------------
 		word = self.map.defaultCoast(self.addUnitTypes(self.expandOrder(order)))
-		if word and len(word[-1]) == 1 and not word[-1].isalpha():
-			word = word[:-1]
 		if len(word) < 2:
 			return self.error.append('BAD ORDER: ' + order)
 		unit, order = ' '.join(word[:2]), ' '.join(word[2:])
@@ -294,7 +295,7 @@ class StandardGame(Game):
 			who.orders = {}
 			if 'NO_CHECK' in self.rules:
 				for order in what:
-					data = self.expandOrder(order)
+					data = self.expandOrder(order, 0)
 					if len(data) < 3 and (len(data) == 1 or data[1] != 'H'):
 						self.error.append('BAD ORDER: ' + order)
 						continue
@@ -302,6 +303,15 @@ class StandardGame(Game):
 			else:
 				for order in what: self.addOrder(who, order)
 			if who.orders: hasOrders += [who]
+		#	------------------------------------------
+		#	Clear any "COAST NOT ALLOWED" errors if
+		#	the orders were entered by an omniscient
+		#	person (normally the GM or the JK, since
+		#	observers are not allowed to enter orders)
+		#	------------------------------------------
+		if power.omniscient:
+			self.error = [x for x in self.error if not x.startswith(
+				'COAST NOT ALLOWED ')]
 		#	------------------------------------------
 		#	Make sure the player can update his orders
 		#	------------------------------------------

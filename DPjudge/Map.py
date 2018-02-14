@@ -803,7 +803,7 @@ class Map:
 					#	form is identical. That way it becomes
 					#	part of the vocabulary.
 					#	---------------------------------------
-					self.lang.addNick(power, power)
+					self.lang.addNick(upword, power)
 				upword = power or upword
 				if power and len(word) > 1 and word[1][0] == '(':
 					nicks = word[1][1:]
@@ -818,8 +818,8 @@ class Map:
 					if nicks and len(nicks[0]) > 1:
 						self.ownWord[upword] = nicks[0]
 						nicks = nicks[1:]
+						self.lang.addNick(self.ownWord[upword], power)
 					else: self.ownWord[upword] = power
-					self.lang.addNick(upword, power)
 					initial = short = ''
 					for nick in nicks + [upword[:1] + ':', upword[:2] + ':']:
 						if not nick: continue

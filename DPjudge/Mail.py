@@ -56,29 +56,39 @@ class Mail:
 	def close(self):
 		if self.mailTo:
 			if host.smtpService is not None:
-				logtext = 0
-				try: self.mail.sendmail(self.mailAs, self.mailTo,
-					self.msg.encode('utf-8'))
-				except SMTPServerDisconnected:
-					logtext  = '{ERROR: Server Disconnected|\n'
-				except SMTPResponseException, exception: 
-					logtext  = '{ERROR: Response Error|\n'
-					logtext += exception.smtp_error
-				except SMTPSenderRefused, exception: 
-					logtext  = '{ERROR: Sender Address Refused|\n'
-					logtext += exception.sender
-				except SMTPRecipientsRefused, exception: 
-					logtext  = '{ERROR: All Recipients Refused|\n'
-					for key, recip in exception.recipients.items():
-						logtext += `recip` + ';'
-				except SMTPDataError: 
-					logtext  = '{ERROR: Data Error|\n'
-				except SMTPConnectError: 
-					logtext  = '{ERROR: Connection Error|\n'
-				except SMTPHeloError: 
-					logtext  = '{ERROR: Helo Refused|\n'
-				except:
-					logtext  = '{ERROR: Unknown|\n'
+				logtext, retry = '', 3
+				while 1:
+					retry = -retry
+					try: self.mail.sendmail(self.mailAs, self.mailTo,
+						self.msg.encode('utf-8'))
+					except SMTPServerDisconnected:
+						logtext += '{ERROR: Server Disconnected|\n'
+						retry = -retry
+					except SMTPResponseException, exception: 
+						logtext += '{ERROR: Response Error|\n'
+						logtext += exception.smtp_error
+					except SMTPSenderRefused, exception: 
+						logtext += '{ERROR: Sender Address Refused|\n'
+						logtext += exception.sender
+					except SMTPRecipientsRefused, exception: 
+						logtext += '{ERROR: All Recipients Refused|\n'
+						for key, recip in exception.recipients.items():
+							logtext += `recip` + ';'
+					except SMTPDataError: 
+						logtext += '{ERROR: Data Error|\n'
+					except SMTPConnectError: 
+						logtext += '{ERROR: Connection Error|\n'
+					except SMTPHeloError: 
+						logtext += '{ERROR: Helo Refused|\n'
+					except:
+						logtext += '{ERROR: Unknown|\n'
+					if retry < 1: break
+					logtext += 'Retries: %d\n' % retry
+					retry -= 1
+					try: self.mail.connect(host.smtpService)
+					except:
+						logtext += 'ERROR: Reconnect Failure|\n'
+						break
 				if logtext:
 					try:
 						logfile = open(host.logDir + '/smtperror.log', 'a')

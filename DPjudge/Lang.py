@@ -298,14 +298,15 @@ class Lang:
 		words, result = self.norm(order).split(), []
 		words = self.scan(words, self.keywords, self.maxKeywords)
 		words = self.scan(words, self.keycombos, self.maxKeycombos)
-		power = self.parseNick(words)
-		if power:
-			result = [power]
-		else:
-			while words:
-				alias, i = self.parseAlias(words)
-				if alias: result += alias.split()
-				words = words[i:]
+		if words:
+			if len(words) > 1 or len(words[0]) > 1:
+				power = self.parseNick(words)
+				if power: result = [power]
+			if not result:
+				while words:
+					alias, i = self.parseAlias(words)
+					if alias: result += alias.split()
+					words = words[i:]
 		if comment: result += ['%', comment.strip()]
 		return self.rearrange(self.vet(result))
 	#	----------------------------------------------------------------------
@@ -398,17 +399,24 @@ class Lang:
 			if vets[i][:2] == 'C/':
 				if vets[i-1][0] == 'L':
 					vets[i-1] = 'C' + vets[i-1][1:] + vets[i][1:]
-				del vets[i]
+					del vets[i]
 			elif vets[i][0] == 'A':
 				if vets[i-1] == 'M-':
 					vets[i-1] = 'A-' + vets[i][1:]
-				del vets[i]
+					del vets[i]
 		#	----------------------------------------
 		#	Replace every ">" that is preceded by a
 		#	territory (so it's not a bet) with a "-"
 		#	----------------------------------------
 		for i in range(2, len(vets)-1):
 			if vets[i] == 'B>' and vets[i-1][0] in 'LC': vets[i] = 'M-'
+		#	--------------------------------------
+		#	Remove every "and" or "or" in front of
+		#	a result or other "and" or "or"
+		#	--------------------------------------
+		for i in range(len(vets)-2, 0, -1):
+			if vets[i][0] == 'S' and vets[i+1][0] in 'RS':
+				del vets[i]
 		#	--------------------------------------
 		#	Remove every "and" that is followed by
 		#	a single territory
@@ -447,10 +455,14 @@ class Lang:
 		#	-------------------------------------
 		#	Insert a colon if a bet amount is not
 		#	followed by an operator
+		#	Remove if it concerns waived builds
 		#	-------------------------------------
-		for i in range(len(vets)-1, 1, -1):
-			if vets[i-1][0] == 'A' and vets[i][0] != 'B':
-				vets[i:i] = ['B:']
+		for i in range(len(vets)-2, 0, -1):
+			if vets[i][0] == 'A':
+				if vets[i+1] in ('OB', 'OV'):
+					del vets[i]
+				elif vets[i+1][0] != 'B':
+					vets[i+1:i+1] = ['B:']
 		#	------------------------------------------
 		#	Move every phase to the end, followed only
 		#	by a comment if present
@@ -599,7 +611,7 @@ class EnglishLang(Lang):
 			'WAIVE': 'V',	'WAIVES': 'V',	'WAIVING': 'V',	'WAIVED': 'V',
 			'KEEP': 'K',	'KEEPS': 'K',	'KEEPING': 'K',
 			'PROXY': 'P',	'PROXIES': 'P',	'PROXYING': 'P',
-			'CLEAR': '*',	
+			'CLEAR': '*',	'UNUSED': '',	'PENDING': 'V',
 			'ORDER': '',	'ORDERS': '',	'RESULT': '',	'RESULTS': '',
 			'IS': '',		'WILL': '',
 			'IN': '',		'AT': '',		'ON': '',		'TO': '-',

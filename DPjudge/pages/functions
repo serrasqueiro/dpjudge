@@ -775,7 +775,7 @@ def showMessages():
 		page.write('</td></tr>')
 #	----------------------------------------------------------------------
 def showControlInfo():
-	game, power = page.game, page.power
+	game, power, viewer = page.game, page.power, None
 	if power.ceo:
 		page.write('<form name=ceoForm method=post>')
 		page.apprise('page', 'Status')
@@ -787,29 +787,43 @@ def showControlInfo():
 			<td><input class=inputSubmit type=submit value="Log In">
 			</td></tr></form>
 			""" % game.anglify(power.ceo[0]))
-		return
-	headsUp = [x.name for x in power.vassals(all = True, indirect = True)]
-	if headsUp:
-		page.write('<form name=ceoForm method=post>')
+	else:
+		headsUp = [x.name for x in power.vassals(all = True, indirect = True)]
+		if headsUp:
+			page.write('<form name=ceoForm method=post>')
+			page.apprise('page', 'Status')
+			page.reprise(['game', 'password'])
+			page.write("""
+				<tr><td class=bodycopy nowrap><b>%s:</b></td>
+				<td align=right>
+				<select class=inputBox
+				name=power onChange=document.ceoForm.submit()>
+				""" % ('Controller Of', 'Power')[power.omniscient > 0])
+			for country in headsUp:
+				page.write('<option value="%s">%s</option>' %
+					(country, game.anglify(country)))
+			page.write(
+				"""
+				</select></td>
+				<td><input class=inputSubmit type=submit value="Log In"></td>
+				</tr>
+				</form>
+				""")
+	if page.pwdFlag == 2:
+		viewer = [x for x in game.powers if x.password == page.password][0]
+	elif page.pwdFlag > 3:
+		viewer = (game.gm, game.jk)[page.pwdFlag - 4]
+	if viewer and viewer != power:
+		page.write('<form name=peekForm method=post>')
 		page.apprise('page', 'Status')
 		page.reprise(['game', 'password'])
+		page.apprise('power', viewer.name)
 		page.write("""
-			<tr><td class=bodycopy nowrap><b>%s:</b></td>
-			<td align=right>
-			<select class=inputBox
-			name=power onChange=document.ceoForm.submit()>
-			""" % ('Controller Of', 'Power')[power.omniscient > 0
-			or power.name == 'MASTER'])
-		for country in headsUp:
-			page.write('<option value="%s">%s</option>' %
-				(country, game.anglify(country)))
-		page.write(
-			"""
-			</select></td>
-			<td><input class=inputSubmit type=submit value="Log In"></td>
-			</tr>
-			</form>
-			""")
+			<tr><td class=bodycopy><b>Viewer:</b></td>
+			<td class=bodycopy align=right>%s</td>
+			<td><input class=inputSubmit type=submit value="Log In">
+			</td></tr></form>
+			""" % game.anglify(viewer.name))
 #	----------------------------------------------------------------------
 def footer():
 	page.write(
@@ -959,6 +973,7 @@ def showWaitFlag():
 #	----------------------------------------------------------------------
 def showAdjustList():
 	game, power, shown = page.game, page.power, 0
+	orders, unorders = [], []
 	#	-------------------------------
 	#	Obtain default orders for dummy
 	#	and nearly eliminated powers.
@@ -1004,38 +1019,77 @@ def showAdjustList():
 				<tr><td class=bodycopy align=center><font size=2>
 				<b>%s Orders</b><p></font>
 				""" % game.phaseName(form = 2)[:-1])
-		if who is not power:
-			page.write('</p><font size=2><b>%s</b></font><p>' %
-				game.anglify(who.name))
 		if game.await == 1:
+			if who is not power:
+				page.write('</p><font size=2><b>%s</b></font><p>' %
+					game.anglify(who.name))
 			page.write('<b>%s</b>' % '<br>'.join(who.adjust))
 			continue
 	###		if 'NO_CHECK' in game.rules:
 	###			page.write('<textarea name=adjust rows=%d cols=40>%s</textarea>' %
 	###				(abs(count), '\n'.join(who.adjust)))
 	###			return 1
-		page.write('<table>')
-		for which in range(abs(count)):
-			order = who.adjust[which:which + 1]
-			page.write('<tr><td class=bodycopy><b>%s</b></td>' % action.title())
-			page.write('<td><select name=adjust class=inputBox>')
-			if page.pwdFlag > 2 or not order:
-				page.write('<option value=\'%s(NMR)\'>(NMR)</option>' %
-					(who is not power and '[%s] ' % who.name or ''))
-			for ord in list:
-				syntax = action + ' ' + ord
-				select = ' selected' * (syntax in order)
-				if who is not power: syntax = '[%s] ' % who.name + syntax
-				if select or page.pwdFlag > 2: page.write(
-					'<option value=\'%s\'%s>%s</option>' %
-					(syntax, select, ord))
-			page.write('</select></td></tr>')
-		page.write('</table>')
+		if 'TEXT_INPUT' in game.rules:
+			if who != power:
+				unorders += ['[' + who.name + ']']
+				orders += ['[' + who.name + ']']
+			unorders += [action] * abs(count)
+			orders += who.adjust
+			if len(who.adjust) < abs(count):
+				orders += [action] * (abs(count) - len(who.adjust))
+		else:
+			if who is not power:
+				page.write('</p><font size=2><b>%s</b></font><p>' %
+					game.anglify(who.name))
+			page.write('<table>')
+			for which in range(abs(count)):
+				order = who.adjust[which:which + 1]
+				page.write('<tr><td class=bodycopy><b>%s</b></td>' %
+					action.title())
+				page.write('<td><select name=adjust class=inputBox>')
+				if page.pwdFlag > 2 or not order:
+					page.write('<option value=\'%s(NMR)\'>(NMR)</option>' %
+						(who is not power and '[%s] ' % who.name or ''))
+				for ord in list:
+					syntax = action + ' ' + ord
+					select = ' selected' * (syntax in order)
+					if who is not power: syntax = '[%s] ' % who.name + syntax
+					if select or page.pwdFlag > 2: page.write(
+						'<option value=\'%s\'%s>%s</option>' %
+						(syntax, select, ord))
+				page.write('</select></td></tr>')
+			page.write('</table>')
+	if orders:
+		import json, cgi
+
+		if not shown:
+			page.write(
+				"""
+				<tr><td class=bodycopy align=center><font size=2>
+				<b>%s Orders</b></font><br>
+			""" % game.phaseName(form=2).title())
+		rows = max(len(orders), 19) + 1
+		orders, unorders = '\n'.join(orders), '\n'.join(unorders)
+		page.write("""
+			<p><input onClick='document.UpdateForm.adjust.value = %s'
+			type=button value="Clear" class="inputSubmit">
+			""" % cgi.escape(json.dumps(unorders)))
+		if unorders != orders:
+			page.write("""
+				&nbsp;&nbsp;
+				<input onClick='document.UpdateForm.adjust.value = %s'
+				type=button value="Revert" class="inputSubmit">
+				""" % cgi.escape(json.dumps(orders)))
+		page.write('</p><p><textarea rows=%s cols=40 name=adjust wrap=off '
+			'class=inputBox>' % rows)
+		page.write(cgi.escape(orders))
+		page.write('</textarea>')
 	if shown: page.write('</p></td></tr>')
 	return shown
 #	----------------------------------------------------------------------
 def showRetreatList():
 	game, power, shown = page.game, page.power, 0
+	orders, unorders = [], []
 	#	-------------------------------
 	#	Obtain default orders for dummy
 	#	and nearly eliminated powers.
@@ -1050,12 +1104,21 @@ def showRetreatList():
 				<tr><td class=bodycopy align=center><font size=2>
 				<b>%s Orders</b></font>
 				""" % game.phase.title()[:-1])
-		if who is not power:
-			page.write('</p><font size=2><b>%s</b></font><p>' %
-				game.anglify(who.name))
 		if game.await == 1:
+			if who is not power:
+				page.write('</p><font size=2><b>%s</b></font><p>' %
+					game.anglify(who.name))
 			for order in who.adjust: page.write(order[8:] + '<br>')
+		elif 'TEXT_INPUT' in game.rules:
+			if who != power:
+				unorders += ['[' + who.name + ']']
+				orders += ['[' + who.name + ']']
+			unorders += ['RETREAT ' + x for x in who.retreats]
+			orders += who.adjust or ['RETREAT ' + x for x in who.retreats]
 		else:
+			if who is not power:
+				page.write('</p><font size=2><b>%s</b></font><p>' %
+					game.anglify(who.name))
 			page.write('<table>')
 			for unit in who.retreats:
 				page.write('<tr><td class=bodycopy align=right>' +
@@ -1074,6 +1137,31 @@ def showRetreatList():
 						(ord, select, choice))
 				page.write('</select></td></tr>')
 			page.write('</table>')
+	if orders:
+		import json, cgi
+
+		if not shown:
+			page.write(
+				"""
+				<tr><td class=bodycopy align=center><font size=2>
+				<b>%s Orders</b></font><br>
+			""" % game.phaseName(form=2).title())
+		rows = max(len(orders), 19) + 1
+		orders, unorders = '\n'.join(orders), '\n'.join(unorders)
+		page.write("""
+			<p><input onClick='document.UpdateForm.adjust.value = %s'
+			type=button value="Clear" class="inputSubmit">
+			""" % cgi.escape(json.dumps(unorders)))
+		if unorders != orders:
+			page.write("""
+				&nbsp;&nbsp;
+				<input onClick='document.UpdateForm.adjust.value = %s'
+				type=button value="Revert" class="inputSubmit">
+				""" % cgi.escape(json.dumps(orders)))
+		page.write('</p><p><textarea rows=%s cols=40 name=adjust wrap=off '
+			'class=inputBox>' % rows)
+		page.write(cgi.escape(orders))
+		page.write('</textarea>')
 	if shown: page.write('</td></tr>')
 	return shown
 #	----------------------------------------------------------------------

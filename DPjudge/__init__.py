@@ -23,6 +23,7 @@ for (var, value) in [
 	('openingsList', ''), ('openingsAddress', ''),
 	('dppd', ''), ('dppdSubURL', '?variant=dppd'),
 	('dpjudgeNick', 'DPjudge'),
+	('smtpService', None),
 	('judgePassword', ''),
 	('judgekeeper', vars(host).get('judgekeepers', [''])[0]),
 	('judgekeepers', [vars(host).get('judgekeeper', '')]),

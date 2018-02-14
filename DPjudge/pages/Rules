@@ -218,6 +218,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option>SOLITAIRE</option>
 <option>START_MASTER</option>
 <option>TEAM_VICTORY</option>
+<option>TEXT_INPUT</option>
 <option>TORN_ALLEGIANCE</option>
 <option>TOUCH_PRESS</option>
 <option value=TROJAN>TROJAN (BLIND)</option>
@@ -864,6 +865,14 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE NO_PARTISANS -->
 	A game using this rule will ignore any and all partisan sites that the
 	map variant might call for in its <a href=<URL>?page=Map>map file</a>.
+<!-- RULE END -->
+
+<a name=TEXT_INPUT></a><p><dt><b><tt>TEXT_INPUT</tt></b><dd>
+<!-- RULE TEXT_INPUT -->
+	Enter retreat and adjustment orders as text instead of the more
+	convenient drop-down boxes. Useful when copying orders from game
+	results to replay a previously played game, e.g. in
+	<a href="#SOLITAIRE"><tt>SOLITAIRE</tt></a> games.
 <!-- RULE END -->
 
 </dl>

@@ -62,11 +62,10 @@ class Page:
 		if self.power:
 			self.power = self.power.upper().replace('%23', '#')
 			if self.game:
-				try: self.power = [x for x in self.game.powers if x.name in
+				try: self.power = [x for x in self.game.powers +
+					[self.game.gm, self.game.jk] if x.name in
 					(self.power, '_' + self.power)][0]
-				except: 
-					if self.power in ('MASTER', 'JUDGEKEEPER'):
-						self.power = Power(self.game, self.power)
+				except: pass
 		if self.user:
 			try: self.user = int(self.user)
 			except: self.user = -1

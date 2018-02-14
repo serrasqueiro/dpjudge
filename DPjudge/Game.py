@@ -487,7 +487,7 @@ class Game:
 					(orderText, unit) + order)
 		return 1
 	#	----------------------------------------------------------------------
-	def expandOrder(self, order):
+	def expandOrder(self, order, check = 1, strip = 'PR'):
 		error, result = self.error, self.lang.revet(self.lang.compact(order))
 		#	---------------
 		#	Weed out errors
@@ -518,12 +518,15 @@ class Game:
 					error.append('UNRECOGNIZED DATA IN ORDER: ' + x)
 					continue
 				y = y.upper()
-			if y == 'P':
-				#	------------------------------
-				#	Remove power names
-				#	Checking ownership of the unit
-				#	might be better
-				#	------------------------------
+			if y in strip:
+				#	------------------------------------
+				#	Remove certain types, like
+				#	power names (P) or judge results (R)
+				#	Don't add P if you want to check the
+				#	ownership of a unit
+				#	Check Lang.vet() for the various
+				#	types and their meaning
+				#	------------------------------------
 				continue
 			elif y == 'O':
 				#	-------------------------------
@@ -542,7 +545,7 @@ class Game:
 				order += x
 			elif y == 'S':
 				order = ''
-			if 'NO_CHECK' in self.rules:
+			if check:
 				#	----------------------------------
 				#	Spot ambiguous placenames and
 				#	coasts in support and convoy oders
@@ -1792,24 +1795,32 @@ class Game:
 		self.start = self.getTime().format(3)
 		if self.start[0] == '0': self.start = self.start[1:]
 		self.changeStatus('active')
-		#	---------------------------------------------
-		#	Generate and broadcast initial unit positions
-		#	and make the initial PostScript and gif map.
-		#	---------------------------------------------
+		#	-------------------------------
+		#	Generate initial unit positions
+		#	-------------------------------
 		lines = self.mapperHeader() + ['Starting position for ' +
 			self.phaseName()] + self.list()
 		lines += ['\nThe deadline for the first orders is %s.\n' %
 			self.timeFormat(pseudo = 1)]
-		self.mailResults([line + '\n' for line in lines],
-			'Diplomacy game %s starting' % self.name)
 		#	-------------------------------------------------------
-		#	Save after sending, as self.list() will add power.sees
 		#	Set the true starting phase, which could be a few
 		#	seasons earlier to allow for order locking in xtalball
 		#	games
 		#	-------------------------------------------------------
 		self.findStartPhase()
+		#	-------------------------------------------------------
+		#	Save after listing, as self.list() will add power.sees
+		#	-------------------------------------------------------
 		self.save()
+		#	----------------------------------------
+		#	Broadcast initial unit positions and
+		#	make the initial PostScript and gif map,
+		#	each of which could fail spectacularly
+		#	Nevertheless mailing results should go
+		#	first, as it creates the results file
+		#	----------------------------------------
+		self.mailResults([line + '\n' for line in lines],
+			'Diplomacy game %s starting' % self.name)
 		self.makeMaps()
 	#	----------------------------------------------------------------------
 	def parameters(self):
@@ -3114,7 +3125,7 @@ class Game:
 				if word[-1] == '?':
 					signal = 1
 					del word[-1]
-					self.result[unit] += ['void']
+					self.result[unit] += ['illegal']
 					self.command[unit] = ' '.join(word)
 			#	------------------------------------------------------
 			#	Remove any trailing "H" from a support-in-place order.
@@ -3761,6 +3772,7 @@ class Game:
 						notes.remove('void')
 						if self.command[unit].count('-') > 1:
 							notes += ['no convoy']
+				notes = [x == 'illegal' and 'void' or x for x in notes]
 				line = '%s: %s.%s' % (self.anglify(power.name),
 					self.anglify(unit + ' ' + self.command[unit], power),
 					notes and '  (*%s*)' % ', '.join(notes) or '')
@@ -4404,29 +4416,41 @@ class Game:
 		return [(x, collector[x.name]) for x in powers]
 	#	----------------------------------------------------------------------
 	def distributeOrders(self, power, orders, proxy = False):
-		distributor, absent, uncontrolled = [], [], []
+		distributor, absent, uncontrolled, unspecified = [], [], [], []
 		for who, what in self.lang.distribute(power.name, orders):
 			dudes = [x for x in self.powers if x.name == who]
-			if not dudes: absent += [who]
-			else:
+			if dudes:
 				dude = dudes[0]
 				if not power.controls(dude): uncontrolled += [who]
 				else: distributor += [(dude, what)]
-		if absent or uncontrolled:
+			elif who == power.name and power.omniscient:
+				unspecified += what
+			else: absent += [who]
+		if absent or uncontrolled or unspecified:
 			if absent: self.error.append('NO SUCH POWER%s: ' %
-				('s'[:len(absent) > 1]) + ', '.join(absent)) 
+				('s'[:len(absent) > 1]) + ', '.join(absent))
 			if uncontrolled: self.error.append('NO CONTROL OVER ' +
 				' OR '.join(uncontrolled) +
 				' (NO NEED TO SPECIFY THE POWER FOR PROXIED UNITS)' * proxy) 
+			if unspecified: self.error += ['NO POWER SPECIFIED FOR: ' + x
+				for x in unspecified]
 		else: return distributor
 	#	----------------------------------------------------------------------
 	def updateOffPhases(self, power, adjust):
-		for who, adj in self.collectOrders(power, adjust):
-			self.addOffPhases(who, adj)
-		#	-----------------------------------------
-		#	Process the phase if everything is ready.
-		#	-----------------------------------------
-		if not self.error: self.process()
+		if 'TEXT_INPUT' in self.rules:
+			if self.phaseType == 'R':
+				self.updateRetreatOrders(power, adjust)
+			elif self.phaseType == 'A':
+				self.updateAdjustOrders(power, adjust)
+			else:
+				self.updateOrders(power, adjust)
+		else:
+			for who, adj in self.collectOrders(power, adjust):
+				self.addOffPhases(who, adj)
+			#	-----------------------------------------
+			#	Process the phase if everything is ready.
+			#	-----------------------------------------
+			if not self.error: self.process()
 		return self.error
 	#	----------------------------------------------------------------------
 	def addOffPhases(self, power, adjust):
@@ -4659,7 +4683,7 @@ class Game:
 				min(self.map.militia.count(power.name),
 				len([0 for x in power.units
 					if x[3:5] in power.homes])))
-		orderType, claim = ('BUILD', 'REMOVE')[need < 0], []
+		orderType, claim, nmr = ('BUILD', 'REMOVE')[need < 0], [], 0
 		if need > 0: 
 			sites = self.buildSites(power)
 			need = min(need, self.buildLimit(power, sites))
@@ -4668,6 +4692,7 @@ class Game:
 			order = order.strip()
 			if not order: continue
 			word = self.expandOrder(order)
+			if not word: continue
 			if word[-1] in 'BDK': word = word[-1:] + word[:-1]
 			if word[-1] in 'RH': word = word[-1:] + word[:-1]
 			if word[0] == 'B': word[0] = 'BUILD'
@@ -4683,7 +4708,8 @@ class Game:
 				word = word[:1] + self.addUnitTypes(word[1:])
 			if len(word) == 4 and word[3] == 'HIDDEN': word = word[:-1]
 			order = ' '.join(word)
-			if word[0] in ('REMOVE', 'KEEP'):
+			if len(word) == 1: nmr = 1
+			elif word[0] in ('REMOVE', 'KEEP'):
 				if len(word) == 3:
 					unit = ' '.join(word[1:])
 					if unit not in power.units:
@@ -4725,13 +4751,16 @@ class Game:
 		while 0 < need < len(adjust):
 			try: adjust.remove('BUILD WAIVED')
 			except: break
-		if 'BUILD WAIVED' in adjust or power.isDummy() and not power.ceo:
+		if ('BUILD WAIVED' in adjust
+		or not nmr and power.isDummy() and not power.ceo):
 			while len(adjust) < need:
 				adjust.append('BUILD WAIVED')
-		if len(adjust) != abs(need):
+		if len(adjust) == abs(need):
+			power.adjust, power.cd = adjust, 0
+		elif adjust:
 			self.error += ['ADJUSTMENT ORDERS IGNORED (MISCOUNTED)']
-			return
-		power.adjust, power.cd = adjust, 0
+		elif nmr:
+			power.adjust, power.cd = [], 0
 	#	----------------------------------------------------------------------
 	def updateRetreatOrders(self, power, orders):
 		for who, adj in self.distributeOrders(power, orders):
@@ -4743,9 +4772,10 @@ class Game:
 		if not orders:
 			power.adjust, power.cd = [], 0
 			return
-		adjust, retreated = [], []
+		adjust, retreated, nmr = [], [], 0
 		for order in orders:
 			word = self.addUnitTypes(self.expandOrder(order))
+			if not word: continue
 			if word[0] == 'R' and len(word) > 3:
 				del word[0]
 			if word[0] in 'RD': word = word[1:] + word[:1]
@@ -4755,11 +4785,14 @@ class Game:
 			except:
 				self.error.append('UNIT NOT IN RETREAT: ' + unit)
 				continue
+			word[1] = unit[2:]
+			if len(word) == 3 and word[2] == 'R':
+				nmr = 1
+				continue
 			if unit in retreated:
 				self.error.append('TWO ORDERS FOR RETREATING UNIT: ' + unit)
 				continue
-			word[1] = unit[2:]
-			if len(word) == 3 and word[2] in 'RD':
+			if len(word) == 3 and word[2] == 'D':
 				word[2] = 'DISBAND'
 			elif len(word) == 4 and word[2] in 'R-':
 				word[2] = '-'
@@ -4773,9 +4806,12 @@ class Game:
 			retreated += [unit]
 			adjust += ['RETREAT ' + ' '.join(word)]
 		if not self.error:
-			if len(retreated) != len(power.retreats):
+			if len(retreated) == len(power.retreats):
+				power.adjust, power.cd = adjust, 0
+			elif not len(retreated) and nmr:
+				power.adjust, power.cd = [], 0
+			else:
 				self.error += ['RETREAT ORDERS IGNORED (INCOMPLETE)']
-			else: power.adjust, power.cd = adjust, 0
 	#	----------------------------------------------------------------------
 	def powerOrders(self, power):
 		try:

@@ -431,8 +431,6 @@ class PayolaGame(Game):
 				if not orders: part = first[2:]
 				else: part = self.map.defaultCoast(self.addUnitTypes(
 					self.expandOrder(' '.join(first[:2] + part))))[2:]
-				if part and len(part[-1]) == 1 and not part[-1].isalpha():
-					part = part[:-1]
 				if not part: return self.error.append('NO %sORDER GIVEN: ' %
 					('|' in ' '.join(word) and 'ALTERNATIVE ' or '') + unit)
 				#	--------------------------------------------------
