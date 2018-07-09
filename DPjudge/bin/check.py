@@ -170,50 +170,53 @@ class Check(Status):
 			#	---------------------------------------------------
 			#	Check for expired grace periods (auto-CD or RESIGN)
 			#	---------------------------------------------------
-			graceOver = game.graceExpired() and not game.avail
+			pastLine = line and game.deadlineExpired()
+			graceOver = pastLine and not game.avail and game.graceExpired()
 			if graceOver and 'CIVIL_PREVIEW' not in game.rules: game.delay = 0
 			if game.delay:
 				game.delay -= 1
+				#	-------------------------------------
+				#	Compensate for any server down events
+				#	or manual check runs
+				#	-------------------------------------
+				if game.delay and pastLine:
+					period = graceOver and 72 or 24
+					delayed = line.diff() % period + 1
+					if game.delay + delayed <= period / 3: game.delay = 0
+					else: game.delay = period - delayed
+				self.save(game)
 				print game.name, 'is delayed, now delay is', game.delay
 			elif graceOver: # and game.latePowers()
 				if 'CIVIL_DISORDER' in game.rules:
 					print game.name, 'will process using CIVIL_DISORDER'
 				elif 'CIVIL_PREVIEW' in game.rules:
 					game.changeStatus('waiting')
-					game.delay, game.preview = 72, 1
-					game.save()
+					game.delay, game.preview = 71, 1
+					self.save(game)
 					print game.name, 'will preview using CIVIL_PREVIEW'
 				else:
 					print game.name, 'will RESIGN its late player(s)'
 					game.lateNotice()
 					game.changeStatus('waiting')
-					game.save()
+					self.save(game)
 					continue
-				game.process(now = 1)
+				self.process(game)
 			elif game.ready() and not game.await:
 				game.preview = 'PREVIEW' in game.rules
 				print (game.name + ' is ready and will be pr%sed now' %
 					('ocess', 'eview')[game.preview])
 				if game.preview:
-					game.delay = 72
-					game.save()
-				try: game.process(now = 1)
-				except: pass
-				if game.await:
-					mail = Mail(host.judgekeeper,
-						'Diplomacy adjudication error! (%s)' % game.name)
-					mail.write('JudgeKeeper:\n\nThe game %s on %s\n'
-						'encountered an error during adjudication\n'
-						'and is still in the AWAIT state.\n' %
-						(game.name, host.dpjudgeID))
-					mail.close()
-			elif line and game.deadlineExpired():
+					game.delay = 71
+					self.save(game)
+				self.process(game)
+			elif pastLine:
 				print game.name, 'is not ready but is past deadline'
 				game.lateNotice()
 				#	---------------------------------------
 				#	Reschedule to check game in eight hours
 				#	---------------------------------------
-				game.delay = 24
+				game.delay = 23
+				self.save(game)
 			elif line:
 				print game.name, 'is not to deadline yet',
 				hey, when = game.latePowers(), game.timing.get('WARN', '4H')
@@ -230,10 +233,31 @@ class Check(Status):
 							game.lateNotice()
 							break
 				print
-				continue
-			if not game.preview: game.save()
 		if os.path.exists(tsf2):
 			try: os.unlink(tsf2)
 			except: pass
 		open(tsf, 'w').close()
+	#	----------------------------------------------------------------------
+	def process(self, game):
+		try: game.process(now = 1)
+		except: pass
+		if game.await:
+			mail = Mail(host.judgekeeper,
+				'Diplomacy adjudication error! (%s)' % game.name)
+			mail.write('JudgeKeeper:\n\nThe game %s on %s\n'
+				'encountered an error during adjudication\n'
+				'and is still in the AWAIT state.\n' %
+				(game.name, host.dpjudgeID))
+			mail.close()
+	#	----------------------------------------------------------------------
+	def save(self, game):
+		try: game.save()
+		except: 
+			mail = Mail(host.judgekeeper,
+				'Diplomacy storage error! (%s)' % game.name)
+			mail.write('JudgeKeeper:\n\nThe game %s on %s\n'
+				'encountered an error during saving;\n'
+				'check the status file and DB record.\n' %
+				(game.name, host.dpjudgeID))
+			mail.close()
 	#	----------------------------------------------------------------------

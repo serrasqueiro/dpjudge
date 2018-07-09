@@ -1,4 +1,4 @@
-import os, sys, urllib, shutil, glob
+import os, sys, shutil, glob
 from codecs import open
 
 import host, Game, Mail
@@ -32,11 +32,40 @@ class Status:
 		return vars(__import__('DPjudge.variants.' + variant,
 			globals(), locals(), `variant`))[variant.title() + 'Game'](gameName)
 	#	----------------------------------------------------------------------
-	def listGames(self, criteria, unlisted = 0):
+	def listGames(self, criteria, unlistedOk = 0):
 		if type(criteria) != list: criteria = [criteria]
-		games = sorted([x for x,y in self.dict.items()
-			if not [1 for z in criteria if z and z.lower() not in y]
-			and ('unlisted' in y) <= unlisted])
+		statuses, variants, private, unlisted = [], [], None, None
+		for crit in criteria:
+			if not crit: continue
+			key = crit.lower()
+			if key in ('preparation', 'forming', 'active', 'waiting',
+				'completed', 'terminated', 'error'): statuses += [key]
+			elif key in ('public', 'private'):
+				if private == None: private = key == 'private'
+				elif private != (key == 'private'): private = None
+			elif key in ('unlisted', 'listed'):
+				if unlisted == None: unlisted = key == 'unlisted'
+				elif unlisted != (key == 'unlisted'): unlisted = None
+			elif os.path.isdir(host.packageDir + '/variants/' + key):
+				variants += [key]
+			else: return 'Unrecognized parameter: ' + crit
+		if not unlistedOk:
+			if unlisted: return 'Searching unlisted games not allowed'
+			else: unlisted = 0
+		games = self.dict.keys()
+		if statuses:
+			games = [x for x in games if [1 for y in statuses if y in self[x]]]
+			if not games: return []
+		if variants:
+			games = [x for x in games if [1 for y in variants if y in self[x]]]
+			if not games: return []
+		if private is not None:
+			games = [x for x in games if private == ('private' in self[x])]
+			if not games: return []
+		if unlisted is not None:
+			games = [x for x in games if unlisted == ('unlisted' in self[x])]
+			if not games: return []
+		games.sort()
 		return games
 	#	----------------------------------------------------------------------
 	def update(self, gameName, data, newVariant = 0):
@@ -49,25 +78,29 @@ class Status:
 		self.dict[game][1] = status
 		self.save()
 	#	----------------------------------------------------------------------
-	def list(self, email, subject=''):
+	def list(self, email, subject='', criteria = None):
 		import Mail
-		results = ''
-		subject = ('DPjudge openings list (%s)' % host.dpjudgeID,
-			'RE: ' + subject)[subject != '']
-		for gameName in self.listGames('waiting') + self.listGames('forming'):
-			if 'unlisted' not in self.dict[gameName]:
+		results, openings = '', criteria is None
+		if openings: criteria = ['forming', 'waiting', 'public']
+		subject = ('DPjudge %s list (%s)' % (openings and 'openings' or
+			'games', host.dpjudgeID), 'RE: ' + subject)[subject != '']
+		games, error = self.listGames(criteria), ''
+		if type(games) != list: error = games
+		else:
+			for gameName in games:
 				try:
 					game = self.load(gameName)
-					if not game.private: results += game.shortList()
+					results += game.shortList()
 				except: pass
 		mail = Mail.Mail(email, subject, mailAs = host.openingsAddress)
 		mail.write((':: Judge: %s\n:: URL: %s%s\n\n' %
 			(host.dpjudgeID, host.dpjudgeURL,
-			'/index.cgi' * (os.name == 'nt'))) + (results or 'No Openings!'))
+			'/index.cgi' * (os.name == 'nt'))) +
+			(error or results or openings and 'No Openings!' or 'No such games!'))
 		mail.close()
 	#	----------------------------------------------------------------------
 	def createGame(self, email = None, gameName = None, gamePass = None, gameVar = 'standard'):
-		import urllib
+		from variants.dppd.DPPD import RemoteDPPD
 		error = []
 		if not gameName: error += ['No game name to CREATE']
 		if not gamePass: error += ['No game password given']
@@ -76,22 +109,7 @@ class Status:
 			if 'forming' in x or 'preparation' in x]) > host.createLimit:
 				error += ['CREATE is disabled -- ' + \
 					'too many games currently need players']
-		if host.dppdURL:
-			#	--------------------------------------------------------------
-			#	Need to use query string rather than POST it.  Don't know why.
-			#	--------------------------------------------------------------
-			dppdURL = host.dppdURL.split(',')[0]
-			query = '?&'['?' in dppdURL]
-			page = urllib.urlopen(dppdURL + query +
-				'page=whois&email=' + urllib.quote(email, '@'))
-			dppd = unicode(page.read(), 'latin-1').strip().split()
-			page.close()
-			dppd = '|'.join(dppd)
-		else:
-			#	-------------------------------------------------------
-			#	Running without a DPPD.  Shame on the judgekeeper.  :-)
-			#	-------------------------------------------------------
-			dppd = '|%s|' % email + email
+		dppd = RemoteDPPD().whois(email) or '|%s|' % email + email
 		error += self.checkGameName(gameName)
 		if '<' in gamePass or '>' in gamePass:
 			error += ["Password cannot contain '<' or '>'"]
@@ -119,6 +137,7 @@ class Status:
 		return error
 	#	----------------------------------------------------------------------
 	def renameGame(self, gameName, toGameName, forced = 1, gamePass = None):
+		from variants.dppd.DPPD import RemoteDPPD
 		error = []
 		if gameName not in self.dict:
 			return ["No such game '%s' exists on this judge" % gameName]
@@ -149,22 +168,8 @@ class Status:
 				game.gameDir = toGameDir
 			except: error += ['Failed to rename the game directory']
 		# Purge from dppd
-		if host.dppdURL:
-			dict = urllib.urlencode({
-				'judge': host.dpjudgeID.encode('latin-1'),
-				'name': gameName.encode('latin-1'),
-				'password': game.password.encode('latin-1')})
-			for dppdURL in host.dppdURL.split(','):
-				query = '?&'['?' in dppdURL]
-				page = urllib.urlopen(dppdURL + query + 'page=delete&' + dict)
-		#   --------------------------------------------------------------------
-		#   Check for an error report and raise an exception if that's the case.
-		#   --------------------------------------------------------------------
-		lines = page.readlines()
-		page.close()
-		if [1 for x in lines if 'DPjudge Error' in x]:
-			if not [1 for x in lines if 'NoGameToDelete' in x]:
-				error += ['Failed to delete the game records from the DPPD'] 
+		try: RemoteDPPD().deleteGame(gameName, game.gm.password)
+		except: error += ['Failed to delete the game records from the DPPD'] 
 		# Rename game and update dppd
 		game.name = toGameName
 		game.save()
@@ -183,6 +188,7 @@ class Status:
 		return filter(None, error)
 	#	----------------------------------------------------------------------
 	def purgeGame(self, gameName, forced = 1, gamePass = None):
+		from variants.dppd.DPPD import RemoteDPPD
 		error = []
 		if gameName not in self.dict:
 			return ["No such game '%s' exists on this judge" % gameName]
@@ -214,22 +220,8 @@ class Status:
 			try: shutil.rmtree(game.gameDir)
 			except: error += ['Failed to remove the game directory']
 		# Purge from dppd
-		if host.dppdURL:
-			dict = urllib.urlencode({
-				'judge': host.dpjudgeID.encode('latin-1'),
-				'name': gameName.encode('latin-1'),
-				'password': game.password.encode('latin-1')})
-			for dppdURL in host.dppdURL.split(','):
-				query = '?&'['?' in dppdURL]
-				page = urllib.urlopen(dppdURL + query + 'page=delete&' + dict)
-		#   --------------------------------------------------------------------
-		#   Check for an error report and raise an exception if that's the case.
-		#   --------------------------------------------------------------------
-		lines = page.readlines()
-		page.close()
-		if [1 for x in lines if 'DPjudge Error' in x]:
-			if not [1 for x in lines if 'NoGameToDelete' in x]:
-				error += ['Failed to delete the game records from the DPPD'] 
+		try: RemoteDPPD().deleteGame(gameName, game.gm.password)
+		except: error += ['Failed to delete the game records from the DPPD'] 
 		# Purge from status
 		del self.dict[gameName]
 		self.save()

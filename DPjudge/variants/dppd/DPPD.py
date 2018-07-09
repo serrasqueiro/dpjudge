@@ -1,4 +1,4 @@
-import os
+import os, urllib
 
 import host
 
@@ -10,6 +10,7 @@ class DPPD(dict):
 		#	For security reasons this should be stored in host.py.
 		#	All other parameters may be changed in there as well (see below).
 		#	-----------------------------------------------------------------
+		db		=	None
 		mysql	=	{
 						'db':	'dpjudge',	'host':		'localhost',
 						'user': 'dpjudge',	'passwd':	'',
@@ -18,16 +19,17 @@ class DPPD(dict):
 		#	------------------------------------------------------------------
 		def __init__(self):
 			import MySQLdb, host
-			#	----------------------------------------------------
-			#	At the very minimum provide a dbPassword in host.py.
-			#	----------------------------------------------------
-			for (sqlVar, hostVar) in [
-				('db', 'dbName'), ('host', 'dbHost'), ('user', 'dbUser'),
-				('passwd', 'dbPassword'), ('port', 'dbPort')]:
-				if hostVar in vars(host):
-					self.mysql[sqlVar] = vars(host)[hostVar]
-			db = MySQLdb.connect(**self.mysql)
-			self.cursor = db.cursor(MySQLdb.cursors.DictCursor)
+			if DPPD.DB.db is None:
+				#	----------------------------------------------------
+				#	At the very minimum provide a dbPassword in host.py.
+				#	----------------------------------------------------
+				for (sqlVar, hostVar) in [
+					('db', 'dbName'), ('host', 'dbHost'), ('user', 'dbUser'),
+					('passwd', 'dbPassword'), ('port', 'dbPort')]:
+					if hostVar in vars(host):
+						self.mysql[sqlVar] = vars(host)[hostVar]
+				DPPD.DB.db = MySQLdb.connect(**self.mysql)
+			self.cursor = DPPD.DB.db.cursor(MySQLdb.cursors.DictCursor)
 		#	------------------------------------------------------------------
 		def __getattr__(self, attr):
 			return getattr(vars(self)['cursor'], attr)
@@ -123,6 +125,22 @@ class DPPD(dict):
 		results = self.keys()
 		if len(results) == 1: return self[data['id']]
 		return results or None
+	#	----------------------------------------------------------------------
+	def whois(self, email):
+		#	------------------------------------------------
+		#	Check membership status of email and pack into a
+		#			DPPD: #idNum email1,email2 First_Last
+		#	header that we return to the requesting judge
+		#	(it will then fulfill the request).
+		#	------------------------------------------------
+		data, name = self.lookup(email), ''
+		if data is None or data.get('id') is None: return
+		status = data.get('status', 'ACTIVE')
+		#	check for sponsor request
+		if status[0].isdigit() or status == 'ACTIVE': status = ''
+		name = data.get('name', '').replace(' ', '_')
+		id = status or ('#%s' % data['id'])
+		return ' '.join([id, email, name])
 	#	----------------------------------------------------------------------
 	def address(self, name = '', id = None, active = 2, dict = 0):
 		#	-----------------------------------------
@@ -267,12 +285,13 @@ class DPPD(dict):
 	def deleteGame(self, gameName, gamePass, judgeId = None):
 		#	------------------------------------------------------------
 		#	Deletes a game from the database.
+		#	Returns True if no game records were found.
 		#	Note that a call to Game.updateState() can restore the game,
 		#	as long as the game folder is still on the server.
 		#	------------------------------------------------------------
 		if not self.db.execute(
 			"select id from Game where judgeId = %s and name = %s",
-			(judgeId or host.dpjudgeID, gameName)): raise NoGameToDelete
+			(judgeId or host.dpjudgeID, gameName)): return True
 		gameId = self.db.fetchone()['id']
 		if host.judgePassword and host.judgePassword != gamePass:
 			if not self.db.execute(
@@ -285,3 +304,78 @@ class DPPD(dict):
 		self.db.execute("delete from Game where id = %s", [gameId])
 	#	----------------------------------------------------------------------
 
+class RemoteDPPD():
+	#	----------------------------------------------------------------------
+	def __init__(self):
+		self.localMain, self.dppd = False, None
+		if host.dppdLocal is not None and host.dbUser:
+			self.dppd = DPPD()
+			self.localMain = True
+		self.urls = host.dppdURL.split(',')
+		if self.dppd is not None and self.urls:
+			self.localMain = not host.dppdLocal
+			del self.urls[host.dppdLocal]
+#	----------------------------------------------------------------------
+	def updateGame(self, data):
+		if self.dppd is not None: self.dppd.updateGame(data)
+		if not self.urls: return
+		dict = urllib.urlencode({'status': data.encode('latin-1')})
+		for dppdURL in urls:
+			#   -----------------------------------------------------
+			#	I don't know why, but we need to use the query string
+			#	instead of a POST.  Something to look into.
+			#   -----------------------------------------------------
+			query = '?&'['?' in dppdURL]
+			page = urllib.urlopen(dppdURL + query + 'page=update&' + dict)
+			#   ----------------------------------------------------------
+			#   Check for an error report and raise an exception if that's
+			#   the case. Double check the DPPD code for any print
+			#   statements, as it may reveal the whole game status info to
+			#   the unsuspecting player.
+			#   ----------------------------------------------------------
+			lines = page.readlines()
+			page.close()
+			if [1 for x in lines if 'DPjudge Error' in x]:
+				#	Make absolutely sure it doesn't print the game status!!
+				print '\n'.join(lines) 
+				raise DPPDStatusUpdateFailed
+	#	----------------------------------------------------------------------
+	def deleteGame(self, gameName, gamePass, judgeId = None):
+		absent = None
+		if self.dppd is not None:
+			absent = self.dppd.deleteGame(gameName, gamePass, judgeId) or False
+		if self.urls:
+			dict = urllib.urlencode({
+				'judge': (judgeId or host.dpjudgeID).encode('latin-1'),
+				'name': gameName.encode('latin-1'),
+				'password': gamePass.encode('latin-1')})
+			for dppdURL in self.urls:
+				query = '?&'['?' in dppdURL]
+				page = urllib.urlopen(dppdURL + query + 'page=delete&' + dict)
+				#   --------------------------------------------------------------------
+				#   Check for an error report and raise an exception if that's the case.
+				#   --------------------------------------------------------------------
+				lines = page.readlines()
+				page.close()
+				if [1 for x in lines if 'DPjudge Error' in x]:
+					if not [1 for x in lines if 'NoGameToDelete' in x]:
+						raise DPPDFailedToDeleteGame
+					elif absent is None: absent = True
+				else: absent = False
+		return absent
+	#	----------------------------------------------------------------------
+	def whois(self, email):
+		if self.localMain: return self.dppd.whois(email)
+		#	--------------------------------------------------------------
+		#	Need to use query string rather than POST it.  Don't know why.
+		#	--------------------------------------------------------------
+		if not self.urls: return
+		dppdURL = self.urls[0]
+		query = '?&'['?' in dppdURL]
+		page = urllib.urlopen(dppdURL + query +
+			'page=whois&email=' + urllib.quote(email, '@'))
+		lines = page.readlines()
+		page.close()
+		if not lines or lines[0][:1] != '#': return
+		return unicode(lines[0], 'latin-1')
+	#	----------------------------------------------------------------------

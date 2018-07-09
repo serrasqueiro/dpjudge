@@ -53,23 +53,24 @@ page.include('functions')
 	<td nowrap class="bodycopy">
 		<!--QUESTIONS LIST BEGINS HERE-->
 		<b>&middot;</b>&nbsp;<a href="#1">The recognized commands</a><br>
-		<b>&middot;</b>&nbsp;<a href="#2">How to get a list of games and</a><br>
-		&nbsp;&nbsp;<a href="#2">information on a specific game</a><br>
+		<b>&middot;</b>&nbsp;<a href="#2">How to get a list of games and<br>
+		&nbsp;&nbsp;information on a specific game</a><br>
 		<b>&middot;</b>&nbsp;<a href="#3">How to observe a game</a><br>
 		<b>&middot;</b>&nbsp;<a href="#4">How to join a game</a><br>
 		<b>&middot;</b>&nbsp;<a href="#5">How to sign on after having joined</a><br>
-		<b>&middot;</b>&nbsp;<a href="#6">How to check, submit, and clear</a><br>
-		&nbsp;&nbsp;<a href="#6">orders</a><br>
+		<b>&middot;</b>&nbsp;<a href="#6">How to check, submit, and clear<br>
+		&nbsp;&nbsp;orders</a><br>
 		<b>&middot;</b>&nbsp;<a href="#7">How to send press</a><br>
 		<b>&middot;</b>&nbsp;<a href="#8">Sending illegal types of press</a><br>
 		<b>&middot;</b>&nbsp;<a href="#9">Ending a press message</a><br>
-		<b>&middot;</b>&nbsp;<a href="#10">Messaging multiple games</a><br>
-		<b>&middot;</b>&nbsp;<a href="#11">Updating player information</a><br>
-		<b>&middot;</b>&nbsp;<a href="#12">Getting around wireless device</a><br>
-		&nbsp;&nbsp;<a href="#11">restrictions</a><br>
-		<b>&middot;</b>&nbsp;<a href="#13">How to resign</a><br>
-		<b>&middot;</b>&nbsp;<a href="#14">How to take over a vacant position</a><br>
-		<b>&middot;</b>&nbsp;<a href="#15">The Master's commands</a>
+		<b>&middot;</b>&nbsp;<a href="#10">How to draw or concede a game</a><br>
+		<b>&middot;</b>&nbsp;<a href="#11">Messaging multiple games</a><br>
+		<b>&middot;</b>&nbsp;<a href="#12">Updating player information</a><br>
+		<b>&middot;</b>&nbsp;<a href="#13">Getting around wireless device<br>
+		&nbsp;&nbsp;restrictions</a><br>
+		<b>&middot;</b>&nbsp;<a href="#14">How to resign</a><br>
+		<b>&middot;</b>&nbsp;<a href="#15">How to take over a vacant position</a><br>
+		<b>&middot;</b>&nbsp;<a href="#16">The Master's commands</a>
 		<!--QUESTIONS LIST TABLE ENDS HERE-->
 	</td>
 	</tr>
@@ -87,64 +88,76 @@ page.include('functions')
 		<a href=mailto:<MAIL>><tt><MAIL></tt></a>
 
 		<P><b>If I send an e-mail to the DPjudge, what commands may I include in that e-mail?</b><br>
-		The DPjudge recognizes only the following forty commands:
+		The DPjudge recognizes only the following forty-two commands:
 	
-			<P><table border=0 cellpadding=0 align=center>
+			<P><table class="bodycopy" border=0 cellpadding=5 align=center width=400>
 			<tr valign=top>
-			<td class="bodycopy">&middot;<a href=#signon>SIGNON</a><br>&middot;<a href=#signoff>SIGNOFF</a></td><td width=20></td>
-			<td class="bodycopy">&middot;<a href=#press>PRESS</a><br>&middot;<a href=#endpress>ENDPRESS</a></td><td width=20></td>
-			<td class="bodycopy">&middot;<a href=#broadcast>BROADCAST</a><br>&middot;<a href=#endbroadcast>ENDBROADCAST</a></td>
+			<td width=30%>&middot;<a href=#signon>SIGNON</a>
+			<br>&middot;<a href=#signoff>SIGNOFF</a></td>
+			<td width="30%">&middot;<a href=#press>PRESS</a>
+			<br>&middot;<a href=#endpress>ENDPRESS</a></td>
+			<td width="30%">&middot;<a href=#broadcast>BROADCAST</a>
+			<br>&middot;<a href=#endbroadcast>ENDBROADCAST</a></td>
 			</tr>
-			<tr><td colspan=5 height=10></td></tr>
 			<tr valign=top>
-			<td class="bodycopy">&middot;<a href=#join>JOIN</a><br>&middot;<a href=#observe>OBSERVE</a> <i>(etc.)</td><td width=20></td>
-			<td class="bodycopy">&middot;<a href=#resign>RESIGN</a><br>&middot;<a href=#takeover>TAKEOVER</a></td><td width=20></td>
-			<td class="bodycopy">&middot;<a href=#status>STATUS</a><br>&middot;<a href=#clear>CLEAR</a></td>
+			<td width="30%">&middot;<a href=#join>JOIN</a>
+			<br>&middot;<a href=#observe>OBSERVE</a> <i>(etc.)</i></td>
+			<td width="30%">&middot;<a href=#resign>RESIGN</a>
+			<br>&middot;<a href=#takeover>TAKEOVER</a></td>
+			<td width="30%">&middot;<a href=#status>STATUS</a>
+			<br>&middot;<a href=#clear>CLEAR</a></td>
 			</tr>
-			<tr><td colspan=5 height=10></td></tr>
 			<tr valign=top>
-			<td class="bodycopy">&middot;<a href=#address>SET ADDRESS</a><br>&middot;<a href=#password>SET PASSWORD</a></td><td width=20></td>
-			<td class="bodycopy">&middot;<a href=#wait>SET WAIT</a><br>&middot;<a href=#nowait>SET NOWAIT</a>
-			<br>&middot;<a href=#absence>SET ABSENCE</a></td>
-			<td width=20></td>
-			<td class="bodycopy">&middot;<a href=#list>LIST</a><br>&middot;<a href=#summary>SUMMARY</a><br>&middot;<a href=#history>HISTORY</a><br>&middot;<a href=#map>MAP</a></td>
+			<td width="30%">&middot;<a href=#list>LIST</a>
+			<br>&middot;<a href=#summary>SUMMARY</a></td>
+			<td width="30%">&middot;<a href=#history>HISTORY</a>
+			<br>&middot;<a href=#map>MAP</a></td>
+			<td width="30%">&middot;<a href=#vote>VOTE</a>
+			<br>&middot;<a href=#propose>PROPOSE</a></td>
+			</tr>
+			<tr valign=top>
+			<td width="30%">&middot;<a href=#address>SET ADDRESS</a>
+			<br>&middot;<a href=#password>SET PASSWORD</a></td>
+			<td width="30%">&middot;<a href=#absence>SET ABSENCE</a>
+			<br>&middot;<a href=#nowait>SET [NO]WAIT</a></td>
+			<td width="30%">&middot;<a href=#nodraw>SET [NO]DRAW</a>
+			<br>&middot;<a href=#noconcede>SET [NO]CONCEDE</a></td>
 			</tr>
 			</table>
 
-		<P><b>Hey, you said there were <i>forty</i> recognized commands!
-		That's only twenty-one!</b><br>
-		Okay, you're right.  I left out the nineteen "Master commands"
+		<P><b>Hey, you said there were <i>forty-two</i> recognized commands!
+		That's only twenty-four!</b><br>
+		Okay, you're right.  I left out the eighteen "Master commands"
 		(those that may be used only by a game's Master). These are:
 	
-			<P><table border=0 cellpadding=0 align=center>
+			<P><table class="bodycopy" border=0 cellpadding=5 align=center width=400>
 			<tr valign=top>
-			<td class="bodycopy" valign=top>&middot;<a href=#create>CREATE</a>
-			<br>&middot;<a href=#purge>PURGE</a>
-			<br>&middot;<a href=#rename>RENAME</a>
-			<br>&middot;<a href=#reveal>REVEAL</a>
-			<td width=20></td>
-			<td class="bodycopy">&middot;<a href=#state>FORM</a>
-			<br>&middot;<a href=#state>ACTIVATE</a>
-			<br>&middot;<a href=#state>WAIT</a>
-			<br>&middot;<a href=#state>TERMINATE</a>
-			<td width=20></td>
-			<td class="bodycopy">&middot;<a href=#process>PROCESS</a>
-			<br>&middot;<a href=#preview>PREVIEW</a>
-			<br>&middot;<a href=#rollback>ROLLBACK</a>
-			<br>&middot;<a href=#rollforward>ROLLFORWARD</a></td>
-			<td width=20></td>
-			<td class="bodycopy">&middot;<a href=#m_resign>RESIGN</a>
+			<td width="30%">&middot;<a href=#create>CREATE</a>
+			<br>&middot;<a href=#rename>RENAME</a></td>
+			<td width="30%">&middot;<a href=#state>FORM</a>
+			<br>&middot;<a href=#state>ACTIVATE</a></td>
+			<td width="30%">&middot;<a href=#state>WAIT</a>
+			<br>&middot;<a href=#state>TERMINATE</a></td>
+			</tr>
+			<tr valign=top>
+			<td width="30%">&middot;<a href=#process>PROCESS</a>
+			<br>&middot;<a href=#preview>PREVIEW</a></td>
+			<td width="30%">&middot;<a href=#m_resign>RESIGN</a>
 			<br>&middot;<a href=#m_dummy>DUMMY</a>
-			<br>&middot;<a href=#revive>REVIVE</a></td>
-			<td width=20></td>
-			<td class="bodycopy">&middot;<a href=#official>OFFICIAL</a>
-			<br>&middot;<a href=#deadline>SET DEADLINE</a>
-			<br>&middot;<a href=#unlisted>SET UNLISTED</a>
-			<br>&middot;<a href=#unlisted>SET LISTED</a></td>
+			<td width="30%">&middot;<a href=#purge>PURGE</a>
+			<br>&middot;<a href=#reveal>REVEAL</a></td>
+			</tr>
+			<tr valign=top>
+			<td width="30%">&middot;<a href=#rollback>ROLLBACK</a>
+			<br>&middot;<a href=#rollforward>ROLLFORWARD</a></td>
+			<td width="30%">&middot;<a href=#revive>REVIVE</a>
+			<br>&middot;<a href=#official>OFFICIAL</a></td>
+			<td width="30%">&middot;<a href=#deadline>SET DEADLINE</a>
+			<br>&middot;<a href=#unlisted>SET [UN]LISTED</a></td>
 			</tr>
 			</table>
 	
-		<p>There; that makes forty.  That's it. If you are familiar with the Ken Lowe Internet judge, you know that it supports a few more commands.  The DPjudge does <i>not</i> support these. Limit your messages to the commands listed above or the DPjudge will simply tell you it does not understand you.
+		<p>There; that's all of them.  If you are familiar with the Ken Lowe Internet judge, you know that it supports a few more commands.  The DPjudge does <i>not</i> support these. Limit your messages to the commands listed above or the DPjudge will simply tell you it does not understand you.
 	
 		<P><i>Note that if a specific <a href=<URL>?page=Rules><tt>RULE</tt></a>
 		(<tt>PLAYER_DEADLINES</tt>) is used in a game, the
@@ -153,10 +166,7 @@ page.include('functions')
 
 		<P><b>Will some of the other Ken Lowe judge commands be supported
 		later?</b><br>
-		<tt>SET DRAW</tt> and <tt>TERMINATE</tt> almost
-		certainly will be (someday) -- as
-		for any other commands, though, don't hold your breath.  I don't
-		really see much of a need for them.
+		Don't hold your breath.  I don't really see much of a need for them.
 	
 		<P> Here is a list of the capabilities provided by the E-Mail and the Web interfaces:
 	
@@ -174,7 +184,8 @@ page.include('functions')
 			&nbsp;&middot;Changing the Game State<br>
 			&nbsp;&middot;Obtaining a Phase <tt>HISTORY</tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
 			&nbsp;&middot;Obtaining a Game <tt>SUMMARY</tt><br>
-			&nbsp;&middot;Obtaining a Game <tt>MAP</tt></font><br>
+			&nbsp;&middot;Obtaining a Game <tt>MAP</tt><br>
+			&nbsp;&middot;Voting on Draw or Concession</font><br>
 			&nbsp;&middot;Obtaining a Game <tt>LIST</tt><br>
 			&nbsp;&middot;Creating a Game<br>
 			&nbsp;&middot;Taking a Role in a Game<br>
@@ -190,8 +201,8 @@ page.include('functions')
 			&nbsp;&middot;Changing the Game State<br>
 			&nbsp;&middot;Viewing Phase <tt>HISTORY</tt><br>
 			&nbsp;&middot;Viewing a Completed Game's <tt>SUMMARY</tt>&nbsp;<br>
-			&nbsp;&middot;Viewing a Game <tt>MAP</tt></font>&nbsp;<br>
-			&nbsp;&middot;Voting on Draw or Concession<br>
+			&nbsp;&middot;Viewing a Game <tt>MAP</tt>&nbsp;<br>
+			&nbsp;&middot;Voting on Draw or Concession</font><br>
 			&nbsp;&middot;Reading Documentation<br>
 			&nbsp;&nbsp;(like you're doing now)<br>
 			&nbsp;&middot;<i>All</i> Other Activities Not Listed</td>
@@ -710,7 +721,33 @@ commands once.  For example:<tt>
 
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
-		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="10"></a><b>Messaging multiple games</b></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="10"></a><b>How to draw or concede a game</b></td></tr>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		</table>	
+	<table border=0 cellpadding=10 cellspacing=0 width=100%>
+	<tr valign=top>
+	<td class="bodycopy">
+		<!--ANSWER BEGINS HERE-->
+		<a name=draw></a>
+		<a name=vote></a>
+		<b>How can I set my draw flag?</b><br>
+		Depending on the endgame rules you can set your draw flag in one of various ways. By default only draws including all survivors (DIAS) are allowed. Use <tt>SET DRAW</tt> or <tt>VOTE DIAS</tt> to agree to one and <tt>SET NODRAW</tt> or <tt>VOTE SOLO</tt> to revert to a solo victory. In <tt>NO_DIAS</tt> games you can additionally get yourself in a smaller draw by sending a <tt>VOTE nWAY</tt> command, where n is a number representing the size of the draw, e.g. <tt>VOTE 3WAY</tt>. If the same number of people agree to that or a bigger draw and the remaining survivors concede the game, the draw succeeds. In <tt>NO_DRAW</tt> games you can only go solo or concede the game, while in <tt>PROPOSE_DIAS</tt> games you need to send <tt>VOTE YES</tt> to agree to a proposal or <tt>VOTE NO</tt> to veto it.<br><br>
+		<a name=concede></a>
+		<b>How do I concede a game?</b><br>
+		You concede by sending either <tt>SET CONCEDE</tt> or <tt>VOTE LOSS</tt>. This can be either to a single player or, in the case of a <tt>NO_DIAS</tt> game, to a group of survivors, as you effectively exclude yourself from the draw. Note that in DIAS games the game will only end if all surviving players set their draw flag or all but one player concede the game. Any other mix will cause the game to continue. For consistency reasons there's also a <tt>SET NOCONCEDE</tt> command, which has the same effect as <tt>SET NODRAW</tt> or <tt>VOTE SOLO</tt>.<br><br>
+		<b>Does my flag immediately get reset after a turn processes as on a Ken Lowe judge?</b><br>
+		No, your flag or vote remains in effect in future turns until you send a new vote to change it. This may differ from the expected behavior, so please be careful. OTOH it saves you the trouble of submitting your vote every turn.<br><br>
+		<a name=propose></a>
+		<b>How do I make a proposal in a <tt>PROPOSE_DIAS</tt> game?</b><br>
+		By sending a <tt>PROPOSE</tt> command followed by the name of the power to concede to (either you or some other surviving power), e.g. <tt>PROPOSE GERMANY</tt>, or <tt>PROPOSE DIAS</tt> if you want a draw. Note that only one proposal can be active at any one time, so you will need to include <tt>VOTE NO</tt> if another proposal is currently being voted on. It's implicitly assumed that you agree with your own proposal, so there's no need to include <tt>VOTE YES</tt> when submitting. You can however veto your own proposal at a later time (meaning in a separate mail) in order to replace it with another proposal or simply to retract it.
+		<!--ANSWER ENDS HERE-->
+	</td>
+	</tr>
+	</table>
+
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="11"></a><b>Messaging multiple games</b></td></tr>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
 		</table>	
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
@@ -740,7 +777,7 @@ commands once.  For example:<tt>
 
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
-		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="11"></a><b>Updating player information</b></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="12"></a><b>Updating player information</b></td></tr>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
 		</table>	
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
@@ -770,7 +807,6 @@ game knows where I now am?</b><br>
 	It's that simple.  This command works whether you are a map power, an
 	observer or other non-map power, or the Master of the game.
 
-		<a name=wait></a>
 		<a name=nowait></a>
 <P><b>Can I change my "wait flag" via e-mail?</b><br>
 	Yep.  Just send in a <tt>SET WAIT</tt> or <tt>SET NOWAIT</tt> command
@@ -830,7 +866,7 @@ game knows where I now am?</b><br>
 
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
-		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="12"></a><b>Getting around wireless device restrictions</b></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="13"></a><b>Getting around wireless device restrictions</b></td></tr>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
 		</table>	
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
@@ -855,7 +891,7 @@ examples:<tt>
 
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
-		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="13"></a><b>How to resign</b></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="14"></a><b>How to resign</b></td></tr>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
 		</table>	
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
@@ -913,7 +949,7 @@ examples:<tt>
 
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
-		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="14"></a><b>How to take over a vacant position</b></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="15"></a><b>How to take over a vacant position</b></td></tr>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
 		</table>	
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
@@ -970,7 +1006,7 @@ does, but tell me anyway.</b><br>
 <a name=mastery></a>
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
-		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="15"></a><b>The Master's commands</b></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="16"></a><b>The Master's commands</b></td></tr>
 		<tr><td bgcolor="#666666" height=1 class="border"></td></tr>
 		</table>	
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>

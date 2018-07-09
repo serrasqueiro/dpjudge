@@ -162,6 +162,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option>HIDE_PROPOSER</option>
 <option>HOLD_WIN</option>
 <option>HOME_BUILDS</option>
+<option>IGNORE_RESULTS</option>
 <option>IMMOBILE_DUMMIES</option>
 <option>LAST_MAN_STANDING</option>
 <option>LATE_CHANGES</option>
@@ -321,7 +322,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE END -->
 
 <a name=SOLITAIRE></a><p><dt><b><tt>SOLITAIRE</tt></b></dt><dd>
-<!-- RULE SOLITAIRE +NO_DEADLINE +CD_DUMMIES +DEFAULT_UNORDERED +ALWAYS_WAIT -->
+<!-- RULE SOLITAIRE +NO_DEADLINE +CD_DUMMIES +DEFAULT_UNORDERED +ALWAYS_WAIT +IGNORE_RESULTS -->
 	A <tt>SOLITAIRE</tt> game is a game where all powers are dummies
 	controlled by the Master. This can be used to test a certain
 	scenario or to solve a puzzle on the Diplomacy board, such as
@@ -507,6 +508,14 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
     The Master is <i>not</i> sent a copy of all public (broadcast) press
 	messages.  To send a message to the Master, the message must
 	specifically include the Master in its addressing.
+<!-- RULE END -->
+
+<a name=IGNORE_RESULTS></a><p><dt><b><tt>IGNORE_RESULTS</tt></b><dd>
+<!-- RULE IGNORE_RESULTS -->
+	The Master doesn't receive any season results or rollback messages.
+	This is the default mode for <a href="#SOLITAIRE"><tt>SOLITAIRE</tt></a>
+	games, where you enter orders for all powers and process the turns
+	yourself.
 <!-- RULE END -->
 
 </dl>

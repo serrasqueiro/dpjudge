@@ -142,7 +142,7 @@ class Time(str):
 			secs = self.seconds() + int(off[:-1]) * dict.get(off[-1], 1)
 		return Time(self.zone, secs, self.npar())
 	#	----------------------------------------------------------------------
-	def trunc(self, mod = 1):
+	def trunc(self, mod = 1200):
 		#	----------------------------------------
 		#	Truncating to a day requires some magic.
 		#	----------------------------------------
@@ -155,6 +155,16 @@ class Time(str):
 			mod = int(mod[:-1]) * dict.get(mod[-1], 1)
 			tsecs = secs / mod * mod
 		return self.offset(tsecs - secs)
+	#	----------------------------------------------------------------------
+	def diff(self, other = None, mod = 1200):
+		secs = self.seconds()
+		try: osecs = other.seconds()
+		except: osecs = Time(self.zone, other, self.npar()).seconds()
+		try: return (osecs - secs) / mod
+		except:
+			dict = { 'M': 60, 'H': 3600, 'D': 86400, 'W': 604800 }
+			mod = int(mod[:-1]) * dict.get(mod[-1], 1)
+			return (osecs - secs) / mod
 	#	----------------------------------------------------------------------
 	def adjust(self, npar):
 		if npar == self.npar(): return self

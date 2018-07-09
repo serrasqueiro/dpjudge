@@ -427,7 +427,7 @@ def showStatusFile():
 		valign=top><b>Description:</b></td>
 		<td colspan=2 class="bodycopy"><textarea class=bodycopy name=desc
 		rows=%d cols=80>%s</textarea></tr>
-		""" % (len(desc) / 80 + 1, desc))
+		""" % (len(desc) / 80 + 2, desc))
 	desc = ' '.join(game.origin)
 	page.write("""
 		<tr><td class="bodycopy" align="left" nowrap

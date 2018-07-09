@@ -1,9 +1,10 @@
 #!/usr/bin/env python -O
 
-import urllib, email
+import email
 from codecs import open
 
 from DPjudge import *
+from DPjudge.variants.dppd.DPPD import RemoteDPPD
 
 class Procmail:
 	#	-------------------------------------------------------------
@@ -149,18 +150,21 @@ class Procmail:
 				if upword[0] != 'S': joiner = word[0].upper()
 				del self.message[:lineNo - 1]
 				break
-			#	---------------------------------------------
-			#	Detect LIST, SUMMARY, HISTORY, or MAP request
-			#	---------------------------------------------
-			elif upword in ('LIST', 'SUMMARY', 'HISTORY', 'MAP'):
+			#	----------------------------------------------------
+			#	Detect LIST, SUMMARY, HISTORY, SEARCH or MAP request
+			#	----------------------------------------------------
+			elif upword in ('LIST', 'SUMMARY', 'HISTORY', 'SEARCH', 'MAP'):
 				if upword == 'MAP':
 					mapType = word[-1].lower()
 					if mapType in ('ps', 'pdf', 'gif'): del word[-1]
 					else: mapType = 'gif'
 				self.pressSent = None
-				if len(word) != 2 and upword != 'LIST': self.respond(
+				if upword == 'SEARCH':
+					Status().list(self.email, self.subject, word[1:])
+				elif upword == 'LIST' and len(word) == 1:
+					Status().list(self.email, self.subject)
+				elif len(word) != 2: self.respond(
 					'A single game must be specified to ' + upword)
-				if len(word) == 1: Status().list(self.email, self.subject)
 				else:
 					gameName = word[1].lower()
 					dataGame = Status().load(gameName)
@@ -320,7 +324,7 @@ class Procmail:
 		except: self.respond('Unable to create status file')
 		self.game = Game(game)
 		if 'SOLITAIRE' in self.game.rules:
-			if not self.game.private: self.game.private = 'SOLITAIRE'
+			if self.game.private is None: self.game.private = 'SOLITAIRE'
 			self.game.save()
 		if self.game.private:
 			games.dict[game] += ['private']
@@ -344,7 +348,7 @@ class Procmail:
 		game, orders = self.game, []
 		if game.phase in ('FORMING', 'COMPLETED'): rules = ['PUBLIC_PRESS']
 		else: rules = game.rules
-		official = press = deathnote = None
+		official = press = deathnote = vote = None
 		if not self.power: self.locatePower(powerName, password)
 		power = self.power
 		try: self.ip = socket.gethostbyaddr(self.ip)[0]
@@ -397,8 +401,10 @@ class Procmail:
 					elif ('PUBLIC_PRESS' in rules
 					and (claimTo or readers not in (['All'], ['MASTER']))):
 						self.respond('Private press not allowed' +
-							' before the start of the game' * (game.phase == 'FORMING') +
-							' after the end of the game' * (game.phase == 'COMPLETED'))
+							' before the start of the game' *
+							(game.phase == 'FORMING') +
+							' after the end of the game' *
+							(game.phase == 'COMPLETED'))
 					if 'NO_PRESS' in rules and readers != ['MASTER']:
 						self.respond('Private press allowed only to Master')
 					if 'FAKE_PRESS' not in rules:
@@ -598,28 +604,32 @@ class Procmail:
 						self.sanitize(word[2]) or None)
 				else: response = goner.dummy()
 				if response: self.respond(response)
-			#	--------------------------
-			#	SET ADDRESS, SET PASSWORD,
-			#	and SET DEADLINE handling.
-			#	--------------------------
-			elif (len(word) > 1 and word[0] == 'SET'
-			and word[1] in ('ADDRESS', 'PASSWORD', 'DEADLINE', 'ZONE',
-							'NOZONE', 'WAIT', 'NOWAIT', 'ABSENCE',
-							'LISTED', 'UNLISTED')):
+			#	---------------------------------------
+			#	SET ADDRESS, SET PASSWORD, SET DEADLINE
+			#	and other SET command handling.
+			#	---------------------------------------
+			elif len(word) > 1 and word[0] == 'SET':
+				if word[1] == 'NO' and len(word) > 2:
+					word[1] += word[2]
+					del word[2]
+				if word[1] not in ('ADDRESS', 'PASSWORD', 'DEADLINE', 'ABSENCE',
+					'ZONE', 'NOZONE', 'WAIT', 'NOWAIT',
+					'DRAW', 'NODRAW','CONCEDE', 'NOCONCEDE',
+					'LISTED', 'UNLISTED'):
+					self.respond('SET %s directive not recognized' % word[1])
 				nok = word[1][:2] in ('NO', 'UN') and 2 or 0
 				if len(word) == 2:
 					if word[1][:2] == 'AD': word += [self.email]
 					elif word[1][nok] == 'Z' and power.name == 'MASTER':
 						word += [host.timeZone or 'GMT']
-					elif word[1][nok] not in 'LWZ': 
+					elif word[1][:2] in ('PA', 'DE', 'AB'): 
 						self.respond('No new %s given' % word[1])
-				elif word[1][nok] in 'LW':
+				elif word[1][:2] not in ('AD', 'PA', 'DE', 'AB', 'ZO'): 
 					self.respond('Bad %s directive' % word[1])
+				#	------------
+				#	SET DEADLINE
+				#	------------
 				if word[1][:2] == 'DE':
-
-					#	------------
-					#	SET DEADLINE
-					#	------------
 					if 'NO_DEADLINE' in game.rules:
 						self.respond('No deadlines can be set in this game')
 					elif (not self.isMaster(power)
@@ -647,10 +657,10 @@ class Procmail:
 						game.anglify(power.name))
 						or 'HIDE_EXTENDERS' in game.rules and 'a power'
 						or game.anglify(power.name)))
+				#	-----------
+				#	SET ABSENCE
+				#	-----------
 				elif word[1][:2] == 'AB':
-					#	-----------
-					#	SET ABSENCE
-					#	-----------
 					if 'NO_ABSENCES' in game.rules and not self.isMaster(power):
 						self.respond('Only the Master is allowed to ' +
 							'SET ABSENCE in this game')
@@ -696,9 +706,9 @@ class Procmail:
 						zone = zoneInfo.__repr__()
 						if self.isMaster(power):
 							game.setTimeZone(zone)
-							deathnote = ("The Master has changed the time zone for game " +
-								"'%s'\nto %s (%s).\n" % (game.name, zone,
-								zoneInfo.gmtlabel()))
+							deathnote = ("The Master has changed the time zone "
+								"for game '%s'\nto %s (%s).\n" %
+								(game.name, zone, zoneInfo.gmtlabel()))
 						else: power.zone = zone
 				#	-------------------
 				#	SET WAIT and NOWAIT
@@ -715,6 +725,21 @@ class Procmail:
 						self.respond('WAIT not available in this phase')
 					if power.name in game.map.powers:
 						power.wait = not nok
+				#	-------------------------
+				#	SET DRAW and NODRAW
+				#	SET CONCEDE and NOCONCEDE
+				#	-------------------------
+				elif word[1][nok] in 'DC':
+					if vote is not None:
+						self.respond('Please submit one vote only')
+					if not power.canVote():
+						self.respond('%s has no right to vote' % power.name)
+					if 'PROPOSE_DIAS' in game.rules:
+						self.respond('Please respond with VOTE YES or ' +
+							'VOTE NO when there is a proposal')
+					elif 'NO_DRAW' in game.rules and word[1][0] == 'D':
+						self.respond('No draws are allowed in a NO_DRAW game')
+					vote = nok and 1 or word[1][0] == 'D' and -1 or 0
 				#	-----------------------
 				#	SET LISTED and UNLISTED
 				#	-----------------------
@@ -728,10 +753,10 @@ class Procmail:
 					else: gameMode.remove('unlisted')
 					game.status[1:] = gameMode
 					games.update(game.name, gameMode, game.status[0])
+				#	----------------------------
+				#	SET ADDRESS and SET PASSWORD
+				#	----------------------------
 				else:
-					#	----------------------------
-					#	SET ADDRESS and SET PASSWORD
-					#	----------------------------
 					word[2] = word[2].lower()
 					if word[1][0] == 'A':
 						try:
@@ -757,9 +782,55 @@ class Procmail:
 						'until after %s' % dates[1])[not dates[0]]]
 				elif word[1][0] in 'AP':
 					self.response += [word[1].title() + ' set to ' + word[2]]
-				elif word[1][0] in 'NW': self.response += [
+				elif word[1][nok] == 'W': self.response += [
 					'Wait status %sset' % ('re' * (word[1][0] == 'N'))]
 				del self.message[0]
+			#	----------------
+			#	PROPOSE and VOTE
+			#	----------------
+			elif command == 'PROPOSE':
+				if not 'PROPOSE_DIAS' in game.rules:
+					self.respond('Not a PROPOSE_DIAS game')
+				elif not power.canVote():
+					self.respond('%s has no right to vote' % power.name)
+				elif game.proposal and vote != 0:
+					self.respond('You will first need to veto the current '
+						'proposal')
+				if len(word) != 2 or word[1] not in ['DIAS'] + [
+					x.name for x in game.powers if x.canVote()]:
+					self.respond('Invalid PROPOSE command')
+				proposal = [word[1], power.name]
+			elif command == 'VOTE':
+				if vote is not None:
+					self.respond('Please submit one vote only')
+				if not power.canVote():
+					self.respond('%s has no right to vote' % power.name)
+				if len(word) > 2 and word[2] == 'WAY':
+					word[1] += word[2]
+					del word[2]
+				if len(word) != 2:
+					self.respond('Bad VOTE syntax')
+				if 'PROPOSE_DIAS' in game.rules:
+					if word[1] == 'YES': vote = 1
+					elif word[1] == 'NO': vote = 0
+					else:
+						self.respond('Please respond with VOTE YES or ' +
+							'VOTE NO when there is a proposal')
+				elif word[1] == 'LOSS': vote = 0
+				elif word[1] == 'SOLO': vote = 1
+				elif 'NO_DRAW' in game.rules:
+					self.respond('No draws are allowed in a NO_DRAW game')
+				elif word[1] in ('DIAS', 'DRAW'): vote = -1
+				elif word[1][-3:] != 'WAY':
+					self.respond('Bad VOTE syntax')
+				elif 'BLIND' in game.rules and 'NO_DIAS' not in game.rules:
+					self.respond('A partial draw is not allowed in a DIAS game')
+				else:
+					vote = word[1][:-3]
+					if vote[-1:] == '-': vote = vote[:-1]
+					if not vote.isdigit():
+						self.respond('Bad VOTE syntax')
+					vote = int(vote)
 			#	-------------------------------
 			#	LIST, SUMMARY, HISTORY, and MAP
 			#	-------------------------------
@@ -820,7 +891,48 @@ class Procmail:
 			'The new deadline is %s.\n' % game.timeFormat(),
 			subject = 'Diplomacy deadline changed')
 		if orders: self.setOrders(orders)
-	#	----------------------------------------------------------------------
+		if vote is not None:
+			if 'PROPOSE_DIAS' in game.rules:
+				if not game.proposal:
+					self.respond('No draw proposal has yet been submitted '
+						'to vote on')
+				self.response += ['You have %s the proposal%s for a %s' %
+					(('vetoed', 'agreed to')[vote],
+					(' by ' + game.anglify(game.proposal[1])) *
+					(not 'HIDE_PROPOSER' in game.rules),
+					('concession to ' + game.anglify(game.proposal[0]),
+					'draw including all survivors')[game.proposal[0] ==
+					'DIAS'])]
+			elif vote == 0:
+				self.response += ['Your goal is now a concession to ' +
+					('another player', 'one or more of the other players')
+					['NO_DIAS' in game.rules]]
+			elif vote == 1:
+				self.response += ['Your goal is now a solo victory for ' +
+					game.anglify(power.name)]
+			else:
+				voters = len([1 for x in game.powers if x.canVote()])
+				if 'BLIND' not in game.rules:
+					if vote == -1: vote = voters
+					elif vote > voters:
+						self.respond('There are only %d powers left '
+							'to include in the draw' % voters)
+					elif vote != voters and 'NO_DIAS' not in game.rules:
+						self.respond('A partial draw is not allowed'
+							' in a DIAS game')
+				self.response += ['Your goal is now a %sdraw'
+					' including %s%s' % (('%d-way ' % vote) * (vote > -1),
+					game.anglify(power.name), ' (DIAS)' * (vote == voters))]
+			power.vote = str(vote)
+			game.save()
+			game.checkVotes()
+		if proposal:
+			game.proposal = proposal
+			game.save()
+			self.response += ['You submitted a proposal for a ' +
+				('concession to ' + game.anglify(proposal[0]),
+				'draw including all survivors (DIAS)')[proposal[0] == 'DIAS']]
+#	----------------------------------------------------------------------
 	def checkEnd(self, line, commands = None, concat = 0):
 		word = line.upper().split()
 		if not word: return
@@ -864,19 +976,13 @@ class Procmail:
 		#	We're here for a JOIN (or similar) or CREATE command that
 		#	requires registration -- need to ask the DPPD for an ID.
 		#	---------------------------------------------------------
-		#	Need to use query string rather than POST it.  Don't know why.
-		dppdURL = host.dppdURL.split(',')[0]
-		query = '?&'['?' in dppdURL]
-		page = urllib.urlopen(dppdURL + query +
-			'page=whois&email=' + urllib.quote(self.email, '@'))
-		response = unicode(page.read(), 'latin-1')
-		page.close()
-		self.ip, self.dppd = self.email, '|'.join(response.split())
-		if self.dppd[:1] != '#': self.respond(
+		self.dppd = RemoteDPPD().whois(self.email)
+		if self.dppd is None: self.respond(
 			'Your e-mail address (%s) is\nnot registered with the DPPD, '
 			'or your DPPD status does\nnot allow you to use the %s command.'
 			'\n\nVisit the DPPD at %s\nfor assistance' %
-			(self.email, command, dppdURL))
+			(self.email, command, host.dppdURL.split(',')[0]))
+		self.ip, self.dppd = self.email, '|'.join(self.dppd.split())
 	#	----------------------------------------------------------------------
 	def updatePlayer(self, power, password, command, word):
 		game, self.power, playerType = self.game, None, None

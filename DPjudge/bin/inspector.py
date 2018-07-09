@@ -63,7 +63,7 @@ class Inspector(object):
 				print 'No game loaded'
 				return
 			gameNames = [self.game.name]
-		argv = ['inspect.check', '-a', '-r'] + gameNames
+		argv = ['inspect.check', '-a'] + gameNames
 		Check(argv)
 	#	----------------------------------------------------------------------
 	def purge(self, gameName = None):

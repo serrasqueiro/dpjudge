@@ -494,7 +494,7 @@ class Map:
 			#	----------------
 			#	Center ownership
 			#	----------------
-			elif upword in ('OWNS', 'CENTERS'):
+			elif upword in ('OWNS', 'CENTERS', 'CENTRES'):
 				if not power:
 					error += [upword + ' BEFORE POWER: ' + ' '.join(word)]
 				else:
@@ -781,14 +781,14 @@ class Map:
 			#	word, and home centers
 			#	----------------------
 			else:
-				if upword in ('NEUTRAL', 'CENTERS', 'UNOWNED'):
+				if upword in ('NEUTRAL', 'CENTERS', 'CENTRES', 'UNOWNED'):
 					power, upword = 0, 'UNOWNED'
 				else: power = self.lang.normPower(upword)
 				if len(word) > 2 and word[1] == '->': 
 					oldPower = power
 					word = word[2:]
 					upword = word[0].upper()
-					if upword in ('NEUTRAL', 'CENTERS', 'UNOWNED'):
+					if upword in ('NEUTRAL', 'CENTERS', 'CENTRES', 'UNOWNED'):
 						power, upword = 0, 'UNOWNED'
 					else: power = self.lang.normPower(upword)
 					if not oldPower or not power:

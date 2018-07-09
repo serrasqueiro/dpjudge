@@ -270,6 +270,34 @@ class Power:
 			self.game.timeFormat())[not self.game.avail],
 			subject = 'Diplomacy position dummied')
 	#	----------------------------------------------------------------------
+	def promote(self):
+		if not self.isDummy():
+			return 'Only dummy powers can be promoted'
+		if 'VASSAL_DUMMIES' in self.game.rules:
+			return 'Vassal dummies cannot be promoted'
+		if self.isEliminated():
+			return 'Eliminated powers cannot be promoted'
+		if len(self.ceo) != 1:
+			return 'Only controlled powers can be promoted'
+		boss = self.controller()
+		if not boss or boss.omniscient > 2:
+			return 'Only controlled powers can be promoted'
+		self.player = [boss.player[0], self.game.phaseAbbr()] + self.player
+		self.address, self.password = boss.address, boss.password
+		self.ceo, self.vote = [], boss.vote
+		for vassal in boss.vassals(all=True):
+			if vassal == self: continue
+			vassal.ceo = [self.name]
+		boss.player = ['DUMMY', self.game.phaseAbbr()] + boss.player
+		boss.address = boss.password = boss.vote = None
+		boss.ceo = [self.name]
+		self.game.save()
+		self.game.mailPress(None, [self.name],
+			"%s takes over from %s as your main power%s.\n" % (
+			self.game.anglify(self.name), self.game.anglify(boss.name),
+			" after the latter's elimination" * boss.isEliminated()),
+			subject = 'Diplomacy position promoted')
+	#	----------------------------------------------------------------------
 	def controller(self):
 		if not self.ceo or self.ceo[0] == 'MASTER': return None
 		for power in self.game.powers:
@@ -397,8 +425,8 @@ class Power:
 		return False
 	#	----------------------------------------------------------------------
 	def canVote(self):
-		return not self.ceo and (self.centers or
-			[1 for x in self.vassals() if x.centers])
+		return not (self.ceo or not (self.centers or
+			[1 for x in self.vassals() if x.centers]))
 	#	----------------------------------------------------------------------
 	def visible(self, unit, order = None):
 		#	--------------------------------------------------------------

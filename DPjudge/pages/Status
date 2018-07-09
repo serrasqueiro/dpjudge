@@ -285,7 +285,8 @@ page.include('functions')
 	keyword specified is required after a player's password in a
 	<tt>JOIN</tt>, <tt>TAKEOVER</tt>, or similar command.  By marking a
 	game <tt>PRIVATE</tt> in this way, only invited players should be able
-	to get into the game.
+	to get into the game. Drop the privacyWord parameter to make an already
+	private game (such as a <tt>SOLITAIRE</tt> game) public.
 
 <A name=RULE></a>
 <p><dt><b><tt>RULE <i>rule</i>...</tt></b><dd>

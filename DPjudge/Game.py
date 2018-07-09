@@ -1,4 +1,4 @@
-import os, random, socket, textwrap, urllib, glob, re, shutil
+import os, random, socket, textwrap, glob, re, shutil
 from codecs import open
 
 import host
@@ -817,7 +817,7 @@ class Game:
 				else:
 					try:
 						self.delay = int(word[1])
-						if not (0 < self.delay < 73): raise
+						if not (0 < self.delay < 72): raise
 					except: error += ['BAD DELAY COUNT: ' + word[1]]
 			else:
 				found = 0
@@ -888,8 +888,9 @@ class Game:
 				self.groups = word[1].upper().split('|')
 			elif upword in ('TEAM', 'TEAMS'):
 				self.teams += [x.upper().split('-') for x in word[1:]]
-			elif upword == 'PRIVATE':
-				if len(word) == 2: self.private = word[1].upper()
+			elif upword in ('PRIVATE', 'PRIVACY'):
+				if len(word) == 1: self.private = ''
+				elif len(word) == 2: self.private = word[1].upper()
 				else: error += ['INVALID PRIVATE STATEMENT']
 			elif upword in ('RULE', 'RULES'):
 				for rule in word[1:]:
@@ -2052,18 +2053,23 @@ class Game:
 		#	-----------------------------------------------
 		#	Mail results (tailored if BLIND) to all parties
 		#	-----------------------------------------------
-		if 'BLIND' in self.rules:
-			for power in [x.name for x in self.powers] + ['MASTER']:
+		for power in self.powers + [self.gm] * ('IGNORE_RESULTS'
+		not in self.rules):
+			if power.controller(): pass
+			elif 'BLIND' in self.rules:
 				lastLine, hide, text = '', 0, []
 				for line in body:
 					if line.startswith('SHOW'):
 						showTo = line.split()[1:]
-						hide = showTo and power not in showTo
+						hide = showTo and power.name not in showTo
 					elif not hide and (line[:-1] or lastLine):
 						lastLine = line[:-1]
 						text += [line]
-				self.mailPress(None, [power], ''.join(text), subject = subject)
-		else: self.mailPress(None, ['All!'], ''.join(body), subject = subject)
+				self.mailPress(None, [power.name], ''.join(text),
+					subject = subject)
+			else:
+				self.mailPress(None, [power.name], ''.join(body),
+					subject = subject)
 		#	----------------------
 		#	File into results file
 		#	----------------------
@@ -2182,9 +2188,9 @@ class Game:
 		#	Parameters are:
 		#		sender    - the Power sending press (None OK if subject)
 		#		readers   -	a [list] of recipient NAMES (strings), which
-		#					will be ['All'] for a broadcast or ['All!'];
+		#					will be ['All'] for a broadcast or ['All!']
+		#					for results (to go to all AND any MONITORS);.
 		#					ignored if self.tester is set (see below)
-		#					for results (to go to all AND any MONITORS).
 		#		message   - a STRING of the lines forming the message
 		#		claimFrom - a NAME (string) of Power to claim as sender
 		#		claimTo   - as readers above; who to claim message is to
@@ -2234,13 +2240,17 @@ class Game:
 				if reader == 'MASTER':
 					if (sender and sender.name != reader and readers == ['All']
 					and 'PRESS_MASTER' in self.rules): continue
+					if (not sender and readers == ['All!']
+					and 'IGNORE_RESULTS' in self.rules): continue
 					power, email = reader, self.master[1]
 				elif reader == 'JUDGEKEEPER':
 					fromSender = sender and sender.name != reader
-					if (not sender or fromSender) and readers in (['All'], ['All!']): continue
+					if (not sender or fromSender) and readers in (['All'],
+						['All!']): continue
 					power, email = reader, host.judgekeeper
 				else:
-					if reader.type == 'MONITOR' and readers != ['All!']: continue
+					if reader.type == 'MONITOR' and readers != ['All!']:
+						continue
 					power = reader.name
 					if reader.address: email = reader.address[0]
 					else:
@@ -3038,7 +3048,8 @@ class Game:
 		coord = self.command.get(otherUnit, 'no unit at dest').split()
 		supportTarget = 'F ' + coord[-1][:3]
 		if (coord[0] == 'S' and	'cut' not in self.result[otherUnit]
-		and	'void' not in self.result[otherUnit]
+		and	'void' not in self.result[otherUnit] 
+		and	'illegal' not in self.result[otherUnit] 
 		#	EXCEPTION A: CANNOT CUT SUPPORT YOU YOURSELF ARE GIVING
 		and (self.unitOwner(unit) is not self.unitOwner(otherUnit)
 			#	EXCEPTION TO EXCEPTION A: THE FRIENDLY_FIRE RULE
@@ -3048,7 +3059,8 @@ class Game:
 		and coord[-1][:3] != unit[2:5]
 		#	EXCEPTION C: OR (IF CONVOYED) FOR OR AGAINST ANY CONVOYING FLEET
 		and	(len(word) == 2 or self.command.get(supportTarget, 'H')[0] != 'C'
-			or 'void' in self.result.get(supportTarget, []))
+			or 'void' in self.result.get(supportTarget, [])
+			or 'illegal' in self.result.get(supportTarget, []))
 		#	EXCEPTION D: OR IF THE MOVE IS ACROSS A SPECIAL ('*') BOUNDARY
 		and (unit[2:], word[-1]) not in self.map.abutRules.get('*', [])
 		#	EXCEPTION E: OR IF THE MOVE IS UNSUPPORTED AND ACROSS A STRAIT (~)
@@ -3597,7 +3609,8 @@ class Game:
 			(centers, yearCenters.count(centers)) == (max(yearCenters), 1))):
 				victors += [power]
 				func = None
-		if victors and not self.preview: self.finish([x.name for x in victors])
+		if victors and not self.preview:
+			self.declareEnd([x.name for x in victors])
 		list = self.powerSizes(victors, func)
 		if not victors: list += self.checkVotes(1)
 		return list
@@ -4193,33 +4206,37 @@ class Game:
 			except: return []
 		votes = filter(None, votes)
 		if not votes or len(votes) > min(votes): return []
-		if len(votes) == 1 or 'NO_DIAS' not in self.rules:
-			self.proposal = ['DIAS']
-		else:
+		if len(votes) == 1 or 'NO_DIAS' in self.rules:
 			self.proposal = ['NO_DIAS']
+		else:
+			self.proposal = ['DIAS']
 		return self.endByAgreement(append)
 	#	----------------------------------------------------------------------
 	def endByAgreement(self, append = 0):
-		lines = not append and [x + '\n' for x in self.mapperHeader()] or []
 		result = self.proposal[0]
 		if result in ('DIAS', 'NO_DIAS'):
 			victors = sorted([x.name for x in self.powers
 				if (x.vote > '0', x.canVote())[result == 'DIAS']])
 		else: victors = [result]
+		lines = self.declareEnd(victors, 1, append)
+		self.fileSummary()
+		return lines
+	#	----------------------------------------------------------------------
+	def declareEnd(self, victors, agreed = 0, append = 0):
+		lines = not append and [x + '\n' for x in self.mapperHeader()] or []
 		drawers = map(self.anglify, victors)
 		drawers[-1] += '.'
 		if len(drawers) > 1:
 			drawers[-1] = 'and ' + drawers[-1]
 			drawers = ', '[len(drawers) < 3:].join(drawers)
 		else: drawers = drawers[0]
-		info = ("Game '%s' has been " % self.name +
-			('conceded to ', 'declared a draw between ')[len(victors) > 1])
+		info = ("Game '%s' has been " % self.name + (agreed and
+			('conceded to ', 'declared a draw between ')[len(victors) > 1] or 'won by '))
 		lines += [x + '\n' for x in textwrap.wrap(info + drawers, 75)]
 		lines += ['\nCongratulations on a game well-played.\n']
 		if not append:
 			self.mailResults(lines, "Diplomacy game '%s' complete" % self.name)
 		self.finish(victors)
-		self.fileSummary()
 		if append: return lines
 	#	----------------------------------------------------------------------
 	def finish(self, victors):
@@ -4383,7 +4400,7 @@ class Game:
 		#	--------------------------------------------------------------
 		#	Set deadline to the nearest :00, :20, or :40 of the given hour
 		#	--------------------------------------------------------------
-		if not realtime: when = when.trunc('20M')
+		if not realtime: when = when.trunc()
 		#	----------------------------------------------------------------
 		#	Now set the deadline unless it's already set beyond the new time
 		#	----------------------------------------------------------------
@@ -4844,13 +4861,14 @@ class Game:
 		if after > 0 or self.deadlineExpired():
 			text += 'Missed Deadline:  %s\n' % self.timeFormat()
 		elif after == 0:
-			for power in late: self.mailPress(None, [power],
-				"%s\n\nThe deadline for '%s' is approaching and\n"
-				'orders for %s have not yet been submitted.\n\n'
-				'The pending deadline is %s.\n' %
-				('\n'.join(self.mapperHeader()),
-				self.name, self.anglify(power), self.timeFormat()),
-				subject = 'Diplomacy deadline reminder')
+			for power, vassals in self.divideLate(late):
+				self.mailPress(None, [power],
+					"%s\n\nThe deadline for '%s' is approaching and\n"
+					'orders for %s have not yet been submitted.\n\n'
+					'The pending deadline is %s.\n' %
+					('\n'.join(self.mapperHeader()),
+					self.name, vassals, self.timeFormat()),
+					subject = 'Diplomacy deadline reminder')
 			return
 		#	-----------------------------------------
 		#	Other notices (late, beyond grace and cd)
@@ -4921,14 +4939,19 @@ class Game:
 				'either ' * resign * cd + 'summarily dismissed' * resign +
 				'\nor ' * resign * cd + 'declared in civil disorder' * cd))
 		else: penalty = ''
-		#	-----------------------------------
-		#	Send late notice.  If it's the same
-		#	calendar hour as the deadline, send
+		#	------------------------------------
+		#	Send late notice.  If it's less than
+		#	three hours after the deadline, send
 		#	it to everyone.  Otherwise, only
 		#	bother the late powers.
-		#	-----------------------------------
+		#	------------------------------------
 		hide = 'HIDE_LATE_POWERS' in self.rules
-		if now[:10] != self.deadline[:10]:
+		if now >= self.deadline.offset('160M'):
+			#	----------------------------------
+			#	Only inform the Master once a day.
+			#	----------------------------------
+			if now >= now.offset('20M').offset('-1D').next(
+				self.deadline).offset('3H'): receivers = omnis = []
 			receivers += [x.name for x in self.powers
 				if not (x.isDummy() or x.isResigned()) and
 				(x.name in late or [1 for y in x.vassals() if y.name in late])]
@@ -4952,6 +4975,31 @@ class Game:
 				'One or more powers are late.')[not what] + penalty + '\n',
 				subject = ('Diplomacy deadline missed', 'Diplomacy late notice')
 				[not mate], private = 1)
+	#	----------------------------------------------------------------------
+	def divideLate(self, late):
+		slackers = []
+		for p in self.powers:
+			if p.isDummy(): continue
+			slack = []
+			for v in [p] + p.vassals(all=1):
+				if v.name in late:
+					slack += [self.anglify(v.name)]
+					late = [x for x in late if x != v.name]
+			if len(slack) > 1:
+				slackers += [(p.name, ', '.join(slack[:-1]) +
+					' and ' + slack[-1])]
+			elif slack: slackers += [(p.name, slack[0])]
+			if not late: return slackers
+		slack = []
+		if self.gm.name in late:
+			slack += ['the Master']
+			late = [x for x in late if x != self.gm.name]
+		slack += [self.anglify(x) for x in late]
+		if len(slack) > 1:
+			slackers += [(self.gm.name, ', '.join(slack[:-1]) +
+				' and ' + slack[-1])]
+		else: slackers += [(self.gm.name, slack[0])]
+		return slackers
 	#	----------------------------------------------------------------------
 	def shortList(self):
 		variant = self.map.name
@@ -5175,32 +5223,14 @@ class Game:
 	def updateState(self):
 		# return # TEMP! BUT AS OF NEW YEARS MOMENT 2007, APACHE SEEMS WAY SICK
 		if not host.dppdURL: return
+		from variants.dppd.DPPD import RemoteDPPD
 		self.collectState()
 		header = '|'.join([x + ':' + (y or '') for x,y in self.state.items()])
 		if self.outcome: result = '|RESULT:' + ':'.join(self.outcome)
 		else: result = ''
 		header = ('JUDGE:%s|GAME:%s%s|' %
 			(host.dpjudgeID, self.name, result) + header)
-		dict = urllib.urlencode({'status': header.encode('latin-1')})
-		for dppdURL in host.dppdURL.split(','):
-			#   -----------------------------------------------------
-			#	I don't know why, but we need to use the query string
-			#	instead of a POST.  Something to look into.
-			#   -----------------------------------------------------
-			query = '?&'['?' in dppdURL]
-			page = urllib.urlopen(dppdURL + query + 'page=update&' + dict)
-			#   ----------------------------------------------------------
-			#   Check for an error report and raise an exception if that's
-			#   the case. Double check the DPPD code for any print
-			#   statements, as it may reveal the whole game status info to
-			#   the unsuspecting player.
-			#   ----------------------------------------------------------
-			lines = page.readlines()
-			page.close()
-			if [1 for x in lines if 'DPjudge Error' in x]:
-				#	Make absolutely sure it doesn't print the game status!!
-				print '\n'.join(lines) 
-				raise DPPDStatusUpdateFailed
+		RemoteDPPD().updateGame(header)
 	#	----------------------------------------------------------------------
 	def changeStatus(self, status):
 		self.status[1] = status

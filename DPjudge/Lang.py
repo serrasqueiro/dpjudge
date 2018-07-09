@@ -614,6 +614,7 @@ class EnglishLang(Lang):
 			'CLEAR': '*',	'UNUSED': '',	'PENDING': 'V',
 			'ORDER': '',	'ORDERS': '',	'RESULT': '',	'RESULTS': '',
 			'IS': '',		'WILL': '',
+			'SET': 'SET',	'GET': 'GET',
 			'IN': '',		'AT': '',		'ON': '',		'TO': '-',
 			'OF': '\\',		'FROM': '<',	'\' S': '',		'WITH': '?',
 			'VIA': '~',		'THROUGH': '~',	'OVER': '~',	'BY': '~',
