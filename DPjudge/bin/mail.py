@@ -345,7 +345,7 @@ class Procmail:
 		self.respond(copyTo = observers + self.game.map.notify)
 	#	----------------------------------------------------------------------
 	def handleEmail(self, powerName, password):
-		game, orders = self.game, []
+		game, orders, proposal = self.game, [], None
 		if game.phase in ('FORMING', 'COMPLETED'): rules = ['PUBLIC_PRESS']
 		else: rules = game.rules
 		official = press = deathnote = vote = None
