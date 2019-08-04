@@ -474,13 +474,16 @@ Calendar.prototype.IsLeapYear=IsLeapYear;
 
 function FormatDate(pDate)
 {
+	var Day = ('0'+pDate).slice(-2);
+	var Month = ('0'+(this.Month+1)).slice(-2);
+	var Year = ('000'+(this.Year)).slice(-4);
 	if (this.Format.toUpperCase()=="DDMMYYYY")
-		return (pDate+DateSeparator+(this.Month+1)+DateSeparator+this.Year);
+		return (Day+DateSeparator+Month+DateSeparator+Year);
 	else if (this.Format.toUpperCase()=="DDMMMYYYY")
-		return (pDate+DateSeparator+this.GetMonthName(false)+DateSeparator+this.Year);
+		return (Day+DateSeparator+this.GetMonthName(false)+DateSeparator+Year);
 	else if (this.Format.toUpperCase()=="MMDDYYYY")
-		return ((this.Month+1)+DateSeparator+pDate+DateSeparator+this.Year);
+		return (Month+DateSeparator+Day+DateSeparator+Year);
 	else if (this.Format.toUpperCase()=="MMMDDYYYY")
-		return (this.GetMonthName(false)+DateSeparator+pDate+DateSeparator+this.Year);			
+		return (this.GetMonthName(false)+DateSeparator+Day+DateSeparator+Year);			
 }
 Calendar.prototype.FormatDate=FormatDate;

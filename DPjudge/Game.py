@@ -672,7 +672,9 @@ class Game:
 	#	----------------------------------------------------------------------
 	def getTime(self, when = None, npar = 0):
 		if not npar:
-			try: npar = len(when)/2-1
+			try:
+				if when.isdigit(): npar = len(when)/2-1
+				else: return Time(self.zone, when)
 			except: return Time(self.zone, when)
 		return Time(self.zone, when, npar)
 	#	----------------------------------------------------------------------
@@ -1043,7 +1045,7 @@ class Game:
 		#	------
 		#	Orders
 		#	------
-		if upword in ('BUILD', 'REMOVE', 'RETREAT'):
+		if upword in ('BUILD', 'REMOVE', 'RETREAT', 'DISBAND'):
 			if not includeFlags & 1: return -1
 			power.adjust += [' '.join(word).upper()]
 			return 1
@@ -1360,31 +1362,42 @@ class Game:
 			kind, goodOrders, builds, sites = None, [], 0, []
 			for order in power.adjust:
 				word = order.split()
-				if not kind:
-					kind = word[0]
-					if (kind == 'RETREAT') == (self.phaseType == 'A'):
+				if self.phaseType == 'A':
+					if word[0] not in ['BUILD', 'REMOVE']:
 						error += ['IMPROPER ORDER TYPE: ' + order]
 						continue
-					if kind == 'BUILD':
+					if not kind:
+						kind = word[0][2]
+					elif kind != word[0][2]:
+						error += ['MIXED ORDER TYPES: %s, ' % type + word[0]]
+						continue
+					if kind == 'I':
+						if order == 'BUILD WAIVED': continue
 						sites = self.buildSites(power)
 						need = self.buildLimit(power, sites)
-				elif kind != word[0]:
-					error += ['MIXED ORDER TYPES: %s, ' % type + word[0]]
-					continue
-				if order == 'BUILD WAIVED': continue
+				else:
+					if word[0] not in ['RETREAT', 'DISBAND']:
+						error += ['IMPROPER ORDER TYPE: ' + order]
+						continue
+					kind = word[0][2]
+					if kind == 'T' and word[3:4] == ['DISBAND']:
+						kind, word[0] = 'S', word[3]
+						del word[3]
 				if len(word) < 3:
-					error += ['BAD ADJUSTMENT ORDER: ' + order]
+					error += ['BAD %s ORDER: ' % word[0] + order]
 					continue
 				if [1 for x in goodOrders if word[2][:3] == x[2][:3]]:
 					error += ['DUPLICATE ORDER: ' + order]
 				else: goodOrders += [word]
 				unit = ' '.join(word[1:3])
-				if kind == 'RETREAT':
-					if (word[3:] != ['DISBAND']
-					and (len(word) != 5 or word[3] != '-'
-					or word[4] not in power.retreats.get(unit, []))):
+				if kind == 'T':
+					if (len(word) != 5 or word[3] != '-'
+					or word[4] not in power.retreats.get(unit, [])):
 						error += ['BAD RETREAT FOR %s: ' % power.name + order]
-				elif kind == 'REMOVE':
+				elif kind == 'S':
+					if len(word) != 3 or unit not in power.retreats:
+						error += ['BAD DISBAND FOR %s: ' % power.name + order]
+				elif kind == 'M':
 					if unit not in power.units or len(word) > 3:
 						error += ['BAD REMOVE FOR %s: ' % power.name + order]
 				elif (not self.map.isValidUnit(unit)
@@ -1902,10 +1915,10 @@ class Game:
 							shows = [x for x in shows if x not in controllers]
 							if shows:
 								lines += ['SHOW ' + ' '.join(shows)]
-								lines += [powerName + self.anglify(unit) + '.']
+								lines += [powerName + self.anglify(unit, power) + '.']
 							shows = controllers
 						lines += ['SHOW ' + ' '.join(shows)]
-					lines += [powerName + self.anglify(unit) +
+					lines += [powerName + self.anglify(unit, power) +
 						(option and (' can retreat to ' +
 						' or '.join(map(self.anglify, option))) or '') + '.']
 				if 'BLIND' in self.rules and not playing: lines += ['SHOW']
@@ -2442,7 +2455,7 @@ class Game:
 				#	-----------------------------------------------------
 				if cd or power.goner:
 					if 'CD_RETREATS' not in self.rules or power.goner:
-						power.adjust, power.cd = ['RETREAT %s DISBAND' % x
+						power.adjust, power.cd = ['DISBAND ' + x
 							for x in power.retreats], 1
 					continue
 			elif power.movesSubmitted() or cd: continue
@@ -2721,7 +2734,7 @@ class Game:
 			rlines = file.readlines()
 			file.close()
 		else: rlines = None
-		self.roll = includeFlags & 4 and 2 or 1
+		self.roll = roll = includeFlags & 4 and 2 or 1
 		preview, self.preview = self.preview, 0
 		self.tester += '@'
 		if self.phase == 'FORMING':
@@ -2769,6 +2782,7 @@ class Game:
 				# Load the phase, including orders.
 				self.loadStatus('status.' + unphase + '.0',
 					includeFlags | 1)
+				self.roll = roll
 				# Capture the deadline and processed time.
 				rlines = self.parseProcessed(rlines, unphase)
 				# Process the phase, suppressing any mail
@@ -2803,6 +2817,7 @@ class Game:
 		# Load the last phase
 		prephase = self.phase
 		self.loadStatus('status.' + unphase + '.0', includeFlags)
+		self.roll = roll
 		self.await = self.await > 1 and self.await
 		if self.phase != 'COMPLETED':
 			self.changeStatus(('active', 'waiting')[waiting])
@@ -3324,37 +3339,63 @@ class Game:
 				self.noEffect([unbouncer, []], nextSite)
 				if nextSite in self.combat: self.unbounce(nextSite)
 	#	----------------------------------------------------------------------
-	def anglify(self, words, power = None, retreating = 0):
-		text, tokens, word = [], words.split(), ''
+	def anglify(self, words, power = None):
+		classic = 'PROGRESSIVE' not in self.rules
+		text, tokens, word, retreating = [], words.split(), '', 0
 		if 'C' in tokens:
 			num, unit = tokens.index('C') + 1, 'AF'[tokens[0] == 'A']
 			if tokens[num] != unit: tokens.insert(num, unit)
 		for num in range(len(tokens)):
 			building, removing = word[:5] == 'Build', word == 'Removes'
 			word = tokens[num]
-			if word == 'RETREAT': continue
+			if word == 'RETREAT':
+				retreating = 1
+				if classic: continue
+				word = 'Retreats'
+			elif word == 'DISBAND':
+				retreating = 1
+				if classic:
+					tokens = tokens[:num] + tokens[num+1:] + tokens[num:num+1]
+					word = tokens[num]
+				else: word = 'Disbands'
 			if word == 'A':
 				if building: word = 'an army in'
 				elif removing: word = 'the army in'
-				elif retreating: word = 'army in'
-				else: word = 'Army'
+				elif retreating or power: word = 'Army'
+				else:
+					word = 'The'
+					help = self.unitOwner(' '.join(tokens[num:num + 2]))
+					if help:
+						word += ' ' + self.anglify(self.map.ownWord[help.name])
+					word += ' army in'
 			elif word == 'F':
 				if building: word = 'a fleet in'
-				elif removing or retreating:
-					word = 'the fleet in'[retreating * 4:]
-					if self.map.areatype(tokens[-1]) == 'WATER': word += ' the'
-				else: word = 'Fleet'
+				elif removing:
+					word = 'the fleet in'
+				elif retreating or power: word = 'Fleet'
+				else:
+					word = 'The'
+					help = self.unitOwner(' '.join(tokens[num:num + 2]))
+					if help:
+						word += ' ' + self.anglify(self.map.ownWord[help.name])
+					word += ' fleet in'
+				if ' ' in word and self.map.areatype(tokens[-1]) == 'WATER':
+					word += ' the'
 			elif word == 'BUILD':
 				word = 'Builds'[:6 - (tokens[num + 1][0] in 'WH')]
 			elif word in ('C', 'S'):
 				word = ('SUPPORT', 'CONVOY')[word == 'C']
+				if not classic: word = word.lower() + 's'
 				if 'SHOW_PHANTOM' not in self.rules:
 					help = self.unitOwner(' '.join(tokens[num + 1:num + 3]))
 					if help not in (None, power):
 						word += ' ' + self.anglify(self.map.ownWord[help.name])
+			elif word == 'H':
+				word = 'HOLD'
+				if not classic: word = word.lower() + 's'
 			else:
 				try: word = {'REMOVE': 'Removes', 'WAIVED': 'waived',
-				 			'HIDDEN': 'hidden',	'-': '->', 'H': 'HOLD'}[word]
+				 			'HIDDEN': 'hidden',	'-': '->'}[word]
 				except:
 					for loc in [y for y, x in self.map.locName.items()
 						if x == word] + [y.strip('_')
@@ -3394,27 +3435,25 @@ class Game:
 		self.loadMap(map.name, map.trial, lastPhase = lastPhase)
 		map = self.map
 		for power, unit in [(x,y) for x in self.powers for y in x.units]:
-			desc = (self.anglify(map.ownWord[power.name]) + ' ' +
-					self.anglify(unit, retreating = 1))
 			if map.isValidUnit(unit):
-				if unit in shut: text += ['The %s is no longer trapped.' % desc]
+				if unit in shut: text += [self.anglify(unit) + ' is no longer trapped.']
 				continue
 			terrain = map.areatype(unit[2:])
 			if ('HIBERNATE' in self.rules
 			and (terrain == 'SHUT' or unit[0] + terrain == 'FLAND')):
 				if unit not in shut:
-					text += ['The %s is trapped and must HOLD.' % desc]
+					text += [self.anglify(unit) + ' is trapped and must HOLD.']
 				continue
 			power.units.remove(unit)
 			if terrain == 'LAND' and 'UNITS_ADAPT' in self.rules:
 				power.units.append('A' + unit[1:])
-				text += ['The %s becomes an army.' % desc]
+				text += [self.anglify(unit) + ' becomes an army.']
 			elif terrain == 'WATER' and 'UNITS_ADAPT' in self.rules:
 				power.units.append('F' + unit[1:])
-				text += ['The %s becomes a fleet.' % desc]
+				text += [self.anglify(unit) + ' becomes a fleet.']
 			elif terrain == 'COAST': unit = 'F ' + [x for x in map.locs
 					if x.startswith(unit[2:5])][-1]
-			else: text += ['The %s is destroyed.' % desc]
+			else: text += [self.anglify(unit) + ' is destroyed.']
 		return text and ([
 			'The following units were affected by geographic changes:\n'] +
 			text + [''])
@@ -3664,11 +3703,9 @@ class Game:
 						and [z.name] != power.ceo and z.ceo != power.ceo]
 				if other:
 					if not other[0].isDummy() or other[0].ceo:
+						list += [self.anglify(unit) +
+							' with torn allegiance was destroyed.']
 						power.units.remove(unit)
-						list += ['The %s %s '
-								'with torn allegiance was destroyed.' %
-								(self.anglify(self.map.ownWord[power.name]),
-								self.anglify(unit, retreating=1))]
 		return list
 	#	----------------------------------------------------------------------
 	def powerSizes(self, victors, func = None):
@@ -3757,6 +3794,7 @@ class Game:
 			'  (%s.%s)' % (self.name, self.phaseAbbr(phase)) * (not form))
 	#	----------------------------------------------------------------------
 	def moveResults(self):
+		classic = 'PROGRESSIVE' not in self.rules
 		self.determineOrders()
 		self.addCoasts()
 		if not self.preview and not self.preMoveUpdate(): return
@@ -3768,9 +3806,11 @@ class Game:
 			#	Make any hidden units appear.
 			#	---------------------------------------
 			if 'BLIND' not in rules:
+				found = 'FOUND'
+				if not classic: found = found.lower()
 				for unit in power.hides:
-					list += ['%s: %s FOUND.' %
-						(self.anglify(power.name), self.anglify(unit))]
+					list += ['%s: %s %s.' %
+						(self.anglify(power.name), self.anglify(unit), found)]
 			for unit in power.units:
 				#	--------------------------------------------------------
 				#	Decide order annotations to be listed in the results.
@@ -3849,10 +3889,8 @@ class Game:
 			dis = ['\nThe following units were dislodged:\n']
 			for power in self.powers:
 				for unit in filter(self.dislodged.has_key, power.units):
+					text = desc = self.anglify(unit)
 					power.units.remove(unit)
-					text = desc = ('The %s ' %
-						self.anglify(self.map.ownWord[power.name]) +
-						self.anglify(unit, retreating = 1))
 					toWhere, line = power.retreats.get(unit), ''
 					if ('NO_RETREAT' in rules or power.isDummy()
 					and not power.ceo and ('IMMOBILE_DUMMIES' in rules
@@ -4007,7 +4045,7 @@ class Game:
 				power.cd = 1
 				if 'CD_RETREATS' not in self.rules:
 					power.adjust = [
-						'RETREAT %s DISBAND' % x for x in power.retreats]
+						'DISBAND ' + x for x in power.retreats]
 					continue
 				taken = []
 				for unit in power.retreats:
@@ -4024,7 +4062,7 @@ class Game:
 						where = random.choice(options)
 						taken.append(where)
 						power.adjust += ['RETREAT %s - ' % unit + where]
-					else: power.adjust += ['RETREAT %s DISBAND' % unit]
+					else: power.adjust += ['DISBAND ' + unit]
 		#self.save(1)
 		#	-------------------------------------------------
 		#	Determine multiple retreats to the same location.
@@ -4810,18 +4848,19 @@ class Game:
 				self.error.append('TWO ORDERS FOR RETREATING UNIT: ' + unit)
 				continue
 			if len(word) == 3 and word[2] == 'D':
-				word[2] = 'DISBAND'
+				word = ['DISBAND'] + word[:2]
 			elif len(word) == 4 and word[2] in 'R-':
 				word[2] = '-'
 				if word[3] not in power.retreats[unit]:
 					self.error.append('INVALID RETREAT DESTINATION: ' +
 						' '.join(word))
 					continue
+				word = ['RETREAT'] + word
 			else:
 				self.error.append('BAD RETREAT ORDER: ' + ' '.join(word))
 				continue
 			retreated += [unit]
-			adjust += ['RETREAT ' + ' '.join(word)]
+			adjust += [' '.join(word)]
 		if not self.error:
 			if len(retreated) == len(power.retreats):
 				power.adjust, power.cd = adjust, 0
@@ -5075,18 +5114,18 @@ class Game:
 			full = len(nope) > 8
 			date = self.getTime(nope, 3 + 2 * full) 
 			line = 'for %s' % date.format(4 - 4 * full)
-		for who in (1, 0):
-			who = ([x.name for x in self.powers
-				if x.type != 'MONITOR'] *
-				('SILENT_ABSENCES' not in self.rules),
-				['MASTER'])[who]
+		for who, limit in ((['MASTER'], 0), (([x.name for x in self.powers
+				if x.type != 'MONITOR'], 0),
+				([power.name] * (power.name != 'MASTER'), 1))
+				['SILENT_ABSENCES' in self.rules]):
 			if who: self.mailPress(None, who,
 				"An absence for game '%s' has been entered\n"
 				'%s%s.\n' % (self.name, ('by %s ' %
 				(power.name == 'MASTER' and 'the Master'
 				or self.anglify(power.name))) *
 				('HIDE_ABSENTEES' not in self.rules
-				or 'MASTER' in who), line),
+				or 'MASTER' in who), line) +
+				'(This notice is only sent to you and the Master.)\n' * limit,
 				subject = 'Diplomacy absences notice')
 			self.save()
 	#	----------------------------------------------------------------------

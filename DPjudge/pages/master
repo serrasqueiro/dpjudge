@@ -1,5 +1,5 @@
 <:
-import codecs
+import codecs, shutil
 open = codecs.open
 
 #	--------------------------------------------------------
@@ -179,14 +179,15 @@ def ruleBoxes(variant = None, mapName = None):
 #
 #	----------------------------------------------------------------------
 def changeMasterButton():
-	if page.game.deadline: com = ''
-	else: com = '//'
 	page.write("""
 		<script>
 		function prepSubmit()
 		{
-			%sdocument.master.date.value=document.master.deadline.value;
-			if(typeof document.master.resign != "undefined")
+			document.master['powerData' +
+				document.master.powerChoice.options[lastPower].value].value =
+				document.master.powerData.value;
+			if (document.master.private.value == '') document.master.privacy.selectedIndex = 0;
+			if (typeof document.master.resign != "undefined")
 			{
 				document.master.dataresigned.value = document.master.resign.checked;
 				document.master.datadummy.value = document.master.dummy.checked;
@@ -207,7 +208,7 @@ def changeMasterButton():
 		class=inputSubmit value="Submit Updates">
 		</td></tr>
 		</form>
-		""" % (com, '!'[page.pwdFlag > 3:]))
+		""" % ('!'[page.pwdFlag > 3:]))
 
 #	----------------------------------------------------------------------
 #	This function parses the status file, only outputting the lines that 
@@ -219,7 +220,7 @@ def outStatusFile():
 		'WAIT', 'SKIP', 'NEED')
 	implemented = ('DESC', 'DESCRIPTION', 'GAME', 'DEADLINE', 'ZONE', 'NAME',
 		'MORPH', 'MASTER', 'RULE', 'RULES', 'PRIVATE', 'MAP', 'TRIAL',
-		'ADDRESS', 'PASSWORD', 'PROCESSED')
+		'ADDRESS', 'PASSWORD', 'PROCESSED', 'TIMING')
 	modal = ('DESC', 'DESCRIPTION', 'NAME', 'MORPH')
 	noshow, mode = hidden + implemented, None
 	file, outfile = open(page.game.file('status'), encoding='latin-1'), ''
@@ -233,6 +234,8 @@ def outStatusFile():
 			if len(word) == 1 and word[0] in modal: mode = word[0]
 			if word[0] not in noshow: outfile += line
 	file.close()
+	if page.game.timing: outfile += 'TIMING ' + ' '.join(
+		map(' '.join, page.game.timing.items())) + '\n'
 	return outfile
 #	----------------------------------------------------------------------
 #
@@ -262,6 +265,38 @@ def showMasterCommands():
 		if page.pwdFlag > 3: page.write('<td>'
 			'<input type=submit class=inputSubmit value=Set></td>')
 		page.write('</tr></form>')
+		if game.deadline:
+			page.write('<form method=post name=deadline><tr>')
+			hideBack('Update')
+			page.apprise('action', 'deadline')
+			page.apprise('stamp', stamp)
+			page.apprise('curVariant', game.__class__.__name__[:-4].lower())
+			dead = game.deadline
+			dead = '%s-%s-%s' % (dead[4:6], dead[6:8], dead[:4])
+			page.apprise('date', dead)
+			page.write("""
+				<script language="javascript" type="text/javascript"
+				src="<URL>/scripts/dater"></script>
+				<script>
+				function deadSubmit() {
+					document.deadline.date.value = document.deadline.dead.value;
+					document.deadline.submit();
+				}
+				</script>
+				<tr><td class=bodycopy><b>Deadline:</b></td>
+				<td class="bodycopy" align=right><input disabled name=dead
+				id=dead type=text size=12 class=numberBox value="%s">
+				<a onmouseover=this.style.cursor='pointer'
+				onclick="NewCal('dead','mmddyyyy',false,24)">
+				<img border=0 src=<URL>/images/cal.gif></a>
+				<b>at</b> <input type=text size=3 maxlength=2 name=hour
+				class=numberBox value=%s><b>:</b><input class=numberBox
+				type=text size=3 maxlength=2 name=minute value=%s> <b>%s</b>
+				""" % (dead, game.deadline[8:10], game.deadline[-2:],
+				TimeZone(game.zone).tzname()))
+			if page.pwdFlag > 3: page.write('<td><input type=button ' +
+				'class=inputSubmit onClick=deadSubmit() value=Set></td>')
+			page.write('</tr></form>')
 	if page.pwdFlag < 4: return
 	#	-------------------------
 	#	Buttons and links Section
@@ -426,39 +461,39 @@ def showStatusFile():
 		<tr><td class="bodycopy" align="left"
 		valign=top><b>Description:</b></td>
 		<td colspan=2 class="bodycopy"><textarea class=bodycopy name=desc
-		rows=%d cols=80>%s</textarea></tr>
+		rows=%d cols=80>%s</textarea></td></tr>
 		""" % (len(desc) / 80 + 2, desc))
 	desc = ' '.join(game.origin)
 	page.write("""
 		<tr><td class="bodycopy" align="left" nowrap
 		valign=top><b>Origin of Name:</b></td>
 		<td colspan=2 class="bodycopy"><textarea class=bodycopy name=origin
-		rows=%d cols=80>%s</textarea></tr>
-		<tr><td class="bodycopy" nowrap align="left">
+		rows=%d cols=80>%s</textarea></td></tr>
 		""" % (len(desc) / 80 + 2, desc))
-	if game.deadline:
-		dead = game.deadline
-		dead = '%s-%s-%s' % (dead[4:6], dead[6:8], dead[:4])
-		page.write("""
-			<script language="javascript" type="text/javascript"
-			src="<URL>/scripts/dater"></script>
-			<b>Deadline:</b></td>
-			""")
-		page.apprise('date', dead)
-		page.write("""
-			<td class="bodycopy" colspan=2><b><input disabled name=deadline
-			id=deadline type=text size=12 value="%s" class=bodycopy>
-			<a onmouseover=this.style.cursor='pointer'
-			onclick="NewCal('deadline','mmddyyyy',false,24)">
-			<img border=0 src=<URL>/images/cal.gif></a>
-			at <input type=text size=2 maxlength=2 name=hour
-			class=bodycopy value=%s>:<input class=bodycopy
-			type=text size=2 maxlength=2 name=minute value=%s>
-			Time Zone:&nbsp;
-			""" % (dead, game.deadline[8:10],
-				game.deadline[-2:]))
-	else: page.write("<b>Time Zone:</b></td><td>")
-	page.write("<select class=bodycopy name=zone>")
+	at = game.timing.pop('AT', ':').split(':')
+	try:
+		move = [x for x in game.timing if not 'MOVEMENT'.find(x)][0]
+		move = game.timing.pop(move)
+	except: move = game.timing.get('NEXT', '3D')
+	page.write("""
+		<tr><td class="bodycopy" nowrap align="left">
+		<b>Timing:</b></td><td colspan=2 class="bodycopy">
+		<b>Days</b>&nbsp;<input type=text size=9 maxlength=7 name=tdays
+		class=numberBox value=%s>
+		<b>at</b>&nbsp;<input type=text size=3 maxlength=2 name=thour
+		class=numberBox value=%s><b>:</b><input class=numberBox
+		type=text size=3 maxlength=2 name=tminute value=%s><br />
+		""" % (game.timing.pop('DAYS', '-MTWTF-'), at[0], at[1]))
+	addPeriod('Next', game.timing.pop('NEXT', '1D'), 'tnext')
+	addPeriod('Move', move, 'tmove')
+	addPeriod('Warn', game.timing.pop('WARN', ''), 'twarn')
+	addPeriod('Grace', game.timing.pop('GRACE', ''), 'tgrace')
+	page.write('</td></tr>')
+	page.write("""
+		<tr><td class="bodycopy" nowrap align="left">
+		<b>Time Zone:</b></td><td colspan=2>
+		<select class=bodycopy name=zone>
+		""")
 	if not game.zone: game.setTimeZone()
 	zoneGroups = TimeZone().groupZones()
 	for label in sorted(zoneGroups.keys(),
@@ -563,6 +598,19 @@ def addOption(option):
 #
 #
 #	----------------------------------------------------------------------
+def addPeriod(label, period, name):
+	length, unit = period[:-1], period[-1:] or 'D'
+	page.write("""
+		%s<input type=text size=2 name=%s class=numberBox
+		value=%s><select class=numberbox name=%ss>
+		""" % (label and '<b>%s</b>&nbsp;' % (label) or '', name, length, name))
+	for opt in 'MHDW': page.write('<option%s>%s</option>' %
+		(' selected' * (opt == unit), opt))
+	page.write('</select>')
+#	----------------------------------------------------------------------
+#
+#
+#	----------------------------------------------------------------------
 def addRoll(phase, forward = 0):
 	game = page.game
 	if page.pwdFlag < 4 + (not forward and game.phase == 'COMPLETED'
@@ -632,11 +680,11 @@ def powerData():
 		function fillPower()
 		{
 			powerData[lastPower] = document.master.powerData.value;
-			lastPower = document.master.powerChoice.options.selectedIndex;
-			document.master.powerData.value = powerData[lastPower];
 			document.master['powerData' +
 				document.master.powerChoice.options[lastPower].value].value =
 				powerData[lastPower];
+			lastPower = document.master.powerChoice.options.selectedIndex;
+			document.master.powerData.value = powerData[lastPower];
 			document.master.resign.checked = isGone[lastPower];
 			document.master.resign.disabled = isGone[lastPower]
 				&& isUnplayed[lastPower];
@@ -734,10 +782,10 @@ def updateMaster():
 			the game status file was updated by another participant in the
 			game or by the DPjudge.  Your changes were not made.
 			""")
+	action = page.setdefault('action')
 	#	----------
 	#	Roll phase
 	#	----------
-	action = page.setdefault('action')
 	if action in ('rollback', 'rollforward'):
 		flags = page.has('restore') * 1 + page.has('full') * 2 + (
 			game.jk.password and page.password == game.jk.password) * 16
@@ -777,22 +825,38 @@ def updateMaster():
 		try: gameMode.remove('unlisted')
 		except: gameMode += ['unlisted']
 	games.update(game.name, gameMode, page.curVariant)
-	if action in ('state', 'form'):
+	deathnote = None
+	if 'date' in vars(page) and 'NO_DEADLINE' not in game.rules:
+		dead = map(int, page.date.split('-'))
+		try: deadline = ('%d%02d%02d' % (dead[2], dead[0], dead[1]) +
+			'%02d%02d' % (int(page.hour), int(page.minute)))
+		except: return reportUpdateError('Invalid deadline time')
+		game.deadline = game.getTime(deadline)
+		deathnote = ('The deadline for game ' +
+			"'%s' has been changed by the Master.\n" % game.name)
+	if action in ('state', 'form', 'deadline'):
+		if deathnote:
+			game.save()
+			deathnote += 'The deadline is now %s.\n' % game.timeFormat()
+			game.mailPress(None, ['All!'], deathnote,
+				subject = 'Diplomacy deadline changed')
 		return finished()
-	for guy in ('desc', 'origin', 'zone', 'status', 'morphs'):
-		if guy not in vars(page): vars(page)[guy] = ''
 	#	------------------
 	#	Update status file
 	#	------------------
 	#	NEW STUFF (TO BE USED TO UPDATE WITH)
+	for guy in ('desc', 'origin', 'zone', 'status', 'morphs'):
+		if guy not in vars(page): vars(page)[guy] = ''
 	if 'map' in vars(page):
 		trial = page.map[:1] == '*'
 		game.map = Map(page.map[trial:], trial)
-	if page.password == game.gm.password: page.password = page.newPassword
-	game.gm.password = page.newPassword
-	if page.privacy == 'public': game.private = None
-	elif page.private: game.private = page.private
-	else: return reportUpdateError('Empty privacy password')
+	if 'newPassword' in vars(page):
+		if page.password == game.gm.password: page.password = page.newPassword
+		game.gm.password = page.newPassword
+	if 'privacy' in vars(page):
+		if page.privacy == 'public': game.private = None
+		elif page.private: game.private = page.private
+		else: return reportUpdateError('Empty privacy password')
 	if page.desc: game.desc = page.desc.split('\n')
 	else: game.desc = []
 	if page.origin: game.origin = page.origin.split('\n')
@@ -822,33 +886,63 @@ def updateMaster():
 	if game.error:
 		return reportUpdateError('<br>'.join(
 			['The following rule violations were detected:'] + game.error))
-	deathnote = None
 	if page.zone != (game.zone and game.zone.__repr__() or 'GMT'):
 		game.setTimeZone(page.zone)
-		deathnote = ('The Master has changed the time zone for ' +
-			"game '%s' to %s (%s).\n" % (
+		deathnote = ('The time zone for game ' +
+			"'%s' has been changed to %s (%s).\n" % (
 			game.name, page.zone, TimeZone(page.zone).gmtlabel()))
-	if ('NO_DEADLINE' in game.rules
-	or game.phase in ('FORMING', 'COMPLETED')): game.deadline = None
-	elif 'date' in vars(page):
-		dead = map(int, page.date.split('-'))
-		try: deadline = ('%d%02d%02d' % (dead[2], dead[0], dead[1]) +
-			'%02d%02d' % (int(page.hour), int(page.minute)))
-		except: return reportUpdateError('Invalid deadline time')
-		if deadline != game.deadline:
-			game.deadline = game.getTime(deadline)
-			if not deathnote:
-				deathnote = ('The deadline for game ' +
-					"'%s' has been changed by the Master.\n" % game.name)
-	else:
+	if game.phase in ('FORMING', 'COMPLETED'):
+		game.deadline = None
+	elif 'NO_DEADLINE' in game.rules:
+		if game.deadline:
+			game.deadline = None
+			deathnote = ("There's no deadline anymore because of " +
+				'the NO_DEADLINE rule.\n')
+	elif not game.deadline:
 		game.setDeadline()
 		deathnote = 'The NO_DEADLINE rule has been removed.\n'
-	if deathnote and game.deadline:
-		deathnote += 'The deadline is now %s.\n' % game.timeFormat()
+	if deathnote:
+		if game.deadline:
+			deathnote += 'The deadline is now %s.\n' % game.timeFormat()
 		game.mailPress(None, ['All!'], deathnote,
 			subject = 'Diplomacy deadline changed')
-	game.timing = None	# it will be in page.extra if given....
-	game.terrain, game.teams = {}, []	# ditto for these guys
+	game.timing = {}
+	if 'tdays' in vars(page):
+		days = page.tdays.strip()
+		if days:
+			if days == days.lower(): days = days.upper()
+			if days != '-MTWTF-': game.timing['DAYS'] = days
+	hour = minute = ''
+	if 'thour' in vars(page): hour = page.thour.strip()
+	if 'tminute' in vars(page): minute = page.tminute.strip()
+	if hour or minute:
+		if hour: hour = ('0' + hour)[-2:]
+		if minute: minute = ('0' + minute)[-2:]
+		game.timing['AT'] = hour + ':' + minute
+	if 'tnext' in vars(page):
+		next = page.tnext.strip()
+		if next:
+			next += page.tnexts
+			if next != '1D': game.timing['NEXT'] = next
+	else: next = ''
+	if 'tmove' in vars(page):
+		move = page.tmove.strip()
+		if move:
+			move += page.tmoves
+			if (move != '3D' or next and next != '1D') and next != move:
+				game.timing['MOVE'] = move
+			else: move = ''
+	else: move = ''
+	if next == '1D' and not move: game.timing['NEXT'] = next
+	if 'twarn' in vars(page):
+		warn = page.twarn.strip()
+		if warn:
+			game.timing['WARN'] = warn + page.twarns
+	if 'tgrace' in vars(page):
+		grace = page.tgrace.strip()
+		if grace:
+			game.timing['GRACE'] = grace + page.tgraces
+	game.terrain, game.teams = {}, []	# it will be in page.extra if given....
 	if game.tester and game.tester[-1:] == '!':
 		game.tester = ''	# and this one?
 	if 'corrupt' in game.status: return finished()
@@ -856,6 +950,7 @@ def updateMaster():
 	# Write the file
 	#--------------
 	try:
+		shutil.copyfile(statFile, game.file('status.backup'))
 		file = open(statFile, 'w')
 		temp = unicode(`game`, 'latin-1').strip()
 		file.write(temp.encode('latin-1'))
@@ -890,8 +985,13 @@ def updateMaster():
 	except: pass
 	gamename = game.name
 	game.updateState()
-	checkErrors()
-	finished()
+	untouched = ''
+	if checkErrors():
+		untouched = 'No '
+		try: shutil.copyfile(game.file('status.backup'), statFile)
+		except: untouched = ''
+	finished(untouched + 'Update Made')
+	if untouched: return
 	####################################################
 	### Now that we've updated the file, let's look at
 	### specific functionality that would require re-
@@ -969,5 +1069,6 @@ def checkErrors():
 			""")
 		map(page.write, page.game.map.error)
 		page.write('</pre></td></tr>')
+	return statuserror
 #	----------------------------------------------------------------------
 :>

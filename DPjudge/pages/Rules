@@ -200,6 +200,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option>POWER_CHOICE</option>
 <option>PRESS_MASTER</option>
 <option>PREVIEW</option>
+<option>PROGRESSIVE</option>
 <option>PROPOSE_DIAS</option>
 <option>PROXY_OK</option>
 <option>PUBLIC_PRESS</option>
@@ -1496,6 +1497,12 @@ the course of the game.
 	Games using this rule will reject as illegal any use
 	of the <tt>SET&nbsp;ABSENCE</tt> command
 	by anyone other than the Master.
+<!-- RULE END -->
+
+<a name=PROGRESSIVE></a><p><dt><b><tt>PROGRESSIVE</tt></b><dd>
+<!-- RULE PROGRESSIVE -->
+	Using proper grammar and no all-caps in results messages. Might not be
+	compatible with existing third-party software.
 <!-- RULE END -->
 
 <a name=PREVIEW></a><p><dt><b><tt>PREVIEW</tt></b><dd>

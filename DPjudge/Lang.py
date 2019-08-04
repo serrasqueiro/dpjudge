@@ -122,8 +122,9 @@ class Lang:
 			return
 		normed = self.normAlias(alias)
 		if not normed: return
-		if normed in self.aliases: return self.error.append(
-			'DUPLICATE MAP ALIAS: ' + alias)
+		if normed in self.aliases:
+			return loc != self.aliases[normed] and self.error.append(
+				'DUPLICATE MAP ALIAS: ' + alias)
 		elif normed != loc and normed in self.aliases.values():
 			return self.error.append(
 				'ALIAS MATCHES OTHER LOCATION ABBREVIATION: ' + alias)

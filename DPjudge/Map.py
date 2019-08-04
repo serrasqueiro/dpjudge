@@ -841,6 +841,7 @@ class Map:
 				reinit = upword in self.inhabits
 				if reinit: self.inhabits.remove(upword)
 				self.addHomes(upword, word[1:], reinit)
+		self.lang.error = langError + self.lang.error
 	#	----------------------------------------------------------------------
 	def addHomes(self, power, homes, reinit):
 		if reinit:

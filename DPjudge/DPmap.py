@@ -230,7 +230,7 @@ class PostScriptMap:
 			#	-------------------------------------------------------
 			#	Adjustment orders (modify the units list for final map)
 			#	-------------------------------------------------------
-			if word[1] in ('DEFAULTS,', 'REMOVES', 'BUILDS', 'BUILD'):
+			if word[1] in ('DEFAULTS,', 'REMOVES', 'REMOVE', 'BUILDS', 'BUILD'):
 				if power not in self.adj: self.adj[power] = [
 				self.translate(word[1][0] == 'B' and 'BUILDS' or 'REMOVES',
 				0, ['BUILDS', 'REMOVES'])]
@@ -277,7 +277,37 @@ class PostScriptMap:
 				self.outFile.write(temp.encode('latin-1'))
 				self.adj[power] += [unit + ' ' + where['nick']]
 				continue
-				
+
+			#	--------------------------
+			#	Retreat and disband orders
+			#	--------------------------
+			if word[1] == 'RETREATS':
+				del word[1]
+			elif word[1] == 'DISBANDS':
+				unit = word[2][0]
+				where = ' '.join(word[3:])
+				where = self.lookup(where.split('.')[0])
+				temp = ''
+				draw = 1
+				if split % 2 == 0:
+					for pow in self.units:
+						if self.findUnit(pow, where, split == 2):
+							draw = 0; break
+				piece = self.addUnit(power, unit, where, 'A')
+				where = piece['loc']
+				if draw:
+					if powerDecl:
+						temp += powerDecl + '\n'
+						powerDecl = None
+					temp += ('\t%d %d Draw%s\n' % (where['x'], where['y'],
+						('Fleet', 'Army')[unit == 'A']))
+				temp += ('\t%d %d DisbandUnit\n' % (where['x'], where['y'])) 
+				piece['state'] = 'X'
+				self.outFile.write(temp.encode('latin-1'))
+				self.retreats += ['%-10s %c %.3s DISBAND' %
+					(power, unit, where['nick'])]
+				continue
+
 			#	------------------------------------------------------
 			#	Determine if the order failed (presence of annotation)
 			#	------------------------------------------------------
@@ -291,7 +321,8 @@ class PostScriptMap:
 			#	Find the order type (and where in the order it is given)
 			#	Detect the word 'NO' from "NO ORDER PROCESSED" ==> HOLD.
 			#	--------------------------------------------------------
-			for order in (	'SUPPORT', 'CONVOY', '->', 'HOLD', 'DISBAND', 'NO',
+			for order in (	'SUPPORT', 'SUPPORTS', 'CONVOY', 'CONVOYS',
+							'->', 'HOLD', 'HOLDS', 'DISBAND', 'NO',
 							'ARRIVES', 'DEPARTS', 'FOUND', 'LOST'	):
 				try: orderWord = word.index(order)
 				except: continue

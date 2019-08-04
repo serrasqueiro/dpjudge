@@ -982,6 +982,10 @@ class Procmail:
 			'or your DPPD status does\nnot allow you to use the %s command.'
 			'\n\nVisit the DPPD at %s\nfor assistance' %
 			(self.email, command, host.dppdURL.split(',')[0]))
+		elif self.dppd[0][:1] == 'P': self.respond(
+			'Please finish your DPPD registration first\n'
+			'by following the instructions written in\nthe mail sent to\n'
+			'your e-mail address (%s)' % self.email)
 		self.ip, self.dppd = self.email, '|'.join(self.dppd.split())
 	#	----------------------------------------------------------------------
 	def updatePlayer(self, power, password, command, word):

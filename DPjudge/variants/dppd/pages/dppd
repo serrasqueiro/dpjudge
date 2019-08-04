@@ -152,16 +152,8 @@ def leftside():
 					onclick=setPage('Email') class="inputSubmit2"><br>
 				<input type="button" value="Change Password"
 					onclick=setPage('Passchange') class="inputSubmit2"><br>
-				<P class=bodycopy><hr><p class=bodycopy>
-				New Game Name:<br>
-				<input type=text class=inputBox name=newGame>
-				New Game Password:<br>
-				<input type=password class=inputBox name=newPass>
-				Variant:<br><select class=bodycopy name=newVariant>
-				<option value=STANDARD selected>STANDARD</option>
-				<option value=PAYOLA>PAYOLA</option>
-				<option value=XTALBALL>XTALBALL</option></select><br>
-				<input type=button class=inputSubmit2 value="Start New Game" onclick=setPage('Login')>
+				<input type="button" value="Start New Game"
+					onclick=setPage('GameCreate') class="inputSubmit2"><br>
 				%s
 				<!--
 				<P class=bodycopy align=center>

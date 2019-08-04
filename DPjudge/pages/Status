@@ -645,19 +645,21 @@ page.include('functions')
 	the possible locations to which the unit may legally retreat.
 
 <a name=RETREAT></a>
-<p><dt><b><tt>RETREAT <i>unit retreatOrder</i></tt></b><dd>
-	Specifies a retreat order to be issued.  A <tt><i>retreatOrder</i></tt> 
-	is either "<tt>DISBAND</tt>" or has the form
-	"<tt>-&nbsp;<i>location</i></tt>".
+<p><dt><b><tt>RETREAT <i>unit </i>-&nbsp;<i>location</i></tt></b><dd>
+	Specifies a retreat order to be issued.
+
+<a name=DISBAND></a>
+<p><dt><b><tt>DISBAND <i>unit</i></tt></b><dd>
+	Specifies a disband order to be issued in a retreat phase.
 
 <a name=BUILD></a>
 <p><dt><b><tt>BUILD <i>unit</i></tt> -or-<br>
 		  <tt>BUILD WAIVED</tt></b><dd>
-	Specifies a build order to be issued.
+	Specifies a build order to be issued in an adjustment phase.
 
 <a name=REMOVE></a>
 <p><dt><b><tt>REMOVE <i>unit</i></tt></b><dd>
-	Specifies a remove order to be issued.
+	Specifies a remove order to be issued in an adjustment phase.
 
 <a name=MSG></a>
 <p><dt><b><tt>MSG <i>message</i></tt></b><dd>

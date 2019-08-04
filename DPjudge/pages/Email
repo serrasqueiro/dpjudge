@@ -1073,7 +1073,7 @@ does, but tell me anyway.</b><br>
 	put into the game's status file as part of its initial content.  The
 	various lines that are understood are all described in
 	<a href=<URL>?page=Status>the status file directive list</a> and in the
-	description of <a href=rules.html>the DPjudge rule set</a>.
+	description of <a href=<URL>?page=Rules>the DPjudge rule set</a>.
 	Exceptions are the <tt>GAME</tt>, <tt>MASTER</tt>, and <tt>PHASE</tt>
 	status file directives, which will be silently ignored -- these cannot
 	be added to the status file by the <tt>CREATE</tt> command.

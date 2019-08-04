@@ -52,44 +52,6 @@ player = login()
 <:
 id, status = player['id'], player.get('status', 'ACTIVE')
 header()
-if 'newGame' in vars(page):
-	if 'newPass' not in vars(page):
-		page.write("""
-		<script>
-		alert('Password cannot be blank.');
-		window.history.back();
-		</script>""")
-	if 'email' not in vars(page):
-		page.dppd.db.execute("""
-		SELECT address
-		  FROM Email
-		 WHERE status = 'PRIMARY'
-		   AND userId = %s""", [id])
-		email = page.dppd.db.fetchone()['address']
-	else: email = page.email
-	back = 'window.history.back();'
-	text = Status().createGame(email, 
-		page.newGame, page.newPass, page.newVariant)
-	if not text:
-		text = 'Your game has been created.'
-		updateText = 'JUDGE:%s|GAME:%s|ZONE:GMT|' % (
-			host.dpjudgeID, page.newGame) + \
-			'STATUS:%s:PREPARATION|MASTER:%s:#%s' % (
-			page.newVariant, page.newPass, id)
-		page.dppd.updateGame(updateText)
-		back = 'document.newGame.submit();'
-	else:
-		text = '\\n'.join(text)
-	page.write("""
-	<form name=newGame method=post>
-	<input type=hidden name=variant value=dppd>
-	<input type=hidden name=id value=%s>
-	<input type=hidden name=password value=\'%s\'>
-	<input type=hidden name=page value='Login'>
-	<script>
-	alert("%s");
-	%s
-	</script>""" % (id, page.password.encode('latin-1'), text, back))
 :>
 
 	<tr valign=top bgcolor="#CCCCCC">

@@ -216,9 +216,7 @@ class StandardGame(Game):
 			if self.phaseType in 'MA': 
 				if sum([len(x.units) for x in self.powers]) == 1:
 					power = [x for x in self.powers if x.units][0]
-					text += ['The %s %s is the Last Man Standing.' %
-						(self.anglify(self.map.ownWord[power.name]),
-						self.anglify(power.units[0], retreating = 1))]
+					text += [self.anglify(power.units[0]) + ' is the Last Man Standing.']
 					self.finish([power.name])
 					return
 		return Game.checkPhase(self, text)

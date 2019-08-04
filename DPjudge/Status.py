@@ -109,7 +109,8 @@ class Status:
 			if 'forming' in x or 'preparation' in x]) > host.createLimit:
 				error += ['CREATE is disabled -- ' + \
 					'too many games currently need players']
-		dppd = RemoteDPPD().whois(email) or '|%s|' % email + email
+		dppd = '|'.join(RemoteDPPD().whois(email).split()) or '|%s|' % email + email
+		if dppd[0] == 'P': error += 'DPPD registration still pending'
 		error += self.checkGameName(gameName)
 		if '<' in gamePass or '>' in gamePass:
 			error += ["Password cannot contain '<' or '>'"]

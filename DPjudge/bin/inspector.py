@@ -145,6 +145,8 @@ class Inspector(object):
 		if game:
 			self.vars[self.makeVar(game.name, 'G')] = self
 			self.vars['game'] = game
+			self.vars['master'] = self.master
+			self.vars['jk'] = self.jk
 			for power in game and game.powers or []:
 				self.vars[self.makeVar(power.name, 'P')] = power
 			self.makeGlob(self.vars, depth + 1)

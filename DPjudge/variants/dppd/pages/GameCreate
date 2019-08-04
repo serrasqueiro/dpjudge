@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<:
+page.include('stylesheet')
+page.include('functions')
+page.include('dppd')
+
+player = login()
+:>
+
+<title>DPPD: <:=player['name']:></title>
+</head>
+<body bgcolor="#ffffff">
+
+<:
+id, status = player['id'], player.get('status', 'ACTIVE')
+header()
+:>
+
+	<tr valign=top bgcolor="#CCCCCC">
+		<td nowrap align=center class="grey"><b>DPjudge Resources</b></td>
+	<td width=100% colspan=2 align=center class="grey"><b>Start New Game</b></td>
+	</tr>
+	<tr valign=top>
+		<td align=center valign=top class=bodycopy>
+<:
+leftside()
+:>
+		</td>
+		<td align=center class=bodycopy>
+<:
+if 'newGame' in vars(page):
+	page.newGame = page.newGame.lower()
+	if 'newPass' not in vars(page):
+		page.write("""
+		<script>
+		alert('Password cannot be blank.');
+		window.history.back();
+		</script>""")
+	else: page.newPass = page.newPass.lower()
+	if 'email' not in vars(page) or not page.email:
+		page.dppd.db.execute("""
+		SELECT address
+		  FROM Email
+		 WHERE status = 'PRIMARY'
+		   AND userId = %s""", [id])
+		email = page.dppd.db.fetchone()['address']
+	else: email = page.email
+	back = 'window.history.back();'
+	text = Status().createGame(email, 
+		page.newGame, page.newPass, page.newVariant)
+	if not text:
+		text = 'Your game has been created.'
+		updateText = 'JUDGE:%s|GAME:%s|ZONE:GMT|' % (
+			host.dpjudgeID, page.newGame) + \
+			'STATUS:%s:PREPARATION|MASTER:%s:#%s' % (
+			page.newVariant, page.newPass, id)
+		page.dppd.updateGame(updateText)
+		back = 'document.newGame.submit();'
+	else:
+		text = '\\n'.join(text)
+	page.write("""
+	<form name=newGame method=post>
+	<input type=hidden name=variant value=dppd>
+	<input type=hidden name=id value=%s>
+	<input type=hidden name=password value=\'%s\'>
+	<input type=hidden name=page value='Login'>
+	<script>
+	alert("%s");
+	%s
+	</script>""" % (id, page.password.encode('latin-1'), text, back))
+else:
+	page.write(
+	"""
+	<form name=form method=post>
+	  <table border=0>
+	    <input type=hidden name=page value=GameCreate>
+        <input type=hidden name=variant value=dppd>
+	    <input type=hidden name=id value=%d>
+	    <input type=hidden name=password value=%s>
+	    <tr>
+	      <td align=right class=bodycopy><b>1.</b></td>
+	      <td align=right class=bodycopy><b>Enter New Game Name:</b></td>
+	      <td><input type=text class=inputBox name=newGame></td>
+	    </tr>
+	    <tr>
+	      <td align=right class=bodycopy><b>2.</b></td>
+	      <td align=right class=bodycopy><b>Enter Game Password:</b></td>
+	      <td><input type=password class=inputBox name=newPass></td>
+	    </tr>
+	    <tr>
+	      <td align=left class=bodycopy><b>3.</b></td>
+	      <td align=right class=bodycopy><b>Select Variant:</b></td>
+	      <td><select class=bodycopy name=newVariant>
+			<option value=STANDARD selected>STANDARD</option>
+			<option value=PAYOLA>PAYOLA</option>
+			<option value=XTALBALL>XTALBALL</option>
+		  </select></td>
+	    </tr>
+	    <tr>
+	      <td align=center colspan=3><input class=inputSubmit2 type=button name=ok onclick=document.form.submit() value="Start"></td>
+	    </tr>
+	</table>
+	</form>
+	""" % (id, page.password))
+footer()	
+:>
+

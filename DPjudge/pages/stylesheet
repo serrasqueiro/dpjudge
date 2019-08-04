@@ -140,5 +140,11 @@ A:VISITED {
 	font-family:		verdana;
 	font-size:			10px
 }
+.numberBox {
+	font-family:		verdana;
+	font-size:			10px;
+	color:				#000000;
+	text-align:			center
+}
 //-->
 </style>

@@ -569,6 +569,7 @@ class Power:
 	#	----------------------------------------------------------------------
 	def showLines(self, unit, notes = [], line = None):
 		game = self.game
+		classic = not 'PROGRESSIVE' in game.rules
 		list, lost, found, gone, came, all = [], [], [], [], [], []
 		#list += ['# Show ' + unit]
 		if game.phaseType == 'M':
@@ -608,12 +609,14 @@ class Power:
 			if not who: continue
 			list += ['SHOW ' + ' '.join(who),
 				fmt % (game.anglify(self.name) + ':',
-				game.anglify((unit, there)[what[0] in 'FA'], self), what)]
+				game.anglify((unit, there)[what[0] in 'FA'], self),
+				classic and what or what.lower())]
 		if line: list += ['SHOW ' + ' '.join(all), line]
 		for who, what in ((gone, 'DEPARTS'), (lost, 'LOST')):
 			if not who: continue
 			list += ['SHOW ' + ' '.join(who),
 				fmt % (game.anglify(self.name) + ':',
-				game.anglify((unit, there)[what[0] in 'FA'], self), what)]
+				game.anglify((unit, there)[what[0] in 'FA'], self),
+				classic and what or what.lower())]
 		return list
 	#	----------------------------------------------------------------------

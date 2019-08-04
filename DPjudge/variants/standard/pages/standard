@@ -25,9 +25,10 @@ def showOrderList():
 		for who in vassals:
 			unorders += ['[' + who.name + ']', '(NMR)']
 	else:
-		if active: unorders += power.units or ['(NMR)']
+		if active: unorders += [x + ' ' for x in power.units] or ['(NMR)']
 		for who in vassals:
-			unorders += ['[' + who.name + ']'] + (who.units or ['(NMR)'])
+			unorders += ['[' + who.name + ']'] + (
+				[x + ' ' for x in who.units] or ['(NMR)'])
 	unorders = '\n'.join(unorders)
 	if 'orders' in vars(page): orders = page.orders.split('\n')
 	else:
@@ -45,13 +46,13 @@ def showOrderList():
 				if power.orders:
 					orders += [u + ' ' + o for u, o in power.orders.items()] + [
 						u for u in power.units if u not in power.orders]
-				else: orders += power.units or ['(NMR)']
+				else: orders += [x + ' ' for x in power.units] or ['(NMR)']
 			for who in vassals:
 				orders += ['[' + who.name + ']']
 				if who.orders:
 					orders += [u + ' ' + o for u, o in who.orders.items()] + [
 						u for u in who.units if u not in who.orders]
-				else: orders += who.units or ['(NMR)']
+				else: orders += [x + ' ' for x in who.units] or ['(NMR)']
 	rows = max(len(orders), 19) + 1
 	orders = '\n'.join(orders)
 	page.write("""

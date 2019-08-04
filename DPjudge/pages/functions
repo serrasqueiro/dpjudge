@@ -365,7 +365,7 @@ def showAbsenceInfo():
 		<input type=hidden name=startdate value="">
 		<td class="bodycopy" align=right nowrap>
 		<b><input disabled name=startabsence
-		id=startabsence type=text size=12 value="" class=bodycopy
+		id=startabsence type=text size=12 value="" class=numberBox
 		onchange="ChangeAbsence('start')">
 		<a onmouseover=this.style.cursor='pointer'
 		onclick="PickAbsence('start')">
@@ -373,7 +373,7 @@ def showAbsenceInfo():
 		to
 		<input type=hidden name=enddate value="">
 		<b><input disabled name=endabsence
-		id=endabsence type=text size=12 value="" class=bodycopy
+		id=endabsence type=text size=12 value="" class=numberBox
 		onchange="ChangeAbsence('end')">
 		<a onmouseover=this.style.cursor='pointer'
 		onclick="PickAbsence('end')">
@@ -464,7 +464,7 @@ def showGameInfo():
 	if game.master and len(game.master) == 3: showInfo('GameMaster',
 		'<a href="mailto:%s?Subject=Game %s">%s</a>' %
 		(game.master[1], game.name, game.master[2].replace('_', ' ')))
-	variant, timing = [], ''
+	variant = []
 	if game.map.name != game.variant:
 		text = game.map.name.title()
 		if os.path.isfile('<PKG>/pages/about_' + text.lower()):
@@ -486,13 +486,8 @@ def showGameInfo():
 		rules and '<tt><b>' + ', '.join(rules) + '.' or '')
 	if game.phase == 'FORMING': showInfo('Time Zone', game.zone.__repr__() or 'UTC (GMT)')
 	if 'NO_DEADLINE' not in game.rules:
-		if game.phase == 'COMPLETED' and 'NOT' in game.timing:
-			del game.timing['NOT']
-		for key, val in game.timing.items(): timing += ' ' + key + ' ' + val
-		timing = timing or 'NEXT 1D MOVE 3D'
-		if 'DAYS' not in game.timing: timing += ' DAYS -MTWTF-'
 		showInfo('<a target=rules href=<URL>?page=Status#timing>Timing</a>',
-				'<tt><b>' + timing)
+				'<tt><b>' + normTiming())
 	if game.avail: showInfo('Last Accessed',
 		Time('GMT', os.path.getmtime(game.file('status'))).cformat())
 	if game.start: showInfo('Game Started', game.start)
@@ -1131,6 +1126,9 @@ def showRetreatList():
 				for choice in choices:
 					ord = 'RETREAT %s ' % unit + choice
 					select = ' selected' * (ord in who.adjust)
+					if choice[0] == 'D':
+						ord = choice + ' ' + unit
+						select = select or ' selected' * (ord in who.adjust)
 					if who is not power: ord = '[%s] ' % who.name + ord
 					if select or page.pwdFlag > 2: page.write(
 						'<option value=\'%s\'%s>%s</option>' %
@@ -1566,7 +1564,7 @@ def normDate(date):
 #	----------------------------------------------------------------------
 def powerInfo():
 	game = page.game
-	variant, timing = [], ''
+	variant = []
 	if game.map.name != game.variant:
 		text = game.map.name.title()
 		if os.path.isfile('<PKG>/pages/about_' + text.lower()):
@@ -1585,14 +1583,22 @@ def powerInfo():
 	rules = rules and '<tt><b>' + ', '.join(rules) + '.' or ''
 	showInfo('<a target=rules href=<URL>?page=Rules>Rules</a>', rules, 1)
 	if 'NO_DEADLINE' not in game.rules:
-		if game.phase == 'COMPLETED' and 'NOT' in game.timing:
-			del game.timing['NOT']
-		for key, val in game.timing.items(): timing += ' ' + key + ' ' + val
-		timing = timing or 'NEXT 1D MOVE 3D'
-		if 'DAYS' not in game.timing: timing += ' DAYS -MTWTF-'
 		showInfo('<a target=rules href=<URL>?page=Status#timing>Timing</a>',
-				'<tt><b>' + timing, 1)
+				'<tt><b>' + normTiming(), 1)
 	page.write('<tr><td colspan=3><HR></td></tr>')
+#	----------------------------------------------------------------------
+def normTiming():
+	game = page.game
+	timing = ''
+	if game.phase == 'COMPLETED' and 'NOT' in game.timing:
+		del game.timing['NOT']
+	for key, val in game.timing.items(): timing += ' ' + key + ' ' + val
+	if 'NEXT' not in game.timing:
+		timing += ' NEXT 1D'
+	if not [1 for x in game.timing if not 'MOVEMENT'.find(x)]:
+		timing += ' MOVE ' + game.timing.get('NEXT', '3D')
+	if 'DAYS' not in game.timing: timing += ' DAYS -MTWTF-'
+	return timing
 #	----------------------------------------------------------------------
 def pouchLinks():
 	page.write("""
