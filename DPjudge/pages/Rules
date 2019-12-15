@@ -170,6 +170,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option>LIST_UNORDERED</option>
 <option>LIST_WAITERS</option>
 <option>MOBILIZE</option>
+<option>MULTI_COAST_PORTAGE</option>
 <option>MUST_ORDER</option>
 <option>MUTE_OBSERVERS</option>
 <option value=MYOPIC>MYOPIC (BLIND)</option>
@@ -219,6 +220,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option>SMART_CD</option>
 <option>SOLITAIRE</option>
 <option>START_MASTER</option>
+<option>SUBMIT_MASTER</option>
 <option>TEAM_VICTORY</option>
 <option>TEXT_INPUT</option>
 <option>TORN_ALLEGIANCE</option>
@@ -323,7 +325,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <!-- RULE END -->
 
 <a name=SOLITAIRE></a><p><dt><b><tt>SOLITAIRE</tt></b></dt><dd>
-<!-- RULE SOLITAIRE +NO_DEADLINE +CD_DUMMIES +DEFAULT_UNORDERED +ALWAYS_WAIT +IGNORE_RESULTS -->
+<!-- RULE SOLITAIRE +SUBMIT_MASTER +NO_DEADLINE +CD_DUMMIES +DEFAULT_UNORDERED +ALWAYS_WAIT +IGNORE_RESULTS -->
 	A <tt>SOLITAIRE</tt> game is a game where all powers are dummies
 	controlled by the Master. This can be used to test a certain
 	scenario or to solve a puzzle on the Diplomacy board, such as
@@ -703,6 +705,13 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	<tt>DUMMY</tt> will not be eligible to receive any movement orders.
 	All such units may only be ordered to hold, support, or convoy.
 <!-- RULE END -->
+
+<a name=SUBMIT_MASTER></a><p><dt><b><tt>SUBMIT_MASTER</tt></b><dd>
+<!-- RULE SUBMIT_MASTER -->
+	This lets the Master edit and submit orders on the Master page.
+	Essential for <a href=#SOLITAIRE><tt>SOLITAIRE</tt></a> games, frowned upon in other
+	circumstances.
+<!-- RULE END -->
 </dl>
 		<a name="1.4"></a>
 <!-- RULE GROUP 4 Convoy -->
@@ -729,10 +738,29 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	coast of that province.
 	It's perfectly valid to convoy a fleet from one coast to another coast
 	of the same province using an army stationed in any adjacent province.
+	(See below for more information on convoys involving a multi-coast
+	province.)
+<!-- RULE END -->
+
+<a name=MULTI_COAST_PORTAGE></a><p><dt><b><tt>MULTI_COAST_PORTAGE</tt></b><dd>
+<!-- RULE MULTI_COAST_PORTAGE +PORTAGE_CONVOY -->
+	Limits PORTAGE_CONVOY to multi-coast provinces only. A fleet on one coast
+	of such a province can be portage convoyed to another coast of the same
+	province with the assistance of a single army in any of the neighboring
+	provinces. Notice that there's no need for the army to be in a coastal
+	province itself. The army simply provides the manpower required to execute
+	the convoy.<br>
 	Just as with orders that <i>support</i> fleets moving to
 	multi-coast provinces, (portage) convoy orders given to armies
 	may <i>not</i> specify any destination coast for the fleet being moved.
-	(Only the fleet's move order may specify its destination coast.)
+	(Only the fleet's move order may specify its destination coast.)<br>
+	As with any convoy the move can be blocked by an attack on the province
+	having equal or greater support. If this results in a dislodgement, the
+	fleet needs to retreat from the coast it started the turn on. In order for
+	another unit to support the move, the province needs to be written twice
+	(just as in the convoy order for the army), otherwise it will be
+	interpreted as a support to hold and thus fail. All this follows standard
+	practice.
 <!-- RULE END -->
 
 <a name=SAFE_CONVOYS></a><p><dt><b><tt>SAFE_CONVOYS</tt></b><dd>

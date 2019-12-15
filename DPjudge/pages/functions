@@ -12,6 +12,23 @@ open = codecs.open
 #	----------------------------------------------------------------------
 #	IndexPage
 #	----------------------------------------------------------------------
+def listVariants():
+	variants = {}
+	for dir in [x for x in os.listdir('<PKG>/variants')
+		if os.path.isdir('<PKG>/variants/' + x)]:
+		try: name = __import__('DPjudge.variants.' + dir,
+								globals(), locals(), dir).VARIANT
+		except: continue
+		variants[name.replace(' Diplomacy', '')] = dir
+	#	----------------------------------------------------------------
+	#	Make sure Standard Diplomacy is listed before any other variants
+	#	----------------------------------------------------------------
+	varNames = sorted(variants.keys())
+	if 'Standard' in varNames:
+		varNames.remove('Standard')
+		varNames.insert(0, 'Standard')
+	return [(x, variants[x]) for x in varNames]
+#	----------------------------------------------------------------------
 def listGames(variant = 'standard'):
 	gameDict, games, which = Status(), {}, 0
 	gameList = ('ACTIVE', 'COMPLETED', 'WAITING', 'FORMING')
@@ -184,10 +201,8 @@ def showMapButtons():
 #	----------------------------------------------------------------------
 def showResultsText(subject = None, align = 1):
 	game = page.game
-	if 'unlisted' in game.status and page.pwdFlag < 2: return
-	if page.pwdFlag > 1: power = page.power.name
-	elif 'BLIND' in game.rules: return
-	else: power = ''
+	if page.pwdFlag < 2 and ('unlisted' in game.status or
+		'BLIND' in game.rules): return
 	backList, forwardList = [], []
 	fileNames = []
 	if os.path.exists(game.file('results')):
@@ -195,7 +210,7 @@ def showResultsText(subject = None, align = 1):
 		file = open(game.file(fileNames[-1]), encoding='latin-1')
 		backList = [line[9:-1] for line in file if line[:8] == 'Subject:']
 		file.close()
-	if power == 'MASTER':
+	if page.pwdFlag > 1 and page.power.omniscient > 2:
 		if os.path.exists(game.file('results.0')):
 			fileNames += ['results.0']
 			file = open(game.file(fileNames[-1]), encoding='latin-1')
@@ -282,7 +297,7 @@ def showDocList(files, beforeEnd = 0):
 		</form>
 		""")
 #	----------------------------------------------------------------------
-def showAbsenceInfo():
+def showAbsence():
 	if ('terminated' in page.game.status or 'completed' in page.game.status
 	or 'NO_DEADLINE' in page.game.rules): return
 	page.write("""
@@ -290,13 +305,21 @@ def showAbsenceInfo():
 		src="<URL>/scripts/dater"></script>
 		<script>
 		function GetToday() {
-			var date = new Date();
-			return (date.getMonth()+1)+'-'+date.getDate()+'-'+date.getFullYear()
+			var date = new Date().toLocaleString("en-US", {timeZone: "%s"});
+			date = new Date(date);
+			return date.getFullYear()+'/'+(date.getMonth()+1)+'/'+date.getDate();
 		}
 		function NormDate(date) {
-			var dots = date.split('-')
-			return new Date().setFullYear(dots[2], dots[0]-1, dots[1]) /
+			var dots = date.split('/');
+			return new Date().setFullYear(dots[0], dots[1]-1, dots[2]) /
 				86400000;
+		}
+		function FormDate(date) {
+			var dt = new Date(date);
+			return dt.toLocaleString('en-US', {weekday: 'long'}) + ', ' +
+				dt.getDate() + ' ' +
+				dt.toLocaleString('en-US', {month: 'long'}) + ' ' +
+				dt.getFullYear();
 		}
 		function SubmitAbsence(start, end) {
 			var form = document.setabsence;
@@ -307,7 +330,7 @@ def showAbsenceInfo():
 		function PickAbsence(side) {
 			var id = side + 'absence';
 			document.getElementById(id).value = '';
-			NewCal(id, 'mmddyyyy', false, 24);
+			NewCal(id, 'yyyymmdd', false, 24, '%s');
 		}
 		function ChangeAbsence(side) {
 			var id = side + 'absence';
@@ -315,8 +338,8 @@ def showAbsenceInfo():
 			var date = dateText.value;
 			var today = GetToday();
 			if (NormDate(date) < NormDate(today)) {
-				alert('Choose a date on or after today (' + today + '), ' +
-					'or leave this blank and only fill in the ' +
+				alert('Choose a date on or after today (' + FormDate(today) +
+					'), or leave this blank and only fill in the ' +
 					(side == 'end' ? 'start' : 'end') + ' date.');
 				dateText.value = '';
 			}
@@ -325,41 +348,37 @@ def showAbsenceInfo():
 			var startDate = document.getElementById('startabsence').value;
 			var endDate = document.getElementById('endabsence').value;
 			var today = GetToday();
-			var isMaster = document.setabsence.power.value == 'MASTER';
+			var isMaster = document.setabsence.omniscient.value > 2;
 			if (startDate == '') {
 				if (endDate == '') {
-					alert('Pick a date first by clicking on one of the ' +
-						'calendar icons.');
-				} else if (!isMaster && (NormDate(endDate) -
-					NormDate(today) > 14)) {
-					alert('Only the Master can set an absence longer ' +
-						'than two weeks.');
-				} else if (confirm('Set absence to ' + endDate + '?')) {
+					alert('Pick a date first by clicking on one of the calendar icons.');
+				} else if (!isMaster && (NormDate(endDate) - NormDate(today) > 14)) {
+					alert('Only the Master can set an absence longer than two weeks.');
+				} else if (confirm('An absence will be set until ' + FormDate(endDate) + '.')) {
 					SubmitAbsence('', endDate);
 				}
 			} else if (endDate == '') {
-				if (confirm('Set absence for ' + startDate + '?')) {
+				if (confirm('An absence will be set for ' + FormDate(startDate) + '.')) {
 					SubmitAbsence(startDate, '');
 				}
 			} else if (NormDate(endDate) < NormDate(startDate)) {
-				alert('Choose an end date on or after ' + startDate + '.');
+				alert('Choose an end date on or after ' + FormDate(startDate) + '.');
 			} else if (NormDate(endDate) == NormDate(startDate)) {
-				if (confirm('Set absence for ' + startDate + '?')) {
+				if (confirm('An absence will be set on ' + FormDate(startDate) + '.')) {
 					SubmitAbsence(startDate, '');
 				}
-			} else if (!isMaster && (NormDate(endDate) -
-				NormDate(startDate) > 14)) {
-				alert('Only the Master can set an absence longer ' +
-					'than two weeks.');
-			} else if (confirm('Set absence from ' + startDate +
-				' to ' + endDate + '?')) {
+			} else if (!isMaster && (NormDate(endDate) - NormDate(startDate) > 14)) {
+				alert('Only the Master can set an absence longer than two weeks.');
+			} else if (confirm('An absence will be set from ' + FormDate(startDate) + ' to ' + FormDate(endDate) + '.')) {
 				SubmitAbsence(startDate, endDate);
 			}
 		}
 		</script>
 		<form method=post name=setabsence>
-		""")
-	hideBack('Status')
+		""" % (page.game.zone, page.game.zone))
+	hideBack('Update')
+	page.apprise('action', 'absent')
+	page.apprise('omniscient', page.power.omniscient)
 	page.write("""
 		<tr><td class="bodycopy"><b>Absence:</b></td>
 		<input type=hidden name=startdate value="">
@@ -382,6 +401,32 @@ def showAbsenceInfo():
 		class="inputSubmit">
 		</td></tr>
 		</form>
+		""")
+#	----------------------------------------------------------------------
+def showCommands():
+	game, power = page.game, page.power
+	if power.omniscient > 2: return showMasterCommands()
+	if power.isDummy(): return
+	#	-------------------------
+	#	Buttons and links Section
+	#	-------------------------
+	page.write("""
+		</table><hr><table width=100%>
+		<tr>
+		<form method=post name=change>
+		""")
+	#	--------------------------------
+	#	The table is more compact if the
+	#	<td> is inside the <form>?!...
+	#	--------------------------------
+	hideBack('Password')
+	page.write("""
+		<td nowrap valign=top>
+		<a href=# onclick="document.change.submit();return false;">
+		<font color=red>[Change Password]</a>
+		</td>
+		</form>
+		</tr>
 		""")
 #	----------------------------------------------------------------------
 #	LoginPage
@@ -410,11 +455,11 @@ def showLoginForm(showElimPowers = 0):
 		elif (game.phase in ('FORMING', 'COMPLETED') or power.centers
 		or showElimPowers): powers += [power.name]
 	if 'terminated' in game.status: powers = others = []
-	for who in sorted(powers) + sorted(others): page.write('<option%s>' %
-		(page.power and page.power.name == who and ' selected' or '') + who)
-	page.write(
-		"""
-		<option%s>MASTER</select>
+	for who in sorted(powers) + sorted(others) + [game.gm.name]:
+		page.write('<option%s>%s</option>' %
+			(page.power and page.power.name == who and ' selected' or '', who))
+	page.write("""
+		</select>
 		<b>Password:</b>&nbsp;
 		<input name="password" type="password" class="inputBox" size=15></td>
 		<td class="bodycopy">
@@ -423,8 +468,7 @@ def showLoginForm(showElimPowers = 0):
 		</tr></form>
 		<script>document.powerForm.password.focus();
 		document.powerForm.password.select();</script>
-		""" %
-		(page.power and page.power.name == 'MASTER' and ' selected' or ''))
+		""")
 #	----------------------------------------------------------------------
 def showInfo(name, value, left = 0):
 	if value: page.write(
@@ -437,8 +481,7 @@ def showInfo(name, value, left = 0):
 #	----------------------------------------------------------------------
 def showVariantInfo():
 	game, power, ceoInfo = page.game, page.power, ''
-	omniscient = (page.pwdFlag > 1 and power.omniscient or
-		page.pwdFlag > 3 and power.name == 'MASTER')
+	omniscient = page.pwdFlag > 1 and power.omniscient
 	if (not omniscient and 'completed' not in page.game.status and
 		'HIDE_DUMMIES' in game.rules): return
 	for who in game.powers:
@@ -461,9 +504,10 @@ def showGameInfo():
 	page.write('<table border=0>')
 	showInfo('Description', ' '.join(game.desc))
 	showInfo('Origin of Name', ' '.join(game.origin))
-	if game.master and len(game.master) == 3: showInfo('GameMaster',
+	if game.gm.player: showInfo('GameMaster',
 		'<a href="mailto:%s?Subject=Game %s">%s</a>' %
-		(game.master[1], game.name, game.master[2].replace('_', ' ')))
+		(game.gm.address[0], game.name,
+		game.gm.player[0].split('|')[2].replace('_', ' ')))
 	variant = []
 	if game.map.name != game.variant:
 		text = game.map.name.title()
@@ -483,11 +527,15 @@ def showGameInfo():
 	rules = ['<a target=rules href=<URL>?page=Rules#%s>%s</a>' % (x, x)
 		for x in rules]
 	showInfo('<a target=rules href=<URL>?page=Rules>Rules</a>',
-		rules and '<tt><b>' + ', '.join(rules) + '.' or '')
-	if game.phase == 'FORMING': showInfo('Time Zone', game.zone.__repr__() or 'UTC (GMT)')
+		rules and '<tt><b>' + ', '.join(rules) + '.</b></tt>' or '')
 	if 'NO_DEADLINE' not in game.rules:
 		showInfo('<a target=rules href=<URL>?page=Status#timing>Timing</a>',
-				'<tt><b>' + normTiming())
+			'<tt><b>' + normTiming() + '</b></tt>')
+		if 'NOT' in game.timing and game.phase != 'COMPLETED':
+			showInfo('Absences',
+				'<tt><b>' + ', '.join([game.formatPeriod(x, 5, 1).upper()
+				for x in game.timing['NOT'].split(',')]) + '.</b></tt>')
+	showInfo('Time Zone', normTimeZone())
 	if game.avail: showInfo('Last Accessed',
 		Time('GMT', os.path.getmtime(game.file('status'))).cformat())
 	if game.start: showInfo('Game Started', game.start)
@@ -518,7 +566,7 @@ def showGameInfo():
 				'JOIN&nbsp;<font color=green><i>powerChoice</i></font>@%s'
 				'&nbsp;<font color=green><i>yourPassword%s</i></font><br>'
 				'SIGNOFF' % (game.name,
-				game.private and ' privacyWord' or '') or ''))
+				game.private and '&nbsp;privacyWord' or '') or ''))
 	if 'terminated' in game.status:
 		showInfo('Game Status', '<font color=red><blink><b>'
 			'Terminated by GameMaster</blink></font>')
@@ -565,12 +613,13 @@ def gameHeader():
 			'<br><font color=yellow size=2>-- Waiting to replace %s --' %
 			', '.join([game.anglify(x[:x.find('-')]) + x[x.find('-'):]
 				for x in game.avail]))
+		elif game.await == 1: pass
 		elif game.deadline < game.getTime():
 			if late:
 				if power and (power.name in late or [1 for x in power.vassals()
 					if x.name in late]): page.write(
 					'<br><font size=+1><blink>You Are Late!</blink></font>')
-				elif (power and (power.name == 'MASTER' or power.omniscient)
+				elif (power and power.omniscient
 				or 'HIDE_LATE_POWERS' not in game.rules): page.write(
 					'<br>(Late Power%s: %s)' % ('s'[len(late) == 1:],
 					', '.join(map(game.anglify, late))))
@@ -616,6 +665,10 @@ def gameHeader():
 		if page.pwdFlag in (2, 3):
 			warnings[-1] = warnings[-1][:-1] + ';'
 			warnings += ['if you disagree, contact the GM or Judgekeeper.']
+	if game.await == 1:
+		warnings += ['The game is waiting for processing of %s.' %
+			typifyPhase(('a', 'the next')[game.phaseType == 'M']),
+			'No changes are currently allowed.']
 	if warnings: page.write("""
 		<tr><th bgcolor="yellow" align=center class="bodycopy">
 		<font color=red>%s</font></th></tr>
@@ -650,15 +703,15 @@ def powerHeader():
 				break
 	page.write('<th class="bodycopy"><font size=+1>%s</font>' %
 		game.anglify(power.name))
-	if power.name == 'MASTER': name = game.master[2]
-	elif power.player: name = power.player[0]
+	if power.player: name = power.player[0]
 	else: name = 0
 	if name: page.write('<br>%s' % name.split('|')[-1].replace('_', ' '))
 	page.write('</th></tr></table>')
 #	----------------------------------------------------------------------
 def showProposal():
 	game, power = page.game, page.power
-	if 'NO_DRAW' in game.rules or not power.canVote(): return
+	if (game.phase in ('FORMING', 'COMPLETED') or 'NO_DRAW' in game.rules
+	or not power.canVote()): return
 	#	------------------------------------------------------------
 	#	In non PROPOSE_DIAS games, each player selects a single game
 	#	result and if they all match, so be it.  NO_DIAS is the same
@@ -680,7 +733,8 @@ def showProposal():
 			<form name=proposalForm %s>
 			""" % (now,
 			('onSubmit="return false"', 'method=post')[page.pwdFlag > 2]))
-		hideBack('Status')
+		hideBack('Update')
+		page.apprise('action', 'propose')
 		page.write("""
 			<tr valign=top><td class="bodycopy">
 			<b>Goal:</b></td><td align=right class="bodycopy">
@@ -888,11 +942,12 @@ def showPressOptions():
 <td><table cellspacing=0>
 <tr><td class="bodycopy" nowrap><b>Send Press To:</b></td></tr>
 			""")
-		omniscient, player = page.power.omniscient or page.power.name == 'MASTER', ''
+		omniscient, player = page.power.omniscient, ''
 		for reader in readers:
 			if omniscient:
 				if reader in ('JUDGEKEEPER', 'ALL'): player = ''
-				elif reader == 'MASTER': player = ' (%s)' % (page.game.master[2])
+				elif reader == page.game.gm.name:
+					player = ' (%s)' % (page.game.gm.player[0].split('|')[2])
 				else:
 					try: player = ' (%s)' % ([x for x in page.game.powers
 						if x.name == reader][0].player[0].split('|')[2])
@@ -922,24 +977,24 @@ def showPressOptions():
 	else: page.write('<td class=bodycopy align=center>(None&nbsp;available)</td>')
 	page.write('</form>')
 #	----------------------------------------------------------------------
+def typifyPhase(pre = ''):
+	kind = page.game.phase.split()[-1].lower()
+	if kind[-1] == 's': kind = kind[:-1]
+	if pre == 'a' and kind[0] in 'aeiou': pre += 'n'
+	if pre: pre += ' '
+	return pre + kind + ' phase'
+#	----------------------------------------------------------------------
+def makeStatic():
+	return page.game.await or (page.pwdFlag < 3, 1, 1,
+		not 'SUBMIT_MASTER' in page.game.rules, 0)[page.power.omniscient]
+#	----------------------------------------------------------------------
 def showWaitNotice():
-	if page.game.phaseType == 'M': phase = 'the next movement'
-	else:
-		kind = page.game.phase.split()[-1]
-		if kind[-1] == 'S': kind = kind[:-1]
-		phase = ('a ', 'an ')[page.game.phaseType in 'AEIOU'] + kind.lower()
-	if page.game.await: page.write(
-		"""
-		<tr><th bgcolor=yellow class=bodycopy><font color=red>
-		The game is waiting for processing of %s phase.<br>
-		No changes are currently allowed.</font></th></tr>
-		""" % phase)
-	else: page.write(
+	page.write(
 		"""
 		<tr><th class=bodycopy><font color=red>
-		You have no orders to issue for the pending %s phase.
+		You have no orders to issue for the pending %s.
 		</font></th></tr>
-		""" % phase.split()[-1])
+		""" % typifyPhase())
 #	----------------------------------------------------------------------
 def showReceiptFlag():
 	if not page.power.address: return
@@ -953,7 +1008,7 @@ def showReceiptFlag():
 			""")
 #	----------------------------------------------------------------------
 def showWaitFlag():
-	if page.pwdFlag < 3 or page.power.name == 'MASTER': return
+	if page.pwdFlag < 3 or page.power.omniscient > 2: return
 	showReceiptFlag()
 	if (('NO_MINOR_WAIT' in page.game.rules and page.game.phaseType != 'M')
 	or 'REAL_TIME' in page.game.rules
@@ -966,9 +1021,13 @@ def showWaitFlag():
 		Wait for deadline before processing</td></tr>
 		""" % (' checked', '')[not page.power.wait])
 #	----------------------------------------------------------------------
-def showAdjustList():
+def showAdjustList(static = 0):
 	game, power, shown = page.game, page.power, 0
-	orders, unorders = [], []
+	orders, unorders, adjust = [], [], []
+	if not static and 'adjust' in vars(page):
+		adjust = page.adjust
+		if 'TEXT_INPUT' in game.rules: orders = adjust + ['']
+		else: adjust = adjust[:]
 	#	-------------------------------
 	#	Obtain default orders for dummy
 	#	and nearly eliminated powers.
@@ -1014,11 +1073,17 @@ def showAdjustList():
 				<tr><td class=bodycopy align=center><font size=2>
 				<b>%s Orders</b><p></font>
 				""" % game.phaseName(form = 2)[:-1])
-		if game.await == 1:
+		if static:
 			if who is not power:
-				page.write('</p><font size=2><b>%s</b></font><p>' %
-					game.anglify(who.name))
-			page.write('<b>%s</b>' % '<br>'.join(who.adjust))
+				page.write('</p><b><font size=2>%s</font></b>%s<p>' %
+					(game.anglify(who.name), '<br>Wait' * (not not who.wait)))
+			page.write("""
+				<table cellspacing=0 cellpadding=5 border=1 width=200>
+				<tr><td bgcolor=white class=bodycopy>
+				<pre><font size=2>%s</font></pre>
+				</td></tr>
+				</table>
+				""" % '\n'.join(who.adjust or ['(NMR)']))
 			continue
 	###		if 'NO_CHECK' in game.rules:
 	###			page.write('<textarea name=adjust rows=%d cols=40>%s</textarea>' %
@@ -1026,19 +1091,30 @@ def showAdjustList():
 	###			return 1
 		if 'TEXT_INPUT' in game.rules:
 			if who != power:
-				unorders += ['[' + who.name + ']']
-				orders += ['[' + who.name + ']']
-			unorders += [action] * abs(count)
-			orders += who.adjust
-			if len(who.adjust) < abs(count):
-				orders += [action] * (abs(count) - len(who.adjust))
+				wait = ' % Wait' * (not not who.wait)
+				unorders += ['[' + who.name + ']' + wait]
+				if not adjust: orders += ['[' + who.name + ']' + wait]
+			unorders += [action + ' '] * abs(count) + ['']
+			if not adjust:
+				orders += who.adjust
+				if len(who.adjust) < abs(count):
+					orders += [action + ' '] * (abs(count) - len(who.adjust))
+				orders += ['']
 		else:
 			if who is not power:
-				page.write('</p><font size=2><b>%s</b></font><p>' %
-					game.anglify(who.name))
+				page.write('</p><b><font size=2>%s</font></b>%s<p>' %
+					(game.anglify(who.name), '<br>Wait' * (not not who.wait)))
+				if who.wait: page.write('</p><b>Wait</b><p>')
 			page.write('<table>')
 			for which in range(abs(count)):
-				order = who.adjust[which:which + 1]
+				if adjust:
+					if adjust[0][0] == '[':
+						whose, order = adjust[0][1:].split('] ', 1)
+					else: whose, order = power.name, adjust[0]
+					if whose == who.name: adjust = adjust[1:]
+					else: order = '(NMR)'
+					order = [order]
+				else: order = who.adjust[which:which + 1]
 				page.write('<tr><td class=bodycopy><b>%s</b></td>' %
 					action.title())
 				page.write('<td><select name=adjust class=inputBox>')
@@ -1063,8 +1139,8 @@ def showAdjustList():
 				<tr><td class=bodycopy align=center><font size=2>
 				<b>%s Orders</b></font><br>
 			""" % game.phaseName(form=2).title())
-		rows = max(len(orders), 19) + 1
-		orders, unorders = '\n'.join(orders), '\n'.join(unorders)
+		rows = max(len(orders) - 1, 19) + 1
+		orders, unorders = '\n'.join(orders[:-1]), '\n'.join(unorders[:-1])
 		page.write("""
 			<p><input onClick='document.UpdateForm.adjust.value = %s'
 			type=button value="Clear" class="inputSubmit">
@@ -1082,9 +1158,12 @@ def showAdjustList():
 	if shown: page.write('</p></td></tr>')
 	return shown
 #	----------------------------------------------------------------------
-def showRetreatList():
+def showRetreatList(static = 0):
 	game, power, shown = page.game, page.power, 0
-	orders, unorders = [], []
+	orders, unorders, adjust = [], [], []
+	if not static and 'adjust' in vars(page):
+		adjust = page.adjust
+		if 'TEXT_INPUT' in game.rules: orders = adjust + ['']
 	#	-------------------------------
 	#	Obtain default orders for dummy
 	#	and nearly eliminated powers.
@@ -1099,36 +1178,50 @@ def showRetreatList():
 				<tr><td class=bodycopy align=center><font size=2>
 				<b>%s Orders</b></font>
 				""" % game.phase.title()[:-1])
-		if game.await == 1:
+		if static:
 			if who is not power:
-				page.write('</p><font size=2><b>%s</b></font><p>' %
-					game.anglify(who.name))
-			for order in who.adjust: page.write(order[8:] + '<br>')
+				page.write('</p><b><font size=2>%s</font></b>%s<p>' %
+					(game.anglify(who.name), '<br>Wait' * (not not who.wait)))
+			page.write("""
+				<table cellspacing=0 cellpadding=5 border=1 width=200>
+				<tr><td bgcolor=white class=bodycopy>
+				<pre><font size=2>%s</font></pre>
+				</td></tr>
+				</table>
+				""" % '\n'.join(who.adjust or ['(NMR)']))
 		elif 'TEXT_INPUT' in game.rules:
 			if who != power:
-				unorders += ['[' + who.name + ']']
-				orders += ['[' + who.name + ']']
-			unorders += ['RETREAT ' + x for x in who.retreats]
-			orders += who.adjust or ['RETREAT ' + x for x in who.retreats]
+				wait = ' % Wait' * (not not who.wait)
+				unorders += ['[' + who.name + ']' + wait]
+				if not adjust: orders += ['[' + who.name + ']' + wait]
+			unorders += ['RETREAT %s ' % x for x in who.retreats] + ['']
+			if not adjust:
+				orders += who.adjust or ['RETREAT %s ' % x for x in who.retreats]
+				orders += ['']
 		else:
+			readjust = who.adjust
 			if who is not power:
-				page.write('</p><font size=2><b>%s</b></font><p>' %
-					game.anglify(who.name))
+				page.write('</p><b><font size=2>%s</font></b>%s<p>' %
+					(game.anglify(who.name), '<br>Wait' * (not not who.wait)))
+				if adjust: readjust = [x.split('] ')[1] for x in adjust
+					if x.startswith('[' + who.name + ']')]
+			elif adjust: readjust = [x for x in adjust
+				if not x.startswith('[')]
 			page.write('<table>')
 			for unit in who.retreats:
 				page.write('<tr><td class=bodycopy align=right>' +
 					unit.replace(' ', '&nbsp;') + '</td>')
 				page.write('<td><select name=adjust class=inputBox>')
-				if not who.adjust or page.pwdFlag > 2:
+				if not readjust or page.pwdFlag > 2:
 					page.write('<option value=\'%s(NMR)\'>(NMR)</option>' %
 						(who is not power and '[%s] ' % who.name or ''))
 				choices = ['DISBAND'] + ['- ' + x for x in who.retreats[unit]]
 				for choice in choices:
 					ord = 'RETREAT %s ' % unit + choice
-					select = ' selected' * (ord in who.adjust)
+					select = ' selected' * (ord in readjust)
 					if choice[0] == 'D':
 						ord = choice + ' ' + unit
-						select = select or ' selected' * (ord in who.adjust)
+						select = select or ' selected' * (ord in readjust)
 					if who is not power: ord = '[%s] ' % who.name + ord
 					if select or page.pwdFlag > 2: page.write(
 						'<option value=\'%s\'%s>%s</option>' %
@@ -1169,7 +1262,6 @@ def changeButton():
 		<%sinput type=submit
 		class=inputSubmit value="Submit Updates">
 		</td></tr>
-		</form>
 		""" % '!'[page.pwdFlag > 2:])
 #	----------------------------------------------------------------------
 def viewFile():
@@ -1190,12 +1282,16 @@ def viewFile():
 	file.close()
 	if not lines: return finished('File Empty')
 	if lines[0] != '<': lines = '<pre>\n' + lines + '\n</pre>'
+	page.write('<table><tr><td>')
+	#	-------------------------------
+	#	Don't use triple quotes here
+	#	to avoid indentation stripping.
+	#	-------------------------------
+	page.write(lines)
 	page.write("""
-		<table><tr><td>
-		%s
 		</td></tr></table><hr>
 		<table><tr><td class=bodycopy>
-		""" % lines)
+		""")
 	goBack()
 	page.write('</td></tr></table>')
 #	----------------------------------------------------------------------
@@ -1255,7 +1351,7 @@ def sendPress():
 	elif type(page.claimTo) in (str, unicode): page.claimTo = [page.claimTo]
 	if page.claimTo and 'ALL' in page.claimTo: page.claimTo = ['All']
 	message, okay = '', page.game.eligiblePressRecipients(page.power)
-	if (page.power.name != 'MASTER'
+	if (page.power.omniscient < 3
 	and [1 for x in page.recipient if x.upper() not in okay]):
 		finished('Message Cannot Be Sent',
 			'The settings of this game dictate that your message cannot ' +
@@ -1307,7 +1403,8 @@ def goBack(caption = None, auto = 0):
 			</form>
 			""" % caption)
 #	----------------------------------------------------------------------
-def finished(header = 'Update Made', subheader = None, body = None):
+def finished(header = None, subheader = None, body = None):
+	if not header: header = 'No ' * (not not subheader) + 'Update Made'
 	if 'receipt' in vars(page):
 		page.game.reportOrders(page.power)
 	page.write(
@@ -1341,7 +1438,7 @@ def finished(header = 'Update Made', subheader = None, body = None):
 		button above), you will need to "Reload" the screen to see
 		your changes reflected.</blockquote>
 		</th></tr>
-		""" * (header != 'Update Made' or page.power.name == 'MASTER'))
+		""" * (header != 'Update Made' or page.power.omniscient > 2))
 #	----------------------------------------------------------------------
 def problem(pre = '', post = ''):
 	page.write(
@@ -1460,6 +1557,12 @@ def lockedUp():
 		""")
 	raise SystemExit
 #	----------------------------------------------------------------------
+def update():
+	if page.action == 'absent': finished(0, checkAbsence())
+	elif page.action == 'propose': finished(0, checkProposal())
+	elif page.action == 'passchange': finished(0, checkNewPassword())
+	else: updateMaster()
+#	----------------------------------------------------------------------
 def updateOffPhases():
 	if type(page.adjust) != list: page.adjust = page.adjust.split('\n')
 	page.game.updateOffPhases(page.power, page.adjust)
@@ -1480,6 +1583,13 @@ def checkPassword():
 		"\\nthe wrong power name ('%s') or" % page.power))
 	raise SystemExit
 #	----------------------------------------------------------------------
+def checkNewPassword():
+	if page.pwdFlag < 3: return 'No Permission'
+	if not 'newPassword' in vars(page): return 'Empty Password'
+	if page.password == page.power.password: page.password = page.newPassword
+	page.power.password = page.newPassword
+	page.game.save()
+#	----------------------------------------------------------------------
 def loadGame():
 	if not page.game:
 		page.write(
@@ -1496,10 +1606,10 @@ def mapName():
 	file = page.game.name
 	if ('BLIND' in page.game.rules and page.pwdFlag > 1
 	and page.game.phase != 'COMPLETED'):
-		if page.power.name != 'MASTER': file += ('.' +
+		if page.power.omniscient < 3: file += ('.' +
 			(page.power.abbrev or 'O') + `hash((page.power.password
-			or page.game.password) + page.power.name)`)
-		else: file += '.M' + `hash(page.game.password)`
+			or page.game.gm.password) + page.power.name)`)
+		else: file += '.M' + `hash(page.game.gm.password)`
 	return file	
 #	----------------------------------------------------------------------
 def checkProposal():
@@ -1555,12 +1665,12 @@ def checkAbsence():
 		nope = normDate(startDate) + '-' + normDate(endDate)
 	elif endDate: nope = '-' + normDate(endDate)
 	elif startDate: nope = normDate(startDate)
-	else: nope = ''
-	page.game.setAbsence(page.power, nope)
+	else: return 'No Absence'
+	return page.game.setAbsence(page.power, nope)
 #	----------------------------------------------------------------------
 def normDate(date):
-	dots = date.split('-')
-	return '%04d%02d%02d' % (int(dots[2]), int(dots[0]), int(dots[1]))
+	dots = date.split('/')
+	return '%04d%02d%02d' % (int(dots[0]), int(dots[1]), int(dots[2]))
 #	----------------------------------------------------------------------
 def powerInfo():
 	game = page.game
@@ -1580,25 +1690,33 @@ def powerInfo():
 	for rule in game.metaRules + ['EAVESDROP']:
 		try: rules.remove(rule)
 		except: pass
-	rules = rules and '<tt><b>' + ', '.join(rules) + '.' or ''
+	rules = rules and '<tt><b>' + ', '.join(rules) + '.</b></tt>' or ''
 	showInfo('<a target=rules href=<URL>?page=Rules>Rules</a>', rules, 1)
 	if 'NO_DEADLINE' not in game.rules:
 		showInfo('<a target=rules href=<URL>?page=Status#timing>Timing</a>',
-				'<tt><b>' + normTiming(), 1)
+			'<tt><b>' + normTiming() + '</b></tt>', 1)
+		if 'NOT' in game.timing and game.phase != 'COMPLETED':
+			showInfo('Absences',
+				'<tt><b>' + ', '.join([game.formatPeriod(x, 5, 1).upper()
+				for x in game.timing['NOT'].split(',')]) + '.</b></tt>', 1)
+	showInfo('Time Zone', normTimeZone(), 1)
 	page.write('<tr><td colspan=3><HR></td></tr>')
 #	----------------------------------------------------------------------
 def normTiming():
 	game = page.game
-	timing = ''
-	if game.phase == 'COMPLETED' and 'NOT' in game.timing:
-		del game.timing['NOT']
-	for key, val in game.timing.items(): timing += ' ' + key + ' ' + val
+	timing = [key + ' ' + val for key, val in game.timing.items() if key != 'NOT']
 	if 'NEXT' not in game.timing:
-		timing += ' NEXT 1D'
+		timing += ['NEXT 1D']
 	if not [1 for x in game.timing if not 'MOVEMENT'.find(x)]:
-		timing += ' MOVE ' + game.timing.get('NEXT', '3D')
-	if 'DAYS' not in game.timing: timing += ' DAYS -MTWTF-'
-	return timing
+		timing += ['MOVE ' + game.timing.get('NEXT', '3D')]
+	if 'DAYS' not in game.timing: timing += ['DAYS -MTWTF-']
+	return ' '.join(timing)
+#	----------------------------------------------------------------------
+def normTimeZone():
+	zone = page.game.zone
+	if not zone: return 'UTC (GMT)'
+	if zone.zone.startswith('GMT'): return zone.zone
+	return zone.zone + ' (%s)' % zone.gmtlabel()
 #	----------------------------------------------------------------------
 def pouchLinks():
 	page.write("""
@@ -1647,15 +1765,14 @@ def showPressArchive(selected = 0, filter = 0):
 	power = page.pwdFlag > 1 and page.power.name or ''
 	thePower = power.encode('latin-1')
 	file, items, validCodes, involved = open(file), [], [], []
-	omniscient = (page.pwdFlag == 2 or page.pwdFlag > 3) and (
-		power == 'MASTER' or power and page.power.omniscient)
+	omniscient = power and page.power.omniscient or 0
 	for lineNum, line in enumerate(file):
 		if not line.startswith('::'): continue
 		data, receivers = line.strip().upper().split(), []
 		if len(data) < 4: continue
 		phase, sender, receivers = data[1], data[2], data[3:]
 		if phase == '?????':
-			if page.game.phaseAbbr() != phase and power != 'MASTER': continue
+			if page.game.phaseAbbr() != phase and omniscient < 3: continue
 			phase = ''
 		else: phase += ': '
 		if '|' in receivers:

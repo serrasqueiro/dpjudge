@@ -59,7 +59,7 @@ Kyushu				= kyu kiu kiushu
 Leningrad (north coast)	= len/nc len(nc) leningrad/nc leningrad(nc)
 Leningrad (south coast)	= len/sc len(sc) leningrad/sc leningrad(sc)
 Leningrad			= len 
-Libya				= lib ben benghazi
+Libya				= lib benghazi
 Lithuania			= lit liv lvn livonia
 London				= lon
 Low Countries		= low belgium holland netherlands net bel hol
@@ -261,9 +261,9 @@ JAPAN	(JAPANESE)	SAP SEN TOK
 
 U+S+A	(AMERICAN)	@CAL HAW NYO WAS
 
-U+S+S+R	(SOVIET:S)	LEN MAG MOS STA
+U+S+S+R	(SOVIET:S:SU)	LEN MAG MOS STA
 
-_INDIA	(INDIAN)	IND
+_INDIA	(INDIAN::ID)	IND
 DUMMY
 A IND
 

@@ -6,11 +6,11 @@ FLAGS minorpower standard
 Ankara			(Ankaran:A)			ANK
 FLAG TURKEY
 Belgium			(Belgian:B)			BEL
-Berlin			(Berliner:C)		BER
+Berlin			(Berliner:C:BN)		BER
 FLAG GERMANY
 Brest			(Breton:D)			BRE
 FLAG FRANCE
-Budapest		(Hungarian:E)		BUD
+Budapest		(Hungarian:E:BP)	BUD
 FLAG AUSTRIA
 Bulgaria		(Bulgarian:F)		BUL
 Constantinople	(Byzantine:G)		CON
@@ -40,9 +40,9 @@ FLAG FRANCE
 Portugal		(Portuguese:W)		POR
 Rome			(Roman:X)			ROM
 FLAG ITALY
-Rumania			(Rumanian:Y)		RUM
+Rumania			(Rumanian:Y:RM)		RUM
 Serbia			(Serbian:Z)			SER
-Sevastopol		(Crimean:0)			SEV
+Sevastopol		(Crimean:0:SV)		SEV
 FLAG RUSSIA
 Smyrna			(Smyrnan:1)			SMY
 FLAG TURKEY
@@ -52,7 +52,7 @@ FLAG RUSSIA
 Sweden			(Swedish:4)			SWE
 Trieste			(Carinthian:5)		TRI
 FLAG AUSTRIA
-Tunis			(Tunisian:6)		TUN
+Tunis			(Tunisian:6:TN)		TUN
 Venice			(Venetian:7)		VEN
 FLAG ITALY
 Vienna			(Viennese:8)		VIE

@@ -1,6 +1,6 @@
 <:
 #	----------------------------------------------------------------------
-def showOrderList():
+def showOrderList(static = 0):
 	import json, cgi
 
 	power, game = page.power, page.game
@@ -10,65 +10,71 @@ def showOrderList():
 	active = power.units or ('PROXY_OK' in game.rules and
 		not power.isDummy(True) and (power.centers or vassals))
 	if not active and not vassals: return
-	page.write(
-		"""
+	page.write("""
 		<tr><td class=bodycopy align=center><font size=2>
 		<b>%s Orders</b></font><br>
 		""" % game.phaseName(form=2).title())
-	if 'NO_CHECK' in game.rules: page.write(
-		'<font color=red>Remember: '
-		'Specify the path of any convoying army '
-		'by listing the fleets involved!</font><p>')
-	unorders = []
-	if 'NO_CHECK' in game.rules:
-		if active: unorders += ['(NMR)']
-		for who in vassals:
-			unorders += ['[' + who.name + ']', '(NMR)']
-	else:
-		if active: unorders += [x + ' ' for x in power.units] or ['(NMR)']
-		for who in vassals:
-			unorders += ['[' + who.name + ']'] + (
-				[x + ' ' for x in who.units] or ['(NMR)'])
-	unorders = '\n'.join(unorders)
-	if 'orders' in vars(page): orders = page.orders.split('\n')
-	else:
-		orders = []
-		if 'NO_CHECK' in game.rules:
-			if active:
-				if power.orders: orders += power.orders.values()
-				else: orders += ['(NMR)']
-			for who in vassals:
-				orders += ['[' + who.name + ']']
-				if who.orders: orders += who.orders.values()
-				else: orders += ['(NMR)']
+	if not static:
+		if  'NO_CHECK' in game.rules: page.write(
+			'<font color=red>Remember: '
+			'Specify the path of any convoying army '
+			'by listing the fleets involved!</font><p>')
+		unorders, orders = [], []
+		ordered = 'orders' in vars(page)
+		if ordered: orders = page.orders.split('\n') + ['']
+	for who in [power] * (not not active) + vassals:
+		if static:
+			if who is not power:
+				page.write('</p><b><font size=2>%s</font></b>%s<p>' %
+					(game.anglify(who.name), '<br>Wait' * (not not who.wait)))
+			if 'NO_CHECK' in game.rules:
+				orders = who.orders and who.orders.values() or ['(NMR)']
+			elif who.orders:
+				orders = [u + ' ' + o for u, o in who.orders.items()] + [
+					u for u in who.units if u not in who.orders]
+			else: orders = [x + ' ' for x in who.units] or ['(NMR)']
+			page.write("""
+				<table cellspacing=0 cellpadding=5 border=1 width=200>
+				<tr><td bgcolor=white class=bodycopy>
+				<pre><font size=2>%s</font></pre>
+				</td></tr>
+				</table>
+				""" % '\n'.join(orders))
 		else:
-			if active:
-				if power.orders:
-					orders += [u + ' ' + o for u, o in power.orders.items()] + [
-						u for u in power.units if u not in power.orders]
-				else: orders += [x + ' ' for x in power.units] or ['(NMR)']
-			for who in vassals:
-				orders += ['[' + who.name + ']']
-				if who.orders:
+			if not who is power: unorders += ['[' + who.name + ']' +
+				' % Wait' * (not not who.wait)]
+			if 'NO_CHECK' in game.rules: unorders += ['(NMR)']
+			else: unorders += [x + ' ' for x in who.units] or ['(NMR)']
+			unorders += ['']
+			if not ordered:
+				if not who is power: orders += ['[' + who.name + ']' +
+					' % Wait' * (not not who.wait)]
+				if 'NO_CHECK' in game.rules:
+					orders += who.orders and who.orders.values() or ['(NMR)']
+				elif who.orders:
 					orders += [u + ' ' + o for u, o in who.orders.items()] + [
 						u for u in who.units if u not in who.orders]
 				else: orders += [x + ' ' for x in who.units] or ['(NMR)']
-	rows = max(len(orders), 19) + 1
-	orders = '\n'.join(orders)
-	page.write("""
-		<p><input onClick='document.UpdateForm.orders.value = %s'
-		type=button value="Clear" class="inputSubmit">
-		""" % cgi.escape(json.dumps(unorders)))
-	if unorders != orders:
+				orders += ['']
+	if not static:
+		rows = max(len(orders) - 1, 19) + 1
+		unorders = '\n'.join(unorders[:-1])
+		orders = '\n'.join(orders[:-1])
 		page.write("""
-			&nbsp;&nbsp;
-			<input onClick='document.UpdateForm.orders.value = %s'
-			type=button value="Revert" class="inputSubmit">
-			""" % cgi.escape(json.dumps(orders)))
-	page.write('</p><p><textarea rows=%s cols=40 name=orders wrap=off '
-		'class=inputBox>' % rows)
-	page.write(cgi.escape(orders))
-	page.write('</textarea></p></td></tr>')
+			<p><input onClick='document.UpdateForm.orders.value = %s'
+			type=button value="Clear" class="inputSubmit">
+			""" % cgi.escape(json.dumps(unorders)))
+		if unorders != orders:
+			page.write("""
+				&nbsp;&nbsp;
+				<input onClick='document.UpdateForm.orders.value = %s'
+				type=button value="Revert" class="inputSubmit">
+				""" % cgi.escape(json.dumps(orders)))
+		page.write('</p><p><textarea rows=%s cols=40 name=orders wrap=off '
+			'class=inputBox>' % rows)
+		page.write(cgi.escape(orders))
+		page.write('</textarea></p>')
+	page.write('</td></tr>')
 	return 1
 #	----------------------------------------------------------------------
 def showLists(orders = 0):
@@ -82,29 +88,30 @@ def showLists(orders = 0):
 				<!--ORDER SUBMISSION TABLE BEGINS HERE-->		
 				<table border=0 align=center>
 		""")
-	if page.game.await: shown = 0
-	else:
+	static = makeStatic()
+	if not static:
 		page.write('<form %s>' %
 			('onSubmit="return false"',
 			'method=post name=UpdateForm')[page.pwdFlag > 2])
 		hideBack('Update')
 		page.apprise('phase', page.game.phaseAbbr())
-		if page.game.phaseType == 'M': shown = showOrderList()
-		elif page.game.phaseType == 'A': shown = showAdjustList()
-		elif page.game.phaseType == 'R': shown = showRetreatList()
-		else: shown = None
-	if shown:
-		showWaitFlag()
-		changeButton()
-	else: showWaitNotice()
-	page.write(
-		"""
-		<tr><td height=5></td></tr>
+	if page.game.phaseType == 'M': shown = showOrderList(static)
+	elif page.game.phaseType == 'A': shown = showAdjustList(static)
+	elif page.game.phaseType == 'R': shown = showRetreatList(static)
+	else: shown = None
+	if not static:
+		if shown:
+			showWaitFlag()
+			changeButton()
+		else: showWaitNotice()
+		page.write('</form>')
+	page.write("""
+			<tr><td height=5></td></tr>
+			</table>
+			<!--ORDER SUBMISSION TABLE ENDS HERE-->
+		</td>
+		</tr>
 		</table>
-		<!--ORDER SUBMISSION TABLE ENDS HERE-->
-	</td>
-	</tr>
-	</table>
 		""")
 #	----------------------------------------------------------------------
 :>

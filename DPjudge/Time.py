@@ -93,14 +93,14 @@ class Time(str):
 		while 1:
 			try:
 				if (when.isnumeric() and len(when) in range(8, 16, 2)):
-					this = str.__new__(self, when.ljust(14, '0')[:(npar * 2 + 2)])
+					this = str.__new__(self, when.ljust(14, '0')[:npar * 2 + 2])
 					break
 			except: pass
 			try:
 				if (unicode(when, 'latin-1').isnumeric()
 				and len(when) in range(8, 16, 2)):
 					this = str.__new__(self,
-						when.ljust(14, '0')[:(npar * 2 + 2)])
+						when.ljust(14, '0')[:npar * 2 + 2])
 					break
 			except: pass
 			try:
@@ -135,42 +135,41 @@ class Time(str):
 	def npar(self):
 		return len(self) / 2 - 1
 	#	----------------------------------------------------------------------
-	def offset(self, off = 0):
-		try: secs = self.seconds() + off
-		except:
-			dict = { 'M': 60, 'H': 3600, 'D': 86400, 'W': 604800 }
-			secs = self.seconds() + int(off[:-1]) * dict.get(off[-1], 1)
-		return Time(self.zone, secs, self.npar())
+	def mod(self, off = 0, mod = 1200):
+		dict = { 'M': 60, 'H': 3600, 'D': 86400, 'W': 604800 }
+		try: off / 1
+		except: off = int(off[:-1]) * dict.get(off[-1], 1)
+		try: return off / mod
+		except: return off / int(mod[:-1]) * dict.get(mod[-1], 1)
 	#	----------------------------------------------------------------------
-	def trunc(self, mod = 1200):
+	def offset(self, off = 0):
+		return Time(self.zone, self.seconds() + self.mod(off, 1), self.npar())
+	#	----------------------------------------------------------------------
+	def trunc(self, mod = 1200, up = 0):
+		if mod == 1: return self.offset()
 		#	----------------------------------------
 		#	Truncating to a day requires some magic.
 		#	----------------------------------------
 		zone, self.zone = self.zone, TimeZone('GMT')
 		secs = self.seconds()
 		zone, self.zone = self.zone, zone
-		try: tsecs = secs / mod * mod
-		except:
-			dict = { 'M': 60, 'H': 3600, 'D': 86400, 'W': 604800 }
-			mod = int(mod[:-1]) * dict.get(mod[-1], 1)
-			tsecs = secs / mod * mod
-		return self.offset(tsecs - secs)
+		#	-------------------
+		#	Convert to seconds.
+		#	-------------------
+		mod = self.mod(mod, 1)
+		return self.offset(((secs - up) / mod  + up) * mod - secs)
 	#	----------------------------------------------------------------------
 	def diff(self, other = None, mod = 1200):
 		secs = self.seconds()
 		try: osecs = other.seconds()
 		except: osecs = Time(self.zone, other, self.npar()).seconds()
-		try: return (osecs - secs) / mod
-		except:
-			dict = { 'M': 60, 'H': 3600, 'D': 86400, 'W': 604800 }
-			mod = int(mod[:-1]) * dict.get(mod[-1], 1)
-			return (osecs - secs) / mod
+		return self.mod(osecs - secs, mod)
 	#	----------------------------------------------------------------------
 	def adjust(self, npar):
 		if npar == self.npar(): return self
 		return Time(self.zone, self.tuple(), npar)
 	#	----------------------------------------------------------------------
-	def next(self, at, frm = 3):
+	def next(self, at, mod = 1200, frm = 3):
 		try:
 			at, npar = at.tuple(), at.npar()
 			week = (None, at[6])[frm == 6]
@@ -215,7 +214,7 @@ class Time(str):
 		if week is not None and week != when.tuple()[6]:
 			if frm < 3: raise MalformedDate
 			when = when.offset('%dD' % ((week - when.tuple()[6]) % 7))
-		return when
+		return when.trunc(mod, 1)
 	#	----------------------------------------------------------------------
 	def tuple(self):
 		return tuple(map(int, [self[:4] or '1901'] + [self[x:x+2] or '1'
@@ -237,23 +236,87 @@ class Time(str):
 	def format(self, form = 0):
 		#	---------------------------------------------------------------
 		#	If "form" is 0, the return format is:
-		#		20150901200059 --> Tuesday 1 September 2015 20:00 JST
+		#		20150901080059 --> Tuesday 1 September 2015 08:00 JST
+		#		20150901 --> Tuesday 1 September 2015
 		#	If "form" is 1, the return format is:
-		#		20150901200059 --> Tue 1 Sep 2015 20:00 JST
+		#		20150901080059 --> Tue 1 Sep 2015 08:00 JST
+		#		20150901 --> Tue 1 Sep 2015
 		#	If "form" is 2, the return format is:
-		#		20150901200059 --> Tue, 01 Sep 2015 20:00:59 JST
+		#		20150901080059 --> Tue, 01 Sep 2015 08:00:59 JST
+		#		20150901 --> Tue, 01 Sep 2015
 		#	If "form" is 3, the return format is:
-		#		20150901200059 --> 1 September 2015
+		#		20150901080059 --> 1 September 2015 08:00 JST
+		#		20150901 --> 1 September 2015
 		#	If "form" is 4, the return format is:
-		#		20150901200059 --> Tuesday 1 September 2015
+		#		20150901080059 --> 1 Sep 2015 08:00
+		#		20150901 --> 1 Sep 2015
+		#	If "form" is 5, the return format is:
+		#		20150901080059 --> 1 Sep 08:00
+		#		20150901 --> 1 Sep
+		#	if the year is current, otherwise:
+		#		20150901080059 --> 1 Sep 2015 08:00
+		#		20150901 --> 1 Sep 2015
+		#	If "form" is 6, the return format is:
+		#		20150901080059 --> 2015/09/01 08:00
+		#		20150901 --> 2015/09/01
+		#	If "form" is 7, the return format is:
+		#		20150901080059 --> 09/01 08:00
+		#		20150901 --> 09/01
+		#	if the year is current, otherwise:
+		#		20150901080059 --> 2015/09/01 08:00
+		#		20150901 --> 2015/09/01
+		#	---------------------------------------------------------------
+		when = [self.formatDate(form)]
+		if self.npar() > 3:
+			when += [self.formatTime(form > 3 and 1 or form == 2 and 2 or 0)]
+		return ' '.join(when)
+	#	----------------------------------------------------------------------
+	def formatDate(self, form = 0):
+		#	---------------------------------------------------------------
+		#	If "form" is 0, the return format is:
+		#		20150901 --> Tuesday 1 September 2015
+		#	If "form" is 1, the return format is:
+		#		20150901 --> Tue 1 Sep 2015
+		#	If "form" is 2, the return format is:
+		#		20150901 --> Tue, 01 Sep 2015
+		#	If "form" is 3, the return format is:
+		#		20150901 --> 1 September 2015
+		#	If "form" is 4, the return format is:
+		#		20150901 --> 1 Sep 2015
+		#	If "form" is 5, the return format is:
+		#		20150901 --> 1 Sep
+		#	if the year is current, otherwise:
+		#		20150901 --> 1 Sep 2015
+		#	If "form" is 6, the return format is:
+		#		20150901 --> 2015/09/01
+		#	If "form" is 7, the return format is:
+		#		20150901 --> 09/01
+		#	if the year is current, otherwise:
+		#		20150901 --> 2015/09/01
 		#	---------------------------------------------------------------
 		when, stc = [], self.struct()
-		if form != 3: when += [time.strftime(form == 2 and '%a,' or
+		if form < 3: when += [time.strftime(form == 2 and '%a,' or
 			form == 1 and '%a' or '%A', stc)]
-		when += [time.strftime(form in (1, 2) and '%d %b %Y' or
-			'%d %B %Y', stc).lstrip('0')]
-		if form < 3: when += [time.strftime(form == 2 and '%H:%M:%S' or
-			'%H:%M', stc), self.zone.tzname()]
+		when += [time.strftime(form in (0, 3) and '%d %B %Y' or
+			form > 5 and '%Y/%m/%d' or '%d %b %Y', stc)]
+		if form != 2 and form < 6: when[-1] = when[-1].lstrip('0')
+		if form in (5, 7):
+			now = Time(self.zone)
+			if now[:4] == self[:4]:
+				when[-1] = form > 5 and when[-1][5:] or when[-1][:-5]
+		return ' '.join(when)
+	#	----------------------------------------------------------------------
+	def formatTime(self, form = 0):
+		#	---------------------------------------------------------------
+		#	If "form" is 0, the return format is:
+		#		20150901080059 --> 08:00 JST
+		#	If "form" is 1, the return format is:
+		#		20150901080059 --> 08:00
+		#	If "form" is 2, the return format is:
+		#		20150901080059 --> 08:00:59 JST
+		#	---------------------------------------------------------------
+		when = [time.strftime(form == 2 and '%H:%M:%S' or '%H:%M', self.tuple())]
+		if form != 1: when += [self.zone.tzname()]
 		return ' '.join(when)
 	#	----------------------------------------------------------------------
 	def changeZone(self, zone = None):

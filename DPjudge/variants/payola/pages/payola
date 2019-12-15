@@ -103,92 +103,125 @@ def showAcceptList():
 #	----------------------------------------------------------------------
 def showPowerData():
 	game, power = page.game, page.power
-	if power.balance is None and power.name != 'MASTER': return
+	if power.balance is None and not power.omniscient: return
 	page.write('<td><table border=0 cellpadding=2 cellspacing=2 width=100%>')
-	if power.name != 'MASTER':
+	if not power.omniscient:
 		page.write('<tr><td><table width=100%>')
 		showBalance()
 		if page.pwdFlag > 1: showTransferForm()
 		showAcceptList()
 		page.write('</table><hr/></td></tr>')
-	if game.await:
-		showWaitNotice()
-		return page.write('</table></td>')
-	page.write('<form %s>' % ('onSubmit="return false"',
-		'method=post name=UpdateForm')[page.pwdFlag > 2])
-	hideBack('Update')
-	page.apprise('balance', power.balance)
-	page.apprise('phase', game.phaseAbbr())
-	if game.phaseType == 'M': shown = showOfferList()
+	static = makeStatic()
+	if not static:
+		page.write('<form %s>' % ('onSubmit="return false"',
+			'method=post name=UpdateForm')[page.pwdFlag > 2])
+		hideBack('Update')
+		page.apprise('balance', power.balance)
+		page.apprise('phase', game.phaseAbbr())
+	if game.phaseType == 'M': shown = showOfferList(static)
 	elif game.phaseType == 'A':
-		showDividends()
-		shown = showAdjustList()
-	elif game.phaseType == 'R': shown = showRetreatList()
-	elif game.phaseType == 'D': shown = showDividends()
+		showDividends(static)
+		shown = showAdjustList(static)
+	elif game.phaseType == 'R': shown = showRetreatList(static)
+	elif game.phaseType == 'D': shown = showDividends(static)
 	else: shown = 0
-	if not shown: showWaitNotice()
-	elif game.phaseType != 'M' or power.units: showWaitFlag()
-	if shown or power.accept and power.centers: changeButton()
+	if not static:
+		if not shown: showWaitNotice()
+		elif game.phaseType != 'M' or power.units: showWaitFlag()
+		if shown or power.accept and power.centers: changeButton()
+		page.write('</form>')
 	page.write('</table>')
 	page.write('</td>')
 #	----------------------------------------------------------------------
-def showDividends():
-	if page.power.name == 'MASTER': return
+def showDividends(static):
+	if page.power.omniscient: return
 	limit = page.power.dividendLimit()
 	if not limit: return
-	page.write(
-		"""
+	share = page.power.funds.get('/share', '(NMR)')
+	page.write("""
 		<tr><td align=center class=bodycopy>
 		<b>Fiscal %d Dividends:</b>
-		Disburse <select class=inputBox name=dividend><option>(NMR)
+		Disburse
 		""" % page.game.year)
-	for div in range(limit + 1): page.write('<option%s>%d' %
-		(page.power.funds.get('/share') == div and ' selected' or '', div))
-	page.write('</select> AgP per Share</td></tr>')
+	if static: page.write(share)
+	else:
+		page.write('<select class=inputBox name=dividend><option>(NMR)</option>')
+		for div in range(limit + 1): page.write('<option%s>%d' %
+			(share == div and ' selected' or '', div))
+		page.write('</select>')
+	page.write(' AgP per Share</td></tr>')
 	return 1
 #	----------------------------------------------------------------------
-def showOfferList():
+def showOfferList(static):
 	import json, cgi
 
-	if 'VASSAL_DUMMIES' in page.game.rules and page.power.ceo: return
-	selfControl = 'PAY_DUMMIES' in page.game.rules and not page.power.isDummy()
+	game, power = page.game, page.power
+	if 'VASSAL_DUMMIES' in game.rules and power.ceo: return
+	selfControl = 'PAY_DUMMIES' in game.rules and not power.isDummy()
 	page.write(
 		"""
 		<tr><td class=bodycopy align=center><font size=2>
 		<b>%s %s</b></font><br>
-		""" % (page.game.phaseName(form=2),
+		""" % (game.phaseName(form=2),
 			('Offer List','Orders')[selfControl]))
 	untext = '(NMR)'
 	if 'offers' in vars(page): text = page.offers.split('\012')
-	elif page.power.name == 'MASTER':
-		text, untext = [], []
-		for p in page.game.powers:
-			if p.balance is None or selfControl and p.isDummy(): continue
-			text += ['[' + p.name + ']' + ' %% %d AgP' % (int(p.balance))]
-			untext += text[-1:] + ['(NMR)', '']
-			text += p.sheet[:] or selfControl and p.units or ['(NMR)']
-			text += ['']
-		untext = '\n'.join(untext)
-	else: text = page.power.sheet[:] or selfControl and page.power.units or []
+	elif power.omniscient:
+		if not static:
+			text, untext = [], []
+			for who in game.powers:
+				if who.balance is None or selfControl and who.isDummy(): continue
+				text += ['[' + who.name + ']' + ' %% %d AgP' % (int(who.balance)) +
+					', Wait' * (not not who.wait)]
+				untext += text[-1:] + ['(NMR)', '']
+				text += who.sheet[:] or selfControl and who.units or ['(NMR)']
+				text += ['']
+			untext = '\n'.join(untext)
+	else: text = power.sheet[:] or selfControl and power.units or []
 	if selfControl: text = [x[x.startswith('0 : ') * 4:] for x in text]
-	page.write("""
-		<p><input onClick='document.UpdateForm.offers.value = %s'
-		type=button value="Clear" class="inputSubmit">
-		""" % cgi.escape(json.dumps(untext)))
-	if text:
+	if static:
+		if power.omniscient:
+			for who in game.powers:
+				if who.balance is None or selfControl and who.isDummy(): continue
+				page.write('</p><b><font size=2>%s</font></b><br>%d AgP%s<p>' %
+					(game.anglify(who.name), int(who.balance),
+					', Wait' * (not not who.wait)))
+				page.write("""
+					<table cellspacing=0 cellpadding=5 border=1 width=200>
+					<tr><td bgcolor=white class=bodycopy>
+					<pre><font size=2>%s</font></pre>
+					</td></tr>
+					</table>
+					""" % '\n'.join(who.sheet[:] or
+					selfControl and who.units or ['(NMR)']))
+		else:
+			page.write("""
+				<table cellspacing=0 cellpadding=5 border=1 width=200>
+				<tr><td bgcolor=white class=bodycopy>
+				<pre><font size=2>%s</font></pre>
+				</td></tr>
+				</table>
+				""" % '\n'.join(text or ['(NMR)']))
+	else:
 		page.write("""
-			&nbsp;&nbsp;<input onClick='document.UpdateForm.offers.value = %s'
-			type=button value="Revert" class="inputSubmit">
-			""" % cgi.escape(json.dumps('\n'.join(text))))
-	if not text: text = ['(NMR)']
-	page.write('</p><p><textarea class=inputBox rows=%s cols=40 name=offers wrap=off>'
-			% (max(len(text), 19) + 1))
-	map(page.write, map(cgi.escape, text))
-	page.write('</textarea></td></tr>')
+			<p><input onClick='document.UpdateForm.offers.value = %s'
+			type=button value="Clear" class="inputSubmit">
+			""" % cgi.escape(json.dumps(untext)))
+		if text:
+			page.write("""
+				&nbsp;&nbsp;<input onClick='document.UpdateForm.offers.value = %s'
+				type=button value="Revert" class="inputSubmit">
+				""" % cgi.escape(json.dumps('\n'.join(text))))
+		if not text: text = ['(NMR)']
+		page.write('</p><p><textarea class=inputBox rows=%s cols=40 name=offers wrap=off>'
+				% (max(len(text), 19) + 1))
+		map(page.write, map(cgi.escape, text))
+		page.write('</textarea>')
+	page.write('</td></tr>')
 	return 1
 #	----------------------------------------------------------------------
 def showPricesButton(selected = ''):
-	if (((page.power and page.power.name == 'MASTER')
+	if (((page.power and page.power.omniscient)
 	or 'PUBLIC_TOTALS' in page.game.rules)
 	and os.path.isfile(page.game.file('chart'))):
 		page.write('<form name=price method=post>')

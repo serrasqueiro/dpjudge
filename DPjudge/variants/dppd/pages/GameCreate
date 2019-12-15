@@ -71,39 +71,40 @@ if 'newGame' in vars(page):
 	%s
 	</script>""" % (id, page.password.encode('latin-1'), text, back))
 else:
-	page.write(
-	"""
-	<form name=form method=post>
-	  <table border=0>
-	    <input type=hidden name=page value=GameCreate>
-        <input type=hidden name=variant value=dppd>
-	    <input type=hidden name=id value=%d>
-	    <input type=hidden name=password value=%s>
-	    <tr>
-	      <td align=right class=bodycopy><b>1.</b></td>
-	      <td align=right class=bodycopy><b>Enter New Game Name:</b></td>
-	      <td><input type=text class=inputBox name=newGame></td>
-	    </tr>
-	    <tr>
-	      <td align=right class=bodycopy><b>2.</b></td>
-	      <td align=right class=bodycopy><b>Enter Game Password:</b></td>
-	      <td><input type=password class=inputBox name=newPass></td>
-	    </tr>
-	    <tr>
-	      <td align=left class=bodycopy><b>3.</b></td>
-	      <td align=right class=bodycopy><b>Select Variant:</b></td>
-	      <td><select class=bodycopy name=newVariant>
-			<option value=STANDARD selected>STANDARD</option>
-			<option value=PAYOLA>PAYOLA</option>
-			<option value=XTALBALL>XTALBALL</option>
-		  </select></td>
-	    </tr>
-	    <tr>
-	      <td align=center colspan=3><input class=inputSubmit2 type=button name=ok onclick=document.form.submit() value="Start"></td>
-	    </tr>
-	</table>
-	</form>
-	""" % (id, page.password))
+	page.write("""
+		<form name=form method=post>
+		  <table border=0>
+			<input type=hidden name=page value=GameCreate>
+			<input type=hidden name=variant value=dppd>
+			<input type=hidden name=id value=%d>
+			<input type=hidden name=password value=%s>
+			<tr>
+			  <td align=right class=bodycopy><b>1.</b></td>
+			  <td align=right class=bodycopy><b>Enter Game Name:</b></td>
+			  <td><input type=text class=inputBox name=newGame></td>
+			</tr>
+			<tr>
+			  <td align=right class=bodycopy><b>2.</b></td>
+			  <td align=right class=bodycopy><b>Enter Game Password:</b></td>
+			  <td><input type=password class=inputBox name=newPass></td>
+			</tr>
+			<tr>
+			  <td align=left class=bodycopy><b>3.</b></td>
+			  <td align=right class=bodycopy><b>Select Variant:</b></td>
+			  <td><select class=bodycopy name=newVariant>
+		""" % (id, page.password))
+	for name, path in listVariants():
+		page.write('<option value="%s">%s</option>' %
+			(name.upper(), name))
+	page.write("""
+			  </select></td>
+			</tr>
+			<tr>
+			  <td align=center colspan=3><input class=inputSubmit2 type=button name=ok onclick=document.form.submit() value="Start"></td>
+			</tr>
+		</table>
+		</form>
+		""")
 footer()	
 :>
 

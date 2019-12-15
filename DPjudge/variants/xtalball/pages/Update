@@ -52,7 +52,7 @@ def updatePower():
 	else: return updateOrders()
 #	----------------------------------------------------------------------
 page.game.error, acting = [], 'message' in vars(page) and 2 or (
-	page.power.name == 'MASTER' and 'action' in vars(page) and 1) or 0
+	'action' in vars(page) and 1) or 0
 if not acting:
 	untouched = updatePower() and 'No ' or ''
 	if page.game.error:
@@ -95,7 +95,7 @@ elif not acting:
 </td>
 <:
 if acting > 1: pass
-elif acting: updateMaster()
+elif acting: update()
 elif page.game.error and page.game.phase not in ('FORMING', 'COMPLETED'):
 	showOrders()
 :>

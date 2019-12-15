@@ -374,10 +374,12 @@ class Map:
 				data = [x.strip() for x in ' '.join(word[1:]).split(':')]
 				if not data: error += ['BAD %s DIRECTIVE IN MAP' % upword]
 				elif upword == 'IN': phase = data[0].upper()
-				else: phase = data[0].lower()
-				if phase == 'start': phase = 0
-				elif (' ' in phase or phase[-1] != 'm'
-				or not phase[1:-1].isdigit()): error += ['BAD FROM DIRECTIVE']
+				else:
+					phase = data[0].lower()
+					if phase == 'start': phase = 0
+					elif (' ' in phase or phase[-1] != 'm'
+					or not phase[1:-1].isdigit()):
+						error += ['BAD %s DIRECTIVE' % upword]
 				if len(data) > 1:
 					self.dynamic.setdefault(phase, []).append(data[1])
 					phase = 0
@@ -783,14 +785,14 @@ class Map:
 			else:
 				if upword in ('NEUTRAL', 'CENTERS', 'CENTRES', 'UNOWNED'):
 					power, upword = 0, 'UNOWNED'
-				else: power = self.lang.normPower(upword)
+				else: power = self.lang.addPower(upword)
 				if len(word) > 2 and word[1] == '->': 
 					oldPower = power
 					word = word[2:]
 					upword = word[0].upper()
 					if upword in ('NEUTRAL', 'CENTERS', 'CENTRES', 'UNOWNED'):
 						power, upword = 0, 'UNOWNED'
-					else: power = self.lang.normPower(upword)
+					else: power = self.lang.addPower(upword)
 					if not oldPower or not power:
 						error += ['RENAMING UNOWNED DIRECTIVE NOT ALLOWED']
 					elif not self.powName.get(oldPower):
@@ -798,12 +800,6 @@ class Map:
 					else: self.renamePower(oldPower, power)
 				if power and not self.powName.get(power):
 					self.powName[power] = upword
-					#	---------------------------------------
-					#	Add power to aliases even if the normed
-					#	form is identical. That way it becomes
-					#	part of the vocabulary.
-					#	---------------------------------------
-					self.lang.addNick(upword, power)
 				upword = power or upword
 				if power and len(word) > 1 and word[1][0] == '(':
 					nicks = word[1][1:]
@@ -824,23 +820,21 @@ class Map:
 					for nick in nicks + [upword[:1] + ':', upword[:2] + ':']:
 						if not nick: continue
 						nick = nick.upper()
-						kind = 'NICKNAME'
 						if nick[-1] == ':':
 							nick = nick[:-1]
 							if len(nick) in (len(initial), len(short)):
 								continue
 						if len(nick) == 1:
-							kind = 'INITIAL'
 							if not initial:
 								self.abbrev[upword] = initial = nick
 						elif len(nick) == 2:
-							kind = 'ABBREVIATION'
 							short = nick
 						self.lang.addNick(nick, power)
 				else: self.ownWord.setdefault(upword, upword)
 				reinit = upword in self.inhabits
 				if reinit: self.inhabits.remove(upword)
 				self.addHomes(upword, word[1:], reinit)
+		self.error += self.lang.error
 		self.lang.error = langError + self.lang.error
 	#	----------------------------------------------------------------------
 	def addHomes(self, power, homes, reinit):

@@ -151,13 +151,34 @@ page.include('functions')
 	consists of any number of key/value pairs, which are recognized as
 	follows:
 	<dl>
-	<dt><b><tt>AT <i>hh:mm</i></tt></b>
-	<dd>Specifies the time-of-day at which all deadlines should occur.
-		The hour is specified using a 24-hour clock, and based at the
-		DPjudge's timezone.  <i>Note that when a deadline is to be set
-		less than 12 hours in the future, </i><tt>AT</tt><i> is ignored.</i>
+	<dt><b><tt>AT <i>hh:mm</i>[,<i>hh:mm...</i>]</tt></b>
+	<dd>Specifies the times-of-day at which all deadlines should occur.
+		The hour is specified using a 24-hour clock, and based on the
+		game's timezone.
+		Deadlines need to respect the DPjudge turn processing schedule and thus
+		can only occur at 0, 20 or 40 minutes past the hour, unless it's a
+		<a href="<PAGE>Rules#REAL_TIME"><tt>REAL_TIME</tt></a> game or the
+		delay (see <tt>NEXT</tt>) is less than 20 minutes. If you specify a
+		time-of-day that falls in between, the deadline will be adjusted
+		upwards to the next valid time slot.
+		<i>Note that when a deadline is to be set less than 12 hours in the
+		future (or less than half the gap between the previous and next
+		time-of-day if more than one gets specified), </i><tt>AT</tt><i>
+		is ignored.</i>
 		Otherwise, all deadlines will fall at the next occuring specified
-		time-of-day after the requisite delay period (see below).
+		time-of-day after or around (see <tt>FUDGE</tt> ) the requisite delay
+		period has passed.
+	<dt><b><tt>FUDGE <i>delay</i></tt></b>
+	<dd>Specifies the amount of fudge time, pushing the deadline to an
+		earlier time-of-day in case the previous deadline was only shortly
+		exceeded.  The <tt><i>delay</i></tt> must be some positive whole
+		number followed by either <tt>M</tt> (for minutes), or <tt>H</tt> (for
+		hours).  The default is one third the gap between the previous and
+		next time-of-day, while the maximum is half that same gap (resp. 8
+		and 12 hours in case only one time-of-day is specified).  The minimum
+		is 1 minute in <a href="<PAGE>Rules#REAL_TIME"><tt>REAL_TIME</tt></a>
+		games and 20 minutes otherwise.  This setting gets ignored if there's
+		no <i><tt>AT</tt></i> timing parameter.
 	<dt><b><tt>DAYS <i>dayList</i></tt></b>
 	<dd>Specifies the days of the week on which the deadline could fall.
 		The <tt><i>dayList</i></tt> must be seven characters in length, with
@@ -173,6 +194,13 @@ page.include('functions')
 		indicates that movement phase deadlines may <i><u>not</u></i> be
 		set on that day.  <i>(Therefore, at least one of the days must be
 		specified in upper-case.)</i>
+	<dt><b><tt>START <i>delay</i></tt></b>
+	<dd>Specifies an offset relative to 00:00, midnight to determine when
+		skipped days start and end. The delay can be negative.
+		E.g. if this parameter is set to 8H and <tt>DAYS</tt> is left as the
+		default, no deadlines will be set between Saturday 08:00 and Monday
+		07:59. If it's -2H the blackout period is from Friday 22:00 to Sunday
+		21:59. Absences expressed in full days are affected in the same way.
 	<dt><b><tt>NEXT <i>delay</i></tt></b>
 	<dd>Specifies the default time period to be used to set the next
 		deadline.  The <tt><i>delay</i></tt> must be some positive whole
@@ -597,7 +625,7 @@ page.include('functions')
 	thereby effectively allowing him to play two powers. If everyone is given
 	a second power (on maps with an even number of powers), the game would only
 	need half the normal number of players. In such a case it makes sense to
-	add the <a href="<PAGE>Rules#TEAM_VICTORY">TEAM_VICTORY</a> rule, so that
+	add the <a href="<PAGE>Rules#TEAM_VICTORY"><tt>TEAM_VICTORY</tt></a> rule, so that
 	the combined SC total of the powers a player controls determines his victory
 	score.
 

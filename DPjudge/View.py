@@ -18,8 +18,8 @@ class View:
 		#	----------------------------------------------------------
 		if 'BLIND' in self.game.rules and self.game.phase != 'COMPLETED':
 			maps = [(x, '.' + y + `hash(z)`)
-				for x, y, z in [('MASTER', 'M', self.game.password)] +
-					[(x.name, x.abbrev or 'O', (x.password or self.game.password) + x.name)
+				for x, y, z in [('MASTER', 'M', self.game.gm.password)] +
+					[(x.name, x.abbrev or 'O', (x.password or self.game.gm.password) + x.name)
 					for x in self.game.powers if (not x.type or x.omniscient)]]
 		else: maps = [(None, '')]
 		for viewer, pwd in maps:

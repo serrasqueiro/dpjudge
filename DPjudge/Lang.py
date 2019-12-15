@@ -92,14 +92,14 @@ class Lang:
 		return ' '.join(words)
 	#	----------------------------------------------------------------------
 	def normNick(self, nick):
+		if len(nick) == 1: return nick
 		normed = self.normAlias(nick)
 		if normed is not None: return normed
 		self.error[-1] = self.error[-1].replace('ALIAS', 'NICK', 1)
 	#	----------------------------------------------------------------------
 	def normPower(self, power):
-		normed = self.normNick(power)
-		if normed is None: return
-		normed = normed.replace(' ', '').replace('-', '').replace('.', '')
+		normed = power.upper()
+		for op in '+ _-.': normed = normed.replace(op, '')
 		if normed: return normed
 		self.error += ['BAD POWER NAME: ' + power]
 	#	----------------------------------------------------------------------
@@ -136,30 +136,37 @@ class Lang:
 		#   -------------------------------
 		if '.' in normed or '-' in normed:
 			normed = (' ' + normed).replace(' .', '').replace(' -', '')[1:]
-			if normed in self.aliases: return self.error.append(
-				'DUPLICATE MAP ALIAS: ' + alias)
+			if normed in self.aliases:
+				return loc != self.aliases[normed] and self.error.append(
+					'DUPLICATE MAP ALIAS: ' + alias)
 			elif normed != loc and normed in self.aliases.values():
 				return self.error.append(
 					'ALIAS MATCHES OTHER LOCATION ABBREVIATION: ' + alias)
 			self.aliases[normed] = loc
 	#	----------------------------------------------------------------------
-	def addNick(self, nick, power):
-		if power not in self.nicks.values():
-			if power in self.nicks: return self.error.append(
-				'POWER NAME MATCHES OTHER NICK: ' + power)
-			normed = self.normNick(power)
-			if not normed: return
-			elif normed != power: return self.error.append(
-				'INVALID POWER NAME: ' + power)
-			if '/' in normed: return self.error.append(
-				'POWER NAME CONTAINS "/": ' + power)
-			elif len(normed) == 1: return self.error.append(
+	def addPower(self, power):
+		normed = self.normPower(power)
+		if not normed: return self.error.append(
+			'EMPTY POWER NAME: ' + power)
+		if normed not in self.nicks.values():
+			if normed in self.nicks: return self.error.append(
+				'POWER NAME MATCHES OTHER NICK: ' + normed)
+			nick = self.normNick(power)
+			if not nick: return
+			if len(nick) == 1: return self.error.append(
 				'POWER NAME CAN BE CONFUSED WITH ' +
-				'ORDER TYPE OR UNIT TYPE: ' + normed)
+				'ORDER TYPE OR UNIT TYPE: ' + nick)
+			if '/' in nick: return self.error.append(
+				'POWER NAME CONTAINS "/": ' + nick)
+			self.nicks[nick] = normed
+		return normed
+	#	----------------------------------------------------------------------
+	def addNick(self, nick, power):
 		normed = self.normNick(nick)
 		if not normed: return
-		if normed in self.nicks: return self.error.append(
-			'DUPLICATE POWER NICKNAME: ' + nick)
+		if normed in self.nicks:
+			return self.nicks[normed] != power and self.error.append(
+				'DUPLICATE POWER NICKNAME: ' + nick)
 		elif normed != power and normed in self.nicks.values():
 			return self.error.append(
 				'NICK MATCHES OTHER POWER NAME: ' + nick)
@@ -173,8 +180,9 @@ class Lang:
 			normed = (' ' + normed).replace(' .', '').replace(' -', '')[1:]
 			if not normed: return self.error.append(
 				'BAD POWER NICKNAME: ' + nick)
-			elif normed in self.nicks: return self.error.append(
-				'DUPLICATE POWER NICKNAME: ' + nick)
+			elif normed in self.nicks:
+				return self.nicks[normed] != power and self.error.append(
+					'DUPLICATE POWER NICKNAME: ' + nick)
 			elif normed != power and normed in self.nicks.values():
 				return self.error.append(
 					'NICK MATCHES OTHER POWER NAME: ' + nick)
@@ -184,8 +192,9 @@ class Lang:
 		#   ----------------------
 		if ' ' in normed:
 			normed = normed.replace(' ', '')
-			if normed in self.nicks: return self.error.append(
-				'DUPLICATE POWER NICKNAME: ' + nick)
+			if normed in self.nicks:
+				return self.nicks[normed] != power and self.error.append(
+					'DUPLICATE POWER NICKNAME: ' + nick)
 			elif normed != power and normed in self.nicks.values():
 				return self.error.append(
 					'NICK MATCHES OTHER POWER NAME: ' + nick)
@@ -219,7 +228,8 @@ class Lang:
 			if j == 1: return '', 2
 			if j > 2 and words[1] + words[j-1] == '**':
 				word2 = words[2:j-1]
-			elif j == 2 and words[1][0] == '/': return words[1], 3
+			elif j == 2 and words[1][0] == '/' and len(words[1]) > 1:
+				return words[1], 3
 			else:
 				word2 = words[1:j]
 				power = self.parseNick(word2)
@@ -307,7 +317,7 @@ class Lang:
 				while words:
 					alias, i = self.parseAlias(words)
 					if alias: result += alias.split()
-					words = words[i:]
+				 	words = words[i:]
 		if comment: result += ['%', comment.strip()]
 		return self.rearrange(self.vet(result))
 	#	----------------------------------------------------------------------

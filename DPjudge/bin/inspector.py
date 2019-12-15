@@ -112,7 +112,7 @@ class Inspector(object):
 				if x.name in (power.upper(), '_' + power.upper())]:
 				print 'No such power'
 				return
-			if not password: password = game.password
+			if not password: password = game.gm.password
 			query.update({'power': powerName, 'password': password})
 		self.browse(query, host.dpjudgeURL, 2)
 	#	----------------------------------------------------------------------
@@ -145,11 +145,18 @@ class Inspector(object):
 		if game:
 			self.vars[self.makeVar(game.name, 'G')] = self
 			self.vars['game'] = game
-			self.vars['master'] = self.master
+			self.vars['gm'] = self.gm
 			self.vars['jk'] = self.jk
 			for power in game and game.powers or []:
 				self.vars[self.makeVar(power.name, 'P')] = power
-			self.makeGlob(self.vars, depth + 1)
+		elif 'jk' not in self.vars:
+			jk = Power(self, 'JUDGEKEEPER')
+			jk.omniscient = 4
+			jk.password = host.judgePassword
+			jk.address = host.judgekeepers
+			self.vars['jk'] = jk
+		else: return
+		self.makeGlob(self.vars, depth + 1)
 	#	----------------------------------------------------------------------
 	def makeVar(self, name, initial):
 		var = name.lower()[name[0] == '_':]
@@ -165,3 +172,88 @@ class Inspector(object):
 		#	to access the top stack.
 		#	-------------------------------------------------------------
 		sys._getframe(depth).f_globals.update(vars)
+	#	----------------------------------------------------------------------
+	def findChain(self, map = None, locs = None, open = 0, report = 0):
+		#	-------------------------------------------------------------
+		#	Find the longest chain of provinces on a map such that every
+		#	province is adjacent to exactly two other provinces, except
+		#	(in an open chain) on the extremes.
+		#	Parameters:
+		#	* map: Map name or Map object
+		#	* locs: List of starting locations.
+		#	* open: Search for open or closed chain
+		#	* report: Report statistics (1), solutions (2) and/or
+		#	    intermediate results (3)
+		#	Returns the length of the longest chains.
+		#	The solutions are stored in self.chains.
+		#	For a closed chain it's best to give a list of locations that
+		#	divide the board in two by drawing a line through the center
+		#	of the board.
+		#	For an open chain all locations could potentially be starting
+		#	locations, so it's better to leave as is and let the program
+		#	sort them from least number of neighbors to most.
+		#	-------------------------------------------------------------
+		if isinstance(map, Map.Map): pass
+		elif map: map = Map(map)
+		elif self.game: map = self.game.map
+		else: map = Map('standard')
+		xlocs = [x.upper() for x in map.locs if len(x) == 3]
+		abuts = {x: list(set([y[:3].upper() for y in map.locAbut.get(x, map.locAbut.get(x.lower()))])) for x in xlocs}
+		avail = [x for x in xlocs if map.locType.get(x, map.locType.get(x.lower())) != 'SHUT']
+		tail = []
+		if not locs:
+			locs = avail[:]
+			locs.sort(key = lambda x: len(abuts[x]))
+		elif [1 for x in locs if x not in avail]:
+			return 'Error in starting locations list'
+		xlen, self.chains, xtime = 0, [], Time.Time()
+		for loc in locs:
+			xlen = self.launchChain(loc, avail, tail, xlen, xtime, abuts, open, report)
+		if report > 1: print('\n'.join(['-'.join(p) for p in self.chains]))
+		if report:
+			print('Final: max=%d, count=%d, elapsed: %d min.' % (xlen, len(self.chains), xtime.diff(Time.Time(), 60)))
+		return xlen
+	#	----------------------------------------------------------------------
+	def launchChain(self, loc, avail, tail, xlen, xtime, abuts, open, report):
+		if report:
+			print('Before %s: max=%d, count=%d, elapsed=%d min.' % (loc, xlen, len(self.chains), xtime.diff(Time.Time(), 60)))
+		path = [loc]
+		avail[:] = [x for x in avail if x != loc]
+		if open: tail += [loc]
+		avas = [x for x in abuts[loc] if x in avail]
+		if open: avail[:] = [x for x in avail if x not in avas]
+		else: avas[:1] = []
+		for l in avas:
+			if not open: avail[:] = [x for x in avail if x != l]
+			xlen = self.recurseChain(l, path, avail, tail, xlen, abuts, open, report)
+		avail += avas
+		if open: avail += [loc]
+		return xlen
+	#	----------------------------------------------------------------------
+	def recurseChain(self, loc, path, avail, tail, xlen, abuts, open, report):
+		path += [loc]
+		if not open and len(path) > 2 and path[0] in abuts[loc]:
+			xlen = self.improveChain(path, xlen, report)
+		else:
+			avas = [x for x in abuts[loc] if x in avail]
+			if not avas:
+				if open and loc not in tail:
+					xlen = self.improveChain(path, xlen, report)
+			else:
+				avail[:] = [x for x in avail if x not in avas]
+				if open and not [x for x in avail if x not in tail]:
+					if loc not in tail:
+						xlen = self.improveChain(path, xlen, report)
+				else:
+					for l in avas:
+						xlen = self.recurseChain(l, path, avail, tail, xlen, abuts, open, report)
+				avail += avas
+		path[-1:] = []
+		return xlen
+	#	----------------------------------------------------------------------
+	def improveChain(self, path, xlen, report):
+		if len(path) > xlen:
+			xlen, self.chains = len(path), [path[:]]
+			if report > 2: print('Max: %d, path = %s' % (xlen, '-'.join(path)))
+		elif len(path) == xlen: self.chains += [path[:]]
+		return xlen

@@ -77,7 +77,7 @@ class Procmail:
 	def parseMessage(self):
 		self.game = self.power = self.pressSent = None
 		self.response = []
-		game = power = password = joiner = None
+		game = power = password = joiner = nopower = None
 		lineNo = 0
 		for line in self.message[:]:
 			word = line.split()
@@ -90,6 +90,7 @@ class Procmail:
 				lineNo = 0
 				continue
 			upword = word[0].upper()
+			unrecognized = 0
 			#	----------------------------------------
 			#	Detect game creation or deletion message
 			#	----------------------------------------
@@ -137,11 +138,14 @@ class Procmail:
 			#	---------------------------------------------------
 			elif upword in ('SIGNON', 'RESIGN', 'TAKEOVER'):
 				self.dppdMandate(upword)
+				nopower = ''
 				if len(word) == 1: power = game = ''
 				elif list(word[1]).count('@') == 1:
 					power, game = word[1].split('@')
-				else: power, game = word[1][0], word[1][1:]
-				power, game = power[power[0] == '_':].upper(), game.lower()
+					power, game = power[power[:1] == '_':].upper(), game.lower()
+				else:
+					power, game = word[1][0].upper(), word[1][1:].lower()
+					nopower = word[1].lower()
 				try: password = self.sanitize(word[2])
 				except: password = ''
 				if upword[0] == 'T':
@@ -188,7 +192,8 @@ class Procmail:
 			#	-------------------------
 			elif self.email and len(word) > 2 and len(word[0]) > 2:
 				if upword != 'MONITOR': self.dppdMandate(upword)
-				game, joiner = None, upword
+				game = nopower = None
+				joiner = upword
 				if word[1].count('@') == 1:
 					power, game = word[1].split('@')
 				elif joiner == 'JOIN': power, game = 'POWER', word[1]
@@ -209,7 +214,9 @@ class Procmail:
 			#	-----------------
 			#	Unrecognized line
 			#	-----------------
-			else: break
+			else:
+				unrecognized = 1
+				break
 		#	----------------------------------
 		#	If the message was just LIST, etc.
 		#	commands, we've processed it all.
@@ -234,15 +241,23 @@ class Procmail:
 				dppdUser, dppdDomain = host.dppd.split('@')
 				dppdDomain = '.'.join(dppdDomain.split('.')[-2:])
 				if (user, domain) == (dppdUser, dppdDomain): os._exit(os.EX_OK)
-			self.respond(('Expected SIGNON, JOIN, CREATE, PURGE, RENAME, '
-				'RESIGN, TAKEOVER, SUMMARY, HISTORY, or LIST,\n'
-				'or a valid non-map-power join '
-				'command (e.g., OBSERVE playerName@gameName)', 'No playerName '
-				'given. Use "OBSERVE playerName@gameName password"')
-				['OBSERVER'.startswith(upword)])
+			if 'OBSERVER'.startswith(upword):
+				self.respond('No playerName given. Use '
+					'"OBSERVE playerName@gameName password"')
+			elif unrecognized:
+				self.respond('Expected SIGNON, JOIN, CREATE, PURGE, RENAME, '
+					'RESIGN, TAKEOVER, SUMMARY, HISTORY, or LIST,\n'
+					'or a valid non-map-power join '
+					'command (e.g., OBSERVE playerName@gameName)')
+			else:
+				self.respond('No gameName specified for %s command' % upword) 
 		self.game = Status().load(game)
 		if not self.game:
 			if not self.email: raise NoSuchGame, game
+			if nopower:
+				self.game = Status().load(nopower)
+				if self.game:
+					self.respond("No power specified for game '%s'" % nopower)
 			self.respond("No game '%s' active" % game)
 		#	---------------------------
 		#	Handle newly joining player
@@ -641,8 +656,13 @@ class Procmail:
 					now, date = game.getTime(npar=6), word[2:]
 					try:
 						if ':' not in date[-1]:
-							date += [game.timing.get('AT', '0:00')]
-						newline = now.next(' '.join(date))
+							at = game.timing.get('AT', '0:00')
+							if ',' in at: date += [at]
+							elif self.deadline:
+								date += [self.deadline.formatTime(1)]
+							else: date += ['00:00']
+						newline = now.next(' '.join(date),
+							'REAL_TIME' in game.rules and 1 or 1200)
 					except: self.respond('Bad %s specified' % word[1])
 					if now > newline: self.respond(
 						'DEADLINE has already past: ' + ' '.join(word[2:]))
@@ -673,7 +693,7 @@ class Procmail:
 					for date in dates:
 						if not date: continue
 						try:
-							newline = (oldline or now).next(' '.join(date))
+							newline = (oldline or now).next(' '.join(date), 1)
 							if not oldline: oldline = newline
 						except: self.respond('Bad %s specified' % word[1])
 					if len(dates) < 2: nope, oldline = '', newline
@@ -690,9 +710,10 @@ class Procmail:
 					if (newline < (oldline or now) or not self.isMaster(power)
 					and newline > (oldline or now).offset('2W')):
 						self.respond('Invalid ABSENCE duration')
-					dates = (oldline and oldline.format(0) or None,
-						newline.format(0))
-					game.setAbsence(power, nope)
+					dates = (oldline and oldline.format() or None,
+						newline.format())
+					msg = game.setAbsence(power, nope)
+					if msg: self.respond(msg.replace('Absence', 'ABSENCE'))
 				elif len(word) > 3: self.respond('Bad %s syntax' % word[1])
 				#	-------------------
 				#	SET ZONE and NOZONE

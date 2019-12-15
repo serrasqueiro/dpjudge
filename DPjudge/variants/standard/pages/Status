@@ -9,8 +9,6 @@ page.include('standard')
 loadGame()
 page.game.logAccess(page.power, page.password)
 checkPassword()
-checkAbsence()
-checkProposal()
 showGameHeader()
 :>
 
@@ -71,12 +69,10 @@ showPressArchive()
 showVariantInfo()
 showDocList((('summary', 'Game Summary'),
 			('EOG', 'End Of Game Statements')))
-if (page.power.name != 'MASTER' and page.game.phase not in
-	('FORMING', 'COMPLETED')):
-	showProposal()
+showProposal()
 showControlInfo()
-showAbsenceInfo()
-if page.power.name == 'MASTER': showMasterCommands()
+showAbsence()
+showCommands()
 :>
 		</table>
 		<!--MAPS, RESULTS, ENDGAME TABLE ENDS HERE-->

@@ -145,7 +145,7 @@ class Status:
 		game = Game.Game(gameName)
 		if not forced and (
 			not host.judgePassword or gamePass != host.judgePassword):
-			if not gamePass or game.password != gamePass:
+			if not gamePass or game.gm.password != gamePass:
 				error += ['No match with the master password']
 		error += self.checkGameName(toGameName)
 		if error: return error
@@ -204,7 +204,7 @@ class Status:
 						'first']
 			else: error += ['Please contact the judgekeeper to purge a game '
 				'that has already started']
-			if not gamePass or game.password != gamePass:
+			if not gamePass or game.gm.password != gamePass:
 				error += ['No match with the master password']
 			if error: return error
 		# Remove game maps

@@ -80,11 +80,12 @@ class Page:
 		#	---------------------------------------------------------------
 		self.pwdFlag = 0
 		if not self.password or not hasattr(self.power, 'name'): pass
-		elif self.password == host.judgePassword: self.pwdFlag = 5
 		elif self.game:
-			if self.password == self.game.password: self.pwdFlag = 4
-			elif self.power:
+			if self.power:
 				self.pwdFlag = self.power.isValidPassword(self.password)
+			elif self.password == self.game.gm.password: self.pwdFlag = 4
+			elif self.password == self.game.jk.password: self.pwdFlag = 5
+		elif self.password == host.judgePassword: self.pwdFlag = 5
 		if self.include(): raise SystemExit
 		self.write("<script>window.location.replace('%s');</script>" %
 			host.dpjudgeURL)

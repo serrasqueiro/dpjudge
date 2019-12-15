@@ -53,7 +53,7 @@ class Power:
 		#	Initialize the persistent parameters
 		#	------------------------------------
 		if includeFlags & 2:
-			address = password = abbrev = None
+			address = password = abbrev = viewer = None
 			omniscient = 0
 			player, msg = [], []
 		#	-----------------------------------
@@ -224,6 +224,7 @@ class Power:
 				"\n\nWelcome%s to the %s." %
 				(' back' * revived, host.dpjudgeNick))
 			self.game.mail.close()
+		if not revived: self.resetVote()
 		if resigned: self.game.avail = [x for x in self.game.avail
 			if not x.startswith(self.name + '-')]
 		if not self.game.avail:
@@ -240,7 +241,7 @@ class Power:
 				subject = 'Diplomacy position taken over')
 	#	----------------------------------------------------------------------
 	def dummy(self):
-		if self.isResigned(): self.player[0] = 'DUMMY'
+		if self.isResigned(): del self.player[0]
 		else:
 			when = self.game.phaseAbbr()
 			if self.player[1:2] != [when]:
@@ -253,7 +254,10 @@ class Power:
 					except: pass
 				self.player[:0] = [when]
 			else: del self.player[0]
+		if self.player[1:2] == ['DUMMY']: del self.player[0]
+		else:
 			self.player[:0] = ['DUMMY']
+			self.resetVote()
 		try: self.game.avail.remove([x for x in self.game.avail
 			if x.startswith(self.name)][0])
 		except: pass
@@ -299,19 +303,19 @@ class Power:
 			subject = 'Diplomacy position promoted')
 	#	----------------------------------------------------------------------
 	def controller(self):
-		if not self.ceo or self.ceo[0] == 'MASTER': return None
+		if not self.ceo or self.ceo[0] == self.game.gm.name: return None
 		for power in self.game.powers:
 			if power.name == self.ceo[0]: return power
 		return None
 	#	----------------------------------------------------------------------
 	def controls(self, power):
 		return (power is self or power.controller() is self or
-			self.name == 'MASTER')
+			self.omniscient > 2)
 	#	----------------------------------------------------------------------
 	def vassals(self, public = False, all = False, indirect = False):
 		return [x for x in self.game.powers
 			if x != self and (x.ceo[:1] == [self.name]
-			or indirect and (self.omniscient or self.name == 'MASTER'))
+			or indirect and self.omniscient)
 			and (all or not x.isEliminated(public, True))]
 	#	----------------------------------------------------------------------
 	def isResigned(self):
@@ -322,7 +326,7 @@ class Power:
 			public and 'HIDE_DUMMIES' in self.game.rules)
 	#	----------------------------------------------------------------------
 	def isEliminated(self, public = False, personal = False):
-		return not ((not self.type and self.name != 'MASTER' and
+		return not ((not self.type and not self.omniscient and
 			self.units or self.centers or self.retreats or
 			(public and 'BLIND' in self.game.rules)) or
 			(not personal and self.vassals()))
@@ -341,47 +345,58 @@ class Power:
 		#		and the CD_DUMMIES rule is on
 		#		and the grace period has expired.
 		#	-----------------------------------
+		if self.type or not self.player or self.isResigned(): return False
 		game = self.game
-		return not self.type and self.player and (
-			self.isDummy() and (
-				not self.ceo and 'CD_DUMMIES' in game.rules or (
-					after > 0 or 'NO_DEADLINE' not in game.rules and
-					game.deadline and game.deadline <= game.getTime() and (
-						not self.ceo or game.graceExpired()
-					)
-				) and (
-					self.ceo and 'CD_DUMMIES' in game.rules or
-					'CIVIL_DISORDER' in game.rules
-				)
-			) or
-			not self.isResigned() and (
-				after > 0 or 'NO_DEADLINE' not in game.rules and
-				game.deadline and game.deadline <= game.getTime() and
-				game.graceExpired()
-			) and
+		if not self.isDummy():
+			return 'CIVIL_DISORDER' in game.rules and game.graceExpired()
+		ceo = self.controller()
+		if ceo:
+			return ceo.isCD(after) or (
+				'CD_DUMMIES' in game.rules or 'CIVIL_DISORDER' in game.rules
+			) and after >= 0 and game.graceExpired()
+		return 'CD_DUMMIES' in game.rules or (
 			'CIVIL_DISORDER' in game.rules
-		)
+		) and (after > 0 or game.deadlineExpired())
 	#	----------------------------------------------------------------------
 	def isValidPassword(self, password):
+		#	------------------------------------------------------
+		#	Some people might accidentally have the same password.
+		#	To minimize detection, we'll do this in order of least
+		#	power, least surprise.
+		#	------------------------------------------------------
+		self.viewer = None
 		#	-------------------------------------------------------------------
 		#	If power is run by controller, password is in the controller's data
 		#	-------------------------------------------------------------------
 		ceo = self.controller()
-		if ceo: return ceo.isValidPassword(password)
+		if ceo:
+			valid = ceo.isValidPassword(password)
+			if valid: self.viewer = ceo.viewer or ceo
+			return valid
 		#	---------------------------
 		#	Determine password validity
 		#	---------------------------
 		if not password: return 0
 		password = password.upper()
-		if password == host.judgePassword.upper(): return 5
-		if password == self.game.password.upper(): return 4
-		if self.password and password == self.password.upper(): return 3
+		if self.password and password == self.password.upper():
+			if self.omniscient > 2: return self.omniscient + 1
+			return 3
 		#	----------------------------------------
 		#	Check against omniscient power passwords
 		#	----------------------------------------
-		if self.name == 'MASTER': return 0
-		if [1 for x in self.game.powers if x.omniscient
-			and x.password and password == x.password.upper()]: return 2
+		game = self.game
+		if not self.omniscient:
+			try:
+				self.viewer = [x for x in game.powers if x.omniscient
+					and x.password and password == x.password.upper()][0]
+				return 2
+			except: pass
+		if password == game.gm.password.upper():
+			self.viewer = game.gm
+			return 4
+		if password == game.jk.password.upper():
+			self.viewer = game.jk
+			return 5
 		return 0
 	#	----------------------------------------------------------------------
 	def isValidUserId(self, userId):
@@ -395,15 +410,17 @@ class Power:
 		#	---------------------------
 		if userId < 0: return 0
 		id = '#' + str(userId)
+		if self.player and id == self.player[0].split('|')[0]:
+			if self.omniscient > 2: return self.omniscient + 1
+			return 3
+		#	----------------------------------
+		#	Check against omniscient power ids
+		#	----------------------------------
+		if not self.omniscient:
+			if [1 for x in self.game.powers if x.omniscient
+				and x.player and id == x.player[0].split('|')[0]]: return 2
 		if self.game.gm.player and id == self.game.gm.player[0].split('|')[0]:
 			return 4
-		if self.player and id == self.player[0].split('|')[0]: return 3
-		#	----------------------------------------
-		#	Check against omniscient power passwords
-		#	----------------------------------------
-		if self.omniscient > 2: return 0
-		if [1 for x in self.game.powers if x.omniscient
-			and x.player and id == x.player[0].split('|')[0]]: return 2
 		return 0
 	#	----------------------------------------------------------------------
 	def generatePassword(self):
@@ -414,7 +431,7 @@ class Power:
 		for suffix in ('.ps', '.pdf', '.gif', '_.gif'):
 			try: os.unlink(host.gameMapDir + '/' + self.game.name + '.' +
 				(self.abbrev or 'O') +
-				`hash((self.password or self.game.password) + self.name)` +
+				`hash((self.password or self.game.gm.password) + self.name)` +
 				suffix)
 			except: pass
 		for vassal in self.vassals(all = True):
@@ -427,6 +444,11 @@ class Power:
 	def canVote(self):
 		return not (self.ceo or not (self.centers or
 			[1 for x in self.vassals() if x.centers]))
+	#	----------------------------------------------------------------------
+	def resetVote(self):
+		if self.canVote() and 'PROPOSE_DIAS' not in self.game.rules:
+			self.vote = '1'
+		else: self.vote = None
 	#	----------------------------------------------------------------------
 	def visible(self, unit, order = None):
 		#	--------------------------------------------------------------
@@ -444,7 +466,7 @@ class Power:
 		#	--------------------------------------------------------------
 		game = self.game
 		if 'command' not in vars(game): game.command = {}
-		shows, order = {'MASTER': 15}, order or game.command.get(unit, 'H')
+		shows, order = {game.gm.name: 15}, order or game.command.get(unit, 'H')
 		old = new = unit.split()[-1][:3]
 		dislodging = 0
 		if order[0] == '-' and (game.phaseType != 'M'

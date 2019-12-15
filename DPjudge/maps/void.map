@@ -14,7 +14,7 @@ Armenia (Armenian:E)
 A ARM
 Baltic+Sea (Baltic:F)
 F BAL
-Barents+Sea (Barentian:G)
+Barents+Sea (Barentian:G:BR)
 F BAR
 Black+Sea (Black:H)
 F BLA
@@ -30,11 +30,11 @@ Finland (Finnish:N)
 A FIN
 Galicia (Galician:P)
 A GAL
-Gascony (Gascon:Q)
+Gascony (Gascon:Q:GS)
 A GAS
-Gulf+Of+Bothnia (Bothnian:R)
+Gulf+Of+Bothnia (Bothnian:R:GB)
 F BOT
-Gulf+Of+Lyon (Lyonese:S)
+Gulf+Of+Lyon (Lyonese:S:GL)
 F LYO
 Helgoland+Bight (Helgolander:T)
 F HEL
@@ -46,11 +46,11 @@ Mid+Atlantic+Ocean (Mid+Atlantic:W)
 F MAO
 North+Sea (Northern:X)
 F NTH
-Norwegian+Sea (Norwegian:Y)
+Norwegian+Sea (Norwegian:Y:NW)
 F NWG
 Picardy (Picardian:Z)
 A PIC
-Piedmont (Piedmontese:0)
+Piedmont (Piedmontese:0:PM)
 A PIE
 Prussia (Prussian:1)
 A PRU
@@ -64,7 +64,7 @@ Tuscany (Tuscanian:5)
 A TUS
 Tyrolia (Tyroler:6)
 A TYR
-Tyrrhenian+Sea (Tyrrhenian:7)
+Tyrrhenian+Sea (Tyrrhenian:7:TS)
 F TYS
 Ukraine (Ukrainian:8)
 A UKR

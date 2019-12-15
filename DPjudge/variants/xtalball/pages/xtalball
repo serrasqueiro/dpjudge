@@ -8,13 +8,53 @@ def showOrdersButton():
 		if not power or power.type == 'OBSERVER': return
 	page.write('<form method=post>')
 	hideBack('Read')
-	if power and power.name != 'MASTER': which = "My Power's"
+	if power and not power.omniscient: which = "My Power's"
 	page.apprise('file', 'lists')
 	page.write("""
 		<tr><td class=bodycopy><b>Orders:</b>
 		<td class=bodycopy align=right>%s Complete Order List History</b>
 		<td><input class=inputSubmit type=submit value="Read"></td></form>
 		""" % which)
+#	----------------------------------------------------------------------
+def showLockedOrders(nextPhase, alive, vassals, extra):
+	game, power = page.game, page.power
+	for skip in range(game.skip, len(game.locks) - (not extra)):
+		page.write(
+			"""
+			<tr><td class=bodycopy align=center><font size=2>
+			<p><b>%s Order List</b></font></p>
+			""" % game.phaseName(form = 2, phase = nextPhase))
+		for who in [power][:alive] + vassals:
+			if who is not power:
+				page.write('</p><font size=2><b>%s</b></font><p>' %
+					game.anglify(who.name))
+			text = """
+				<table cellspacing=0 cellpadding=5 border=1 width=200>
+				<tr><td bgcolor=white class=bodycopy>
+				<pre><font size=2>"""
+			if not skip:
+				game.determineOrders(who, processing = 0)
+			locks = who.list[game.locks[skip]]
+			if locks:
+				for count, order in enumerate(locks):
+					if skip:
+						text += order + '\n'
+						continue
+					if who.notes[count] == 'ignored':
+						start, end = '<font color=brown><i>', '</i></font>'
+					elif who.notes[count] == 'default':
+						start, end = '<font color=green>', '</font>'
+					elif who.notes[count] == 'ordered': start = end = ''
+					elif who.notes[count] == 'revoked':
+						start, end = '<strike>', '</strike>'
+					elif who.notes[count] in ('proxied', 'byProxy', 'proxy??'):
+						start, end = '<font color=gray>', '</font>'
+					else: start, end = '<font color=red>', '</font>'
+					text += start + '[%s] ' % who.notes[count] + order + end + '\n'
+			else: text += '(NMR)\n'
+			page.write(text + '</td></tr></table>')
+		nextPhase = game.map.findNextPhase(nextPhase, 'M')
+	return nextPhase
 #	----------------------------------------------------------------------
 def showOrders():
 	import json, cgi
@@ -28,78 +68,45 @@ def showOrders():
 		return page.write('</table></td>')
 	which, shown = game.locks[-1], 0
 	page.write('<p>')
-	if not game.await or power.omniscient:
+	static = makeStatic()
+	if not static:
 		page.write('<form %s>' % ('onSubmit="return false"',
 			'method=post name=UpdateForm')[page.pwdFlag > 2])
 		hideBack('Update')
 		page.apprise('phase', game.phaseAbbr())
-	if game.phaseType != 'M':
-		if game.phaseType == 'A': shown = showAdjustList()
-		elif game.phaseType == 'R': shown = showRetreatList()
+	after = game.phaseType == 'M'
+	if after: curPhase, shown = game.phase, 1
+	else:
+		if game.phaseType == 'A': shown = showAdjustList(static)
+		elif game.phaseType == 'R': shown = showRetreatList(static)
+		if not shown: showWaitNotice()
 		curPhase = game.findNextPhase('M')
-	else: curPhase, shown = game.phase, not game.await
-	if game.skip: curPhase = game.map.findNextPhase('M', curPhase, game.skip-1)
-	elif game.await: curPhase = game.map.findNextPhase('M', curPhase)
-	if not shown: showWaitNotice()
-	nextPhase = curPhase
-	for skip in range(game.skip, len(game.locks)-1):
-		page.write(
-			"""
-			<tr><td class=bodycopy align=center><font size=2>
-			<p><b>%s Order List</b></font></p>
-			""" % game.phaseName(form = 2, phase = nextPhase))
-		for who in [power][:alive] + vassals:
-			if who is not power:
-				page.write('</p><font size=2><b>%s</b></font><p>' %
-					game.anglify(who.name))
-			text = """
-				<table cellspacing=0 cellpadding=5 border=1 width=80%>
-				<tr><td bgcolor=white class=bodycopy>
-				<pre><font size=2>"""
-			if not skip and not game.await:
-				game.determineOrders(who, processing = 0)
-			for count, order in enumerate(who.list[game.locks[skip]]):
-				if skip or game.await:
-					text += order + '\n'
-					continue
-				if who.notes[count] == 'ignored':
-					start, end = '<font color=brown><i>', '</i></font>'
-				elif who.notes[count] == 'default':
-					start, end = '<font color=green>', '</font>'
-				elif who.notes[count] == 'ordered': start = end = ''
-				elif who.notes[count] == 'revoked':
-					start, end = '<strike>', '</strike>'
-				elif who.notes[count] in ('proxied', 'byProxy', 'proxy??'):
-					start, end = '<font color=gray>', '</font>'
-				else: start, end = '<font color=red>', '</font>'
-				text += start + '[%s] ' % who.notes[count] + order + end + '\n'
-			page.write(text + '</td></tr></table>')
-		nextPhase = game.map.findNextPhase('M', nextPhase)
-	if shown and game.phaseType == 'M':
-		page.write(
-		"""
-		<tr><td class=bodycopy align=center><font size=2>
-		<p><b>%s Order List</b></font></p>
-		""" % game.phaseName(form = 2, phase = nextPhase))
-	if shown:
-		if game.phaseType == 'M':
-			if alive: unorders = ['(NMR)']
+	if game.skip: curPhase = game.map.findNextPhase(curPhase, 'M', game.skip-1)
+	nextPhase = showLockedOrders(curPhase, alive, vassals, static and after)
+	if not static:
+		if after:
+			page.write("""
+				<tr><td class=bodycopy align=center><font size=2>
+				<p><b>%s Order List</b></font></p>
+				""" % game.phaseName(form = 2, phase = nextPhase))
+			if alive: unorders = ['(NMR)', '']
 			else: unorders = []
-			for who in vassals:
-				unorders += ['[' + who.name + ']', '(NMR)']
-			unorders = '\n'.join(unorders)
-			try: orders = page.errorOrders
+			for who in vassals: unorders += ['[' + who.name + ']' +
+				' % Wait' * (not not who.wait), '(NMR)', '']
+			unorders = '\n'.join(unorders[:-1])
+			try: orders = page.errorOrders + ['']
 			except: orders = []
 			if not orders:
 				if alive:
-					orders = power.list[which]
-					if not orders: orders = ['(NMR)']
+					orders = power.list[which] or ['(NMR)']
+					orders += ['']
 				for who in vassals:
-					orders += ['[' + who.name + ']']
-					if who.list[which]: orders += who.list[which]
-					else: orders += ['(NMR)']
-			rows = max(len(orders), 19) + 1
-			orders = '\n'.join(orders)
+					orders += ['[' + who.name + ']' +
+						' % Wait' * (not not who.wait)]
+					orders += who.list[which] or ['(NMR)']
+					orders += ['']
+			rows = max(len(orders) - 1, 19) + 1
+			orders = '\n'.join(orders[:-1])
 			if not power.omniscient:
 				page.write("""
 					<p><input onClick='document.UpdateForm.%s.value = %s'
@@ -115,9 +122,10 @@ def showOrders():
 				'class=inputBox>' % (rows, which))
 			page.write(cgi.escape(orders))
 			page.write('</textarea></p>')
-		if not power.omniscient:
+		if shown:
 			showWaitFlag()
 			changeButton()
+		page.write('</form>')
 		page.write('<tr><td height=5></td></tr>')
 	page.write('</table></td>')
 #	----------------------------------------------------------------------

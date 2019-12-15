@@ -183,10 +183,16 @@ def changeMasterButton():
 		<script>
 		function prepSubmit()
 		{
-			document.master['powerData' +
-				document.master.powerChoice.options[lastPower].value].value =
-				document.master.powerData.value;
-			if (document.master.private.value == '') document.master.privacy.selectedIndex = 0;
+			if (typeof document.master.private != "undefined") {
+				if (document.master.private.value == '') {
+					document.master.privacy.selectedIndex = 0;
+				}
+			}
+			if (typeof document.master.powerChoice != "undefined") {
+				document.master['powerData' +
+					document.master.powerChoice.options[lastPower].value
+				].value = document.master.powerData.value;
+			}
 			if (typeof document.master.resign != "undefined")
 			{
 				document.master.dataresigned.value = document.master.resign.checked;
@@ -242,7 +248,7 @@ def outStatusFile():
 #
 #	----------------------------------------------------------------------
 def showMasterCommands():
-	if page.power.name != 'MASTER': return
+	if page.power.omniscient < 3: return
 	game = page.game
 	stamp = int(os.path.getmtime(game.file('status')))
 	if 'preparation' not in game.status:
@@ -251,7 +257,6 @@ def showMasterCommands():
 		hideBack('Update')
 		page.apprise('action', 'state')
 		page.apprise('stamp', stamp)
-		page.apprise('curVariant', game.__class__.__name__[:-4].lower())
 		page.write('<tr><td class=bodycopy><b>Game&nbsp;State:</b>'
 			'</td><td align=right><select class=inputBox name=gameMode>')
 		for mode in (['forming'] * (game.phase == 'FORMING') +
@@ -269,10 +274,9 @@ def showMasterCommands():
 			page.write('<form method=post name=deadline><tr>')
 			hideBack('Update')
 			page.apprise('action', 'deadline')
-			page.apprise('stamp', stamp)
-			page.apprise('curVariant', game.__class__.__name__[:-4].lower())
 			dead = game.deadline
-			dead = '%s-%s-%s' % (dead[4:6], dead[6:8], dead[:4])
+			dead = '%s/%s/%s %s:%s' % (dead[:4], dead[4:6], dead[6:8],
+				dead[8:10], dead[-2:])
 			page.apprise('date', dead)
 			page.write("""
 				<script language="javascript" type="text/javascript"
@@ -285,66 +289,129 @@ def showMasterCommands():
 				</script>
 				<tr><td class=bodycopy><b>Deadline:</b></td>
 				<td class="bodycopy" align=right><input disabled name=dead
-				id=dead type=text size=12 class=numberBox value="%s">
+				id=dead type=text size=19 class=numberBox value="%s">
 				<a onmouseover=this.style.cursor='pointer'
-				onclick="NewCal('dead','mmddyyyy',false,24)">
+				onclick="NewCal('dead','yyyymmdd',true,24,'%s')">
 				<img border=0 src=<URL>/images/cal.gif></a>
-				<b>at</b> <input type=text size=3 maxlength=2 name=hour
-				class=numberBox value=%s><b>:</b><input class=numberBox
-				type=text size=3 maxlength=2 name=minute value=%s> <b>%s</b>
-				""" % (dead, game.deadline[8:10], game.deadline[-2:],
-				TimeZone(game.zone).tzname()))
+				""" % (dead, game.zone))
 			if page.pwdFlag > 3: page.write('<td><input type=button ' +
 				'class=inputSubmit onClick=deadSubmit() value=Set></td>')
 			page.write('</tr></form>')
+			if 'NOT' in game.timing:
+				absences = []
+				for absence in game.timing['NOT'].split(','):
+					if not absence: continue
+					absences += [(absence, game.formatPeriod(absence, 5, 3))]
+				if absences:
+					page.write("""
+						<script>
+						function dropAbsence() {
+							var presence = document.absences.presence;
+							var period = presence.options[presence.selectedIndex].text;
+							if (confirm("The absence " +
+								period.charAt(0).toLowerCase() +
+								period.slice(1) + " will be revoked.")) {
+								document.absences.submit();
+							}
+						}
+						</script>
+						""")
+					page.write('<form method=post name=absences><tr>')
+					hideBack('Update')
+					page.apprise('action', 'revoke')
+					page.write("""
+						<tr><td class=bodycopy><b>Absences:</b></td>
+						<td class="bodycopy" align=right>
+						<select class=bodycopy name=presence>
+						""")
+					for absence in absences[:-1]:
+						page.write('<option value=%s>%s</option>' % absence)
+					page.write('<option value=%s selected>%s</option>' % absences[-1])
+					page.write('</select></td>')
+					if page.pwdFlag > 3: page.write('<td><input type=button ' +
+						'class=inputSubmit onClick=dropAbsence() ' +
+						'value=Revoke></td>')
+					page.write('</tr></form>')
 	if page.pwdFlag < 4: return
 	#	-------------------------
 	#	Buttons and links Section
 	#	-------------------------
-	page.write('</table><hr><table width=100%>')
-	page.write('<tr><form method=post name=access>')
-	hideBack('Read')
-	page.apprise('file', 'access')
+	page.write("""
+		</table><hr><table width=100%>
+		<tr>
+		<form method=post name=change>
+		""")
+	#	--------------------------------
+	#	The table is more compact if the
+	#	<td> is inside the <form>?!...
+	#	--------------------------------
+	hideBack('Password')
 	page.write("""
 		<td nowrap valign=top>
-		<a href=# onclick="document.access.submit();return false;">
-		<font color=red>[View Access Log]</a></td>
+		<a href=# onclick="document.change.submit();return false;">
+		<font color=red>[Change Password]</a>
+		</td>
+		</form>
+		<form method=post name=settings>
 		""")
-	page.write('</form>')
-	page.write('<form method=post name=settings>')
 	hideBack('Settings')
 	page.write("""
 		<td nowrap colspan=2 align=right valign=top>
 		<a href=# onclick="document.settings.submit();return false;">
-		<font color=red>[Edit Settings]</font></a></td>
+		<font color=red>[Edit Settings]</font></a>
+		</form>
+		</td>
+		</tr>
 		""")
-	page.write('</form></tr>')
 	if 'preparation' in game.status or ('forming' in game.status
 	and not game.available()):
-		page.write('<tr><form method=post>')
+		page.write("""
+			<tr>
+			<form method=post>
+			""")
 		hideBack('Update')
 		page.apprise('action', 'form')
 		page.apprise('stamp', stamp)
-		page.apprise('curVariant', game.__class__.__name__[:-4].lower())
 		mode = (game.available() or 'preparation' in game.status and
 			'START_MASTER' in game.rules) and 'forming' or 'active'
 		page.apprise('formMode', mode)
 		page.write("""
 			<td colspan=3 align=center>
-			<input type=submit class=inputSubmit value="%s"></td>
-			""" % ('Allow Game To Form', 'Set Game To Active')[
-			mode == 'active'])
-		page.write('</form></tr>')
+			<input type=submit class=inputSubmit value="%s">
+			</td>
+			</form>
+			</tr>
+			""" % ('Allow Game To Form',
+			'Set Game To Active')[mode == 'active'])
 	elif game.phase not in ('FORMING', 'COMPLETED'):
-		page.write('<tr><form method=post>')
+		page.write("""
+			<tr>
+			<form method=post>
+			""")
 		hideBack('Update')
 		page.apprise('action', 'process')
 		page.apprise('stamp', stamp)
 		page.write("""
 			<td colspan=3 align=center>
-			<input type=submit class=inputSubmit value="Process Turn"></td>
+			<input type=submit class=inputSubmit value="Process Turn">
+			</td>
+			</form>
+			</tr>
 			""")
-		page.write('</form></tr>')
+	page.write("""
+		<tr>
+		<form method=post name=access>
+		""")
+	hideBack('Read')
+	page.apprise('file', 'access')
+	page.write("""
+		<td nowrap colspan=3 valign=top>
+		<a href=# onclick="document.access.submit();return false;">
+		<font color=red>[View Access Log]</a>
+		</td>
+		</form>
+		</tr>
+		""")
 	#	--------------------------------
 	#	End of Buttons and links Section
 	#	--------------------------------
@@ -353,7 +420,7 @@ def showMasterCommands():
 #
 #	----------------------------------------------------------------------
 def showStatusFile():
-	if page.power.name != 'MASTER':
+	if page.power.omniscient < 3:
 		return reportUpdateError(
 			'Only the Master can edit the game status file.')
 	game = page.game
@@ -364,10 +431,6 @@ def showStatusFile():
 	page.apprise('stamp', int(os.path.getmtime(statFile)))
 	page.apprise('currpower', 'NO POWERS')
 	page.comprise(['dataresigned', 'datadummy'])
-	page.write("""
-		<tr><td class=bodycopy><b>Password:</b>
-		<td><input class=bodycopy name=newPassword value="%s"></td></tr>
-		""" % game.gm.password)
 	page.write("""
 		<script>
 		function policy()
@@ -380,7 +443,8 @@ def showStatusFile():
 			else document.master.private.style.visibility = 'hidden';
 		}
 		</script>
-		<tr><td class=bodycopy><b>Player Policy:</b>
+		<tr><td class=bodycopy>
+			<b><a href=<PAGE>Status#private>Player Policy:</a></b>
 			<td><select name=privacy onchange=policy() class=bodycopy>
 				<option value=public%s>Public Game
 				<option value=private%s>Private Game With Password:
@@ -432,7 +496,8 @@ def showStatusFile():
 		(' checked' * ('unlisted' in game.status)))
 	page.apprise('list', 'LIST')
 	page.write('</td></tr>')
-	page.write("<tr class=bodycopy><td><b>%sMap:</b><td>" %
+	page.write('<tr class=bodycopy><td>'
+		"<b><a href=<PAGE>Status#map>%sMap:</a></b></td><td>" %
 		('Trial ' * game.map.trial))
 	if game.phase == 'FORMING':
 		gameFile  = game.map.name + '.map'
@@ -459,39 +524,57 @@ def showStatusFile():
 	desc = ' '.join(game.desc)
 	page.write("""
 		<tr><td class="bodycopy" align="left"
-		valign=top><b>Description:</b></td>
+		valign=top><b><a href=<PAGE>Status#desc>Description:</a></b></td>
 		<td colspan=2 class="bodycopy"><textarea class=bodycopy name=desc
 		rows=%d cols=80>%s</textarea></td></tr>
 		""" % (len(desc) / 80 + 2, desc))
 	desc = ' '.join(game.origin)
 	page.write("""
 		<tr><td class="bodycopy" align="left" nowrap
-		valign=top><b>Origin of Name:</b></td>
+		valign=top><b><a href=<PAGE>Status#name>Origin of Name:</a></b></td>
 		<td colspan=2 class="bodycopy"><textarea class=bodycopy name=origin
 		rows=%d cols=80>%s</textarea></td></tr>
 		""" % (len(desc) / 80 + 2, desc))
-	at = game.timing.pop('AT', ':').split(':')
+	page.write("""
+		<tr><td class="bodycopy" nowrap align="left">
+		<b><a href="<PAGE>Status#timing">Timing:</a></b></td>
+		<td colspan=2 class="bodycopy">
+		""")
+	game.timing.pop('NOT', '')
+	times = game.timing.pop('AT', ':').split(',')
+	at, times = times[-1].split(':'), times[:-1]
+	page.write("""
+		<b>At</b>&nbsp;<input type=text size=3 maxlength=2 name=thour
+		class=numberBox value=%s><b>:</b><input class=numberBox
+		type=text size=3 maxlength=2 name=tminute value=%s>
+		""" % (at[0], at[1]))
+	addTimeToDroplist('thour', 'tminute', 'ttime')
+	addDroplist(times, 'ttime')
+	addPeriod('Fudge', game.timing.pop('FUDGE', ''), 'tfudge', 1)
+	page.write('<br />')
+	page.write("""
+		<b>Days</b>&nbsp;<input type=text size=10 maxlength=7 name=tdays
+		class=numberBox value=%s>
+		""" % game.timing.pop('DAYS', '-MTWTF-'))
+	addPeriod('Start', game.timing.pop('START', ''), 'tstart', 1)
+	page.write('<br />')
 	try:
 		move = [x for x in game.timing if not 'MOVEMENT'.find(x)][0]
 		move = game.timing.pop(move)
 	except: move = game.timing.get('NEXT', '3D')
-	page.write("""
-		<tr><td class="bodycopy" nowrap align="left">
-		<b>Timing:</b></td><td colspan=2 class="bodycopy">
-		<b>Days</b>&nbsp;<input type=text size=9 maxlength=7 name=tdays
-		class=numberBox value=%s>
-		<b>at</b>&nbsp;<input type=text size=3 maxlength=2 name=thour
-		class=numberBox value=%s><b>:</b><input class=numberBox
-		type=text size=3 maxlength=2 name=tminute value=%s><br />
-		""" % (game.timing.pop('DAYS', '-MTWTF-'), at[0], at[1]))
 	addPeriod('Next', game.timing.pop('NEXT', '1D'), 'tnext')
 	addPeriod('Move', move, 'tmove')
-	addPeriod('Warn', game.timing.pop('WARN', ''), 'twarn')
+	page.write('<br />')
+	warn, warnings = '', game.timing.pop('WARN', '').split(',')
+	if warnings: warn, warnings = warnings[-1], warnings[:-1]
+	addPeriod('Warn', warn, 'twarn')
+	addPeriodToDroplist('twarn', 'twarning')
+	addDroplist(warnings, 'twarning')
 	addPeriod('Grace', game.timing.pop('GRACE', ''), 'tgrace')
 	page.write('</td></tr>')
 	page.write("""
 		<tr><td class="bodycopy" nowrap align="left">
-		<b>Time Zone:</b></td><td colspan=2>
+		<b><a href=<PAGE>Status#zone>Time Zone:</a></b></td><td colspan=2>
 		<select class=bodycopy name=zone>
 		""")
 	if not game.zone: game.setTimeZone()
@@ -541,10 +624,10 @@ def showStatusFile():
 	page.write('<tr><td colspan=3><hr></td></tr>')
 	page.write("""
 		<tr><td nowrap valign=top>
-		<a href=<URL>?page=StatusHelp target=status>
+		<a href=<PAGE>Status target=status>
 		<font color=red>[Status File Help]</font></a></td>
 		<td nowrap align=right valign=top colspan=2>
-		<a href=<URL>?page=Rules target=rules>
+		<a href=<PAGE>Rules target=rules>
 		<font color=red>[Game Rules Help]</font></a></td></tr>
 		""")
 	page.write('<tr><td align=center colspan=3>')
@@ -579,7 +662,7 @@ def showAccessLog():
 		occurring -- it is possible that the judgekeeper may already
 		be aware of and monitoring an issue.</p></b></blockquote>
 		<textarea cols=88 rows=20>%s</textarea><p>
-		""" % (host.judgekeeper, page.game.name, contents))
+		""" % (page.game.jk.address[0], page.game.name, contents))
 	goBack()
 	page.write('<br>&nbsp;<BR>')
 #	----------------------------------------------------------------------
@@ -598,15 +681,125 @@ def addOption(option):
 #
 #
 #	----------------------------------------------------------------------
-def addPeriod(label, period, name):
-	length, unit = period[:-1], period[-1:] or 'D'
+def addPeriod(label, period, name, diurnal = 0):
+	length, unit = period[:-1], period[-1:] or diurnal and 'H' or 'D'
 	page.write("""
-		%s<input type=text size=2 name=%s class=numberBox
-		value=%s><select class=numberbox name=%ss>
+		%s<input type=text size=3 name=%s class=numberBox
+		value=%s><select class=numberBox name=%ss>
 		""" % (label and '<b>%s</b>&nbsp;' % (label) or '', name, length, name))
-	for opt in 'MHDW': page.write('<option%s>%s</option>' %
-		(' selected' * (opt == unit), opt))
+	for opt in 'MH' + 'DW' * (not diurnal):
+		page.write('<option%s>%s</option>' % (' selected' * (opt == unit), opt))
 	page.write('</select>')
+#	----------------------------------------------------------------------
+#
+#
+#	----------------------------------------------------------------------
+def addPeriodToDroplist(period, name):
+	page.write("""
+		<script>
+		function add%s() {
+			var numberbox = document.master.%s;
+			var period = numberbox.value.trim();
+			if (!/^[1-9]\d*$/.test(period)) {
+				alert('Please fill in a positive integer number.');
+			} else {
+				period += document.master.%ss.value;
+				var droplist = document.master.%s;
+				var idx = droplist.length;
+				var opt = document.createElement('option');
+				opt.value = opt.text = period;
+				droplist.options.add(opt);
+				droplist.selectedIndex = idx;
+				numberbox.value = '';
+				if (idx > 0) {
+					period = ',' + period;
+				} else {
+					droplist.parentNode.style.display = 'inline';
+				}
+				document.master.%ss.value += period;
+			}
+		}
+		</script>
+		""" % (name.title(), period, period, name, name))
+	page.write('<input type=button class=inputSubmit value=Add'
+		' onClick=add%s()>' % name.title())
+#	----------------------------------------------------------------------
+#
+#
+#	----------------------------------------------------------------------
+def addTimeToDroplist(hour, minute, name):
+	page.write("""
+		<script>
+		function add%s() {
+			var hourbox = document.master.%s;
+			var hour = hourbox.value.trim();
+			var minutebox = document.master.%s;
+			var minute = minutebox.value.trim();
+			if (!/^([01]?\d|2[0-3])$/.test(hour) || !/^[0-5]?\d$/.test(minute)) {
+				alert('Please fill in a valid time.');
+			} else {
+				hour = ('0' + hour).slice(-2);
+				minute = ('0' + minute).slice(-2);
+				time = hour + ':' + minute;
+				var droplist = document.master.%s;
+				var idx = droplist.length;
+				var opt = document.createElement('option');
+				opt.value = opt.text = time;
+				droplist.options.add(opt);
+				droplist.selectedIndex = idx;
+				hourbox.value = minutebox.value = '';
+				if (idx > 0) {
+					time = ',' + time;
+				} else {
+					droplist.parentNode.style.display = 'inline';
+				}
+				document.master.%ss.value += time;
+			}
+		}
+		</script>
+		""" % (name.title(), hour, minute, name, name))
+	page.write('<input type=button class=inputSubmit value=Add'
+		' onClick=add%s()>' % name.title())
+#	----------------------------------------------------------------------
+#
+#
+#	----------------------------------------------------------------------
+def addDroplist(droplist, name):
+	page.write("""
+		<script>
+		function drop%s() {
+			var droplist = document.master.%s;
+			if (droplist.length > 0) {
+				var idx = droplist.selectedIndex;
+				droplist.options.remove(idx);
+				var options = [];
+				if (droplist.length > 0) {
+					if (idx == 0) {
+						idx = droplist.length;
+					}
+					droplist.selectedIndex = idx - 1;
+					for (idx = 0; idx < droplist.length; idx++) {
+						options.push(droplist.options[idx].value);
+					}
+				} else {
+					droplist.parentNode.style.display = 'none';
+				}
+				document.master.%ss.value = options.join();
+			}
+		}
+		</script>
+		""" % (name.title(), name, name))
+	page.write('<span%s><select class=bodycopy name=%s>' %
+		(' style="display:none;"' * (not droplist), name))
+	if droplist:
+		for drop in droplist[:-1]:
+			page.write('<option>%s</option>' % drop)
+		page.write('<option selected>%s</option>' % droplist[-1])
+	page.write('</select>&nbsp;'
+		'<input type=button class=inputSubmit value=Drop'
+		' onClick=drop%s()>' % name.title())
+	page.write('<input type=hidden name=%ss value=%s></span> &nbsp;' %
+		(name, ','.join(droplist)))
 #	----------------------------------------------------------------------
 #
 #
@@ -771,18 +964,23 @@ def reportUpdateError(error):
 #
 #	----------------------------------------------------------------------
 def updateMaster():
-	if page.pwdFlag < 4: return reportUpdateError(
+	game, action = page.game, page.setdefault('action')
+	if page.pwdFlag > 3: pass
+	elif (action not in ('deadline', 'present')
+	or 'PLAYER_DEADLINES' not in game.rules): return reportUpdateError(
 		'Only the Master can update the game status file.')
-	game = page.game
-	statFile = game.file('status')
-	if page.stamp != `int(os.path.getmtime(statFile))`:
-		return reportUpdateError(
-			"""
-			While you were entering your modifications,
-			the game status file was updated by another participant in the
-			game or by the DPjudge.  Your changes were not made.
-			""")
-	action = page.setdefault('action')
+	elif page.pwdFlag < 3: return reportUpdateError('Only players ' +
+		'or the Master can change the deadline or cancel absences.')
+	statFile = ''
+	if 'stamp' in vars(page):
+		statFile = game.file('status')
+		if page.stamp != `int(os.path.getmtime(statFile))`:
+			return reportUpdateError(
+				"""
+				While you were entering your modifications,
+				the game status file was updated by another participant in the
+				game or by the DPjudge.  Your changes were not made.
+				""")
 	#	----------
 	#	Roll phase
 	#	----------
@@ -806,7 +1004,8 @@ def updateMaster():
 	#	Game mode modification
 	#	----------------------
 	games = Status()
-	gameMode = game.status[1:]
+	gameMode, gameVariant = game.status[1:], page.setdefault('curVariant',
+		game.__class__.__name__[:-4].lower())
 	if 'formMode' in vars(page):
 		if page.formMode == 'active' and gameMode[0] != 'forming':
 			game.status[1] = 'forming'
@@ -824,22 +1023,47 @@ def updateMaster():
 	if page.has('list') and page.has('unlist') != ('unlisted' in gameMode):
 		try: gameMode.remove('unlisted')
 		except: gameMode += ['unlisted']
-	games.update(game.name, gameMode, page.curVariant)
+	games.update(game.name, gameMode, gameVariant)
+	#	---------------
+	#	Deadline change
+	#	---------------
 	deathnote = None
 	if 'date' in vars(page) and 'NO_DEADLINE' not in game.rules:
-		dead = map(int, page.date.split('-'))
-		try: deadline = ('%d%02d%02d' % (dead[2], dead[0], dead[1]) +
-			'%02d%02d' % (int(page.hour), int(page.minute)))
+		dead, time = page.date.split(' ')
+		dead, time = map(int, dead.split('/')), map(int, time.split(':'))
+		try: deadline = ('%d%02d%02d' % (dead[0], dead[1], dead[2]) +
+			'%02d%02d' % (time[0], time[1]))
 		except: return reportUpdateError('Invalid deadline time')
-		game.deadline = game.getTime(deadline)
+		deadline = game.getTime(deadline)
+		if not 'REAL_TIME' in game.rules: deadline = deadline.trunc(up = 1)
+		if deadline < game.getTime():
+			return reportUpdateError('Cannot set deadline in the past')
+		game.deadline = deadline
 		deathnote = ('The deadline for game ' +
-			"'%s' has been changed by the Master.\n" % game.name)
+			"'%s' has been changed.\n" % game.name)
 	if action in ('state', 'form', 'deadline'):
 		if deathnote:
 			game.save()
 			deathnote += 'The deadline is now %s.\n' % game.timeFormat()
 			game.mailPress(None, ['All!'], deathnote,
 				subject = 'Diplomacy deadline changed')
+		return finished()
+	#	--------------
+	#	Revoke absence
+	#	--------------
+	if action == 'revoke':
+		if 'presence' not in vars(page) or 'NOT' not in game.timing:
+			return finished(0, 'No Absence to Revoke')
+		absences = game.timing['NOT'].split(',')
+		if page.presence not in absences:
+			return finished(0, 'No Absence to Revoke')
+		absences = [x for x in absences if x != page.presence]
+		if not absences: del game.timing['NOT']
+		else: game.timing['NOT'] = ','.join(absences)
+		game.save()
+		game.mailPress(None, ['All!'],
+			'The absence %s was revoked' % game.formatPeriod(page.presence,
+			0, 2), subject = 'Diplomacy absence revoked')
 		return finished()
 	#	------------------
 	#	Update status file
@@ -850,9 +1074,6 @@ def updateMaster():
 	if 'map' in vars(page):
 		trial = page.map[:1] == '*'
 		game.map = Map(page.map[trial:], trial)
-	if 'newPassword' in vars(page):
-		if page.password == game.gm.password: page.password = page.newPassword
-		game.gm.password = page.newPassword
 	if 'privacy' in vars(page):
 		if page.privacy == 'public': game.private = None
 		elif page.private: game.private = page.private
@@ -915,10 +1136,16 @@ def updateMaster():
 	hour = minute = ''
 	if 'thour' in vars(page): hour = page.thour.strip()
 	if 'tminute' in vars(page): minute = page.tminute.strip()
+	if 'ttimes' in vars(page): game.timing['AT'] = page.ttimes
 	if hour or minute:
 		if hour: hour = ('0' + hour)[-2:]
 		if minute: minute = ('0' + minute)[-2:]
-		game.timing['AT'] = hour + ':' + minute
+		if 'AT' in game.timing: game.timing['AT'] += ',' + hour + ':' + minute
+		else: game.timing['AT'] = hour + ':' + minute
+	if 'tfudge' in vars(page):
+		game.timing['FUDGE'] = page.tfudge.strip() + page.tfudges
+	if 'tstart' in vars(page):
+		game.timing['START'] = page.tstart.strip() + page.tstarts
 	if 'tnext' in vars(page):
 		next = page.tnext.strip()
 		if next:
@@ -934,10 +1161,14 @@ def updateMaster():
 			else: move = ''
 	else: move = ''
 	if next == '1D' and not move: game.timing['NEXT'] = next
+	if 'twarnings' in vars(page):
+		game.timing['WARN'] = page.twarnings
 	if 'twarn' in vars(page):
 		warn = page.twarn.strip()
 		if warn:
-			game.timing['WARN'] = warn + page.twarns
+			if 'WARN' in game.timing:
+				game.timing['WARN'] += ',' + warn + page.twarns
+			else: game.timing['WARN'] = warn + page.twarns
 	if 'tgrace' in vars(page):
 		grace = page.tgrace.strip()
 		if grace:
@@ -945,7 +1176,7 @@ def updateMaster():
 	game.terrain, game.teams = {}, []	# it will be in page.extra if given....
 	if game.tester and game.tester[-1:] == '!':
 		game.tester = ''	# and this one?
-	if 'corrupt' in game.status: return finished()
+	if 'corrupt' in game.status or not statFile: return finished()
 	#--------------
 	# Write the file
 	#--------------
@@ -1036,7 +1267,7 @@ def extract(key, var = 0, isList = 0):
 #	----------------------------------------------------------------------
 def checkErrors():
 	if not page.game.error and not page.game.map.error: return
-	if page.power and page.power.name != 'MASTER':
+	if page.power and page.power.omniscient < 3:
 		page.write("""
 			<script>
 			alert(" Problems Found in Game %s File!" +
