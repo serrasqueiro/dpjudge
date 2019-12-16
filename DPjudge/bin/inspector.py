@@ -1,5 +1,6 @@
 import re, sys, urllib
 from DPjudge import *
+from DPjudge.Map import Map
 from DPjudge.bin.check import Check
 from DPjudge.variants.dppd import *
 
@@ -173,17 +174,19 @@ class Inspector(object):
 		#	-------------------------------------------------------------
 		sys._getframe(depth).f_globals.update(vars)
 	#	----------------------------------------------------------------------
-	def findChain(self, map = None, locs = None, open = 0, report = 0):
+	def findChain(self, map = None, slocs = None, xlocs = None, open = 0, report = 0):
 		#	-------------------------------------------------------------
 		#	Find the longest chain of provinces on a map such that every
 		#	province is adjacent to exactly two other provinces, except
 		#	(in an open chain) on the extremes.
 		#	Parameters:
 		#	* map: Map name or Map object
-		#	* locs: List of starting locations.
+		#	* slocs: List of starting locations
+		#	* xlocs: List of excluded locations (end locations in open
+		#		chains, anywhere in closed chains)
 		#	* open: Search for open or closed chain
 		#	* report: Report statistics (1), solutions (2) and/or
-		#	    intermediate results (3)
+		#		intermediate results (3)
 		#	Returns the length of the longest chains.
 		#	The solutions are stored in self.chains.
 		#	For a closed chain it's best to give a list of locations that
@@ -193,21 +196,24 @@ class Inspector(object):
 		#	locations, so it's better to leave as is and let the program
 		#	sort them from least number of neighbors to most.
 		#	-------------------------------------------------------------
-		if isinstance(map, Map.Map): pass
+		if isinstance(map, Map): pass
 		elif map: map = Map(map)
 		elif self.game: map = self.game.map
 		else: map = Map('standard')
-		xlocs = [x.upper() for x in map.locs if len(x) == 3]
-		abuts = {x: list(set([y[:3].upper() for y in map.locAbut.get(x, map.locAbut.get(x.lower()))])) for x in xlocs}
-		avail = [x for x in xlocs if map.locType.get(x, map.locType.get(x.lower())) != 'SHUT']
+		mlocs = [x.upper() for x in map.locs if len(x) == 3]
+		abuts = {x: list(set([y[:3].upper() for y in map.locAbut.get(x, map.locAbut.get(x.lower()))])) for x in mlocs}
+		avail = [x for x in mlocs if map.locType.get(x, map.locType.get(x.lower())) != 'SHUT']
 		tail = []
-		if not locs:
-			locs = avail[:]
-			locs.sort(key = lambda x: len(abuts[x]))
-		elif [1 for x in locs if x not in avail]:
+		if xlocs:
+			if open: tail = xlocs
+			else: avail = [x for x in avail if x not in xlocs]
+		if not slocs:
+			slocs = avail[:]
+			slocs.sort(key = lambda x: len(abuts[x]))
+		elif [1 for x in slocs if x not in avail]:
 			return 'Error in starting locations list'
 		xlen, self.chains, xtime = 0, [], Time.Time()
-		for loc in locs:
+		for loc in slocs:
 			xlen = self.launchChain(loc, avail, tail, xlen, xtime, abuts, open, report)
 		if report > 1: print('\n'.join(['-'.join(p) for p in self.chains]))
 		if report:
@@ -234,20 +240,15 @@ class Inspector(object):
 		path += [loc]
 		if not open and len(path) > 2 and path[0] in abuts[loc]:
 			xlen = self.improveChain(path, xlen, report)
-		else:
+		elif not open or [x for x in avail if x not in tail]:
 			avas = [x for x in abuts[loc] if x in avail]
-			if not avas:
-				if open and loc not in tail:
-					xlen = self.improveChain(path, xlen, report)
-			else:
+			if avas:
 				avail[:] = [x for x in avail if x not in avas]
-				if open and not [x for x in avail if x not in tail]:
-					if loc not in tail:
-						xlen = self.improveChain(path, xlen, report)
-				else:
-					for l in avas:
-						xlen = self.recurseChain(l, path, avail, tail, xlen, abuts, open, report)
+				for l in avas:
+					xlen = self.recurseChain(l, path, avail, tail, xlen, abuts, open, report)
 				avail += avas
+		if open and loc not in tail:
+			xlen = self.improveChain(path, xlen, report)
 		path[-1:] = []
 		return xlen
 	#	----------------------------------------------------------------------
