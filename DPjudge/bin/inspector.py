@@ -174,7 +174,7 @@ class Inspector(object):
 		#	-------------------------------------------------------------
 		sys._getframe(depth).f_globals.update(vars)
 	#	----------------------------------------------------------------------
-	def findChain(self, map = None, slocs = None, xlocs = None, open = 0, report = 0):
+	def findChain(self, map = None, slocs = None, xlocs = None, xlen = 0, open = 0, report = 0):
 		#	-------------------------------------------------------------
 		#	Find the longest chain of provinces on a map such that every
 		#	province is adjacent to exactly two other provinces, except
@@ -184,6 +184,7 @@ class Inspector(object):
 		#	* slocs: List of starting locations
 		#	* xlocs: List of excluded locations (end locations in open
 		#		chains, anywhere in closed chains)
+		#	* xlen: Minimal chain length to strive for
 		#	* open: Search for open or closed chain
 		#	* report: Report statistics (1), solutions (2) and/or
 		#		intermediate results (3)
@@ -212,7 +213,7 @@ class Inspector(object):
 			slocs.sort(key = lambda x: len(abuts[x]))
 		elif set(slocs) - avail:
 			return 'Error in starting locations list'
-		xlen, self.chains, xtime = 0, [], Time.Time()
+		self.chains, xtime = [], Time.Time()
 		for loc in slocs:
 			xlen = self.launchChain(loc, avail, tail, xlen, xtime, abuts, open, report)
 		if report > 1: print('\n'.join(['-'.join(p) for p in self.chains]))
@@ -233,7 +234,7 @@ class Inspector(object):
 			for l in avas:
 				if not open: avail.remove(l)
 				xlen = self.recurseChain(l, path, avail, tail, xlen, abuts, open, report)
-			if open: avail |= avas
+			avail |= avas
 		if open: avail.add(loc)
 		return xlen
 	#	----------------------------------------------------------------------
@@ -241,7 +242,7 @@ class Inspector(object):
 		path += [loc]
 		if not open and len(path) > 2 and path[0] in abuts[loc]:
 			xlen = self.improveChain(path, xlen, report)
-		elif not open or tail:
+		elif len(path) + len(avail) >= xlen and (not open or tail & avail):
 			avas = abuts[loc] & avail
 			if avas:
 				avail -= avas
