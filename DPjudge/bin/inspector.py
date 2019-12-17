@@ -200,17 +200,17 @@ class Inspector(object):
 		elif map: map = Map(map)
 		elif self.game: map = self.game.map
 		else: map = Map('standard')
-		mlocs = [x.upper() for x in map.locs if len(x) == 3]
-		abuts = {x: list(set([y[:3].upper() for y in map.locAbut.get(x, map.locAbut.get(x.lower()))])) for x in mlocs}
-		avail = [x for x in mlocs if map.locType.get(x, map.locType.get(x.lower())) != 'SHUT']
-		tail = []
+		mlocs = set([x.upper() for x in map.locs if len(x) == 3])
+		abuts = {x: set([y[:3].upper() for y in map.locAbut.get(x, map.locAbut.get(x.lower()))]) for x in mlocs}
+		avail = {x for x in mlocs if map.locType.get(x, map.locType.get(x.lower())) != 'SHUT'}
+		tail = open and set(avail) or None
 		if xlocs:
-			if open: tail = xlocs
-			else: avail = [x for x in avail if x not in xlocs]
+			if open: tail -= set(xlocs)
+			else: avail -= set(xlocs)
 		if not slocs:
-			slocs = avail[:]
+			slocs = list(avail)
 			slocs.sort(key = lambda x: len(abuts[x]))
-		elif [1 for x in slocs if x not in avail]:
+		elif set(slocs) - avail:
 			return 'Error in starting locations list'
 		xlen, self.chains, xtime = 0, [], Time.Time()
 		for loc in slocs:
@@ -224,30 +224,31 @@ class Inspector(object):
 		if report:
 			print('Before %s: max=%d, count=%d, elapsed=%d min.' % (loc, xlen, len(self.chains), xtime.diff(Time.Time(), 60)))
 		path = [loc]
-		avail[:] = [x for x in avail if x != loc]
-		if open: tail += [loc]
-		avas = [x for x in abuts[loc] if x in avail]
-		if open: avail[:] = [x for x in avail if x not in avas]
-		else: avas[:1] = []
-		for l in avas:
-			if not open: avail[:] = [x for x in avail if x != l]
-			xlen = self.recurseChain(l, path, avail, tail, xlen, abuts, open, report)
-		avail += avas
-		if open: avail += [loc]
+		avail.remove(loc)
+		if open: tail.discard(loc)
+		avas = abuts[loc] & avail
+		if avas:
+			if open: avail -= avas
+			else: avas.remove(list(avas)[0])
+			for l in avas:
+				if not open: avail.remove(l)
+				xlen = self.recurseChain(l, path, avail, tail, xlen, abuts, open, report)
+			if open: avail |= avas
+		if open: avail.add(loc)
 		return xlen
 	#	----------------------------------------------------------------------
 	def recurseChain(self, loc, path, avail, tail, xlen, abuts, open, report):
 		path += [loc]
 		if not open and len(path) > 2 and path[0] in abuts[loc]:
 			xlen = self.improveChain(path, xlen, report)
-		elif not open or [x for x in avail if x not in tail]:
-			avas = [x for x in abuts[loc] if x in avail]
+		elif not open or tail:
+			avas = abuts[loc] & avail
 			if avas:
-				avail[:] = [x for x in avail if x not in avas]
+				avail -= avas
 				for l in avas:
 					xlen = self.recurseChain(l, path, avail, tail, xlen, abuts, open, report)
-				avail += avas
-		if open and loc not in tail:
+				avail |= avas
+		if open and loc in tail:
 			xlen = self.improveChain(path, xlen, report)
 		path[-1:] = []
 		return xlen
