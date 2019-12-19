@@ -174,7 +174,7 @@ class Inspector(object):
 		#	-------------------------------------------------------------
 		sys._getframe(depth).f_globals.update(vars)
 	#	----------------------------------------------------------------------
-	def findChain(self, map = None, slocs = None, xlocs = None, xlen = 0, open = 0, report = 0):
+	def findChain(self, map = None, slocs = None, xlocs = None, dpaths = None, xlen = 0, open = 0, report = 0):
 		#	-------------------------------------------------------------
 		#	Find the longest chain of provinces on a map such that every
 		#	province is adjacent to exactly two other provinces, except
@@ -184,6 +184,9 @@ class Inspector(object):
 		#	* slocs: List of starting locations
 		#	* xlocs: List of excluded locations (end locations in open
 		#		chains, anywhere in closed chains)
+		#	* dpaths: Divider chains that divide the map in roughly
+		#		two equal halfs; two such lines can divide the map in
+		#		quarters, etc., significantly speeding up the search
 		#	* xlen: Minimal chain length to strive for
 		#	* open: Search for open or closed chain
 		#	* report: Report statistics (1), solutions (2) and/or
@@ -213,8 +216,15 @@ class Inspector(object):
 			slocs.sort(key = lambda x: len(abuts[x]))
 		elif set(slocs) - avail:
 			return 'Error in starting locations list'
+		dpaths = None
+		if dpaths:
+			dblocks = [self.divideMap(x, avail, abuts) for x in dpaths]
+			if None in dblocks:
+				return 'Error in dividing paths'
 		self.chains, xtime = [], Time.Time()
 		for loc in slocs:
+			if report:
+				print('Before %s: max=%d, count=%d, elapsed=%d min.' % (loc, xlen, len(self.chains), xtime.diff(Time.Time(), 60)))
 			xlen = self.launchChain(loc, avail, tail, xlen, xtime, abuts, open, report)
 		if report > 1: print('\n'.join(['-'.join(p) for p in self.chains]))
 		if report:
@@ -222,15 +232,15 @@ class Inspector(object):
 		return xlen
 	#	----------------------------------------------------------------------
 	def launchChain(self, loc, avail, tail, xlen, xtime, abuts, open, report):
-		if report:
-			print('Before %s: max=%d, count=%d, elapsed=%d min.' % (loc, xlen, len(self.chains), xtime.diff(Time.Time(), 60)))
 		path = [loc]
 		avail.remove(loc)
 		if open: tail.discard(loc)
 		avas = abuts[loc] & avail
 		if avas:
 			if open: avail -= avas
-			else: avas.remove(list(avas)[0])
+			else:
+				tail = set(avas)
+				avas.remove(list(avas)[0])
 			for l in avas:
 				if not open: avail.remove(l)
 				xlen = self.recurseChain(l, path, avail, tail, xlen, abuts, open, report)
@@ -242,7 +252,7 @@ class Inspector(object):
 		path += [loc]
 		if not open and len(path) > 2 and path[0] in abuts[loc]:
 			xlen = self.improveChain(path, xlen, report)
-		elif len(path) + len(avail) >= xlen and (not open or tail & avail):
+		elif len(path) + len(avail) >= xlen and tail & avail:
 			avas = abuts[loc] & avail
 			if avas:
 				avail -= avas
@@ -260,3 +270,19 @@ class Inspector(object):
 			if report > 2: print('Max: %d, path = %s' % (xlen, '-'.join(path)))
 		elif len(path) == xlen: self.chains += [path[:]]
 		return xlen
+	#	----------------------------------------------------------------------
+	def divideMap(self, dpath, abuts):
+		divider = set(dpath)
+		former = set(abuts.keys()) - divider
+		if not former: return None
+		loc = list(former)[0]
+		dblock = (divider, former, set())
+		self.moveMap(loc, dblock, abuts)
+		if not former: return None
+		return dblock
+	#	----------------------------------------------------------------------
+	def moveMap(self, loc, dblock, abuts):
+		dblock[1].remove(loc)
+		dblock[2].add(loc)
+		for l in abuts[loc] & dblock[1]:
+			if l in dblock[1]: self.moveMap(l, dblock, abuts)
