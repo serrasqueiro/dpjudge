@@ -174,7 +174,7 @@ class Inspector(object):
 		#	-------------------------------------------------------------
 		sys._getframe(depth).f_globals.update(vars)
 	#	----------------------------------------------------------------------
-	def findChain(self, map = None, slocs = None, xlocs = None, dpaths = None, xlen = 0, open = 0, report = 0):
+	def findChain(self, map = None, slocs = None, xlocs = None, dchains = None, xlen = 0, open = 0, report = 0):
 		#	-------------------------------------------------------------
 		#	Find the longest chain of provinces on a map such that every
 		#	province is adjacent to exactly two other provinces, except
@@ -184,9 +184,11 @@ class Inspector(object):
 		#	* slocs: List of starting locations
 		#	* xlocs: List of excluded locations (end locations in open
 		#		chains, anywhere in closed chains)
-		#	* dpaths: Divider chains that divide the map in roughly
+		#	* dchains: Divider chains that divide the map in roughly
 		#		two equal halfs; two such lines can divide the map in
-		#		quarters, etc., significantly speeding up the search
+		#		quarters, etc., significantly speeding up the search;
+		#		impassable areas (shuts) along the chain should be
+		#		included
 		#	* xlen: Minimal chain length to strive for
 		#	* open: Search for open or closed chain
 		#	* report: Report statistics (1), solutions (2) and/or
@@ -216,23 +218,24 @@ class Inspector(object):
 			slocs.sort(key = lambda x: len(abuts[x]))
 		elif set(slocs) - avail:
 			return 'Error in starting locations list'
-		dpaths = None
-		if dpaths:
-			dblocks = [self.divideMap(x, avail, abuts) for x in dpaths]
+		dblocks = None
+		if dchains:
+			dblocks = [self.divideBlock(x, abuts) for x in dchains]
 			if None in dblocks:
-				return 'Error in dividing paths'
+				return 'Error in dividing chains'
 		self.chains, xtime = [], Time.Time()
+		self.hits, self.kills = 1, 0
 		for loc in slocs:
 			if report:
-				print('Before %s: max=%d, count=%d, elapsed=%d min.' % (loc, xlen, len(self.chains), xtime.diff(Time.Time(), 60)))
-			xlen = self.launchChain(loc, avail, tail, xlen, xtime, abuts, open, report)
+				print('Before %s: max=%d, count=%d, hit rate=%.1f, elapsed=%d min.' % (loc, xlen, len(self.chains), self.kills / float(self.hits), xtime.diff(Time.Time(), 60)))
+			xlen = self.launchChain(loc, avail, tail, dblocks, xlen, xtime, abuts, open, report)
 		if report > 1: print('\n'.join(['-'.join(p) for p in self.chains]))
 		if report:
-			print('Final: max=%d, count=%d, elapsed: %d min.' % (xlen, len(self.chains), xtime.diff(Time.Time(), 60)))
+			print('Final: max=%d, count=%d, hit rate=%.1f, elapsed: %d min.' % (xlen, len(self.chains), self.kills / float(self.hits), xtime.diff(Time.Time(), 60)))
 		return xlen
 	#	----------------------------------------------------------------------
-	def launchChain(self, loc, avail, tail, xlen, xtime, abuts, open, report):
-		path = [loc]
+	def launchChain(self, loc, avail, tail, dblocks, xlen, xtime, abuts, open, report):
+		chain = [loc]
 		avail.remove(loc)
 		if open: tail.discard(loc)
 		avas = abuts[loc] & avail
@@ -243,46 +246,68 @@ class Inspector(object):
 				avas.remove(list(avas)[0])
 			for l in avas:
 				if not open: avail.remove(l)
-				xlen = self.recurseChain(l, path, avail, tail, xlen, abuts, open, report)
+				xlen = self.recurseChain(l, chain, avail, tail, dblocks, xlen, abuts, open, report)
 			avail |= avas
 		if open: avail.add(loc)
 		return xlen
 	#	----------------------------------------------------------------------
-	def recurseChain(self, loc, path, avail, tail, xlen, abuts, open, report):
-		path += [loc]
-		if not open and len(path) > 2 and path[0] in abuts[loc]:
-			xlen = self.improveChain(path, xlen, report)
-		elif len(path) + len(avail) >= xlen and tail & avail:
-			avas = abuts[loc] & avail
-			if avas:
-				avail -= avas
-				for l in avas:
-					xlen = self.recurseChain(l, path, avail, tail, xlen, abuts, open, report)
-				avail |= avas
+	def recurseChain(self, loc, chain, avail, tail, dblocks, xlen, abuts, open, report):
+		chain += [loc]
+		if not open and len(chain) > 2 and chain[0] in abuts[loc]:
+			xlen = self.improveChain(chain, xlen, report)
+		else:
+			xblocks = None
+			if dblocks:
+				blos, xblocks = set(), []
+				for dblock in dblocks:
+					blocked = self.applyBlock(loc, dblock, avail)
+					if blocked:
+						self.hits += 1
+						self.kills += len(blocked)
+						blos |= blocked
+					else: xblocks += [dblock]
+			if len(chain) + len(avail) >= xlen and tail & avail:
+				avas = abuts[loc] & avail
+				if avas:
+					avail -= avas
+					for l in avas:
+						xlen = self.recurseChain(l, chain, avail, tail, xblocks, xlen, abuts, open, report)
+					avail |= avas
+			if dblocks: avail |= blos
 		if open and loc in tail:
-			xlen = self.improveChain(path, xlen, report)
-		path[-1:] = []
+			xlen = self.improveChain(chain, xlen, report)
+		chain[-1:] = []
 		return xlen
 	#	----------------------------------------------------------------------
-	def improveChain(self, path, xlen, report):
-		if len(path) > xlen:
-			xlen, self.chains = len(path), [path[:]]
-			if report > 2: print('Max: %d, path = %s' % (xlen, '-'.join(path)))
-		elif len(path) == xlen: self.chains += [path[:]]
+	def improveChain(self, chain, xlen, report):
+		if len(chain) > xlen:
+			xlen, self.chains = len(chain), [chain[:]]
+			if report > 2: print('Max: %d, chain = %s' % (xlen, '-'.join(chain)))
+		elif len(chain) == xlen: self.chains += [chain[:]]
 		return xlen
 	#	----------------------------------------------------------------------
-	def divideMap(self, dpath, abuts):
-		divider = set(dpath)
-		former = set(abuts.keys()) - divider
-		if not former: return None
-		loc = list(former)[0]
-		dblock = (divider, former, set())
-		self.moveMap(loc, dblock, abuts)
-		if not former: return None
-		return dblock
+	def divideBlock(self, dchain, abuts):
+		halver = set(dchain)
+		half = set(abuts.keys()) - halver
+		if not half: return None
+		loc = list(half)[0]
+		dblock = (halver, half, set())
+		self.moveBlock(loc, dblock, abuts)
+		if len(dblock[1]) > len(dblock[2]): half = dblock[2]
+		if not half: return None
+		return (halver, half)
 	#	----------------------------------------------------------------------
-	def moveMap(self, loc, dblock, abuts):
-		dblock[1].remove(loc)
-		dblock[2].add(loc)
-		for l in abuts[loc] & dblock[1]:
-			if l in dblock[1]: self.moveMap(l, dblock, abuts)
+	def moveBlock(self, loc, dblock, abuts):
+		halver, half, other = dblock
+		half.remove(loc)
+		other.add(loc)
+		for l in abuts[loc] & half:
+			if l in half: self.moveBlock(l, dblock, abuts)
+	#	----------------------------------------------------------------------
+	def applyBlock(self, loc, dblock, avail):
+		halver, half = dblock
+		if loc in halver or halver & avail: return
+		if loc in half: blocked = avail - half
+		else: blocked = avail & half
+		avail -= blocked
+		return blocked
