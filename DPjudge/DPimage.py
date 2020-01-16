@@ -144,11 +144,11 @@ class ImageView:
 		idx += 1
 		make +=	'%s/ppmtogif -interlace %s > %%s' % (self.toolsDir, inp[idx])
 		for page in pages:
-			gif = root + '_' * (page < 0) + ('%d' % abs(page)) * (
+			gif = root + '_' * (page < 0) + ('%02d' % abs(page)) * (
 				not 1 > page > -2) + '.gif'
 			try: os.unlink(gif)
 			except: pass
-			map(os.system, (chop % ('_' * (page < 1) + '%d' % (
+			map(os.system, (chop % ('_' * (page < 1) + '%02d' % (
 				page > 0 and page or 1 - page)) + make % gif).split(';'))
 			#	------------------------------------------------------------
 			#	If the gif make fails, the file will be 0 bytes.  Remove it.
