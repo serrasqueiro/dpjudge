@@ -4,7 +4,10 @@
 import os
 os.sys.path[:0] = [os.path.dirname(os.path.abspath(os.sys.argv[0])) + '/..']
 
-import host
+try: import host
+except:
+	os.sys.path[0] += '/..'
+	import host
 from Game import Game, Power, Mail, Status
 
 host.packageDir = __path__[0]

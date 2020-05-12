@@ -2,7 +2,7 @@ import re, sys, urllib
 from DPjudge import *
 from DPjudge.Map import Map
 from DPjudge.bin.check import Check
-from DPjudge.variants.dppd import *
+from DPjudge.dppd import *
 
 class Inspector(object):
 	"""

@@ -68,7 +68,7 @@ class Inspect:
 		if argv is None: argv = sys.argv
 		interp, command  = 'i', [
 			'from DPjudge import *',
-			'from DPjudge.variants.dppd import *',
+			'from DPjudge.dppd import *',
 			'import host',
 			'from DPjudge.bin.inspector import Inspector',
 			'self = inspect = Inspector()',

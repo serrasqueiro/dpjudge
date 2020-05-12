@@ -4,7 +4,7 @@ import email
 from codecs import open
 
 from DPjudge import *
-from DPjudge.variants.dppd.DPPD import RemoteDPPD
+from DPjudge.dppd.DPPD import RemoteDPPD
 
 class Procmail:
 	#	-------------------------------------------------------------
@@ -279,7 +279,7 @@ class Procmail:
 		if game in games.dict:
 			self.respond("Game name '%s' already used" % game)
 		try: desc = __import__('DPjudge.variants.' + variant,
-			globals(), locals(), `variant`).VARIANT
+			globals(), locals(), repr(variant)).VARIANT
 		except: self.respond('Unrecognized rule variant: ' +
 			variant)
 		self.dppdMandate(upword)
@@ -657,9 +657,9 @@ class Procmail:
 					try:
 						if ':' not in date[-1]:
 							at = game.timing.get('AT', '0:00')
-							if ',' in at: date += [at]
-							elif self.deadline:
-								date += [self.deadline.formatTime(1)]
+							if ',' not in at: date += [at]
+							elif game.deadline:
+								date += [game.deadline.formatTime(1)]
 							else: date += ['00:00']
 						newline = now.next(' '.join(date),
 							'REAL_TIME' in game.rules and 1 or 1200)

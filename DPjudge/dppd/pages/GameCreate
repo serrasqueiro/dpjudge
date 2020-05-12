@@ -93,7 +93,7 @@ else:
 			  <td align=right class=bodycopy><b>Select Variant:</b></td>
 			  <td><select class=bodycopy name=newVariant>
 		""" % (id, page.password))
-	for name, path in listVariants():
+	for name, path in getVariants():
 		page.write('<option value="%s">%s</option>' %
 			(name.upper(), name))
 	page.write("""

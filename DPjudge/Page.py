@@ -12,7 +12,8 @@ class Page:
 		#	they end up as a list of 2 nearly identical values,
 		#	which is undesirable.
 		#	---------------------------------------------------
-		self.variant = self.game = self.power = self.password = self.user = self.page = ''
+		self.game = self.power = self.password = ''
+		self.page = self.user = self.variant = self.dppd = ''
 		for key in form.keys():
 			if type(form) is dict or type(form[key]) != list:
 				vars(self)[key] = unicode(form.get(key), 'latin-1')
@@ -35,6 +36,8 @@ class Page:
 				self.write(self.adaptToHTML(host.bannerHtml))
 			if host.headerHtml:
 				self.write(self.adaptToHTML(host.headerHtml))
+		if self.variant == 'dppd':
+			self.dppd, self.variant = '1', ''
 		if self.game:
 			game = self.game.lower().replace('%23', '#')
 			self.game = Status().load(game)
@@ -51,9 +54,13 @@ class Page:
 			dir = dir.split('/')[-1]
 			if dir and os.path.isdir(host.packageDir + '/' + dir):
 				self.variant = dir
+		if self.dppd:
+			module = __import__('DPjudge.dppd',
+								globals(), locals(), 'dppd')
+			globals().update(vars(module))
 		if self.variant and not self.game:
 			module = __import__('DPjudge.variants.' + self.variant,
-								globals(), locals(), `self.variant`)
+								globals(), locals(), repr(self.variant))
 			globals().update(vars(module))
 		if not self.page:
 			if not self.game: self.page = 'Index'
@@ -177,13 +184,14 @@ class Page:
 	def include(self, fileName = None, lims = ('<:', ':>'), data = None):
 		global page
 		if not (fileName or data): fileName = self.page
-		if self.variant: variant = '/variants/' + self.variant
-		else: variant = ''
 		if fileName:
 			# this next line causes problems for the DPPD urllib playerchecker
 			# print '<!-- including', fileName, '-->'
-			for subdir in	(host.hostDir,
-							host.packageDir + variant, host.packageDir):
+			subdirs = [host.hostDir]
+			if self.variant: subdirs += [host.packageDir + '/variants/' + self.variant]
+			if self.dppd: subdirs += [host.packageDir + '/dppd']
+			subdirs += [host.packageDir]
+			for subdir in subdirs:
 				try: file = open(subdir + '/pages/' + fileName)
 				except: continue
 				data = file.read()

@@ -10,9 +10,10 @@ import cgi
 import codecs
 open = codecs.open
 #	----------------------------------------------------------------------
-#	IndexPage
+def separate(divider = 1):
+	page.write('<p>' + '<hr>' * divider)
 #	----------------------------------------------------------------------
-def listVariants():
+def getVariants():
 	variants = {}
 	for dir in [x for x in os.listdir('<PKG>/variants')
 		if os.path.isdir('<PKG>/variants/' + x)]:
@@ -28,6 +29,64 @@ def listVariants():
 		varNames.remove('Standard')
 		varNames.insert(0, 'Standard')
 	return [(x, variants[x]) for x in varNames]
+#	----------------------------------------------------------------------
+#	IndexPage, OpeningsPage
+#	----------------------------------------------------------------------
+def listVariants():
+	page.write("""
+		<table border=0 cellpadding=0 cellspacing=0>
+		<tr><td height=2></td></tr>
+		""")
+	for name, path in getVariants():
+		page.write("""
+			<form method=post>
+			<tr><td align=center>
+			<input type=hidden name=variant value="%s">
+			<input type=hidden name=page value=Index>
+			<input type=submit value="%s" class=inputSubmit2>
+			</td></tr>
+			</form>
+			<tr><td height=2></td></tr>
+			""" % (path, name))
+	page.write('</table>')
+#	----------------------------------------------------------------------
+def goToGame():
+	page.write("""
+		<table border=0 cellpadding=0 cellspacing=0>
+		<form method="post" name="toGame">
+		<input type=hidden name=page value=Login>
+		<tr><td class="bodycopy">
+		<b>Go directly to game:</b>
+		</td></tr>
+		<tr><td height=2></td></tr>
+		<tr><td align=center>
+		<input type="text" name="game" onChange="document.toGame.submit()" class="inputBox">
+		</td></tr>
+		<tr><td height=2></td></tr>
+		<tr><td align=right>
+		<input type="submit" value="Go" class="inputSubmit">
+		</td></tr>
+		</form>
+		</table>
+		<script>document.toGame.game.focus(); document.toGame.game.select();</script>
+		""")
+#	----------------------------------------------------------------------
+def mapIt():
+	page.write("""
+		<table border=0 cellpadding=0 cellspacing=0>
+		<form>
+		<input type=hidden name=page value=DPmapit>
+		<tr><td class="bodycopy">
+		<b>Map any position:
+		</td></tr>
+		<tr><td height=2></td></tr>
+		<tr><td align=center>
+		<input type=submit value="DPmapit!" class=inputSubmit>
+		</td></tr>
+		</form>
+		</table>
+		""")
+#	----------------------------------------------------------------------
 #	----------------------------------------------------------------------
 def listGames(variant = 'standard'):
 	gameDict, games, which = Status(), {}, 0
@@ -375,7 +434,7 @@ def showAbsence():
 		}
 		</script>
 		<form method=post name=setabsence>
-		""" % (page.game.zone, page.game.zone))
+		""" % (page.game.zone or 'GMT', page.game.zone or 'GMT'))
 	hideBack('Update')
 	page.apprise('action', 'absent')
 	page.apprise('omniscient', page.power.omniscient)
@@ -469,6 +528,31 @@ def showLoginForm(showElimPowers = 0):
 		<script>document.powerForm.password.focus();
 		document.powerForm.password.select();</script>
 		""")
+	if game.avail and 'forming' in game.status and 'unlisted' in game.status:
+		page.write("""
+			<script>
+			function maySubmitForm() {
+				var form = document.availForm;
+				if (form.password.value == "") {
+					form.password.focus();
+					form.password.select();
+				} else form.submit();
+			}
+			</script>
+			<form name=availForm method=post onSubmit=maySubmitForm()>
+			""")
+		page.apprise('page', 'Status')
+		page.reprise(['game'])
+		page.write("""
+			<tr valign=bottom><td height=10 colspan=3><!hr></td></tr>
+			<tr><td colspan=2 class="bodycopy" align=right nowrap>
+			<b>Password:</b>&nbsp;
+			<input name="password" type="password" class="inputBox" size=15></td>
+			<td class="bodycopy">
+			<input type="button" value="Join" class="inputSubmit" onClick=maySubmitForm()>
+			</td></tr>
+			</form>
+			""")
 #	----------------------------------------------------------------------
 def showInfo(name, value, left = 0):
 	if value: page.write(

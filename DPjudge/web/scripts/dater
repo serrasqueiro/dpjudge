@@ -139,7 +139,7 @@ function NewCal(pCtrl,pFormat,pShowTime,pTimeMode,pTimeZone)
 		}	
 	}
 	dtSelected=new Date(Cal.Year,Cal.Month,Cal.Date)
-	winCal=window.open("","DateTimePicker","toolbar=0,status=0,menubar=0,fullscreen=no,width=195,height=245,resizable=0,top="+cnTop+",left="+cnLeft);
+	winCal=window.open("","DateTimePicker","toolbar=0,status=0,menubar=0,fullscreen=no,width=215,height=245,resizable=0,top="+cnTop+",left="+cnLeft);
 	docCal=winCal.document;
 	RenderCal();
 }

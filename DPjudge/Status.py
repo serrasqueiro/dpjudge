@@ -30,7 +30,7 @@ class Status:
 		try: variant = self.dict[gameName][0]
 		except: return
 		return vars(__import__('DPjudge.variants.' + variant,
-			globals(), locals(), `variant`))[variant.title() + 'Game'](gameName)
+			globals(), locals(), repr(variant)))[variant.title() + 'Game'](gameName)
 	#	----------------------------------------------------------------------
 	def listGames(self, criteria, unlistedOk = 0):
 		if type(criteria) != list: criteria = [criteria]
@@ -78,7 +78,7 @@ class Status:
 		self.dict[game][1] = status
 		self.save()
 	#	----------------------------------------------------------------------
-	def list(self, email, subject='', criteria = None):
+	def list(self, email='', subject='', criteria = None):
 		import Mail
 		results, openings = '', criteria is None
 		if openings: criteria = ['forming', 'waiting', 'public']
@@ -92,15 +92,17 @@ class Status:
 					game = self.load(gameName)
 					results += game.shortList()
 				except: pass
-		mail = Mail.Mail(email, subject, mailAs = host.openingsAddress)
-		mail.write((':: Judge: %s\n:: URL: %s%s\n\n' %
+		body = (':: Judge: %s\n:: URL: %s%s\n\n' %
 			(host.dpjudgeID, host.dpjudgeURL,
-			'/index.cgi' * (os.name == 'nt'))) +
-			(error or results or openings and 'No Openings!' or 'No such games!'))
+			'/index.cgi' * (os.name == 'nt')))
+		body += error or results or openings and 'No Openings!' or 'No such games!'
+		if not email: return body
+		mail = Mail.Mail(email, subject, mailAs = host.openingsAddress)
+		mail.write(body)
 		mail.close()
 	#	----------------------------------------------------------------------
 	def createGame(self, email = None, gameName = None, gamePass = None, gameVar = 'standard'):
-		from variants.dppd.DPPD import RemoteDPPD
+		from dppd.DPPD import RemoteDPPD
 		error = []
 		if not gameName: error += ['No game name to CREATE']
 		if not gamePass: error += ['No game password given']
@@ -138,7 +140,7 @@ class Status:
 		return error
 	#	----------------------------------------------------------------------
 	def renameGame(self, gameName, toGameName, forced = 1, gamePass = None):
-		from variants.dppd.DPPD import RemoteDPPD
+		from dppd.DPPD import RemoteDPPD
 		error = []
 		if gameName not in self.dict:
 			return ["No such game '%s' exists on this judge" % gameName]
@@ -189,7 +191,7 @@ class Status:
 		return filter(None, error)
 	#	----------------------------------------------------------------------
 	def purgeGame(self, gameName, forced = 1, gamePass = None):
-		from variants.dppd.DPPD import RemoteDPPD
+		from dppd.DPPD import RemoteDPPD
 		error = []
 		if gameName not in self.dict:
 			return ["No such game '%s' exists on this judge" % gameName]

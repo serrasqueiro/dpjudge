@@ -399,6 +399,19 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	If preceded by <tt><i>oldName</i></tt>, which must be the name of a previously
 	defined power, followed by an arrow, that power gets renamed to the new
 	power name.
+	<P>
+	If the <tt><i>center</i></tt> is preceded (immediately, with no
+	intervening space) by a dash (<tt>-</tt>), the center is removed
+	(if possible) from any pre-existing list of home centers for the power,
+	and added to the list of unowned supply centers.
+	This allows for locations to lose "home center" status.  Factory and
+	partisan sites may also be removed in this same manner.
+	<p>
+	Multiple lines for a single <tt><i>powerName</i></tt> may be used to
+	handle long lists of centers.<p>This type of line sets a "current power"
+	such that all following lines (that specify initial owned centers and
+	units) will apply to this power (as opposed to any other) until another
+	<tt><i>powerName</i></tt> directive is encountered.
 	<p><a name=CLAIM></a>
 	<u><b>Claiming New Home Centers</b></u><br>
 	One or more <tt><i>center</i></tt> may be specified as <tt>&SC</tt> and
@@ -444,19 +457,6 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 	rule for applying this effect to all builds for all players. 
 	This sign can be combined with other signs if you want to apply more than
 	one special property to the same center, as in <tt>~@CAL(NYO)</tt>.
-	<P>
-	If the <tt><i>center</i></tt> is preceded (immediately, with no
-	intervening space) by a dash (<tt>-</tt>), the center is removed
-	(if possible) from any pre-existing list of home centers for the power,
-	and added to the list of unowned supply centers.
-	This allows for locations to lose "home center" status.  Factory and
-	partisan sites may also be removed in this same manner.
-	<p>
-	Multiple lines for a single <tt><i>powerName</i></tt> may be used to
-	handle long lists of centers.<p>This type of line sets a "current power"
-	such that all following lines (that specify initial owned centers and
-	units) will apply to this power (as opposed to any other) until another
-	<tt><i>powerName</i></tt> directive is encountered.
 
 <p><dt><b><tt>UNOWNED [<i>center...</i>]</tt> -or-<br>
 		<tt>NEUTRAL [<i>center...</i>]</tt> -or-<br>
@@ -482,7 +482,7 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 <tt>DUMMIES ALL</tt> -or- <br>
 <tt>DUMMIES [ALL EXCEPT] <i>powerName...</i></tt></b><dd>
 	This indicates that either the current power, or all powers, or only those
-	specified by <tt><i>powerName</i><tt>, or again all powers other than
+	specified by <tt><i>powerName</i></tt>, or again all powers other than
 	those specified, are to be made a <tt>DUMMY</tt>
 	power in the game.  No player will take the role of such a power.
 	Such a power can be put into civil disorder using the <tt>CD_DUMMIES</tt>
@@ -494,7 +494,7 @@ be accepted.  Take a look at the <tt>.ps</tt> files
 
 <a name=CONTROL></a>
 <p><dt><b><tt>CONTROL <i>powerName</i>...</tt></b><dd>
-	This command puts the dummy power under the control of another power,
+	This command puts the current (a dummy) power under the control of another power,
 	rotating through the list of powers according to the <tt>ROTATE</tt>
 	directive. (See the <a href=<PAGE>Status#CONTROL><tt>CONTROL</tt></a>
 	directive in the game status help file for a more thorough description.)

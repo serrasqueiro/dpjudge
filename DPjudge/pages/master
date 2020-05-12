@@ -293,7 +293,7 @@ def showMasterCommands():
 				<a onmouseover=this.style.cursor='pointer'
 				onclick="NewCal('dead','yyyymmdd',true,24,'%s')">
 				<img border=0 src=<URL>/images/cal.gif></a>
-				""" % (dead, game.zone))
+				""" % (dead, game.zone or 'GMT'))
 			if page.pwdFlag > 3: page.write('<td><input type=button ' +
 				'class=inputSubmit onClick=deadSubmit() value=Set></td>')
 			page.write('</tr></form>')
@@ -332,6 +332,19 @@ def showMasterCommands():
 						'class=inputSubmit onClick=dropAbsence() ' +
 						'value=Revoke></td>')
 					page.write('</tr></form>')
+	page.write("""
+		<tr>
+		<form method=post name=access>
+		""")
+	hideBack('Read')
+	page.apprise('file', 'access')
+	page.write("""
+		<td class=bodycopy><b>Monitoring:</b></td>
+		<td class=bodycopy align=right>Access Log</td>
+		<td><input type=submit class=inputSubmit value=View></td>
+		</form>
+		</tr>
+		""")
 	if page.pwdFlag < 4: return
 	#	-------------------------
 	#	Buttons and links Section
@@ -398,20 +411,6 @@ def showMasterCommands():
 			</form>
 			</tr>
 			""")
-	page.write("""
-		<tr>
-		<form method=post name=access>
-		""")
-	hideBack('Read')
-	page.apprise('file', 'access')
-	page.write("""
-		<td nowrap colspan=3 valign=top>
-		<a href=# onclick="document.access.submit();return false;">
-		<font color=red>[View Access Log]</a>
-		</td>
-		</form>
-		</tr>
-		""")
 	#	--------------------------------
 	#	End of Buttons and links Section
 	#	--------------------------------

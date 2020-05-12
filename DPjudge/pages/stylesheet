@@ -114,7 +114,7 @@ A:VISITED {
 	font-family:		verdana;
 	font-size:			10px;
 	font-weight:		bold;
-	width:				11em;
+	width:				12em;
 	margin:				1px;
 	cursor:				hand;
 }

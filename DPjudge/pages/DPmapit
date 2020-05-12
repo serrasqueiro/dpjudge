@@ -78,13 +78,14 @@ class GameMap(Game):
 		if not results:
 			self.phase = self.map.phase
 			results = 'Starting position for Spring of 1901.\n\015'
+			self.powers = [MapPower(x) for x in self.map.powers]
+			self.gm, self.jk = MapPower('MASTER'), MapPower('JUDGEKEEPER')
 			for power in sorted(self.map.units):
 				units = self.map.units[power]
 				results += '\n\015'
 				for unit in units: results += ('%s: %s.\n\015' %
-					(self.anglify(power), self.anglify(unit)))
+					(self.anglify(power), self.anglify(unit, power)))
 			results += '\n\015Ownership of supply centers:\n\015\n\015'
-			self.powers = [MapPower(x) for x in self.map.powers]
 			for power, centers in self.map.homes.items():
 				if centers: results += ('%s: %s.\n\015' % (self.anglify(power),
 					', '.join([self.anglify(x) for x in centers])))

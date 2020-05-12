@@ -2165,7 +2165,7 @@ class Game:
 		#	----------------------------------------
 		#	Create list of eligible press recipients
 		#	----------------------------------------
-		if not self.powers: who = [self.gm.name]
+		if not self.powers or 'SOLITAIRE' in self.rules: who = [self.gm.name]
 		else: who = self.powers + ([self.gm.name, 'ALL'],
 			['ALL', self.gm.name])['PRESS_MASTER' in self.rules]
 		if sendingPower.name == self.jk.name: pass
@@ -2296,9 +2296,9 @@ class Game:
 					and 'IGNORE_RESULTS' in self.rules): continue
 					power, email = reader, self.gm.address[0]
 				elif reader == 'JUDGEKEEPER':
-					fromSender = sender and sender.name != reader
-					if (not sender or fromSender) and readers in (['All'],
-						['All!']): continue
+					#fromSender = sender and sender.name != reader
+					if (not sender or sender.name != reader) and readers in (
+						['All'], ['All!']): continue
 					power, email = reader, self.jk.address[0]
 				else:
 					if reader.type == 'MONITOR' and readers != ['All!']:
@@ -5355,7 +5355,7 @@ class Game:
 	def updateState(self):
 		# return # TEMP! BUT AS OF NEW YEARS MOMENT 2007, APACHE SEEMS WAY SICK
 		if not host.dppdURL: return
-		from variants.dppd.DPPD import RemoteDPPD
+		from dppd.DPPD import RemoteDPPD
 		self.collectState()
 		header = '|'.join([x + ':' + (y or '') for x,y in self.state.items()])
 		if self.outcome: result = '|RESULT:' + ':'.join(self.outcome)
