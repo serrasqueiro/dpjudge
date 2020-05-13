@@ -506,7 +506,8 @@ class Game:
 		return 1
 	#	----------------------------------------------------------------------
 	def expandOrder(self, order, check = 1, strip = 'PR'):
-		error, result = self.error, self.lang.revet(self.lang.compact(order))
+		error, keepMoveMarks = self.error, 'NEED_MOVE_MARKS' in self.rules
+		result = self.lang.revet(self.lang.compact(order, keepMoveMarks))
 		#	---------------
 		#	Weed out errors
 		#	---------------
@@ -4575,7 +4576,8 @@ class Game:
 	#	----------------------------------------------------------------------
 	def distributeOrders(self, power, orders, proxy = False):
 		distributor, absent, uncontrolled, unspecified = [], [], [], []
-		for who, what in self.lang.distribute(power.name, orders):
+		keepMoveMarks = 'NEED_MOVE_MARKS' in self.rules
+		for who, what in self.lang.distribute(power.name, orders, keepMoveMarks):
 			dudes = [x for x in self.powers if x.name == who]
 			if dudes:
 				dude = dudes[0]

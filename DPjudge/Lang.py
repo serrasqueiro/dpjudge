@@ -266,11 +266,11 @@ class Lang:
 		else: i = 1
 		return alias, i
 	#	----------------------------------------------------------------------
-	def distribute(self, power, orders):
+	def distribute(self, power, orders, keepMoveMarks = False):
 		powers, distributor = [power], {}
 		blocker = power
 		for order in orders:
-			vets = self.compact(order)
+			vets = self.compact(order, keepMoveMarks)
 			if not vets: continue
 			pets, start, liner, loner = [], 1, blocker, 1
 			for vet in vets + ['S&']:
@@ -302,7 +302,7 @@ class Lang:
 			if loner: blocker = liner
 		return [(x, distributor[x]) for x in powers if x in distributor]
 	#	----------------------------------------------------------------------
-	def compact(self, phrase):
+	def compact(self, phrase, keepMoveMarks = False):
 		if '%' in phrase:
 			order, comment = phrase.split('%', 1)
 		else: order, comment = phrase, None
@@ -319,7 +319,7 @@ class Lang:
 					if alias: result += alias.split()
 				 	words = words[i:]
 		if comment: result += ['%', comment.strip()]
-		return self.rearrange(self.vet(result))
+		return self.rearrange(self.vet(result), keepMoveMarks)
 	#	----------------------------------------------------------------------
 	def vet(self, words, strict=0):
 		#	---------------------------------------------------------
@@ -389,7 +389,7 @@ class Lang:
 	def revet(self, vets, strict = 1):
 		return self.vet([x[1:] for x in vets], strict)
 	#	----------------------------------------------------------------------
-	def rearrange(self, vets):
+	def rearrange(self, vets, keepMoveMarks = False):
 		#	--------------------------------------------------
 		#	Surround with ampersands to simplify edge cases
 		#	--------------------------------------------------
@@ -417,7 +417,7 @@ class Lang:
 					del vets[i]
 		#	----------------------------------------
 		#	Replace every ">" that is preceded by a
-		#	territory (so it's not a bet) with a "-"
+		#	place (so it's not an offer) with a "-"
 		#	----------------------------------------
 		for i in range(2, len(vets)-1):
 			if vets[i] == 'B>' and vets[i-1][0] in 'LC': vets[i] = 'M-'
@@ -441,20 +441,21 @@ class Lang:
 		#	Remove every move operator, but keep track of
 		#	the primary type per "and" and "or" phrase
 		#	---------------------------------------------
-		move, moves = '-', []
-		for i in range(len(vets)-2, -1, -1):
-			if vets[i][0] == 'M':
-				if move == '=': pass
-				elif vets[i][1] == '=': move = '='
-				elif vets[i][1] != '-': move = vets[i][1]
-				del vets[i]
-			elif vets[i] in ('S|', 'S&'):
-				moves += [move]
-				move = '-'
-		#	-------------------------------------------------
-		#	Move every bet to the front of each "and" branch, 
+		if not keepMoveMarks:
+			move, moves = '-', []
+			for i in range(len(vets)-2, -1, -1):
+				if vets[i][0] == 'M':
+					if move == '=': pass
+					elif vets[i][1] == '=': move = '='
+					elif vets[i][1] != '-': move = vets[i][1]
+					del vets[i]
+				elif vets[i] in ('S|', 'S&'):
+					moves += [move]
+					move = '-'
+		#	---------------------------------------------------
+		#	Move every offer to the front of each "and" branch, 
 		#	preceded only by the power if already in place
-		#	-------------------------------------------------
+		#	---------------------------------------------------
 		j, k = 0, 1
 		for i in range(1, len(vets)-1):
 			if vets[i][0] in 'AB':
@@ -463,11 +464,11 @@ class Lang:
 				k = k+1
 			elif vets[i] == 'S&' or vets[i][0] == 'P' and i == j+1:
 				j, k = i, i+1
-		#	-------------------------------------
-		#	Insert a colon if a bet amount is not
-		#	followed by an operator
+		#	-----------------------------------
+		#	Insert a colon if an offer amount
+		#	is not followed by an operator
 		#	Remove if it concerns waived builds
-		#	-------------------------------------
+		#	-----------------------------------
 		for i in range(len(vets)-2, 0, -1):
 			if vets[i][0] == 'A':
 				if vets[i+1] in ('OB', 'OV'):
@@ -545,9 +546,9 @@ class Lang:
 				break
 			elif vets[j][0] == 'O': i = j
 			elif vets[j] in ('S|', 'S&'): break
-		#	-----------------------------------------
-		#	Put the power before the unit and the bet
-		#	-----------------------------------------
+		#	-------------------------------------------
+		#	Put the power before the unit and the offer
+		#	-------------------------------------------
 		j = 0
 		for i in range(1, len(vets)-1):
 			if vets[i][0] == 'P':
@@ -561,12 +562,13 @@ class Lang:
 		#	Insert the primary move operator between
 		#	subsequent locations
 		#	----------------------------------------
-		for i in range(len(vets)-2, 1, -1):
-			if vets[i][0] in 'LC' and (vets[i-1][0] in 'LC'
-			or vets[i-1] == 'S|'):
-				vets[i:i] = ['M' + moves[0]]
-			elif vets[i] in ('S|', 'S&'):
-				moves = moves[1:]
+		if not keepMoveMarks:
+			for i in range(len(vets)-2, 1, -1):
+				if vets[i][0] in 'LC' and (vets[i-1][0] in 'LC'
+				or vets[i-1] == 'S|'):
+					vets[i:i] = ['M' + moves[0]]
+				elif vets[i] in ('S|', 'S&'):
+					moves = moves[1:]
 		#	----------------------------------
 		#	Remove ampersands at start and end
 		#	----------------------------------

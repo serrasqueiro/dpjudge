@@ -78,7 +78,7 @@ class PayolaGame(Game):
 		#	Initialize the persistent parameters
 		#	------------------------------------
 		if includeFlags & 2:
-			self.rules = ['ORDER_ANY']
+			self.rules = ['ORDER_ANY', 'NEED_MOVE_MARKS']
 			self.taxes, self.tax, self.cap = {}, 0, 0
 		#	-----------------------------------
 		#	Initialize the transient parameters

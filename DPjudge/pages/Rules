@@ -174,6 +174,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 <option>MUST_ORDER</option>
 <option>MUTE_OBSERVERS</option>
 <option value=MYOPIC>MYOPIC (BLIND)</option>
+<option>NEED_MOVE_MARKS</option>
 <option>NO_ABSENCES</option>
 <option>NO_DEADLINE</option>
 <option>NO_DIAS</option>
@@ -533,6 +534,17 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
 	GM on it. This will remove the e-mail receipt flag on the order page.
 	Useful for investigating or discouraging claims of corrupted order entry,
 	e.g. when a password became exposed.
+<!-- RULE END -->
+
+<a name=NEED_MOVE_MARKS></a><p><dt><b><tt>NEED_MOVE_MARKS</tt></b><dd>
+<!-- RULE NEED_MOVE_MARKS -->
+	By default, orders that are specified without an order type (that is,
+	without "move", "support", or "convoy") are interpreted as a move
+	order if possible.  In this way, <tt>A VEN&nbsp;TRI</tt> is considered
+	equivalent to <tt>A VEN&nbsp;-&nbsp;TRI</tt>.  This <tt>RULE</tt>
+	countermands that and makes it mandatory to include a mark (<tt>-</tt>,
+	<tt>-&gt;</tt>, etc.) indicating that the order is a move.  Note that
+	this rule also applies to Retreat phase orders.
 <!-- RULE END -->
 
 <a name=BROADCAST_ORDERS></a><p><dt><b><tt>BROADCAST_ORDERS</tt></b><dd>
@@ -1790,7 +1802,13 @@ the course of the game.
 		<dl>
 		<a name="3.1"></a>
 <p><dt><b>3.1 Included, Forbidden, and Ignored Rules</b>
-<p><dd>Payola games always use the <tt>ORDER_ANY</tt> rule.
+<p><dd>Payola games always use the <tt>ORDER_ANY</tt> and
+	<tt>NEED_MOVE_MARKS</tt> rules. The reason for including the
+	latter is that some bribe offers would otherwise become 
+	ambiguous. Consider e.g. <tt>5: A VEN S TRI | TYR</tt>. Should
+	this be interpreted as an offer to either support Trieste or
+	move to Tyrolia, or rather as a support for either Trieste or
+	Tyrolia? Requiring the move mark removes the ambiguity.
 	<p>The <tt>PROXY_OK</tt> and <tt>FICTIONAL_OK</tt> rules are not allowed.
 	(An exception is made for <tt>FICTIONAL_OK</tt> if it is included as
 	a by-product of the use of the <tt>BLIND</tt> rule.)
