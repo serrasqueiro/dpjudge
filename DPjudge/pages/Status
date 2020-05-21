@@ -174,7 +174,8 @@ page.include('functions')
 		exceeded.  The <tt><i>delay</i></tt> must be some positive whole
 		number followed by either <tt>M</tt> (for minutes), or <tt>H</tt> (for
 		hours).  The default is one third the gap between the previous and
-		next time-of-day, while the maximum is half that same gap (resp. 8
+		next time-of-day (given in the <tt>AT</tt> data of the <tt>TIMING</tt>),
+		while the maximum is half that same gap (respectively, 8
 		and 12 hours in case only one time-of-day is specified).  The minimum
 		is 1 minute in <a href="<PAGE>Rules#REAL_TIME"><tt>REAL_TIME</tt></a>
 		games and 20 minutes otherwise.  This setting gets ignored if there's
@@ -351,7 +352,7 @@ page.include('functions')
 	This line is used to <u>add</u> a new <tt><i>mapFileLine</i></tt> to
 	the map being used for the game.  The <i>mapFileLine</i></tt> should
 	be a properly formatted line that could appear in a map file, according
-	to rhe <a href=<URL>?page=Map>map file syntax description</a>.  In this
+	to the <a href=<URL>?page=Map>map file syntax description</a>.  In this
 	way, existing maps may be altered in various ways (providing that the
 	underlying graphical support map is compatible with the additional lines
 	and need not be updated). To add more than one line, either use multiple

@@ -614,7 +614,7 @@ onchange=document.location.replace('#'+document.find.rule.options[document.find.
     Players may issue orders to units owned by any player, not just those
     they themselves own.  This could be because proxy orders are allowed,
     or (as in Payola) because all units are subject to acting according to
-    the highest financial bid received.
+    the highest financial payment offer received.
 <!-- RULE END -->
 
 <a name=PROXY_OK></a><p><dt><b><tt>PROXY_OK</tt></b><dd>
@@ -1994,7 +1994,7 @@ the course of the game.
 	<br><br>Let's illustrate the difference with the following example.
 	Italy has moved towards France (intentionally or not), and France
 	wants Austria to stab Italy by attacking Venice from Trieste.
-	<br>Here are the bid sheets for fleet Trieste when <tt>RESTRICT_SIGNAL</tt>
+	<br>Here are the offer sheets for fleet Trieste when <tt>RESTRICT_SIGNAL</tt>
 	is <b>not</b> active (only <tt>SIGNAL_SUPPORT</tt> is):
 	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Austria: 2 : F TRI - VEN</tt>
 	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Austria: 0 : F TRI S A VEN - SWI ?</tt>
@@ -2010,10 +2010,12 @@ the course of the game.
 	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;France:&nbsp; 3 : F TRI - VEN</tt>
 	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;France:&nbsp; 1 : F TRI H</tt>
 	<br><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Italy:&nbsp;&nbsp; 5 ! F TRI - VEN</tt>
-	<br>The only difference is that, in case the attack bid on Venice
-	fails, France pays Trieste to hold instead of supporting, as the rule
+	<br>The only difference is that, in case the offers made to Trieste to
+	attack Venice are insufficient,
+	France pays Trieste to hold instead of supporting, as the rule
 	forbids France to issue an invalid support order to a foreign unit.
-	The bid indeed fails, with the result that Fleet Trieste gives void
+	The offers are indeed insufficient, with the result that Fleet Trieste
+	gives void
 	support to Venice to Switzerland, which is Austria's default order.
 	Although France and Italy paid for it, it's Austria choosing the
 	message, proclaiming his desire to seek peace with Italy, much to

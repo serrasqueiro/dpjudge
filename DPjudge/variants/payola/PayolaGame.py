@@ -368,17 +368,36 @@ class PayolaGame(Game):
 			parts = [x.strip().split() for x in ' '.join(word[2:]).split('|')]
 			#	--------------------------------------------------
 			#	Convert all words in the first order to recognized 
-			#	tokens and add all missing unit types and any
-			#	missing coasts (RUM-BUL becomes RUM-BUL/EC)
+			#	tokens and add all missing unit types
+			#	Note that if no unit type (A or F) is given and no
+			#	unit exists on the location, the type (A or F)
+			#	will not be filled in.
 			#	--------------------------------------------------
-			first = self.map.defaultCoast(self.addUnitTypes(
-				self.expandOrder(' '.join(parts[0]))))
+			first = self.addUnitTypes(self.expandOrder(' '.join(parts[0])))
 			#	---------------------------------------------------
 			#	Validate the unit and check for disallowed wildcard
 			#	orders and and for 0 AgP bribes to foreign units.
 			#	---------------------------------------------------
 			if len(first) < 2:
 				return self.error.append('INCOMPLETE OFFER: ' + ' '.join(word))
+			if len(first[0]) != 1:
+				# determination of missing unit type failed
+				if 'FICTIONAL_OK' not in self.rules:
+					return self.error.append('OFFER TO NON-EXISTENT UNIT: ' + ' '.join(word))
+				#	TODO:	Fill in every possible unit type (TUN becomes A TUN then F TUN)
+				#			and call a method doing all of the below code for each.  If the
+				#			self.error length grows after either method call, return.
+				#			(Do all this INSTEAD of returning with the error line below.)
+				return self.error.append('UNIT TYPE REQUIRED IN BLIND PAYOLA: ' + ' '.join(word))
+			else:
+				#	TODO:	Call the code below, broken into a new method as discussed above.
+				#			Hmm...we are still wasting some effort re-checking Classic rule
+				#			adherence, etc., until getting to the "for part in parts" line.
+				pass
+			#	-------------------------------------------------------
+			#	Add any	missing coasts (F RUM-BUL becomes F RUM-BUL/EC)
+			#	-------------------------------------------------------
+			first = self.map.defaultCoast(first)
 			unit, orders, newline = ' '.join(first[:2]), [], first[:2]
 			if word[:2] != ['0', ':'] or 'PAY_DUMMIES' not in self.rules:
 				newline = word[:2] + newline
