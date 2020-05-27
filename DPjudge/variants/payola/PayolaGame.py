@@ -153,7 +153,7 @@ class PayolaGame(Game):
 					power.elect[company] = candidate
 			elif word[0] == 'STATE':		# (exchange, undocumented?)
 				if len(word) == 2: power.state = word[1]
-				else: error += ['BAD STATE FOR ' + power.name]
+				else: self.error += ['BAD STATE FOR ' + power.name]
 			elif word[0] == 'ACCEPT':
 				if power.accept: self.error += ['TWO ACCEPTS FOR ' + power.name]
 				elif len(word) != 2:

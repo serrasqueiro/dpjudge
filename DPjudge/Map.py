@@ -612,7 +612,7 @@ class Map:
 			#	Teams, a way to create dummies controlled by a single power
 			#	-----------------------------------------------------------
 			elif upword in ('TEAM', 'TEAMS'):
-				if len(word) == 1: error += ['%s REQUIRES LIST OF TEAMS']
+				if len(word) == 1: error += [upword + ' REQUIRES LIST OF TEAMS']
 				else:
 					power = None
 					teams = word[1:2]
@@ -645,22 +645,6 @@ class Map:
 								self.controls[member] = [leader]
 			elif upword == 'DROP':
 				for place in [x.upper() for x in word[1:]]: self.drop(place)
-			#	----------------------------------------
-			#	Dynamic map instructions to be processed
-			#	by the game only in specific game phases
-			#	----------------------------------------
-			elif len(word) > 1 and upword == 'IN':
-				data = [x.strip() for x in ' '.join(word[1:]).split(':')]
-				if len(data) != 2: error += ['BAD DYNAMIC MAP INSTRUCTION']
-				else: self.dynamic.setdefault(data[0], []).append(data[1])
-			#	----------------------------------------
-			#	Dynamic map instructions to be processed
-			#	by the game only in specific game phases
-			#	----------------------------------------
-			elif len(word) > 1 and upword == 'IN':
-				data = [x.strip() for x in ' '.join(word[1:]).split(':')]
-				if len(data) != 2: error += ['BAD DYNAMIC MAP INSTRUCTION']
-				else: self.dynamic.setdefault(data[0], []).append(data[1])
 			#	------------------------------
 			#	Terrain type and adjacencies
 			#	(with special adjacency rules)
@@ -680,7 +664,7 @@ class Map:
 				if place in self.locs: self.locs.remove(place)
 				self.locs += [place]
 				if upword != 'AMEND':
-					self.locType[place] = word[0]
+					self.locType[place] = upword
 					if len(word) > 2: self.locAbut[place] = []
 				elif place not in self.locType:
 					error += ['NO DATA TO "AMEND" FOR ' + place]
@@ -756,8 +740,6 @@ class Map:
 					error += ['NO POWER AFTER UNPLAYED ALL EXCEPT']
 				else: goners = [x for x in self.homes.keys() if x not in (
 					['UNOWNED'] + [self.lang.normPower(y) for y in word[3:]])]
-				power = None
-
 				for goner in goners:
 					try:
 						del self.powName[goner]
@@ -862,7 +844,7 @@ class Map:
 				limits, home = home[idx + 1:-1].split(','), home[:idx]
 			else: limits = []
 			if not home: continue
-			if power in self.alternative.keys():
+			if power in self.alternative:
 				self.alternative[power] = [x for x in self.alternative[power]
 					if x[0] != home]
 			if home in self.hidden.get(power, []):
@@ -922,10 +904,10 @@ class Map:
 			gone = (old.lower(), old)[old in data]
 			data[(new.lower(), new)[old in data]] = data[gone]
 			del data[gone]
-		for one, two in [(x,y) for z in self.abutRules.values()
+		for one, two, rules in [(x,y, z) for z in self.abutRules.values()
 						for x,y in z if old in (x.upper(), y.upper())]:
-			self.abuts.remove((one, two))
-			self.abuts.append((	one == old and new
+			rules.remove((one, two))
+			rules.append((	one == old and new
 						or  one == old.lower() and new.lower()
 						or  one == old.title() and new.title() or one,
 							two == old and new

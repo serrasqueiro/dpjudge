@@ -619,6 +619,7 @@ class EnglishLang(Lang):
 			'CONVOY': 'C',	'CONVOYS': 'C',	'CONVOYING': 'C', 
 			'HOLD': 'H',	'HOLDS': 'H',	'HOLDING': 'H',
 			'BUILD': 'B',	'BUILDS': 'B',	'BUILDING': 'B',
+			'RAISE': 'B',	'RAISES': 'B',	'RAISING': 'B',
 			'DISBAND': 'D',	'DISBANDS': 'D',	'DISBANDING': 'D',
 			'REMOVE': 'D',	'REMOVES': 'D',	'REMOVING': 'D',
 			'WAIVE': 'V',	'WAIVES': 'V',	'WAIVING': 'V',	'WAIVED': 'V',
