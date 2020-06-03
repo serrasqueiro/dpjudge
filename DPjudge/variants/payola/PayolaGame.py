@@ -20,9 +20,9 @@ class PayolaGame(Game):
 		#	------------------------------------------------------------------
 		def __cmp__(self, key):
 			#	--------------------------------------------------------------
-			#	Decide all bribe winners.  High bribe wins, and if two or more
-			#	bribes are tied, the winner is that with the more acceptable
-			#	bribes (from bribe positions, put in acceptance list order).
+			#	Determine winning offers.  High offer wins, and if two or more
+			#	offers are tied, the winner is that with the more acceptable
+			#	offers (from offer positions, put in acceptance list order).
 			#	--------------------------------------------------------------
 			return (cmp(key.total, self.total)
 				or cmp([(x, os.sys.maxint)[x is None] for x in self.seqs],
@@ -309,14 +309,14 @@ class PayolaGame(Game):
 		if word[0][0] in '!:>@': word[0] = '0' + word[0]
 		elif word[0][0].isalpha(): word = ['0', ':'] + word
 		#	-----------------------------------------------------------
-		#	Format bribe amount and plateau without embedded whitespace
+		#	Format offer amount and plateau without embedded whitespace
 		#	-----------------------------------------------------------
 		for ch in '*#+':
 			if len(word) > 1 and word[1][0] == ch:
 				if len(word[1]) > 1: word[:2] = [''.join(word[:2])]
 				else: word[:3] = [''.join(word[:3])]
 		#	--------------------
-		#	Segregate bribe type
+		#	Segregate offer type
 		#	--------------------
 		if not word[0][0].isdigit():
 			return self.error.append('INVALID OFFER AMOUNT:&nbsp;' + word[0])
@@ -326,13 +326,13 @@ class PayolaGame(Game):
 				break
 		if len(word[1]) > 1: word[1:2] = [word[1][0], word[1][1:]]
 		#	-----------------------------------------
-		#	Validate the bribe amount, which may have
+		#	Validate the offer amount, which may have
 		#	the format rep*max#plateau+(another)+...
 		#	-----------------------------------------
 		detail = []
 		for each in word[0].split('+'):
 			if not each: return self.error.append(
-				'ADDITIONAL BRIBE NOT GIVEN:&nbsp;' + word[0])
+				'ADDITIONAL OFFER NOT GIVEN:&nbsp;' + word[0])
 			try:
 				if '*' in each:
 					rep, rest = each.split('*')
@@ -359,9 +359,9 @@ class PayolaGame(Game):
 				return self.error.append('PLATEAU AMOUNT ON SAVINGS REQUEST')
 			for rep, amt, plateau in detail: power.reserve(rep * amt)
 			newline = word
-		#	-----------------------------
-		#	Now see if it is a bribe line
-		#	-----------------------------
+		#	------------------------------
+		#	Now see if it is an offer line
+		#	------------------------------
 		elif word[1] in list(':!@>&'):
 			if len(word) < 3:
 				return self.error.append('INCOMPLETE OFFER: ' + ' '.join(word))
@@ -376,7 +376,7 @@ class PayolaGame(Game):
 			first = self.addUnitTypes(self.expandOrder(' '.join(parts[0])))
 			#	---------------------------------------------------
 			#	Validate the unit and check for disallowed wildcard
-			#	orders and and for 0 AgP bribes to foreign units.
+			#	orders and and for 0 AgP offers to foreign units.
 			#	---------------------------------------------------
 			if len(first) < 2:
 				return self.error.append('INCOMPLETE OFFER: ' + ' '.join(word))
@@ -409,7 +409,7 @@ class PayolaGame(Game):
 					return self.error.append(
 						'MULTIPLE OFFERS TO A SINGLE UNIT FORBIDDEN: ' + unit)
 				if word[1] != ':' or '|' in offer: return self.error.append(
-					'WILDCARD BRIBES NOT ALLOWED')
+					'WILDCARD OFFERS NOT ALLOWED')
 				if '*' in word[0] or '+' in word[0]: return self.error.append(
 					'REPETITION AND AUGMENTATION NOT ALLOWED')
 				if ('LIMIT_OFFERS' in self.rules
@@ -425,13 +425,13 @@ class PayolaGame(Game):
 						if ((amt, word[1]) != (0, ':') or '|' in offer
 						or [x for x in power.offers if x.unit == unit]):
 							return self.error.append(
-								'BRIBE TO DOMESTIC UNIT: ' + unit)
+								'OFFER TO DOMESTIC UNIT: ' + unit)
 				else:
 					whose = self.unitOwner(unit)
 					if whose and whose.player and not whose.isDummy():
-						return self.error.append('BRIBE TO OWNED UNIT: ' + unit)
+						return self.error.append('OFFER TO OWNED UNIT: ' + unit)
 			#	---------------------------------------------------
-			#	Check for zero silver piece bribes to foreign units
+			#	Check for zero silver piece offers to foreign units
 			#	---------------------------------------------------
 			for rep, amt, plateau in detail:
 				if (amt == 0 and unit not in power.units
@@ -439,7 +439,7 @@ class PayolaGame(Game):
 				and 'ZERO_FOREIGN' not in self.rules): return self.error.append(
 					'ZERO AgP OFFER TO FOREIGN UNIT: ' + unit)
 			#	--------------------------------------------------
-			#	Go through all bribes (separated by vertical bars)
+			#	Go through all offers (separated by vertical bars)
 			#	--------------------------------------------------
 			for part in parts:
 				#	--------------------------------------------------
@@ -456,8 +456,8 @@ class PayolaGame(Game):
 				#	The Payola Mailing List voted to outlaw duplicate
 				#	orders in offers (i.e. "5 : F TYS - ION | - ION").
 				#	Note that this form DOES have meaning, though --
-				#	rather than a single bribe of 10 AgP, which would
-				#	be reduced to 9 on overspending, two bribes of 5
+				#	rather than a single offer of 10 AgP, which would
+				#	be reduced to 9 on overspending, two offers of 5
 				#	would be reduced each to four, for a total of 8.
 				#	However, to achieve quicker reduction like this,
 				#	players must use separate offers.  The best
@@ -484,7 +484,7 @@ class PayolaGame(Game):
 						if word[:2] != ['0', ':']:
 							return self.error.append(
 								'SIGNAL_SUPPORT ORDER MUST BE 0 AgP DIRECT ' +
-								'BRIBE: ' + ' '.join(word))
+								'OFFER: ' + ' '.join(word))
 						elif not whose or power not in (whose, whose.controller()):
 							return self.error.append(
 								'SIGNAL_SUPPORT ORDER TO FOREIGN UNIT: %s ' %
@@ -498,8 +498,8 @@ class PayolaGame(Game):
 								'MORE THAN ONE SIGNAL_SUPPORT ORDER FOR UNIT: %s ' %
 								unit + order) 
 					newline += ['?']
-				if (('TOUCH_BRIBE' in self.rules
-				or   'REMOTE_BRIBE' in self.rules)
+				if (('TOUCH_OFFER' in self.rules
+				or   'REMOTE_OFFER' in self.rules)
 				and not ('CD_DUMMIES' in self.rules
 				and whose and whose.player and whose.isDummy())):
 					owner = whose or power
@@ -507,10 +507,10 @@ class PayolaGame(Game):
 						bad = [x for x in power.units
 							if self.validOrder(power, x, 'S ' + unit, report=0) == 1
 							or self.validOrder(owner, unit, 'S ' + x, report=0) == 1]
-						if 'TOUCH_BRIBE' in self.rules: bad = not bad
+						if 'TOUCH_OFFER' in self.rules: bad = not bad
 						if bad: return self.error.append(
-							'BRIBED UNIT M%sT BE ADJACENT: ' %
-							('AY NO', 'US')['TOUCH_BRIBE' in self.rules] + unit)
+							'UNIT BEING GIVEN OFFER M%sT BE ADJACENT: ' %
+							('AY NO', 'US')['TOUCH_OFFER' in self.rules] + unit)
 				orders += [order + ' ?' * (valid == -1)]
 			#	-----------------------------------------------------
 			#	Add the offer repeatedly (according to the "*" count)
@@ -537,7 +537,7 @@ class PayolaGame(Game):
 			#	---------------------------------------------------
 			#	In BLIND games, all the offers a unit gets MIGHT be
 			#	invalid.  If so, we'll have no order yet, and we'll
-			#	need to add another (default hold) bribe to get one
+			#	need to add another (default hold) offer to get one
 			#	---------------------------------------------------
 			if not orders: power.addOffer(':', unit, 'H')
 		#	----------------------
@@ -563,7 +563,7 @@ class PayolaGame(Game):
 		#	high-bid amount to a unit for separate orders, and no power's
 		#	money is involved.  All investors appear at the same location
 		#	in all acceptance lists, meaning the "num" attribute of the two
-		#	Keys could be identical if each power listed its contending
+		#	Keys could be identical if each investor listed its contending
 		#	bid at the same position down their list.
 		#
 		#	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -574,14 +574,14 @@ class PayolaGame(Game):
 		#	--------------------------------------------------------
 		if 'RESTRICT_SIGNAL' in self.rules and best.order == 'H':
 			best.order = self.signalOrder(power, unit) or 'H'
-		#	--------------------------------------------------------
-		#	If the eBayola rule is being used, the winning briber(s)
+		#	---------------------------------------------------------
+		#	If the eBayola rule is being used, the winning offerer(s)
 		#	will only be charged the sum of the highest NON-winning
-		#	bribe amount plus one.  Any resulting rebates will be
+		#	offer amount plus one.  Any resulting rebates will be
 		#	given to the most-preferred contributing powers first
 		#	(uncomment in the if clause to rebate the most-preferred
 		#	contributing power among those offering the most gold).
-		#	--------------------------------------------------------
+		#	---------------------------------------------------------
 		if 'EBAYOLA' in self.rules:
 			for other in self.offers[unit][1:]:
 				for who, amt in other.cost.items():
@@ -600,8 +600,8 @@ class PayolaGame(Game):
 				best.total -= rebate
 				over -= rebate
 		#	--------------------------------------------------------------
-		#	When a DUMMY unit is bribed, all ties involving bribes offered
-		#	by a different power or set of powers are decided by having
+		#	When a DUMMY unit is given an offer, all ties involving offers
+		#	from a different power or set of powers are decided by having
 		#	the unit HOLD.  Find and accept the unit's HOLD offer, and set
 		#	its total (for appearances) to one AgP better than the best.
 		#	--------------------------------------------------------------
@@ -641,7 +641,7 @@ class PayolaGame(Game):
 		#	(separated by vertical bars) would often sort higher than the
 		#	first order in the list, in direct contradiction of Rule 3.3.
 		#	So then I made it so that the expansion occurred for all lists
-		#	only before each run through all of the bribes -- including
+		#	only before each run through all of the offers -- including
 		#	before any re-run-throughs caused by player overexpenditure.
 		#	This made good sense to me, but proved too difficult to explain
 		#	in the rules and could lead to players wondering why an
@@ -762,7 +762,7 @@ class PayolaGame(Game):
 	#	----------------------------------------------------------------------
 	def sendLedgers(self):
 		self.openMail('Payola orders', 'ledgers')
-		self.mail.write('OFFICIAL Payola bribe results %s %.1s%s%.1s\n' %
+		self.mail.write('OFFICIAL Payola offer results %s %.1s%s%.1s\n' %
 			tuple([self.name] + self.phase.split()), 0)
 		blind = 'BLIND' in self.rules
 		for power in self.powers:
@@ -788,7 +788,7 @@ class PayolaGame(Game):
 					self.mail.write(
 						'TOTAL NET INCOME FOR YOUR UNITS WAS:%5d AgP\n' % gain)
 					power.funds['+'] = power.funds.get('+', 0) + gain
-			if not power.offers: self.mail.write('YOU OFFERED NO BRIBES\n')
+			if not power.offers: self.mail.write('YOU MADE NO OFFERS\n')
 			elif 'HIDE_OFFERS' not in self.rules:
 				status = 1
 				for key in [x for x in self.orders.values() if power in x.cost]:
@@ -798,11 +798,11 @@ class PayolaGame(Game):
 							if 'PAY_DUMMIES' in self.rules: continue
 						elif blind and 'ZERO_FOREIGN' not in self.rules:
 							continue
-					self.mail.write('YOUR ACCEPTED BRIBES WERE:\n' * status +
+					self.mail.write('YOUR ACCEPTED OFFERS WERE:\n' * status +
 						off)
 					status = 0
 				if status:
-					self.mail.write('NONE OF YOUR BRIBES WERE ACCEPTED\n')
+					self.mail.write('NONE OF YOUR OFFERS WERE ACCEPTED\n')
 				self.mail.write('YOUR OFFER SHEET WAS:\n')
 				for offer in power.sheet:
 					if not offer[:1].isdigit(): offer = '0 : ' + offer
@@ -817,10 +817,10 @@ class PayolaGame(Game):
 				'THE PREVIOUS BALANCE OF YOUR BANK ACCOUNT WAS:%7d AgP\n' %
 					power.balance)
 				if power.overpaid: self.mail.write(
-				'EACH OFFER WAS SUBJECT TO BRIBE REDUCTION RULES %5d TIME%s\n'
+				'EACH OFFER WAS SUBJECT TO OFFER REDUCTION RULES %5d TIME%s\n'
 					% (power.overpaid, 'S'[power.overpaid < 2:]))
 				self.mail.write(
-				'TOTAL COST TO YOU OF THE BRIBES YOU OFFERED WAS:%5d AgP\n' %
+				'TOTAL COST TO YOU OF THE OFFERS YOU MADE WAS:   %5d AgP\n' %
 					(power.liquid - power.left))
 			power.balance -= power.liquid - power.left
 			self.mail.write(
@@ -934,7 +934,7 @@ class PayolaGame(Game):
 		if 'NO_LEDGERS' in self.rules: return
 		if not (bal or power.gained or power.lost): return
 		subject = 'Payola income report ' + self.phase.split()[1]
-		desc = ('TAX INCOME', 'BRIBE PROFITS')['ZEROSUM' in self.rules]
+		desc = ('TAX INCOME', 'OFFER PROFITS')['ZEROSUM' in self.rules]
 		self.openMail(subject, 'ledgers')
 		self.mail.write('OFFICIAL %s\n' % subject, 0)
 		self.mail.write('PRESS TO %s %s\n' %
