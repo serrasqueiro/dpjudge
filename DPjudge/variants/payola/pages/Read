@@ -39,7 +39,7 @@ def showPrices():
 	page.write(
 		"""
 		<tr valign=top bgcolor="#CCCCCC">
-		<td align=center class="grey"><b>Bribe Chart for %s</b></td>
+		<td align=center class="grey"><b>Offer Chart for %s</b></td>
 		</tr>
 		<tr valign=top>
 		<td>

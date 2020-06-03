@@ -681,9 +681,9 @@ class PayolaGame(Game):
 			[x.reduce() for x in self.powers if x.left < 0]
 	#	----------------------------------------------------------------------
 	def writeChart(self):
-		header, num, dash, bribers = '%35s', '%4d ', '   - ', self.map.powers
+		header, num, dash, offerers = '%35s', '%4d ', '   - ', self.map.powers
 		powers, balance, liquid, left, overpaid, total = [], {}, {}, {}, {}, 0
-		for player in bribers:
+		for player in offerers:
 			for power in self.powers:
 				if power.name == player:
 					balance[player], left[player] = power.balance, power.left
@@ -692,15 +692,15 @@ class PayolaGame(Game):
 					if power.units: powers += [power]
 					break
 		if 'PAY_DUMMIES' in self.rules:
-			bribers = [x.name for x in self.powers
+			offerers = [x.name for x in self.powers
 				if x.name in self.map.powers and not x.isDummy()]
 			powers = [x for x in powers if x.isDummy()]
-		line = '-' * (39 + 5 * len(bribers))
+		line = '-' * (39 + 5 * len(offerers))
 		try: file = open(self.file('chart'), 'a')
 		except: return self.error.append('CANNOT WRITE CHART: INFORM MASTER')
 		temp = '\n%s\n%s\n%s\n%35s' % (line, self.phase, line, '')
 		file.write(temp.encode('latin-1'))
-		for player in bribers: file.write('  %.3s' % player)
+		for player in offerers: file.write('  %.3s' % player)
 		if 'PAY_DUMMIES' not in self.rules:
 			for power in powers:
 				file.write('\nACCEPTANCE LIST FOR %-15s' % power.name)
@@ -720,7 +720,7 @@ class PayolaGame(Game):
 						offer.order[-1:] == '?') and 'H' or offer.order
 					temp = '%-35s' % (unit + ' ' + order)
 					file.write(temp.encode('latin-1'))
-					for payer in bribers:
+					for payer in offerers:
 						player = [x for x in self.powers if x.name == payer]
 						if player:
 							temp = (player[0] in offer.cost
@@ -732,10 +732,10 @@ class PayolaGame(Game):
 		file.write(line.encode('latin-1'))
 		if overpaid:
 			file.write('\n%-35s' % 'OVERBIDDING REDUCTIONS')
-			for power in bribers: file.write(
+			for power in offerers: file.write(
 				overpaid.get(power) and num % overpaid[power] or dash)
 		file.write('\n%-35s' % 'TREASURY BEFORE OFFERS')
-		for power in bribers:
+		for power in offerers:
 			balance[power] = balance.get(power, 0)
 			liquid[power] = liquid.get(power, 0)
 			left[power] = left.get(power, 0)
@@ -744,13 +744,13 @@ class PayolaGame(Game):
 		temp = num % total + '\n%-35s' % 'TOTAL PRICES PAID'
 		file.write(temp.encode('latin-1'))
 		total = 0
-		for power in bribers:
+		for power in offerers:
 			file.write(num % (liquid[power] - left[power]))
 			total += liquid[power] - left[power]
 		temp = num % total + '\n%-35s' % 'NEW TREASURY BALANCES'
 		file.write(temp.encode('latin-1'))
 		total = 0
-		for power in bribers:
+		for power in offerers:
 			temp = num % (balance[power] - liquid[power] + left[power])
 			file.write(temp.encode('latin-1'))
 			total += balance[power] - liquid[power] + left[power]

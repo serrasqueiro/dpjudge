@@ -85,7 +85,7 @@ showPressArchive()
 showVariantInfo()
 showDocList( (	('summary', 'Game Summary'),
 				('EOG', 'End Of Game Statements'),
-				('chart', 'Bribe Chart'),
+				('chart', 'Offer Chart'),
 				('ledgers', 'Offer Ledgers')))
 showProposal()
 if (page.power.name != 'MASTER'

@@ -228,7 +228,7 @@ def showPricesButton(selected = ''):
 		hideBack('Read')
 		page.apprise('file', 'chart')
 		page.write("""
-			<tr><td class=bodycopy><b>Bribes:</b></td>
+			<tr><td class=bodycopy><b>Offers:</b></td>
 			<td align=right class=bodycopy><select name=phase class=inputBox
 			onChange=document.price.submit()>
 			""")

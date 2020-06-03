@@ -46,22 +46,22 @@ def updateOffers():
 def payolaProblem():
 	savings = ('NO_SAVINGS' not in page.game.rules and
 		"""
-		<li>You can also specify a savings request instead of a bribe
+		<li>You can also specify a savings request instead of an offer
 			type.  To do so, use a <tt><b>"$"</b></tt> rather than any of the
-			single character bribe types listed above, and after the
+			single character offer types listed above, and after the
 			<tt><b>"$"</b></tt>, you're done.  Otherwise (if <i>not</i>
 			specifying a savings request), ....
 		""" or '')
 	plateau = (savings and 'NO_PLATEAU' not in page.game.rules and
 		"""
 		<li><i>Optionally</i>, a pound sign (<tt><b>"#"</b></tt>) followed by
-			the bribe's plateau amount.  The plateau amount must be a
-			whole number between zero and the bribe amount (inclusive).
-			If this part of the offer is omitted, the bribe has no plateau
+			the offer's plateau amount.  The plateau amount must be a
+			whole number between zero and the offer amount (inclusive).
+			If this part of the offer is omitted, the offer has no plateau
 			(a plateau of zero).  If the pound sign is provided but no
-			plateau amount is given, the plateau is the same as the bribe
-			amount -- that is, the bribe will not be reduced at all unless
-			and until all other bribes reach their plateau.  (Note that
+			plateau amount is given, the plateau is the same as the offer
+			amount -- that is, the offer will not be reduced at all unless
+			and until all other offers reach their plateau.  (Note that
 			you may <i>not</i> specify a plateau amount in a savings
 			request.)
 		""" or '')
@@ -73,21 +73,21 @@ def payolaProblem():
 			(though it will show up, just as you entered it, in your offer
 			sheet).  As for the format of the <i>non-</i>comment part
 			of your offers....
-		<li>A bribe offer can begin with a repetition count, indicating
-			how many times in succession the bribe should be repeated
+		<li>An offer can begin with a repetition count, indicating
+			how many times in succession the offer should be repeated
 			in the offer list.  This is optional (defaults to 1), but
 			if given, should be an integer value from zero to ninety-nine,
 			followed by a star.
-		<li>The first required part of a bribe offer is the numeric bribe
+		<li>The first required part of an offer is the numeric offer
 			amount.  This must be a whole integral number, greater than
 			or equal to zero and strictly less than ten thousand (10000).
 		%s
 		<li>You may then, if you wish, add a plus-sign (<tt>+</tt>) followed
-			by another bribe offer (complete, if you wish, with a repetition
+			by another offer (complete, if you wish, with a repetition
 			and plateau).  All of the different offers (separated by these
 			plus-signs) will be considered to be separate offers, all listed
 			in sequence, for the unit and order(s) in question.
-		<li>Next, give the single character bribe <em>type</em>
+		<li>Next, give the single character offer <em>type</em>
 			(either <tt><b>":"</b></tt>, <tt><b>"!"</b></tt>,
 			<tt><b>"&gt;"</b></tt>, <tt><b>"@"</b></tt>, or
 			<tt><b>"&amp;"</b></tt>).
@@ -95,9 +95,9 @@ def payolaProblem():
 		""" % (plateau, savings),
 		"""
 		<li>To provide a second (third, etc.) order to a unit in the same
-			bribe, supply a vertical bar character, then <b>only</b> the
-			order part of the bribe.  That is, do <b>not</b> re-specify
-			the type and location of the unit being bribed.  Example:
+			offer, supply a vertical bar character, then <b>only</b> the
+			order part of the offer.  That is, do <b>not</b> re-specify
+			the type and location of the unit being given offer.  Example:
 			<dd><tt><b>F LVN-BOT | S F BAR-STP | S A PRU</b></tt></dd>
 		""")
 #	----------------------------------------------------------------------

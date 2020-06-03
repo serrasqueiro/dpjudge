@@ -130,9 +130,9 @@ class PayolaPower(Power):
 			if 'H' not in orders: self.newOffer(':', unit, 'H')
 			return self.newOffer(code, unit, orders, amt, plateau)
 		for order in orders:
-			bribe = ((code != '&') and (code != '>' or order[0] != '-')
+			offer = ((code != '&') and (code != '>' or order[0] != '-')
 				and  (code != '@' or order[0] == '-')) and amt
-			self.newOffer(':', unit, order, bribe, bribe and plateau)
+			self.newOffer(':', unit, order, offer, offer and plateau)
 		if code != ':': self.newOffer(code, unit, None, amt, plateau)
 	#	----------------------------------------------------------------------
 	def addDefaults(self):

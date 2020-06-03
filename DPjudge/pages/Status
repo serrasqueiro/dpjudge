@@ -815,7 +815,7 @@ page.include('functions')
 	Specifies the power's current acceptance list.
 
 <p><dt><b><tt><i>offer</i></tt></b><dd>
-	A bribe offer.
+	An offer being made to a unit.
 
 <a name=SENT></a>
 <p><dt><b><tt>SENT <i>powerName</i></tt></b><dd>

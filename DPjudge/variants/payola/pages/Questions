@@ -56,14 +56,14 @@ page.include('functions')
 		<!--QUESTIONS LIST BEGINS HERE-->
 		<b>&middot;</b>&nbsp;<a href="#1">Payola and Diplomacy</a><br>
 		<b>&middot;</b>&nbsp;<a href="#2">Income and Expenses</a><br>
-		<b>&middot;</b>&nbsp;<a href="#3">Bribe Syntax</a><br>
-		<b>&middot;</b>&nbsp;<a href="#4">Bribe Interactions</a><br>
+		<b>&middot;</b>&nbsp;<a href="#3">Offer Syntax</a><br>
+		<b>&middot;</b>&nbsp;<a href="#4">Offer Interactions</a><br>
 		&nbsp;&nbsp;<a href="#4">(Including the coastal support question)</a><br>
 		<b>&middot;</b>&nbsp;<a href="#5">High-Bid Ties and the Acceptance List</a><br>
 		<b>&middot;</b>&nbsp;<a href="#6">Overexpenditure and Money Management</a><br>
 		<b>&middot;</b>&nbsp;<a href="#7">Game Phases (Including "Why were my</a><br>
 		&nbsp;&nbsp;<a href="#7">units told to HOLD?")</a><br>
-		<b>&middot;</b>&nbsp;<a href="#8">Special-Case Bribes</a><br>
+		<b>&middot;</b>&nbsp;<a href="#8">Special-Case Offers</a><br>
 		<b>&middot;</b>&nbsp;<a href="#9">The Website and the E-Mail Interfaces</a>
 		<!--QUESTIONS LIST TABLE ENDS HERE-->
 	</td>
@@ -80,7 +80,7 @@ page.include('functions')
 		<b>What is Payola Diplomacy anyway?</b><br>
 	Basically, Payola Diplomacy is a standard game of Diplomacy (on any
 	game map, etc.) in which each player has a treasury of "silver pieces"
-	that he uses to offer "bribes" to each of the various pieces on the
+	that he uses to make "offers" to each of the various pieces on the
 	board (other players' units but also his own).  Each player must pay
 	his own armies and fleets enough to get them to follow the orders he
 	wishes them to follow, or risk them doing the bidding of another player.
@@ -145,10 +145,10 @@ of Monopoly money.  How much do I have and how and when do I get more?</b><br>
 	<li>the "zero sum" model, in which all supply centers are worth
 		ten silver pieces awarded once only, funds are transferred from one
 		player to another when a supply center changes hands,
-		and all of the money paid as bribes to each player's units during
-		the game-year is added to that player's
+		and all of the money paid (as accepted offers made to each player's
+		units during the game-year) is added to that player's
 		treasury at the end of the year (in standard Payola, money spent on
-		accepted bribes is gone forever; spent by the generals and admirals
+		accepted offers is gone forever; spent by the generals and admirals
 		at the officers' club).
 	</ul>
 
@@ -163,7 +163,7 @@ game-year?  Is the money one of those "use it or lose it" things?
 	use to pay an enemy army to simply step aside and let you walk into
 	the supply center that gives you a solo victory.
 
-<P><b>Before I ask you how to bribe a unit, is that 
+<P><b>Before I ask you how to make an offer to a unit, is that
 the only thing I can do with my money?</b><br>
 	No, you can transfer some or all of it to any other player.  You can do 
 	this at any time, and the transfer is instantaneous.  Players take
@@ -177,32 +177,32 @@ the only thing I can do with my money?</b><br>
 
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
-		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="3"></a><b>Bribe Syntax</b></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="3"></a><b>Offer Syntax</b></td></tr>
 		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
 		</table>	
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
 		<!--ANSWERS BEGINS HERE-->
-		<b>Okay, I'm ready to learn how to bribe the pieces now.
-How do I do it?  What are the different types of bribes I can offer to
+		<b>Okay, I'm ready to learn how to make offers to the pieces now.
+How do I do it?  What are the different types of offers I can make to
 the pieces on the board?</b><br>
-	In Payola, there are five different types of bribes.  Here are examples
+	In Payola, there are five different types of offers.  Here are examples
 	of each, with an explanation:
 	<ul>
-	<p><li><b>Direct Bribe.</b>  The offer below is a promise to pay four
+	<p><li><b>Direct Offer.</b>  The offer below is a promise to pay four
 		"silver pieces" if the army in Paris attempts to move to Burgundy.
 		<dd><tt>4 : A PAR - BUR</tt></dd><br>
-		Direct bribes are the most common of the bribe types.  Many players
-		use only direct bribes throughout a game.
-	<p><li><b>Negative Bribe.</b>  The offer below is a promise to pay four
+		Direct offers are the most common of the offer types.  Many players
+		use only direct offers throughout a game.
+	<p><li><b>Negative Offer.</b>  The offer below is a promise to pay four
 		"silver pieces" if the army in Paris does <u>not</u> attempt to
 		move to Burgundy.
 		<dd><tt>4 ! A PAR - BUR</tt></dd><br>
 		As long as the army in Paris does anything <i>other than</i> try
-		to move to Burgundy, the treasury of the player issuing this bribe
+		to move to Burgundy, the treasury of the player issuing this offer
 		will be debited four silver pieces.
-	<p><li><b>Move Bribe.</b> The offer below is a promise to pay four "silver
+	<p><li><b>Move Offer.</b> The offer below is a promise to pay four "silver
 		pieces if the army in Paris tries to move either to Burgundy or
 		to anywhere else.
 		<dd><tt>4 &gt; A PAR - BUR</tt></dd><br>
@@ -210,12 +210,12 @@ the pieces on the board?</b><br>
 		<i>any</i>where (not just to Burgundy, but to any space adjacent
 		to Paris), it will cost the player four silver pieces from his
 		treasury.
-	<p><li><b>Hold Bribe.</b> The offer below is a promise to pay four
+	<p><li><b>Hold Offer.</b> The offer below is a promise to pay four
 		"silver pieces" if the army in Paris either does not attempt
 		to move at all, or attempts to move only to Burgundy.
 		<dd><tt>4 @ A PAR - BUR</tt></dd><br>
 		Because the order I included in the above example is a <i>move</i>
-		order, the meaning of the example order may seem a bit confusing, so
+		order, the meaning of the example offer may seem a bit confusing, so
 		let me explain.  The at-sign
 		in the offer does indeed mean that the amount offered will be paid if
 		the unit does <i>not</i> move.  That is, four silver pieces will be
@@ -225,18 +225,18 @@ the pieces on the board?</b><br>
 		offer, whether it is a stationary order or not, so
 		an attempt to move from to Burgundy would also cost the player those
 		four silver pieces.
-	<p><li><b>Gift Bribe.</b>  The offer below is a promise to pay four
+	<p><li><b>Gift Offer.</b>  The offer below is a promise to pay four
 		"silver pieces" <i>no matter what order is issued</i> to the army
 		in Paris.
 		<dd><tt>4 &amp; A PAR - BUR</tt></dd><br>
-		Yes, you read that right.  A gift bribe is a simple drain on your
+		Yes, you read that right.  A gift offer is a simple drain on your
 		treasury.  Whatever the army in Paris does, it's going to cost you
-		four silver pieces if you offered this bribe.  You probably are
-		not surprised to hear that the gift bribe is
+		four silver pieces if you made this offer.  You probably are
+		not surprised to hear that the gift offer is
 		very rarely used in practice.
 	</ul>
 
-<P><b>Can I offer more than one bribe to a single unit?</b><br>
+<P><b>Can I make more than one offer to a single unit?</b><br>
 	Yes, you can.  Here are some examples:
 	<ul>
 	<p><li>Let's say that you didn't care whether
@@ -262,7 +262,7 @@ the pieces on the board?</b><br>
 	but that for some reason 
 	you are willing to pay two <i>extra</i> silver pieces if it moves
 	to Burgundy as opposed to anywhere else.  You could express this with
-	the bribes:
+	these offers:
 	<dd><tt>4 &gt; A PAR - BUR<br>2 : A PAR - BUR</tt></dd><br>
 	</ul>
 
@@ -276,7 +276,7 @@ the pieces on the board?</b><br>
 	pieces if it is issued any <i>other</i> order.
 	<P>
 	What the player probably wished to say was "four if you don't move
-	to Burgundy <i><u>and</u></i> you don't move to Gascony."  This bribe
+	to Burgundy <i><u>and</u></i> you don't move to Gascony."  This offer
 	<i>must</i> be expressed using the vertical bar, like this:
 	<ul><dd><tt>4 ! A PAR - BUR | - GAS</tt></dd></ul>
 		<!--ANSWERS ENDS HERE-->
@@ -286,7 +286,7 @@ the pieces on the board?</b><br>
 
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
-		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="4"></a><b>Bribe Interactions (Including the coastal support question</b></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="4"></a><b>Offer Interactions (Including the coastal support question</b></td></tr>
 		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
 		</table>	
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
@@ -320,15 +320,15 @@ money that other players offer for that same order?</b><br>
 
 <P><b>What if I offer money for a fleet in Constantinople
 to move to the east coast of Bulgaria, and someone else offers it money
-to move to the <i>south</i> coast.  Are our bribes combined?</b><br>
+to move to the <i>south</i> coast.  Are our offers combined?</b><br>
 	No.  Those are two separate orders.
 
 <P><b>What if I wish to <i>support</i> a Constantinople
 fleet's move to a particular coast of Bulgaria?  The Website is not
-letting me enter the bribe offer.  How do I do it?</b><br>
+letting me enter the offer.  How do I do it?</b><br>
 	You cannot.  You may offer support for the fleet to move to Bulgaria,
 	but not to a specific coast of Bulgaria.  This is the proper implementation
-	of the Diplomacy rules -- support is directed to a <i>space</i>, not to
+	of the Diplomacy rules &mdash; support is directed to a <i>space</i>, not to
 	a specific <i>coast</i>.
 	</td>
 	</tr>
@@ -360,7 +360,7 @@ another player's offer, what will the unit do?</b><br>
 
 <P><b>Does the acceptance list really matter?  Do I really
 need to keep an eye on it and change it every season?</b><br>
-	Well, you can check the data for all the completed Payola games (bribe
+	Well, you can check the data for all the completed Payola games (offer
 	histories become public knowledge at the end of the game) to find instances
 	where the acceptance list came into play to break a tie, but the fact is
 	that, in practice, these are few and far between.  As long as you have
@@ -373,9 +373,9 @@ need to keep an eye on it and change it every season?</b><br>
 	<P>
 	The reason why the acceptance list is not of paramount importance is
 	that
-	if you have a unit that is being bribed to do something you don't
+	if you have a unit that is being offered money to do something you don't
 	want it to do, it probably doesn't matter to you whether the power
-	doing the bribing is someone you thought was your friend or someone
+	doing the offering is someone you thought was your friend or someone
 	you knew was your enemy.  Therefore, when you have a unit deciding
 	between two tied
 	orders -- neither of which includes money (or even a zero silver piece
@@ -393,22 +393,22 @@ need to keep an eye on it and change it every season?</b><br>
 	want to be sure to list him high in your acceptance list to avoid the
 	risk of his being one silver
 	piece short on a crucial bid, which then goes to a tie-break that is
-	decided against him.  However, since you can issue zero AgP bribes to your
+	decided against him.  However, since you can issue zero AgP offers to your
 	own units -- and assuming you list yourself at the front of your acceptance
 	list (you'd rarely not do so!) -- you can tip the balance in favor of
 	your ally's planned bids to your units, even if he is listed dead-last
 	in your acceptance list.  In fact, you may want to do just that -- list
 	him last, so that if he does cross you up, his bids won't match your
 	zero silver piece "helper bids," and his bids will run the risk of losing
-	a tie-break to a bribe made by another power.  (Of course, if this happens,
+	a tie-break to an offer made by another power.  (Of course, if this happens,
 	it just means that your
 	unit is controlled by someone you considered to be even more against you
 	than your would-be treacherous "friend," and that you've allowed that
 	"friend" to save the money he was about to stab you with so that he can
 	use it to try to do so again next season!  If he honestly tells you
 	how much he spent, though,
-	in attempting the bribe -- lying to you only about what the order was
-	that he listed in his bribe -- you can tell from your account statement
+	in attempting the offer -- lying to you only about what the order was
+	that he listed in his offer -- you can tell from your account statement
 	that he lost a tie-break, and his treachery will be exposed to you.)
 		<!--ANSWERS ENDS HERE-->
 	</td>
@@ -424,11 +424,11 @@ need to keep an eye on it and change it every season?</b><br>
 	<tr valign=top>
 	<td class="bodycopy">
 		<!--ANSWERS BEGINS HERE-->
-		<b>Can I offer bribes whose amounts total to
+		<b>Can I make offers whose amounts total to
 more money than I have in my treasury?</b><br>
-	Yes, you can.  But of course, if you do, and if enough of your bribes
+	Yes, you can.  But of course, if you do, and if enough of your offers
 	turn out to be accepted, you won't be able to afford them all.  If this
-	happens, your bribes are automatically devalued and the units try again
+	happens, your offers are automatically devalued and the units try again
 	to see if they can meet your demands without leaving you bankrupt.
 	This all happens behind the scenes, simultaneously for all such
 	"overgenerous" players, and is done as follows:
@@ -446,13 +446,13 @@ more money than I have in my treasury?</b><br>
 	decide on their orders <i>again</i>, you are <i>still</i> promising them
 	more than you could pay, your offers are <i>all</i> reduced by
 	<i>another</i> "silver piece."  This continues until you can afford to
-	pay all the units that accept your bribes.
+	pay all the units that accept your offers.
 	</ul>
 
-<P><b>Okay, I understand.  If I overcommit, all of my bribes
+<P><b>Okay, I understand.  If I overcommit, all of my offers
 will be reduced one silver piece, then re-offered to the various units,
 with this reduction and re-offering repeated if necessary.
-What if there are some of my bribe offers that I care less about than others?
+What if there are some of my offers that I care less about than others?
 Can I somehow have these less important offers reduce at a faster rate, in
 order to give the others a better chance to be accepted?</b><br>
     Yes, you can.  The way you do this is by splitting any offer that
@@ -462,11 +462,13 @@ order to give the others a better chance to be accepted?</b><br>
     but you wish it to reduce by two silver pieces rather
     than by one, you would split the offer into two parts:
     <ul><dd><tt>4 : A PAR - BUR<dd>4 : A PAR - BUR</tt></dd></ul>
+    There is a convenient shorthand for this as well:
+    <ul><dd><tt>2 * 4 : A PAR - BUR</tt></dd></ul>
 <!--
 Planning how quickly your bids would reduce can be
 a good way to implement different campaign possibilities. With some orders
 decreasing faster than others, if it turns out you can't afford your
-preferred campaign, an alternate plan (its bribes reducing slower) could
+preferred campaign, an alternate plan (its offers reducing slower) could
 become the more attractive to the units to which you're making offers.
 <P>
 For (an oversimplified) example, if your treasury contains twenty silver
@@ -497,39 +499,39 @@ and still have all the same bribing flexibility?
 	Yes, there is.  You can specify with your offers that -- no
 	matter what happens -- you wish to be left with a specific amount of money
 	after the units are given their orders.  This is done by including a
-	"savings request" with your bribes.  For example, to guarantee that
+	"savings request" with your offers.  For example, to guarantee that
 	your treasury will contain at least twenty-five "silver pieces" after
 	the current turn, include the line:
 	<ul><dd><tt>25 $</tt></dd></ul>
 	with your offers.
 	(Note that if you include more than one savings request in an
 	offer sheet, they will be totaled to create a single request.)
-	The savings request simply means that if enough of your bribes would be
+	The savings request simply means that if enough of your offers would be
 	accepted to leave you with fewer silver pieces than requested,
-	your bribes are subjected to the one-silver-piece-at-a-time
+	your offers are subjected to the one-silver-piece-at-a-time
 	devaluation described above, until all the acceptable offers
 	are also payable without violating your savings request.
 	<P><b>
 Is there any other money-management tool
 or technique I can take advantage of?</b><br>
-	Yes, there is one more; the "bribe plateau."  You can give
-	any of your bribe offers a "plateau" amount, which comes into play
-	if your bribes need to be reduced.  Each bribe, as discussed above,
-	is reduced in value by a single silver piece; <i>however</i>, a bribe
+	Yes, there is one more; the "offer plateau."  You can give
+	any of your offers a "plateau" amount, which comes into play
+	if your offers need to be reduced.  Each offer, as discussed above,
+	is reduced in value by a single silver piece; <i>however</i>, an offer
 	is never reduced lower than its "plateau" amount unless and
 	until <i>every one</i> of the
-	player's bribes reaches its plateau.  Here is an example:
+	player's offers reaches its plateau.  Here is an example:
 	<ul><dd><tt>8#4 : A PAR - BUR</tt></dd></ul>
-	This bribe is for eight silver pieces, but directs that it should not
+	This offer is for eight silver pieces, but directs that it should not
 	be reduced (if reduction is necessary) to any amount lower than four
-	silver pieces.  The only way this bribe could be reduced to offer an
+	silver pieces.  The only way this offer could be reduced to offer an
 	amount of three "silver pieces" or fewer is if all of the player's
-	bribes are reduced to their plateau amounts
-	but the player is still "overextended" -- if this happens, this bribe
-	and all of this player's other bribes will then "forget their plateau"
+	offers are reduced to their plateau amounts
+	but the player is still "overextended" -- if this happens, this offer
+	and all of this player's other offers will then "forget their plateau"
 	and continue to be reduced, down to zero if need be.
 	<P>
-	Any bribe offer that does not include a pound-sign character to indicate a
+	Any offer that does not include a pound-sign character to indicate a
 	plateau has a plateau amount of zero.  Additionally, a useful shorthand
 	is recognized:  the offer
 	<ul><dd><tt>8# : A PAR - BUR</tt></dd></ul>
@@ -550,17 +552,17 @@ or technique I can take advantage of?</b><br>
 	<tr valign=top>
 	<td class="bodycopy">
 		<!--ANSWERS BEGINS HERE-->
-<b>What about retreat and adjustment phases?  Do I bribe
+<b>What about retreat and adjustment phases?  Do I make offers to
 units during those phases of the game too?</b><br>
 	No.  All of a player's retreat, build, and remove orders are under the
 	control of that individual player acting alone.  In these phases,
 	a Payola game is  just like a standard Diplomacy game.
-	Just as you enter your movement phase bribe offers at the Website,
+	Just as you enter your movement phase offers at the Website,
 	you can issue your retreat and adjustment phase orders here too.
 
 <P><b>
-When are bribes adjudicated? Will moves process before the deadline if
-all players have submitted their bribes?
+When are orders adjudicated? Will moves process before the deadline if
+all players have submitted their offers?
 </b><br>
 	The short answer to the second question
 	is, "Yes; assuming no player has set his <i>wait flag</i>."
@@ -568,7 +570,7 @@ all players have submitted their bribes?
 	Webpage that answers the
 	<a href=<URL>?page=Questions>Common Questions About the DPjudge</a>.  The
 	complete processing mechanics is described there.  Simply
-	remember to read "bribe offers" when it talks about "movement orders."
+	remember to read "offer sheets" when it talks about "movement orders".
 		<!--ANSWERS ENDS HERE-->
 	</td>
 	</tr>
@@ -576,55 +578,55 @@ all players have submitted their bribes?
 
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
-		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="8"></a><b>Special-Case Bribes</b></td></tr>
+		<tr><td bgcolor="#CCCCCC" class="grey" align=center><a name="8"></a><b>Special-Case Offers</b></td></tr>
 		<tr><td bgcolor="#666666" height=1 class="border"><img src="<URL>/images/spacer.gif" height=1></td></tr>
 		</table>	
 	<table border=0 cellpadding=10 cellspacing=0 width=100%>
 	<tr valign=top>
 	<td class="bodycopy">
 		<!--ANSWERS BEGINS HERE-->
-		<b>What if a unit doesn't receive any bribe at all?
+		<b>What if a unit doesn't receive any offer at all?
 What will it do?</b><br>
 	It will <tt>HOLD</tt>.  This is because if a player offers no
-	non-negative bribe to one of his own units, a default bribe for that unit
+	non-negative offer to one of his own units, a default offer for that unit
 	to <tt>HOLD</tt> --
 	offering to pay zero "silver pieces" -- is automatically entered for him
 	at the end of his list of offers.
 
-<P><b>What if the only bribe a unit gets is a "negative" bribe?  What will the unit do?</b><br>
+<P><b>What if the only offer a unit gets is a "negative" offer?  What will the unit do?</b><br>
 	Again, it will <tt>HOLD</tt>.
-	This is explained as follows:  each negative bribe that does not ask
+	This is explained as follows:  each negative offer that does not ask
 	for the unit to <tt>HOLD</tt> "comes with" a
-	"hidden" direct bribe offer to pay zero silver pieces if the unit is
-	ordered to <tt>HOLD</tt>, and it is this bribe -- the only positive
+	"hidden" direct offer to pay zero silver pieces if the unit is
+	ordered to <tt>HOLD</tt>, and it is this offer -- the only positive
 	("do this") offer that the unit gets -- which is followed.
 	<P>
-	Ah, you say, but what if the bribe offer
+	Ah, you say, but what if the offer
 	is one that asks for the unit <i>not</i> to <tt>HOLD</tt>?  As in
 	<ul><dd><tt>4 ! A PAR H</tt></dd></ul>
 	It doesn't matter.  The unit will still <tt>HOLD</tt> (the bribing
 	player will <i>not</i> be charged four silver pieces, however).  The
-	bribe that will be accepted is the owning player's default (automatically
+	offer that will be accepted is the owning player's default (automatically
 	created) zero silver piece offer <tt>HOLD</tt> offer.
 	<P>
-	The thing to remember about negative bribes is that they never give a
+	The thing to remember about negative offers is that they never give a
 	unit an order that it can consider.  Units <i>only</i> look at the
 	<i>non-</i>negative offers made to them when deciding what order to follow.
-	Money that is offered in a negative bribe is <i>added</i> as appropriate,
-	to each non-negative bribe that fits its requirements, of course, but
-	there must be some non-negative bribe to catch the money or it essentially
+	Money that is offered in a negative offer is <i>added</i> as appropriate,
+	to each non-negative offer that fits its requirements, of course, but
+	there must be some non-negative offer to catch the money or it essentially
 	goes unoffered.  The lesson is that if you ever offer a unit money
-	<i>not</i> to <tt>HOLD</tt>, be sure to offer it a "direct" bribe
+	<i>not</i> to <tt>HOLD</tt>, be sure to make it a "direct" offer
 	as well, just in case your money has nothing to which it can be added.
 
 <P><b>Wait a minute.  In the rules it says that a player
-cannot offer a zero silver piece bribe to any unit that he doesn't own.  But,
+cannot offer a zero silver piece offer to any unit that he doesn't own.  But,
 in the answer to that last question, you said that a zero silver piece
-bribe for a unit to <tt>HOLD</tt> is automatically paired with every single
-negative bribe offer.  What gives?</b><br>
-	The restriction against zero silver piece bribes to foreign units is real,
+offer for a unit to <tt>HOLD</tt> is automatically paired with every single
+negative offer.  What gives?</b><br>
+	The restriction against zero silver piece offers to foreign units is real,
 	but it applies only to offers actually written by a player.
-	The zero silver piece bribe to <tt>HOLD</tt> which is added automatically
+	The zero silver piece offer to <tt>HOLD</tt> which is added automatically
 	is exempt from this prohibition.
 		<!--ANSWERS ENDS HERE-->
 	</td>
@@ -681,7 +683,7 @@ Website?</b><br>
 <P><b>So there's an e-mail interface I can use to submit
 my offers and orders and send my press messages?  What do I need to
 know?</b><br>
-	Yes, you can submit your bribe offers and your retreat and adjustment
+	Yes, you can submit your offers and your retreat and adjustment
 	orders by e-mail -- just include them somewhere under your <tt>SIGNON</tt>
 	(and outside of a press message!)
 	Speaking of press, yes, in addition to being able to compose and send
