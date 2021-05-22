@@ -14,6 +14,30 @@ Porting to git, from Mercurial (hg), was done using:
   + Used Sourceforge clone from Mercurial, then _**hg**_, version:
     o Mercurial Distributed SCM (version 5.8)
 
+The Mercurial configuration used was as follow:
+```
+ludo:~/hclm-dpjudge> more .hg/hgrc  
+# example repository config (see 'hg help config' for more info)
+[paths]
+###default = ssh://hclm@hg.code.sf.net/u/hclm/dpjudge
+###default = ssh://git@github.com:serrasqueiro/dpjudge.git
+default = ../my-local-git
+
+# path aliases to other clones of this repo in URLs or filesystem paths
+# (see 'hg help config.paths' for more info)
+#
+# default:pushurl = ssh://jdoe@example.net/hg/jdoes-fork
+# my-fork         = ssh://jdoe@example.net/hg/jdoes-fork
+# my-clone        = /home/jdoe/jdoes-clone
+
+[ui]
+# name and email (local to this repository, optional), e.g.
+# username = Jane Doe <jdoe@example.com>
+verbose = True
+```
+Then at the git dir, performed:
+- `/tmp/fast-export/hg-fast-export.sh -r ~/hclm-dpjudge/`
+
 ## Elsewhere...
 
 - About the Diplomatic Pouch, article [here](http://uk.diplom.org/pouch/Zine/S2020M/Editor/about.html).
