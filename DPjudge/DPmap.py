@@ -94,9 +94,7 @@ class PostScriptMap:
 						if year == 'of': year = lowWord[where + 3]
 						year = int(float(year))  # "year" has a period at end
 						if lowWord[-1][0] == '(' and lowWord[-1][-1] == ')':
-							title += season + (' ' + self.translate(
-								'Retreat', 1)) * (split > 1 and
-								section == 'R') + ' ' + `year`
+							title += season + (' ' + self.translate('Retreat', 1)) * (split > 1 and section == 'R') + ' ' + str(year)
 							self.errorPhase = lowWord[-1][1:-1].split('.')[-1]
 							if viewer:
 								self.errorPhase = viewer + '.' + self.errorPhase
@@ -727,7 +725,7 @@ class PostScriptMap:
 			'%%%%Pages: %d 1\n' % self.pages)
 		self.outFile.write(temp.encode('latin-1'))
 		self.outFile.close()
-		try: os.chmod(self.outFileName, 0666)
+		try: os.chmod(self.outFileName, 0o0666)
 		except: pass
 	#	----------------------------------------------------------------------
 	def startPage(self, title = None):
