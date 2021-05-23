@@ -2,7 +2,8 @@
 
 import sys
 import os
-from compat.iowrite import StdOutput, StdError, Output
+import compat.iowrite
+from compat.iowrite import StdOutput, StdError, Output, dprint
 
 
 def main():
@@ -20,6 +21,7 @@ def main():
 
 def run_main(args):
 	""" Main function """
+	compat.iowrite.debug = 1
 	if args[1:]:
 		if args[1] in ('-h', '--help'):
 			return None
@@ -72,8 +74,11 @@ class PostScriptMap:
 		self.owner, self.adj, self.units, self.discoveries = {}, {}, {}, {}
 		self.vassals, self.error, self.errorPhase = {}, [], None
 		self.startDoc(mapFile)
+		idx = 0
 		for line in lines:
+			idx += 1
 			word = line.upper().split()
+			dprint(f"Debug: read line {idx}/{len(lines)}:", word)
 			if not word or line[0] in ' \t' and section != 'O': 
 				lastLine = None
 				continue
@@ -81,11 +86,13 @@ class PostScriptMap:
 				line = lastLine.rstrip() + ' ' + line
 				word = line.upper().split()
 				lastLine = None
-			if word[0][0] in '#%': continue
+			if word[0][0] in '#%':
+				continue
 			if word[0] == 'SHOW':
 				show = not word[1:] or (viewer or 'MASTER') in word[1:]
 				continue
-			if not show: continue
+			if not show:
+				continue
 			copy = ' '.join(word)
 
 			if 'VASSAL' in word:
@@ -101,9 +108,11 @@ class PostScriptMap:
 			#	-------------------------------------------
 			#	Check if this is the beginning of a section
 			#	-------------------------------------------
-			if ' '.join(word[:2]) in (	'STARTING POSITION', 'STATUS OF',
-										'ADJUSTMENT ORDERS', 'RETREAT ORDERS',
-										'MOVEMENT RESULTS'):
+			if ' '.join(word[:2]) in (
+					'STARTING POSITION', 'STATUS OF',
+					'ADJUSTMENT ORDERS', 'RETREAT ORDERS',
+					'MOVEMENT RESULTS'
+			):
 				where, section = word[1] == 'OF' and 5 or 2, word[0][0]
 				lastSection = section
 			elif word[0] == 'OWNERSHIP':
@@ -112,9 +121,11 @@ class PostScriptMap:
 			elif ' '.join(word[:2]) == 'THE FOLLOWING':
 				where, section = 0, 'D'
 				continue
-			elif section: where = 0
-			else: continue
-
+			elif section:
+				where = 0
+			else:
+				continue
+			dprint("Debug:", f"section={section}, where={where}")
 			if where:
 				#	--------------------------------------------------------
 				#	Determine the page title (game name, season, year, etc.)
@@ -155,8 +166,9 @@ class PostScriptMap:
 			#	Lines to be ignored
 			#	-------------------
 			if ('PENDING' in copy or 'INVALID' in copy
-			or	'REORDER' in copy or 'INCOME HAS' in copy
-			or  'SUBJECT' in copy or copy[:2] == '::'): continue
+					or 'REORDER' in copy or 'INCOME HAS' in copy
+					or  'SUBJECT' in copy or copy[:2] == '::'):
+				continue
 
 			#	-------------------------------------------
 			#	See if we're reading orders for a new power
@@ -204,7 +216,8 @@ class PostScriptMap:
 					# games not all visible powers are listed.
 					section = 'U'
 				else:
-					if power not in self.ownerOrder: raise PowerNotInPS
+					if power not in self.ownerOrder:
+						raise PowerNotInPS
 					scList += ' ' + ' '.join(word[line[0] != ' ':])
 					if scList[-1] == '.':
 						self.owner[power], scList = [], scList[:-1]
@@ -225,7 +238,8 @@ class PostScriptMap:
 			#	----------------
 			if section == 'U':
 				if 'SUPPLY' in word:
-					if power not in self.ownerOrder: raise PowerNotInPS
+					if power not in self.ownerOrder:
+						raise PowerNotInPS
 					continue
 
 			#	--------------------------------------------------------
@@ -358,7 +372,8 @@ class PostScriptMap:
 					except: break
 				di = self.lookup(' '.join(word[where:]))
 				if not msg: state = 'M' 
-			if 'DISLODGED' in msg: msg, state = 'DISLODGED', 'D'
+			if 'DISLODGED' in msg:
+				msg, state = 'DISLODGED', 'D'
 			if not si:
 				piece, draw = self.addUnit(power, unit, None, phase, state), 0
 			elif split > 1 and section == 'R':
@@ -407,7 +422,8 @@ class PostScriptMap:
 			#	----
 			#	HOLD
 			#	----
-			if order[0] in 'NH': order, graph = 'H', ''
+			if order[0] in 'NH':
+				order, graph = 'H', ''
 			#	------
 			#	CONVOY
 			#	------
@@ -539,11 +555,13 @@ class PostScriptMap:
 			#	Finish the document
 			#	-------------------
 			self.endDoc()
+
 	#	----------------------------------------------------------------------
 	def addUnit(self, power, unit, where, phase, state = 'H'):
 		piece = {'type': unit, 'loc': where, 'phase': phase, 'state': state} 
 		self.units.setdefault(power, []).append(piece)
 		return piece
+
 	#	----------------------------------------------------------------------
 	def findUnit(self, power, where, after = 0, state = None):
 		for piece in self.units.get(power, [])[:]:
@@ -551,6 +569,7 @@ class PostScriptMap:
 			if loc and loc['nick'] == where['nick'] and (not state
 				or state == piece['state']): return piece
 		else: return None
+
 	#	----------------------------------------------------------------------
 	def reportSCOwner(self):
 		#	-------------------
@@ -606,6 +625,7 @@ class PostScriptMap:
 		#	SC coloration
 		#	-------------
 		self.outFile.write(self.sc.encode('latin-1'))
+
 	#	----------------------------------------------------------------------
 	#	Searches the ps-file for all procedures required for DPmap.
 	#	If one is not found, it will be replaced by a stub.
@@ -679,7 +699,8 @@ class PostScriptMap:
 		procsNeeded = dict.fromkeys([p[0] for p in self.procs])
 
 		info, blank, visit, endSetup, self.ownerOrder = 0, 0, 0, None, []
-		for line in file.readlines():
+		lines = file.readlines()
+		for line in lines:
 			word = line.split()
 			upWord = [x.upper() for x in word]
 			if upWord[:2] == ['%', 'MAP']: info = 0; blank *= 2
@@ -736,18 +757,22 @@ class PostScriptMap:
 		file.close()
 		
 		if not self.ownerOrder: raise NoPowersFoundInPS
-		self.ownerOrder.remove('UNOWNED'); self.ownerOrder.append('UNOWNED')
+		self.ownerOrder.remove('UNOWNED')
+		self.ownerOrder.append('UNOWNED')
 
 		if procsNeeded.keys():
 			self.outFile.write('% Stubs\n')
 			for p in self.procs:
-				if not p[0] in procsNeeded: continue
+				a_proc = p[0]
+				dprint("Debug:", "procs, p:", p, f"@{sorted(procsNeeded)}", a_proc in procsNeeded)
+				if not a_proc in procsNeeded:
+					continue
 				self.outFile.write('/%s where {pop} { /%s {' % (p[0], p[0]))
 				if len(p) == 2:
 					self.outFile.write(' '.join(['pop'] * p[1]))
-				elif p[0] == 'ShowPage':
+				elif a_proc == 'ShowPage':
 					self.outFile.write('showpage')
-				elif p[0] == 'DrawNames':
+				elif a_proc == 'DrawNames':
 					self.outFile.write('\n')
 					for data in [x for x in self.map if '/' not in x['nick']]:
 						temp = '\t%(x)d %(y)d (%(nick)s) DrawName\n' % data
@@ -755,7 +780,6 @@ class PostScriptMap:
 				self.outFile.write('} bind def } ifelse\n')
 		if endSetup:
 			self.outFile.write(endSetup.encode('latin-1'))
-			
 		self.pages, self.started = 0, None
 	#	----------------------------------------------------------------------
 	def endDoc(self):

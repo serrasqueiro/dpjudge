@@ -9,6 +9,7 @@ stdin/ stdout/ stderr Python3 compatibility
 
 import sys
 
+debug = 0
 
 class IOStream():
     """ Generic IO stream """
@@ -65,3 +66,10 @@ class Output(IOStream):
             self.write(msg.encode(self._encoding))
             return
         assert False, f"Output(): unexpected msg type: {type(msg)}"
+
+def dprint(*args, end='\n') -> bool:
+    """ Debug print """
+    if not debug:
+        return False
+    print(*args, end=end)
+    return True
