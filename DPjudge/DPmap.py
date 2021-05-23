@@ -2,7 +2,47 @@
 
 import sys
 import os
-from codecs import open
+from compat.iowrite import StdOutput, StdError, Output
+
+
+def main():
+	""" Main script """
+	sys.stdout = StdOutput(encoding='latin-1', old=True)
+	sys.stderr = StdError(encoding='latin-1', old=True)
+	code = run_main(sys.argv)
+	if code is None:
+		temp = ('Usage: %s [.../mapDir/mapName]'
+			' [viewer] [split] [resultsFile] [outputPSfile]'
+			' < resultsFile > outputPSfile\n' %
+			os.path.basename(sys.argv[0]))
+		sys.stdout.write(temp.encode('latin-1'))
+	sys.exit(code if code else 0)
+
+def run_main(args):
+	""" Main function """
+	if args[1:]:
+		if args[1] in ('-h', '--help'):
+			return None
+	return run_postscript(args)
+
+def run_postscript(args):
+	""" Generate maps """
+	if len(args) == 1:
+		args += [os.path.dirname(args[0]) + '/maps/standard']
+	if len(args) == 2: args += [0]
+	if len(args) == 3: args += [1]
+	if len(args) == 4: args += [0]
+	if len(args) == 5: args += [0]
+	if len(args) > 6 or args[1] == '-?':
+		return None
+	map = PostScriptMap(
+		args[1],
+		args[4], args[5], args[2], int(args[3])
+	)
+	if map.error:
+		sys.stderr.write('\n'.join(map.error).encode('latin-1') + '\n')
+	return 0
+
 
 class PostScriptMap:
 	#	----------------------------------------------------------------------
@@ -13,18 +53,17 @@ class PostScriptMap:
 	#		 2: Display retreat and adjustment together on separate page
 	#		 3: Display retreat and adjustment on separate pages
 	#	----------------------------------------------------------------------
-	def __init__(self, mapFile, inFile = 0, outFile = 0, viewer = 0, split = 1):
-		try: 
-			if inFile:
-				input = open(inFile, 'r', 'latin-1')
-				lines = input.readlines()
-				input.close()
-			else: lines = [unicode(x, 'latin-1') for x in sys.stdin.readlines()]
-		except: raise CannotOpenResultsFile
+	def __init__(self, mapFile, inFile, outFile = 0, viewer = 0, split = 1):
+		if inFile:
+			input = open(inFile, 'r', encoding='latin-1')
+			lines = input.readlines()
+			input.close()
+		else:
+			lines = [unicode(x, 'latin-1') for x in sys.stdin.readlines()]
 		self.outFileName = outFile
-		try: self.outFile = outFile and open(outFile, 'w') or sys.stdout
-		except: raise CannotOpenOutputFile
-		if viewer: viewer = viewer.upper()
+		self.outFile = outFile and Output(outFile, encoding='latin-1') or sys.stdout
+		if viewer:
+			viewer = viewer.upper()
 		self.pages, self.sc, show = 0, '', 1
 		self.started = self.scBefore = section = lastSection = lastLine = None
 		power = powerDecl = powerRedecl = powerOrder = season = year = None
@@ -583,12 +622,8 @@ class PostScriptMap:
 	#	to use.
 	#	----------------------------------------------------------------------
 	def startDoc(self, mapFile):
-		try: file = open(mapFile + '.ps', 'rU', encoding = 'latin-1')
-		except: 
-			try: file = open(mapFile, 'rU', encoding = 'latin-1')
-			except: raise CannotOpenPostScriptFile
-
-		self.procs = [];
+		file = open(mapFile + '.ps', 'r', encoding='latin-1')
+		self.procs = []
 		# Basic procedures
 		# Note: The stub for ShowPage executes showpage.
 		self.procs += [
@@ -667,8 +702,10 @@ class PostScriptMap:
 				elif word[0][0] == '}': visit = 0
 				self.outFile.write(line.encode('latin-1'))
 			elif not word:
-				if endSetup: endSetup += '\n'
-				elif blank < 2: self.outFile.write('\n')
+				if endSetup:
+					endSetup += '\n'
+				elif blank < 2:
+					self.outFile.write('\n')
 				blank = 1
 			elif word[0] == '%%EndSetup':
 				blank = 0
@@ -677,8 +714,10 @@ class PostScriptMap:
 				endSetup = line
 			elif word[0][0] == '%':
 				blank = 0
-				if endSetup: endSetup += '\n' + line
-				else: self.outFile.write(line.encode('latin-1'))
+				if endSetup:
+					endSetup += '\n' + line
+				else:
+					self.outFile.write(line.encode('latin-1'))
 			else:
 				blank = 0
 				if endSetup:
@@ -853,23 +892,7 @@ class PostScriptMap:
 					unit['loc']['y'], ('Fleet', 'Army')[unit['type'] == 'A'])
 		self.outFile.write(graphics.encode('latin-1'))
 		if complete: self.endPage()
-		
 	#	----------------------------------------------------------------------
 
 if __name__ == '__main__':
-	if len(sys.argv) == 1:
-		sys.argv += [os.path.dirname(sys.argv[0]) + '/maps/standard']
-	if len(sys.argv) == 2: sys.argv += [0]
-	if len(sys.argv) == 3: sys.argv += [1]
-	if len(sys.argv) == 4: sys.argv += [0]
-	if len(sys.argv) == 5: sys.argv += [0]
-	if len(sys.argv) > 6 or sys.argv[1] == '-?':
-		temp = ('Usage: %s [.../mapDir/mapName]'
-			' [viewer] [split] [resultsFile] [outputPSfile]'
-			' < resultsFile > outputPSfile\n' %
-			os.path.basename(sys.argv[0]))
-		sys.stderr.write(temp.encode('latin-1'))
-	else:
-		map = PostScriptMap(sys.argv[1],
-			sys.argv[4], sys.argv[5], sys.argv[2], int(sys.argv[3]))
-		if map.error: sys.stderr.write('\n'.join(map.error).encode('latin-1') + '\n')
+	main()
