@@ -13,5 +13,6 @@ build/
 
 venv/
 
-# Pyre type checker
+# Pyre type checker, etc
 .pyre/
+.idea/
